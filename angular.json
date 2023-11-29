@@ -20,9 +20,10 @@
               "zone.js"
             ],
             "tsConfig": "tsconfig.app.json",
-            "assets": [
+            "assets":
+            [
               "src/favicon.ico",
-              "src/assets"
+              "src/assets/bootstrap/css/bootstrap.min.css"
             ],
             "styles": [
               "src/styles.css"
