@@ -1,4 +1,4 @@
-import { User_Permission,Preferences } from "./RestModels";
+import { User_Permission,Preferences,Production_Area } from "./RestModels";
 
 export class GetEmpty
 {
@@ -147,5 +147,15 @@ export class GetEmpty
 			stock_negative_values_allowed: 0,
 			updated:new Date()
 		};
+	}
+
+	static production_area():Production_Area
+	{
+		return {
+			created: new Date(),
+			id:0,
+			name:'',
+			updated: new Date(),
+		}
 	}
 }

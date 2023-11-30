@@ -268,10 +268,9 @@ export class RestService
 
 		let x = this.initRestSimple('preferences');
 		let url = `${this.domain_configuration.domain}/${this.url_base}/preferences.php?domain=${window.location.hostname}`;
+		let method = 'GET';
 
-		return fetch(url, {
-			method: "GET"
-		})
+		return fetch(url, { method })
 		.then((response)=>
 		{
 			if( response.ok )

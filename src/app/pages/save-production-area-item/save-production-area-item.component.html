@@ -1,0 +1,30 @@
+<div class="container-fluid">
+	<h1 class="my-3 text-capitalize">{{production_area_item.id ? 'Actualizar':'Agregar'}} production area item</h1>
+	<form ngNativeValidate (submit)="save()">
+		<div class="card p-3">
+			<div class="row p-3">
+				
+				<div class="col-6 col-md-4">
+					<label class="">Production area</label>
+					<select name="production_area_id" [(ngModel)]="production_area_item.production_area_id" class="form-control">
+						<option [ngValue]="null">Select</option>
+						<option *ngFor="let c of production_area_item_list" [value]="c.id">{{c.id}}</option>
+					</select>
+				</div>
+				<div class="col-6 col-md-4">
+					<label class="">Item</label>
+					<select name="item_id" [(ngModel)]="production_area_item.item_id" class="form-control">
+						<option [ngValue]="null">Select</option>
+						<option *ngFor="let c of item_list" [value]="c.id">{{c.background}}</option>
+					</select>
+				</div>
+
+			</div>
+			<div class="row p-3">
+				<div class="col-12 text-right">
+					<button type="submit"  [disabled]="is_loading" class="btn btn-primary">Guardar</button>
+				</div>
+			</div>
+		</div>
+	</form>
+</div>

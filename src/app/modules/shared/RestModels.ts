@@ -190,10 +190,10 @@ export interface Cash_Close{
 	cash_on_hand:number;
 	created:Date;
 	created_by_user_id:number
-	end:string;	// 'Hora de la dispositivo del cajero, No es una hora fiable, para hacer las cuentas solo sirve para imprimir el ticket',
+	end:string;  // 'Hora de la dispositivo del cajero, No es una hora fiable, para hacer las cuentas solo sirve para imprimir el ticket',
 	id:number;
 	since:Date;
-	start:string;	// 'Hora de la dispositivo del cajero, No es una hora fiable, para hacer las cuentas solo sirve para imprimir',
+	start:string;  // 'Hora de la dispositivo del cajero, No es una hora fiable, para hacer las cuentas solo sirve para imprimir',
 	updated:Date;
 }
 export interface Cashier_Withdrawal{
@@ -287,7 +287,7 @@ export interface File_Type{
 }
 export interface Fund{
 	amount:number;
-	cashier_hour:string;	// 'Se usa para imprimir el corte de caja, esta hora no es segura para hacer comparaciones de rango los usuario suelen cambiar las horas de los dispositivos, y se afecta en los cambios de horario anualmente, pero es para la refererencia en el misma linea de tiempo',
+	cashier_hour:string;  // 'Se usa para imprimir el corte de caja, esta hora no es segura para hacer comparaciones de rango los usuario suelen cambiar las horas de los dispositivos, y se afecta en los cambios de horario anualmente, pero es para la refererencia en el misma linea de tiempo',
 	created:Date;
 	created_by_user_id:number
 	currency_id:string;
@@ -862,6 +862,16 @@ export interface Process{
 	id:number;
 	name:number
 	production_area_id:number
+	status:'ACTIVE'|'DELETED';
+	updated:Date;
+}
+export interface Process_Status{
+	created:Date;
+	id:number;
+	mark_task_as_done:number;
+	name:number
+	process_id:number
+	status:'ACTIVE'|'DELETED';
 	updated:Date;
 }
 export interface Product{
@@ -1210,6 +1220,7 @@ export interface Store{
 	phone:string | null;
 	pos_category_preferences:'DEFAULT_BY_PRODUCT'|'HIDE_BY_DEFAULT'|'SHOW_BY_DEFAULT';
 	price_list_id:number | null;
+	print_receipt:number | null;
 	printer_ticket_config:string | null;
 	qr_size:'PERCENT_25'|'PERCENT_50'|'PERCENT_75'|'PERCENT_100';
 	rfc:string | null;
@@ -1270,6 +1281,30 @@ export interface Table{
 	store_id:number
 	updated:Date;
 	updated_by_user_id:number | null;
+}
+export interface Task{
+	counter:number | null;
+	created:Date;
+	description:string;
+	id:number;
+	in_charge_user_id:number | null;
+	is_done:number;
+	item_id:number | null;
+	order_id:number | null;
+	parent_task_id:number | null;
+	process_id:number
+	process_status_id:number | null;
+	status:'ACTIVE'|'DELETED';
+	updated:Date;
+}
+export interface Task_Comment{
+	comment:string;
+	created:Date;
+	id:number;
+	task_id:number
+	type:'SYSTEM'|'USER';
+	updated:Date;
+	user_id:number | null;
 }
 export interface Unidad_Medida_Sat{
 	descripcion:string | null;

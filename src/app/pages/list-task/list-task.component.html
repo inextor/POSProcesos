@@ -1,0 +1,159 @@
+<div class="container-fluid">
+
+	<div class="row align-items-end mx-0">
+		<div class="col">
+			<h1 class="my-3 text-capitalize">task</h1>
+		</div>
+		<div class="col-auto">
+			<!--button type="button" class="mr-2 btn btn-light lift" (click)="show_import=true">Importar</button>
+			<button type="button" class="mr-2 btn btn-light lift" (click)="exportFile()">Exportar</button-->
+			<button type="button" class="ml-2 btn btn-secondary lift" [routerLink]="['/add-task']"> Agregar task</button>
+		</div>
+	</div>
+
+	<!-- div>
+		<div class="row">
+			
+				<div class="col-6 col-md-3 form-group">
+					<label class="">Id</label>
+					<input type="number" name="id" [(ngModel)]="task_search.eq.id" class="form-control">
+				</div>
+				<div class="col-6 col-md-3 form-group">
+					<label class="">Process</label>
+					<select name="process_id" [(ngModel)]="task_search.eq.process_id" class="form-control">
+						<option [ngValue]="null">Select</option>
+						<option *ngFor="let c of process_list" [value]="c.id">{{c.status}}</option>
+					</select>
+				</div>
+				<div class="col-6 col-md-3 form-group">
+					<label class="">Description</label>
+					<input type="text" name="description" [(ngModel)]="task_search.lk.description" class="form-control">
+				</div>
+				<div class="col-6 col-md-3 form-group">
+					<label class="">Parent task</label>
+					<input type="number" name="parent_task_id" [(ngModel)]="task_search.eq.parent_task_id" class="form-control">
+				</div>
+				<div class="col-6 col-md-3 form-group">
+					<label class="">Order</label>
+					<select name="order_id" [(ngModel)]="task_search.eq.order_id" class="form-control">
+						<option [ngValue]="null">Select</option>
+						<option *ngFor="let c of order_list" [value]="c.id">{{c.address}}</option>
+					</select>
+				</div>
+				<div class="col-6 col-md-3 form-group">
+					<label class="">Item</label>
+					<select name="item_id" [(ngModel)]="task_search.eq.item_id" class="form-control">
+						<option [ngValue]="null">Select</option>
+						<option *ngFor="let c of item_list" [value]="c.id">{{c.background}}</option>
+					</select>
+				</div>
+				<div class="col-6 col-md-3 form-group">
+					<label class="">Is done</label>
+					<input type="number" name="is_done" [(ngModel)]="task_search.eq.is_done" class="form-control">
+				</div>
+				<div class="col-6 col-md-3 form-group">
+					<label class="">Status</label>
+					<select name="status" [(ngModel)]="task_search.lk.status" class="form-control">
+						<option [ngValue]="null">Select</option>
+						<option value="ACTIVE">ACTIVE</option>
+						<option value="DELETED">DELETED</option>
+					</select>
+				</div>
+				<div class="col-6 col-md-3 form-group">
+					<label class="">Process status</label>
+					<input type="number" name="process_status_id" [(ngModel)]="task_search.eq.process_status_id" class="form-control">
+				</div>
+				<div class="col-6 col-md-3 form-group">
+					<label class="">In charge user</label>
+					<select name="in_charge_user_id" [(ngModel)]="task_search.eq.in_charge_user_id" class="form-control">
+						<option [ngValue]="null">Select</option>
+						<option *ngFor="let c of user_list" [value]="c.id">{{c.email}}</option>
+					</select>
+				</div>
+				<div class="col-6 col-md-3 form-group">
+					<label class="">Counter</label>
+					<input type="number" name="counter" [(ngModel)]="task_search.eq.counter" class="form-control">
+				</div>
+				<div class="col-6 col-md-3 form-group">
+					<label class="">Created</label>
+					<input type="datetime-local" name="created" [(ngModel)]="task_search.eq.created" class="form-control">
+				</div>
+				<div class="col-6 col-md-3 form-group">
+					<label class="">Updated</label>
+					<input type="datetime-local" name="updated" [(ngModel)]="task_search.eq.updated" class="form-control">
+				</div>
+
+			<div class="col-6 col-md-3">
+				<button type="button" class="w-100 btn btn-primary" (click)="search()">Buscar</button>
+			</div>
+		</div>
+	</div -->
+
+	<div  class="card p-3 mt-3">
+		<!-- div class="row">
+				TEMPLATE_LIST_TABLE_HEADERS
+		</div -->
+		<app-loading [is_loading]="is_loading"></app-loading>
+		<div class="table-responsive">
+			<table class="table table-sm table-nowrap mb-0">
+				<thead class="thead-light">
+					<tr>
+						<th>Id</th>
+						<th>Process</th>
+						<th>Description</th>
+						<th>Parent task</th>
+						<th>Order</th>
+						<th>Item</th>
+						<th>Is done</th>
+						<th>Status</th>
+						<th>Process status</th>
+						<th>In charge user</th>
+						<th>Counter</th>
+						<th>Created</th>
+						<th>Updated</th>
+
+					</tr>
+				</thead>
+				<tbody>
+					<tr *ngFor="let task of task_list">
+						<td><a [routerLink]="['/edit-task',task.id]">{{task.id}}</a></td>
+						<td>{{task.process_id}}</td>
+						<td>{{task.description}}</td>
+						<td>{{task.parent_task_id}}</td>
+						<td>{{task.order_id}}</td>
+						<td>{{task.item_id}}</td>
+						<td>{{task.is_done}}</td>
+						<td>{{task.status}}</td>
+						<td>{{task.process_status_id}}</td>
+						<td>{{task.in_charge_user_id}}</td>
+						<td>{{task.counter}}</td>
+						<td>{{task.created | date: 'MMM d, y' }}</td>
+						<td>{{task.updated | date: 'MMM d, y,  h:mm a' }}</td>
+
+					</tr>
+					<tr *ngIf="task_list == null || task_list.length == 0 && !is_loading" colspan="TEMPLATE_HEADERS_SIZE">
+						<div class="alert alert-light m-3" role="alert">No se encontraron elementos</div>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+	</div>
+	<app-pagination [path]="'/list-task'" [pages]="pages" [total_pages]="total_pages" [current_page]="current_page"></app-pagination>
+</div>
+<!--app-modal [(show)]="show_import">
+	<div class="card p-3">
+		<h2>Import excel</h2>
+		<div class="from-group mb-3">
+			<label>Excel data</label>
+			<input name="file" type="file" (change)="onFileChanged($event)" accept="*/*" class="form-control">
+		</div>
+		<div class="row mt-3">
+			<div class="col-6">
+				<button type="button" class="btn btn-secondary w-100" (click)="show_import=false">Cancel</button>
+			</div>
+			<div class="col-6">
+				<button type="button" class="btn btn-primary w-100" (click)="uploadFile()" [disabled]="file==null">Upload</button>
+			</div>
+		</div>
+	</div>
+</app-modal-->

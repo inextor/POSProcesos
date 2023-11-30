@@ -32,7 +32,8 @@ export class SaveProductionAreaComponent implements OnInit
 
 	ngOnInit()
 	{
-		this.subs.sync = this.route.paramMap.pipe
+		//this.subs.sync =
+		this.route.paramMap.pipe
 		(
 			mergeMap((paramMap)=>
 			{
