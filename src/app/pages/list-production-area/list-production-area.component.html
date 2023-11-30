@@ -1,0 +1,85 @@
+<div class="container-fluid">
+	<div class="row align-items-end mx-0">
+		<div class="col">
+			<h1 class="my-3 text-capitalize">Areas de Producción</h1>
+		</div>
+		<div class="col-auto">
+			<!--button type="button" class="mr-2 btn btn-light lift" (click)="show_import=true">Importar</button>
+			<button type="button" class="mr-2 btn btn-light lift" (click)="exportFile()">Exportar</button-->
+			<button type="button" class="ml-2 btn btn-secondary lift" [routerLink]="['/add-production-area']">Agregar</button>
+		</div>
+	</div>
+	<!-- div>
+		<div class="row">
+
+				<div class="col-6 col-md-3 form-group">
+					<label class="">Id</label>
+					<input type="number" name="id" [(ngModel)]="production_area_search.eq.id" class="form-control">
+				</div>
+				<div class="col-6 col-md-3 form-group">
+					<label class="">Name</label>
+					<input type="text" name="name" [(ngModel)]="production_area_search.lk.name" class="form-control">
+				</div>
+				<div class="col-6 col-md-3 form-group">
+					<label class="">Created</label>
+					<input type="datetime-local" name="created" [(ngModel)]="production_area_search.eq.created" class="form-control">
+				</div>
+				<div class="col-6 col-md-3 form-group">
+					<label class="">Updated</label>
+					<input type="datetime-local" name="updated" [(ngModel)]="production_area_search.eq.updated" class="form-control">
+				</div>
+
+			<div class="col-6 col-md-3">
+				<button type="button" class="w-100 btn btn-primary" (click)="search()">Buscar</button>
+			</div>
+		</div>
+	</div -->
+
+	<div	class="card p-3 mt-3">
+		<!-- div class="row">
+				TEMPLATE_LIST_TABLE_HEADERS
+		</div -->
+		<!--app-loading [is_loading]="is_loading"></app-loading-->
+		<div class="table-responsive">
+			<table class="table table-sm table-nowrap mb-0">
+				<thead class="thead-light">
+					<tr>
+						<th>Nombre</th>
+						<th>Creacion</th>
+						<th class="text-end">Actualización</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr *ngFor="let production_area of production_area_list">
+						<td>
+					<a [routerLink]="['/edit-production-area',production_area.id]">{{production_area.id}}- {{production_area.name}}</a>
+				</td>
+						<td>{{production_area.created | date: 'MMM d, y' }}</td>
+						<td class="text-end">{{production_area.updated | date: 'MMM d, y,	h:mm a' }}</td>
+					</tr>
+					<tr *ngIf="production_area_list == null || production_area_list.length == 0 && !is_loading" colspan="4">
+						<div class="alert alert-light m-3" role="alert">No se encontraron elementos</div>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+	</div>
+	<!--app-pagination [path]="'/list-production-area'" [pages]="pages" [total_pages]="total_pages" [current_page]="current_page"></app-pagination-->
+</div>
+<!--app-modal [(show)]="show_import">
+	<div class="card p-3">
+		<h2>Import excel</h2>
+		<div class="from-group mb-3">
+			<label>Excel data</label>
+			<input name="file" type="file" (change)="onFileChanged($event)" accept="*/*" class="form-control">
+		</div>
+		<div class="row mt-3">
+			<div class="col-6">
+				<button type="button" class="btn btn-secondary w-100" (click)="show_import=false">Cancel</button>
+			</div>
+			<div class="col-6">
+				<button type="button" class="btn btn-primary w-100" (click)="uploadFile()" [disabled]="file==null">Upload</button>
+			</div>
+		</div>
+	</div>
+</app-modal-->

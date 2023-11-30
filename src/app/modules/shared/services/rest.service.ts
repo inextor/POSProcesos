@@ -29,7 +29,7 @@ export class RestService
 		domain: window.location.protocol+'//'+window.location.hostname
 	};
 
-	public url_base = '';
+	public url_base = this.getUrlBase();
 	public url_platform = '';
 
 	public _is_offline:boolean = false;
@@ -51,7 +51,6 @@ export class RestService
 	//);
 	constructor(private http:HttpClient)
 	{
-
 
 	}
 

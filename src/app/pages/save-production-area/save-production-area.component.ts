@@ -8,8 +8,7 @@ import { GetEmpty } from '../../modules/shared/GetEmpty';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { mergeMap, of } from 'rxjs';
-import { toSignal } from '@angular/core/rxjs-interop';
-import { Signal } from '@angular/core';
+import {Location} from '@angular/common';
 
 @Component({
 	selector: 'app-save-production-area',
@@ -25,7 +24,7 @@ export class SaveProductionAreaComponent implements OnInit
 	production_area = GetEmpty.production_area();
 	is_loading:boolean = false;
 
-	constructor(private rest:RestService,private route:ActivatedRoute,private router:Router)
+	constructor(private rest:RestService,private route:ActivatedRoute,private router:Router, private location:Location)
 	{
 		this.production_area_rest = rest.initRestSimple<Production_Area>('production_area');
 	}
@@ -57,6 +56,7 @@ export class SaveProductionAreaComponent implements OnInit
 	save(evt:Event)
 	{
 		evt.preventDefault();
+		evt.stopPropagation();
 
 		this.is_loading = true;
 
@@ -64,7 +64,8 @@ export class SaveProductionAreaComponent implements OnInit
 		.create( this.production_area )
 		.subscribe((production_area)=>
 		{
-			//location.back();
+			this.is_loading = false;
+			this.location.back();
 		})
 	}
 }
