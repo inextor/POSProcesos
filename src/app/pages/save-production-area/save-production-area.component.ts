@@ -8,6 +8,8 @@ import { GetEmpty } from '../../modules/shared/GetEmpty';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { mergeMap, of } from 'rxjs';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { Signal } from '@angular/core';
 
 @Component({
 	selector: 'app-save-production-area',
@@ -30,17 +32,25 @@ export class SaveProductionAreaComponent implements OnInit
 
 	ngOnInit()
 	{
-		this.route.paramMap.pipe
+		this.subs.sync = this.route.paramMap.pipe
 		(
-			mergeMap((paramMap)=>{
+			mergeMap((paramMap)=>
+			{
 				return paramMap.has('id')
 					? this.production_area_rest.get( paramMap.get('id' ) )
 					: of( GetEmpty.production_area() );
-			})
-		).subscribe((production_area)=>
+			}),
+		)
+		.subscribe((response)=>
 		{
-			this.production_area = production_area;
-		});
+			this.is_loading = false;
+			this.production_area = response;
+		})
+	}
+
+	ngOnDestroy()
+	{
+		//this.subs.unsubscribe();
 	}
 
 	save(evt:Event)
