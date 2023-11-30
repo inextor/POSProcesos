@@ -22,10 +22,11 @@
             "tsConfig": "tsconfig.app.json",
             "assets":
             [
-              "src/favicon.ico",
-              "src/assets/bootstrap/css/bootstrap.min.css"
+              "src/assets/bootstrap/css/bootstrap.min.css",
+              "src/favicon.ico"
             ],
             "styles": [
+              "src/assets/bootstrap/css/bootstrap.min.css",
               "src/styles.css"
             ],
             "scripts": []
@@ -92,5 +93,8 @@
         }
       }
     }
+  },
+  "cli": {
+    "analytics": "139e1cc4-7466-4198-89a3-878ae4ade222"
   }
 }
