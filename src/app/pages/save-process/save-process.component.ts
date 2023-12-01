@@ -1,59 +1,82 @@
 import { Component } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { Process, Production_Area } '../../RestModels';
+import {CommonModule, Location} from '@angular/common';
+import { Process, Production_Area } from '../../modules/shared/RestModels';
+import { RestService } from '../../modules/shared/services/rest.service';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
+import { GetEmpty } from '../../modules/shared/GetEmpty';
+import { forkJoin,mergeMap, of } from 'rxjs';
+import { RestSimple } from '../../modules/shared/Rest';
+import { FormsModule } from '@angular/forms';
 
 
 @Component({
-  selector: 'app-save-process',
-  standalone: true,
-  imports: [CommonModule],
-  templateUrl: './save-process.component.html',
-  styleUrl: './save-process.component.css'
+	selector: 'app-save-process',
+	standalone: true,
+	imports: [CommonModule,RouterModule,FormsModule],
+	templateUrl: './save-process.component.html',
+	styleUrl: './save-process.component.css'
 })
 export class SaveProcessComponent {
 
-	process:Partial<Process>	= {};
-  is_loading:boolean = false;
+	process:Process	= GetEmpty.process();
+	is_loading:boolean = false;
 
 
 	production_area_list:Production_Area[] = [];
+	rest_process:RestSimple<Process> = this.rest.initRestSimple('process');
+	rest_production_area:RestSimple<Production_Area> = this.rest.initRestSimple('production_area');
+	production_area = GetEmpty.production_area();
 
+	constructor(private rest:RestService,private route:ActivatedRoute,private router:Router,private location:Location)
+	{
+
+	}
 
 	ngOnInit()
 	{
-		this.route.paramMap.subscribe( params =>
-		{
-			//this.company = this.rest.getCompanyFromSession();
-
-
-
-
+		this.route.paramMap.pipe
+		(
+			mergeMap((paramMap)=>
+			{
 				this.is_loading = true;
-
-				if( params.has('id') )
+				return forkJoin({
+					process: paramMap.has('id')
+						? this.rest_process.get( paramMap.get('id' ) )
+						: of( GetEmpty.process() ),
+					production_area: paramMap.has('production_area_id')
+						? this.rest_production_area.get( paramMap.get('production_area_id') )
+						: of( GetEmpty.production_area() )
+				})
+			}),
+			mergeMap((response)=>
+			{
+				if( response.process.id )
 				{
-					this.subs.sink = forkJoin({
-						process : this.rest.process.get(  params.get('id')  ),
-						production_area : this.rest.production_area.search({limit:9999})
+					return forkJoin
+					({
+						process: of( response.process ),
+						production_area: this.rest_production_area.get( response.process.production_area_id )
 					})
-					.subscribe((responses)=>
-					{
-						this.process = responses.process;
-						this.production_area_list = responses.production_area.data;
-
-						this.is_loading = false;
-					},(error)=>this.showError(error));
 				}
-				else
-				{
-					this.subs.sink = this.rest.production_area.search({limit:9999})
-					.subscribe((response)=>
-					{
-						this.production_area_list = response.data;
-						this.is_loading = false;
-					},(error)=>this.showError(error));
-				}
+				response.process.production_area_id = response.production_area.id;
+				return of( response );
+			})
+		)
+		.subscribe( response=>
+		{
+			this.is_loading = false;
+			this.process = response.process;
+			this.production_area = response.production_area;
 		});
+	}
+
+	showError(a:any)
+	{
+
+	}
+	showSuccess(s:any)
+	{
+
 	}
 
 	save()
@@ -62,19 +85,22 @@ export class SaveProcessComponent {
 
 		if( this.process.id	)
 		{
-			this.subs.sink	= this.rest.process.update( this.process ).subscribe((process)=>{
+			this.rest_process.update( this.process )
+			.subscribe((process:any)=>
+			{
 				this.is_loading = false;
-				this.showSuccess('process se actualizo exitosamente');
+				//this.showSuccess('process se actualizo exitosamente');
 				this.location.back();
-			},(error)=>this.showError(error));
+			},(error:any)=>this.showError(error));
 		}
 		else
 		{
-			this.subs.sink	= this.rest.process.create( this.process ).subscribe((process)=>{
+			this.rest_process.create( this.process )
+			.subscribe((process:any)=>{
 				this.is_loading = false;
 				this.showSuccess('process se guardo exitosamente');
 				this.location.back();
-			},(error)=>this.showError(error));
+			},(error:any)=>this.showError(error));
 		}
 	}
 }
