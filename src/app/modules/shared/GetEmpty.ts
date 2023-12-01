@@ -1,7 +1,19 @@
-import { User_Permission,Preferences,Production_Area } from "./RestModels";
+import { User_Permission,Preferences,Production_Area,Process } from "./RestModels";
 
 export class GetEmpty
 {
+
+	static process():Process
+	{
+		return {
+			created: new Date(),
+			id:0,
+			name:'',
+			production_area_id:0,
+			status:'ACTIVE',
+			updated: new Date(),
+		};
+	}
 	static user_permission():User_Permission
 	{
 		return {
