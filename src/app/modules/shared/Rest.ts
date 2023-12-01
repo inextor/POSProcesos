@@ -1,7 +1,7 @@
 import { Observable } from 'rxjs';
 import { HttpClient, HttpHeaders,HttpParams } from '@angular/common/http';
 import { Utils} from './Utils';
-import {retry} from 'rxjs/operators';
+import {mergeMap, retry} from 'rxjs/operators';
 //import { HttpErrorResponse } from '@angular/common/http';
 
 
@@ -232,7 +232,15 @@ export class Rest<U,T>{
 	search(searchObj:Partial<SearchObject<U>>):Observable<RestResponse<T>>
 	{
 		let params = this.getParamsFromSearch(searchObj);
-		return this.http.get<RestResponse<T>>(`${this.domain_configuration.domain}/${this.url_base}`,{params,headers:this.getSessionHeaders(),withCredentials:true}).pipe( retry(2) );
+		return this.http.get<RestResponse<T>>
+		(
+			`${this.domain_configuration.domain}/${this.url_base}`,
+			{params,headers:this.getSessionHeaders(),withCredentials:true}
+		)
+		.pipe
+		(
+			retry(2),
+		);
 	}
 
 	searchAsPromise(searchObj:Partial<SearchObject<U>>):Promise<RestResponse<T>>

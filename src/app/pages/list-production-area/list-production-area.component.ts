@@ -18,14 +18,13 @@ import {Location} from '@angular/common';
 })
 export class ListProductionAreaComponent
 {
-	production_area_rest: RestSimple<Production_Area>;
+	production_area_rest: RestSimple<Production_Area> = this.rest.initRestSimple<Production_Area>('production_area');
 	production_area_list:Production_Area[] = [];
 	is_loading:boolean = false;
 	obs: Subscription | null = null;
 
-	constructor(private rest:RestService,private route:ActivatedRoute,private router:Router, private location:Location)
+	constructor(private rest:RestService,private route:ActivatedRoute,private router:Router)
 	{
-		this.production_area_rest = rest.initRestSimple<Production_Area>('production_area');
 	}
 
 	ngOnInit()

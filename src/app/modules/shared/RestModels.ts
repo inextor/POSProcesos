@@ -860,7 +860,7 @@ export interface Price_Type{
 export interface Process{
 	created:Date;
 	id:number;
-	name:number
+	name:string;
 	production_area_id:number
 	status:'ACTIVE'|'DELETED';
 	updated:Date;

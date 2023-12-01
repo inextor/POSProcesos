@@ -71,6 +71,8 @@ export class ViewProductionAreaComponent
 		{
 			this.is_loading = false;
 			this.production_area = response.production_area;
+			this.process_list = response.process.data;
+
 			this.citem_list = response.items.production_area_items.data.map((pai:Production_Area_Item)=>
 			{
 				return {

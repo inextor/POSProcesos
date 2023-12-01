@@ -52,10 +52,15 @@
 				<tbody>
 					<tr *ngFor="let production_area of production_area_list">
 						<td>
-					<a [routerLink]="['/edit-production-area',production_area.id]">{{production_area.id}}- {{production_area.name}}</a>
-				</td>
+							<a [routerLink]="['/view-production-area',production_area.id]">
+								{{production_area.id}} - {{production_area.name}}
+							</a>
+						</td>
 						<td>{{production_area.created | date: 'MMM d, y' }}</td>
 						<td class="text-end">{{production_area.updated | date: 'MMM d, y,	h:mm a' }}</td>
+						<td class="text-end">
+							<a [routerLink]="['/edit-production-area',production_area.id]">Editar</a>
+						</td>
 					</tr>
 					<tr *ngIf="production_area_list == null || production_area_list.length == 0 && !is_loading" colspan="4">
 						<div class="alert alert-light m-3" role="alert">No se encontraron elementos</div>
