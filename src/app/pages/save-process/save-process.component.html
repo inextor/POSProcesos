@@ -3,31 +3,21 @@
 	<form ngNativeValidate (submit)="save()">
 		<div class="card p-3">
 			<div class="row p-3">
-				
-				<div class="col-6 col-md-4">
-					<label class="">Production area</label>
-					<select name="production_area_id" [(ngModel)]="process.production_area_id" class="form-control">
-						<option [ngValue]="null">Select</option>
-						<option *ngFor="let c of production_area_list" [value]="c.id">{{c.name}}</option>
-					</select>
-				</div>
-				<div class="col-6 col-md-4">
-					<label class="">Name</label>
-					<input type="number" name="name" [(ngModel)]="process.name" class="form-control">
-				</div>
-				<div class="col-6 col-md-4">
-					<label class="">Status</label>
-					<select name="status" [(ngModel)]="process.status" class="form-control">
-						<option [ngValue]="null">Select</option>
-						<option value="ACTIVE">ACTIVE</option>
-						<option value="DELETED">DELETED</option>
-					</select>
-				</div>
 
-			</div>
-			<div class="row p-3">
-				<div class="col-12 text-right">
-					<button type="submit"  [disabled]="is_loading" class="btn btn-primary">Guardar</button>
+				<div class="col-12 col-md-4 form-group">
+					<label class="">Area de Produccion</label>
+					<div class="fw-bold">{{production_area.name}}</div>
+				</div>
+				<div class="col-12 col-md-4 form-group">
+					<label class="">Nombre del Proceso</label>
+					<input type="text" name="name" [(ngModel)]="process.name" class="form-control">
+				</div>
+				<div class="d-flex d-md-none col-6"></div>
+				<div class="col-12 col-md-4 text-right">
+					<label>&nbsp;</label>
+					<div>
+						<button type="submit" [disabled]="is_loading" class="btn btn-primary w-100">Guardar</button>
+					</div>
 				</div>
 			</div>
 		</div>
