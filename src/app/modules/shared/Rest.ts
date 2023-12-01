@@ -2,6 +2,7 @@ import { Observable } from 'rxjs';
 import { HttpClient, HttpHeaders,HttpParams } from '@angular/common/http';
 import { Utils} from './Utils';
 import {mergeMap, retry} from 'rxjs/operators';
+import { ParamMap } from '@angular/router';
 //import { HttpErrorResponse } from '@angular/common/http';
 
 
@@ -54,8 +55,10 @@ export class Rest<U,T>{
 	private url_base:string;
 	private http:HttpClient;
 	private domain_configuration:DomainConfiguration;
+	public page_size:number = 50;
 
-	constructor(domain_configuration:DomainConfiguration,url_base:string,http:HttpClient)
+
+	constructor(domain_configuration:DomainConfiguration,url_base:string,http:HttpClient,public fields:string[]=[],public extra_keys=[])
 	{
 		this.url_base = url_base;
 		this.http = http;
@@ -229,9 +232,16 @@ export class Rest<U,T>{
 		return this.http.post<RestResponse<T>>(url,params,options).pipe( retry(2) );
 	}
 
-	search(searchObj:Partial<SearchObject<U>>):Observable<RestResponse<T>>
+	search(so:Partial<SearchObject<U>> | ParamMap | null ):Observable<RestResponse<T>>
 	{
-		let params = this.getParamsFromSearch(searchObj);
+		let search_object:Partial<SearchObject<U>> = this.getEmptySearch();
+
+		if( so !== null )
+		{
+			search_object = ('has' in so ) ? (so as Partial<SearchObject<U>>) : this.getSearchObject( so as ParamMap );
+		}
+
+		let params = this.getParamsFromSearch(search_object);
 		return this.http.get<RestResponse<T>>
 		(
 			`${this.domain_configuration.domain}/${this.url_base}`,
@@ -429,6 +439,145 @@ export class Rest<U,T>{
 		}
 
 		return this.http.delete<T>(`${this.domain_configuration.domain}/${this.url_base}`,{params,headers:this.getSessionHeaders(),withCredentials:true});
+	}
+
+
+	getSearchObject(param_map:ParamMap,f:string[] | null = null ,e:string[] | null = null):SearchObject<U>
+	{
+		let extra_keys = e === null ? [] : e;
+		let fields = f === null ? [] : f;
+
+		let keys:string[] = ['eq','le','lt','ge','gt','csv','lk','nn','start'];
+		let item_search:any = this.getEmptySearch();
+
+		extra_keys.forEach((i:string)=>
+		{
+			if( param_map.has('search_extra.'+i ) )
+			{
+				let v = param_map.get('search_extra.'+i ) === 'null' ? null : param_map.get('search_extra.'+i);
+
+				if( v!== null && /^\d{4}-\d{2}-\d{2}(T|\s)\d{2}:\d{2}:\d{2}/.test( v ) )
+				{
+					let components = v.split(/T|-|:|\s/g);
+					let utcTime = Date.UTC
+					(
+						parseInt( components[0] ),
+						parseInt( components[1] )-1,
+						parseInt( components[2] ),
+						parseInt( components[3] ),
+						parseInt( components[4] )
+					);
+					let localTime = new Date();
+					localTime.setTime( utcTime );
+					item_search.search_extra[ i ] = localTime;// Utils.getLocalMysqlStringFromDate( localTime );
+					return;
+				}
+				item_search.search_extra[ i ] = v;
+			}
+			else
+			{
+				item_search.search_extra[ i ] = null;
+			}
+		});
+
+		keys.forEach((k:string)=>
+		{
+			item_search[k] ={};
+
+			fields.forEach((f:string)=>
+			{
+				let field = k+"."+f;
+
+				if( param_map.has( field) )
+				{
+					let value_to_assign = param_map.get( field );
+					if( value_to_assign === 'null' )
+					{
+						item_search[k][ field ] = null
+					}
+					else if( value_to_assign === null  || value_to_assign === undefined )
+					{
+						item_search[ field ] = null
+					}
+					else
+					{
+						if( f == 'created' || f =='updated' )
+						{
+							let value = param_map.get(field);
+
+							if( value && value !='null' )
+							{
+								item_search[k][f] = Utils.getDateFromUTCMysqlString( value );
+							}
+							return;
+						}
+						/*else */
+						if( k == 'csv' )
+						{
+							let v = param_map.get(field);
+							let array = (''+v).split(',');
+							item_search.csv[f] = array.length == 1 && array[0] == '' ? [] : array;
+						}
+						else
+						{
+							let z	= parseInt(value_to_assign);
+
+							if( /.*_id$/.test( field ) && !Number.isNaN(z) )
+							{
+								item_search[ k ][ f ] = z;
+							}
+							else if( field )
+							{
+								item_search[ k ][ f ] = param_map.get( field );
+							}
+						}
+					}
+				}
+				else
+				{
+					item_search[ k ][ f ] = null;
+				}
+			});
+		});
+
+		let sort_order = param_map.get('sort_order');
+
+		if(sort_order !== null )
+		{
+			item_search.sort_order = sort_order.split(',');
+		}
+
+		let page_str:string | null = param_map.get('page');
+
+
+		let page = page_str ? parseInt( page_str ) : 0;
+		item_search.page = isNaN( page ) ? 0 : page;
+		item_search.limit = this.page_size;
+
+		return item_search as SearchObject<U>;
+	}
+
+	getEmptySearch():SearchObject<U>
+	{
+		let item_search:SearchObject<U> = {
+			eq:{} as U,
+			le:{} as U,
+			lt:{} as U,
+			ge:{} as U,
+			gt:{} as U,
+			lk:{} as U,
+			nn:[] as string[],
+			sort_order:[] as string[],
+			start:{} as U,
+			ends:{} as U,
+			csv:{},
+			different:{},
+			is_null:[],
+			search_extra: {} as Record<string,string|null|number|Date>,
+			page:0,
+			limit: this.page_size
+		};
+		return item_search;
 	}
 }
 
