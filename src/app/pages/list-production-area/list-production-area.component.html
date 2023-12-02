@@ -59,7 +59,7 @@
 						<td>{{production_area.created | date: 'MMM d, y' }}</td>
 						<td class="text-end">{{production_area.updated | date: 'MMM d, y,	h:mm a' }}</td>
 						<td class="text-end">
-							<a [routerLink]="['/edit-production-area',production_area.id]">Editar</a>
+							<a [routerLink]="['/edit-production-area',production_area.id]" class="btn btn-primary">Editar</a>
 						</td>
 					</tr>
 					<tr *ngIf="production_area_list == null || production_area_list.length == 0 && !is_loading" colspan="4">

@@ -1,1 +1,89 @@
 /* You can add global styles to this file, and also import other style files */
+
+:root
+{
+  --menu-icon-color: #000000;
+ --menu-text-color: #000000;
+ --menu-title-color: #000000;
+ --submenu-icon-color: #000000;
+ --submenu-text-color: #000000;
+ --button-border-radius: .25rem;
+ --btn-primary-bg-color: #61236d;
+ --btn-primary-bg-color-hover: #a075a9;
+ --btn-primary-text-color: #FFFFFF;
+ --btn-primary-text-color-hover: #ffffff;
+ --btn-primary-border-color: #61236d;
+ --btn-primary-border-color-hover: #61236d;
+ --btn-secondary-bg-color: #61236d;
+ --btn-secondary-bg-color-hover: #a075a9;
+ --btn-secondary-text-color: #FFFFFF;
+ --btn-secondary-text-color-hover: #FEFEFE;
+ --btn-secondary-border-color: #61236d;
+ --btn-secondary-border-color-hover: #61236d;
+ --header-background-color: #ffffff;
+ --header-text-color: #000000;
+ --link-color: #000000;
+ --link-color-hover: #000000;
+ --button-style: transparent;
+ --titles-color: #666666;
+ --card-border-radius: .25rem;
+ --button_border_radius: .25rem;
+ --text-color: #4d4d4d;
+ --icon-menu-color: #61236d;
+ --pv-bar-text-color: #FFFFFF;
+ --pv-bar-background-color: #61236d;
+ --pv-bar-total-color: #FFFFFF;
+ --item-selected-background-color: #a075a9;
+ --item-selected-text-color: #FFFFFF;
+ --pos_item_height: 44px;
+ --login-background-image: url(http://127.0.0.159/PointOfSale/image.php?id=5) no-repeat fixed center/cover transparent;
+ --background-image: url(http://127.0.0.159/PointOfSale/image.php?id=4) repeat fixed;
+ --menu-background-color: transparent;
+ --menu-background-image: url(/assets/default_menu_background.jpg) repeat fixed;
+ --submenu-background-color: rgba(215,187,221,1);
+ --card-background-color: rgba(255,255,255,0.86);
+ --card-background-color-plain: #FFFFFF;
+ --card-background-image: none;
+ --card-border-style: solid;
+ --card-border-width: 1px;
+ --card-border-color: #B5B5B5;
+
+}
+
+.btn-primary, .btn-primary:visited, .btn-primary:active
+{
+    background-color: var(--btn-primary-bg-color);
+    background-image: var(--button-style);
+    color: var(--btn-primary-text-color);
+    box-shadow: none !important;
+    border: var(--btn-primary-border-color) 1px solid;
+}
+
+.btn-secondary, .btn-primary:visited, .btn-primary:active
+{
+    background-color: var(--btn-secondary-bg-color );
+    background-image: var(--button-style);
+    color: var(--btn-secondary-text-color);
+    box-shadow: none !important;
+    border: var(--btn-secondary-border-color) 1px solid;
+}
+
+.main_background{
+    /*position: absolute;
+    top: 0px;
+    left: 0px;
+    right: 0px;
+    bottom: 0px;
+    */
+    background: var(--background-image);
+}
+
+.card {
+    background-color: var(--card-background-color);
+    background-image: var(--card-background-image);
+    box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
+    border-color: var(--card-border-color);
+    border-width: var(--card-border-width);
+    border-style: var(--card-border-style);
+    border-radius: var(--card-border-radius);
+}
