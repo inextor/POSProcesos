@@ -87,3 +87,12 @@
     border-style: var(--card-border-style);
     border-radius: var(--card-border-radius);
 }
+
+dialog{
+	border: 1px solid #DDDDDD;
+}
+
+dialog::backdrop 
+{
+  background-color: rgba(0,0,0,0.8)!important;
+}

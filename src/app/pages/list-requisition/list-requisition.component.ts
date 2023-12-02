@@ -30,6 +30,8 @@ interface CRequisitionItem
 })
 export class ListRequisitionComponent implements OnInit
 {
+
+
 	requisition_list:RequisitionInfo[] =[];
 	store_list:Store[] = [];
 
@@ -38,6 +40,8 @@ export class ListRequisitionComponent implements OnInit
 	rest_store:RestSimple<Store> = this.rest.initRest('store',['id','name','created','updated']);
 	c_req_item_list:CRequisitionItem[] = [];
 	is_loading:boolean = false;
+	show_add_production: boolean = false;
+	selected_crequistion_item: CRequisitionItem | null = null;
 
 	constructor(private rest:RestService,private route:ActivatedRoute,private router:Router,private location:Location)
 	{
@@ -109,5 +113,35 @@ export class ListRequisitionComponent implements OnInit
 	floor(n:number)
 	{
 		return Math.floor( n );
+	}
+
+	showProduction(cri: CRequisitionItem)
+	{
+		this.show_add_production = true;
+		this.selected_crequistion_item = cri;
+
+		this.showModal('modal-add-production');
+	}
+
+	showModal(id:string)
+	{
+		let e = document.getElementById(id) as HTMLDialogElement;
+
+		if( e )
+			e.showModal();
+	}
+
+	closeModal(id:string)
+	{
+		let e = document.getElementById(id) as HTMLDialogElement;
+
+		if( e )
+			e.close();
+	}
+
+	addProduction(evt: SubmitEvent)
+	{
+		evt.preventDefault();
+		evt.stopPropagation();
 	}
 }
