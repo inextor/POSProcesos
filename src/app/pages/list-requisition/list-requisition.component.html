@@ -1,0 +1,108 @@
+<div class="container-fluid">
+	<div class="row align-items-end mx-0">
+		<div class="col">
+			<h1 class="my-3 text-capitalize">Requisiciones: </h1>
+		</div>
+	</div>
+	<!--div	class="card p-3 mt-3">
+		<div class="table-responsive">
+			<table class="table table-sm table-nowrap mb-0">
+				<thead class="thead-light">
+					<tr>
+						<th>Nombre</th>
+						<th>Creacion</th>
+						<th class="text-end">Actualización</th>
+					</tr>
+				</thead>
+			</table>
+		</div>
+	</div>
+	<div class="row my-3">
+		<div class="col-9">
+			<h2>Procesos de producción</h2>
+		</div>
+		<div class="col-3 text-end">
+			<a class="btn btn-primary" [routerLink]="['/add-process',production_area.id]">Agregar Nuevo</a>
+		</div>
+	</div-->
+
+	<div class="card p-3 mt-3">
+    <div class="row">
+      <div class="col-4">
+        <label>Articulo</label>
+        <input type="text" name="name" class="form-control">
+      </div>
+      <div class="col-4">
+        <label>Sucursal</label>
+        <select name="store_id" class="form-control">
+          <option [ngValue]="null">Todas</option>
+          <option *ngFor="let s of store_list" [ngValue]="s.id">{{s.name | titlecase}}</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+	<div class="card p-3 mt-3">
+		<div class="table-responsive">
+			<table class="table table-sm table-nowrap mb-0">
+				<thead class="thead-light">
+					<tr>
+						<th>Artículo</th>
+						<th>Sucursal</th>
+						<th>Requeridos</th>
+						<th>Producidos</th>
+						<th>Pendientes</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr *ngFor="let cri of c_req_item_list">
+            <td>{{cri.item.name}}</td>
+            <td>{{cri?.store?.name??'TODAS'}}</td>
+            <td>{{cri.qty | number}}</td>
+            <td>{{floor( cri.qty/2 ) | number}}</td>
+            <td>{{cri.qty - floor( cri.qty/2) | number}}</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+	</div>
+
+	<!--div class="row my-3">
+		<div class="col-10">
+			<h2>Articulos de producción</h2>
+		</div>
+		<div class="col-2 text-end">
+			<a class="btn btn-primary">Asignar nuevo</a>
+		</div>
+	</div>
+	<div class="card p-3 mt-3">
+		<div class="table-responsive">
+			<table class="table table-sm table-nowrap mb-0">
+				<thead class="thead-light">
+					<tr>
+						<th>Nombre</th>
+						<th>Creacion</th>
+						<th class="text-end">Actualización</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr *ngFor="let citem of citem_list">
+						<td>
+							<a [routerLink]="['/view-production-area',production_area.id]">
+								{{citem.item.id}} - {{citem.item.name}}
+							</a>
+						</td>
+						<td>{{citem.item.created | date: 'MMM d, y' }}</td>
+						<td class="text-end">{{production_area.updated | date: 'MMM d, y,	h:mm a' }}</td>
+						<td class="text-end">
+							<a [routerLink]="['/edit-production-area',production_area.id]">Editar</a>
+						</td>
+					</tr>
+					<tr *ngIf="citem_list.length == 0 && !is_loading" colspan="4">
+						<div class="alert alert-light m-3" role="alert">No se encontraron elementos</div>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+	</div-->
+</div>

@@ -3,6 +3,7 @@ import { SaveProductionAreaComponent } from './pages/save-production-area/save-p
 import { ListProductionAreaComponent } from './pages/list-production-area/list-production-area.component';
 import { ViewProductionAreaComponent } from './pages/view-production-area/view-production-area.component';
 import { SaveProcessComponent } from './pages/save-process/save-process.component';
+import { ListRequisitionComponent } from './pages/list-requisition/list-requisition.component';
 
 export const routes: Routes = [
   {path: '', component: ListProductionAreaComponent},
@@ -12,4 +13,5 @@ export const routes: Routes = [
   {path: 'view-production-area/:id', component: ViewProductionAreaComponent},
   {path: 'add-process/:production_area_id', component: SaveProcessComponent},
   {path: 'edit-process/:id', component: SaveProcessComponent },
+  {path: 'list-requisition', component: ListRequisitionComponent},
 ];

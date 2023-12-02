@@ -1,4 +1,4 @@
-import { Observable } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { HttpClient, HttpHeaders,HttpParams } from '@angular/common/http';
 import { Utils} from './Utils';
 import {mergeMap, retry} from 'rxjs/operators';
@@ -41,6 +41,28 @@ export interface SearchObject<T>
 	search_extra:Record<string,string|number|null|Date>
 }
 
+/*
+export class SObject implements SearchObject
+{
+	page = 0;
+	limit = 50;
+	eq:Partial<T>; //Equals to
+	gt:Partial<T>; //Great than
+	lt:Partial<T>; //Less than
+	ge:Partial<T>; //Great or equal than
+	different:Partial<T>; //Different than
+	le:Partial<T>; //less or equal than
+	lk:Partial<T>; //like
+	nn:string[]; //Not nulls
+	is_null:string[];
+	sort_order:string[]; //Sort order like 'updated_ASC','name_DESC' //Etc
+	csv:CsvArray; //Posiblemente String tambien
+	start:Partial<T>;
+	ends:Partial<T>;
+	search_extra:Record<string,string|number|null|Date>
+}
+*/
+
 export interface RestResponse<T>{
 	total:number;
 	data:T[];
@@ -57,8 +79,7 @@ export class Rest<U,T>{
 	private domain_configuration:DomainConfiguration;
 	public page_size:number = 50;
 
-
-	constructor(domain_configuration:DomainConfiguration,url_base:string,http:HttpClient,public fields:string[]=[],public extra_keys=[])
+	constructor(domain_configuration:DomainConfiguration,url_base:string,http:HttpClient,public fields:string[]=[],public extra_keys:string[]=[])
 	{
 		this.url_base = url_base;
 		this.http = http;
@@ -229,8 +250,14 @@ export class Rest<U,T>{
 
 		let url = `${this.domain_configuration.domain}/${this.url_base}`;
 
-		return this.http.post<RestResponse<T>>(url,params,options).pipe( retry(2) );
+		return this.http.post<RestResponse<T>>(url,params,options).pipe
+		(
+			retry(2),
+			mergeMap((r)=> of( Utils.convertToDate( r ) as RestResponse<T> ) )
+		);
 	}
+
+
 
 	search(so:Partial<SearchObject<U>> | ParamMap | null ):Observable<RestResponse<T>>
 	{
@@ -238,7 +265,7 @@ export class Rest<U,T>{
 
 		if( so !== null )
 		{
-			search_object = ('has' in so ) ? (so as Partial<SearchObject<U>>) : this.getSearchObject( so as ParamMap );
+			search_object = ('has' in so ) ?  this.getSearchObject( so as ParamMap ) : (so as Partial<SearchObject<U>>);
 		}
 
 		let params = this.getParamsFromSearch(search_object);
@@ -250,6 +277,7 @@ export class Rest<U,T>{
 		.pipe
 		(
 			retry(2),
+			mergeMap((r)=> of( Utils.convertToDate( r ) as RestResponse<T> ) )
 		);
 	}
 
@@ -315,13 +343,17 @@ export class Rest<U,T>{
 
 	create(obj:any):Observable<T>
 	{
-		return this.http.post<T>(`${this.domain_configuration.domain}/${this.url_base}`,obj,{headers:this.getSessionHeaders(),withCredentials:true});
+		return this.http
+			.post<T>(`${this.domain_configuration.domain}/${this.url_base}`,obj,{headers:this.getSessionHeaders(),withCredentials:true})
+			.pipe
+			(
+				mergeMap((r)=> of( Utils.convertToDate( r ) as T ) )
+			);
 	}
 
 	createAsPromise(obj:Partial<T>):Promise<T>
 	{
 		let url = `${this.domain_configuration.domain}/${this.url_base}`;
-
 
 		//const paramsString = params.toString();
 		let a_headers = this.getSessionHeaders();
@@ -358,7 +390,13 @@ export class Rest<U,T>{
 
 	update(obj:any,send_as_json:boolean = true ):Observable<T>
 	{
-		return this.http.put<T>(`${this.domain_configuration.domain}/${this.url_base}`,obj,{headers:this.getSessionHeaders(),withCredentials:true});
+		return this.http
+			.put<T>(`${this.domain_configuration.domain}/${this.url_base}`,obj,{headers:this.getSessionHeaders(),withCredentials:true})
+			.pipe
+			(
+				mergeMap((r)=> of( Utils.convertToDate( r ) as T ) )
+			);
+
 	}
 
 	updateAsPromise(obj:Partial<T>):Promise<T>
@@ -396,18 +434,26 @@ export class Rest<U,T>{
 				// Process the data if needed before returning
 				return Utils.transformJson( text ) as T;
 			});
-
-
 	}
 
 	batchCreate(obj:Partial<T>[]):Observable<T[]>
 	{
-		return this.http.post<T[]>(`${this.domain_configuration.domain}/${this.url_base}`,obj,{headers:this.getSessionHeaders(),withCredentials:true});
+		return this.http
+			.post<T[]>(`${this.domain_configuration.domain}/${this.url_base}`,obj,{headers:this.getSessionHeaders(),withCredentials:true})
+			.pipe
+			(
+				mergeMap((r)=> of( Utils.convertToDate( r ) as T[] ) )
+			);
 	}
 
 	batchUpdate(obj:Partial<T>[]):Observable<T[]>
 	{
-		return this.http.put<T[]>(`${this.domain_configuration.domain}/${this.url_base}`,obj,{headers:this.getSessionHeaders(),withCredentials:true});
+		return this.http
+			.put<T[]>(`${this.domain_configuration.domain}/${this.url_base}`,obj,{headers:this.getSessionHeaders(),withCredentials:true})
+			.pipe
+			(
+				mergeMap((r)=> of( Utils.convertToDate( r ) as T[] ) )
+			);
 	}
 
 	batchUpdateJSON(obj:Partial<T>[]):Observable<T[]>
@@ -415,7 +461,12 @@ export class Rest<U,T>{
 		let str = JSON.stringify( obj );
 		let headers = this.getSessionHeaders().set('Content-Type','application/json');
 
-		return this.http.put<T[]>(`${this.domain_configuration.domain}/${this.url_base}`,str,{headers,withCredentials:true});
+		return this.http
+			.put<T[]>(`${this.domain_configuration.domain}/${this.url_base}`,str,{headers,withCredentials:true})
+			.pipe
+			(
+				mergeMap((r)=> of( Utils.convertToDate( r ) as T[] ) )
+			);
 	}
 
 	delete(obj:U):Observable<T>
@@ -427,8 +478,15 @@ export class Rest<U,T>{
 			params = params.set(i,''+obj[i]);
 		}
 
-		return this.http.delete<T>(`${this.domain_configuration.domain}/${this.url_base}`,{params,headers:this.getSessionHeaders(),withCredentials:true});
+		return this.http
+			.delete<T>(`${this.domain_configuration.domain}/${this.url_base}`,{params,headers:this.getSessionHeaders(),withCredentials:true})
+			.pipe
+			(
+				mergeMap((r)=> of( Utils.convertToDate( r ) as T ) )
+			);
+
 	}
+
 	deleteT(obj:T):Observable<T>
 	{
 		let params = new HttpParams();
@@ -438,7 +496,12 @@ export class Rest<U,T>{
 			params = params.set(i,''+obj[i]);
 		}
 
-		return this.http.delete<T>(`${this.domain_configuration.domain}/${this.url_base}`,{params,headers:this.getSessionHeaders(),withCredentials:true});
+		return this.http
+			.delete<T>(`${this.domain_configuration.domain}/${this.url_base}`,{params,headers:this.getSessionHeaders(),withCredentials:true})
+			.pipe
+			(
+				mergeMap((r)=> of( Utils.convertToDate( r ) as T ) )
+			);
 	}
 
 
@@ -447,7 +510,8 @@ export class Rest<U,T>{
 		let extra_keys = e === null ? [] : e;
 		let fields = f === null ? [] : f;
 
-		let keys:string[] = ['eq','le','lt','ge','gt','csv','lk','nn','start'];
+		let keys = ['eq','le','lt','ge','gt','csv','lk','nn','start'];
+
 		let item_search:any = this.getEmptySearch();
 
 		extra_keys.forEach((i:string)=>
@@ -548,7 +612,6 @@ export class Rest<U,T>{
 		}
 
 		let page_str:string | null = param_map.get('page');
-
 
 		let page = page_str ? parseInt( page_str ) : 0;
 		item_search.page = isNaN( page ) ? 0 : page;

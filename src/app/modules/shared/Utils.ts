@@ -47,6 +47,16 @@ export interface KeyboardShortcutEvent
 	stopPropagation: StopPropagationFunction;
 }
 
+function isIso8601(value:any):boolean
+{
+	if( typeof value === 'string' )
+	{
+		return /^\d{4}-\d{2}-\d{2}(T|\s)\d{2}:\d{2}:\d{2}/.test( value )
+	}
+
+	return false;
+}
+
 export class Utils
 {
 	static getLocalDateFromMysqlString(str:string):Date | null
@@ -340,15 +350,14 @@ export class Utils
 	static getDateFromValue(value:unknown):Date | null
 	{
 		let simple_date_regex = /^\d{4}(-\d\d){2}$/;
-		let date_regex = /\d{4}(-\d\d){2}(T|\s)\d\d(:\d\d){2}/
 
 		if( value instanceof Date )
 		{
 			return value;
 		}
-		else if( typeof value === "string" && date_regex.test( value ))
+		else if( isIso8601( value ) )
 		{
-			return Utils.getDateFromUTCMysqlString( value );
+			return Utils.getDateFromUTCMysqlString( value as string );
 		}
 		else if( typeof value === "string" && simple_date_regex.test( value.trim() ) )
 		{
@@ -363,13 +372,12 @@ export class Utils
 		let simple_date_regex = /^\d{4}(-\d\d){2}$/;
 
 		let d:Date | null = null;
-		let date_regex = /\d{4}(-\d\d){2}(T|\s)\d\d(:\d\d){2}/
 
 		if( value instanceof Date )
 		{
 			d = value;
 		}
-		else if( typeof value === "string" && date_regex.test( value ))
+		else if( isIso8601(value) )
 		{
 			d = Utils.getDateFromUTCMysqlString( value );
 		}
@@ -432,4 +440,33 @@ export class Utils
 	{
 		return lat_or_lng* Math.PI / 180;
 	}
+
+	public static convertToDate(body:any):any
+	{
+		if (body === null || body === undefined)
+		{
+			return body;
+		}
+
+		if (typeof body !== 'object' ) {
+			return body;
+		}
+
+		for (const key of Object.keys(body))
+		{
+			const value = body[key];
+
+			if( isIso8601( value ) && ( key === 'created' || key==='updated' || key.includes('system') || key.includes('timestamp') )  )
+			{
+				body[key] = Utils.getDateFromUTCMysqlString( value );   //fromUTCStringToLocalDate( value as string )
+			}
+			else if (typeof value === 'object')
+			{
+				Utils.convertToDate(value);
+			}
+		}
+
+		return body;
+	}
 }
+

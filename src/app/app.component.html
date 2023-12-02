@@ -8,19 +8,19 @@
 			<hr>
 			<ul class="nav nav-pills flex-column mb-auto">
 				<li class="nav-item">
-					<a href="#" class="nav-link active" aria-current="page">
+          <a class="nav-link text-white" aria-current="page" routerLink="list-production-area" routerLinkActive="active">
 						<svg class="bi me-2" width="16" height="16"><use xlink:href="#home"/></svg>
 						Areas de producción
 					</a>
 				</li>
 				<li>
-					<a href="#" class="nav-link text-white">
+					<a class="nav-link text-white" [routerLink]="['list-proccess']">
 						<svg class="bi me-2" width="16" height="16"><use xlink:href="#speedometer2"/></svg>
 						Procedimientos
 					</a>
 				</li>
 				<li>
-					<a href="#" class="nav-link text-white">
+					<a class="nav-link text-white" routerLink="list-requisition" routerLinkActive="active">
 						<svg class="bi me-2" width="16" height="16"><use xlink:href="#table"/></svg>
 						Requisiciones
 					</a>
