@@ -190,10 +190,10 @@ export interface Cash_Close{
 	cash_on_hand:number;
 	created:Date;
 	created_by_user_id:number
-	end:string;  // 'Hora de la dispositivo del cajero, No es una hora fiable, para hacer las cuentas solo sirve para imprimir el ticket',
+	end:string;	// 'Hora de la dispositivo del cajero, No es una hora fiable, para hacer las cuentas solo sirve para imprimir el ticket',
 	id:number;
 	since:Date;
-	start:string;  // 'Hora de la dispositivo del cajero, No es una hora fiable, para hacer las cuentas solo sirve para imprimir',
+	start:string;	// 'Hora de la dispositivo del cajero, No es una hora fiable, para hacer las cuentas solo sirve para imprimir',
 	updated:Date;
 }
 export interface Cashier_Withdrawal{
@@ -248,6 +248,24 @@ export interface Category_Type{
 	TYPE:'PRODUCT_FOR_SALE'|'TOOL'|'RAW_MATERIAL';
 	id:string;
 }
+
+export interface Check_In
+{
+	id: number;
+	current:number;
+	user_id:number;
+	timestamp_start: Date;
+	timestamp_end: Date | null;
+}
+
+export interface Check_In_Raw
+{
+	id: number;
+	user_id:number;
+	created: Date;
+}
+
+
 export interface Commanda{
 	commanda_type_id:number
 	has_sound:number;
@@ -287,7 +305,7 @@ export interface File_Type{
 }
 export interface Fund{
 	amount:number;
-	cashier_hour:string;  // 'Se usa para imprimir el corte de caja, esta hora no es segura para hacer comparaciones de rango los usuario suelen cambiar las horas de los dispositivos, y se afecta en los cambios de horario anualmente, pero es para la refererencia en el misma linea de tiempo',
+	cashier_hour:string;	// 'Se usa para imprimir el corte de caja, esta hora no es segura para hacer comparaciones de rango los usuario suelen cambiar las horas de los dispositivos, y se afecta en los cambios de horario anualmente, pero es para la refererencia en el misma linea de tiempo',
 	created:Date;
 	created_by_user_id:number
 	currency_id:string;
