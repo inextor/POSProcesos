@@ -128,16 +128,16 @@ export class RestService
 		return new Rest<T,U>(this.platform_domain_configuration,`${this.url_platform}/${path}.php`, this.http);
 	}
 
-	public initRest<T, U>(path: string, fields:string[] | undefined = undefined, extra_keys:string[] | undefined = undefined )
+	public initRest<T, U>(path: string, fields:string[] | undefined = undefined, extra_keys:string[] | undefined  = undefined)
 	{
 
-	  //constructor(domain_configuration:DomainConfiguration,url_base:string,http:HttpClient,public fields:string[]=[],public extra_keys=[])
+		//constructor(domain_configuration:DomainConfiguration,url_base:string,http:HttpClient,public fields:string[]=[],public extra_keys=[])
 		return new Rest<T, U>(this.domain_configuration,`${this.url_base}/${path}.php`, this.http, fields, extra_keys);
 	}
 
-	public initRestSimple<T>(path: string)
+	public initRestSimple<T>(path: string, fields:string[]|undefined = undefined, extra_keys:string[]|undefined = undefined)
 	{
-		return this.initRest<T,T>(path) as RestSimple<T>;
+		return this.initRest<T,T>(path, fields,extra_keys) as Rest<T,T>;
 	}
 
 	getApiUrl():string
@@ -183,10 +183,10 @@ export class RestService
 	}
 	//doLoginPlatform(email:string,password:string):Observable<LoginResponse>
 	//{
-	//	let url  = `${this.getPlatformDomain()}/${this.getUrlPlatform()}/login.php`;
+	//	let url	= `${this.getPlatformDomain()}/${this.getUrlPlatform()}/login.php`;
 	//	let credentials = 'include';
 
-	//	let params  = new FormData();
+	//	let params	= new FormData();
 	//	params.set('password',password );
 	//	params.set('email', email );
 
