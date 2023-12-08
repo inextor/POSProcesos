@@ -16,3 +16,4 @@ export interface RequisitionInfo
 	user:User;
 	shipping:Shipping | null;
 }
+

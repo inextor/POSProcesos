@@ -30,13 +30,9 @@ interface CRequisitionItem
 })
 export class ListRequisitionComponent implements OnInit
 {
-
-
 	requisition_list:RequisitionInfo[] =[];
 	store_list:Store[] = [];
-
 	rest_requistion:Rest<Requisition,RequisitionInfo> = this.rest.initRest('requisition_info');
-
 	rest_store:RestSimple<Store> = this.rest.initRest('store',['id','name','created','updated']);
 	c_req_item_list:CRequisitionItem[] = [];
 	is_loading:boolean = false;
@@ -108,6 +104,11 @@ export class ListRequisitionComponent implements OnInit
 				}
 			}
 		});
+	}
+
+	copyRequisition()
+	{
+
 	}
 
 	floor(n:number)

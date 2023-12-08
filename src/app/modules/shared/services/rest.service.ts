@@ -137,7 +137,7 @@ export class RestService
 
 	public initRestSimple<T>(path: string, fields:string[]|undefined = undefined, extra_keys:string[]|undefined = undefined)
 	{
-		return this.initRest<T,T>(path, fields,extra_keys) as Rest<T,T>;
+		return this.initRest<T,T>(path, fields,extra_keys) as RestSimple<T>;
 	}
 
 	getApiUrl():string

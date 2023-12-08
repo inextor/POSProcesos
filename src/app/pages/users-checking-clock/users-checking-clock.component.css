@@ -1,0 +1,4 @@
+.border-not-last:not(:last-child)
+{
+    border-bottom: var(--bs-border-width) var(--bs-border-style) var(--bs-border-color) !important;
+}

@@ -1,6 +1,8 @@
-import { Component, Directive } from '@angular/core';
+import { Component, OnInit, OnDestroy} from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Rest } from '../Rest';
+import { RestService } from '../services/rest.service';
+import { ActivatedRoute, Router } from '@angular/router';
+import { SubSink } from 'subsink';
 
 @Component({
 	selector: 'app-base',
@@ -9,6 +11,28 @@ import { Rest } from '../Rest';
 	templateUrl: './base.component.html',
 	styleUrl: './base.component.css'
 })
-export class BaseComponent
+export class BaseComponent	implements OnDestroy
 {
+	subs = new SubSink();
+	is_loading = false;
+
+	constructor(public rest:RestService, public route:ActivatedRoute, public router:Router)
+	{
+
+	}
+
+	ngOnDestroy()
+	{
+		this.subs.unsubscribe();
+	}
+
+	showError(a:any)
+	{
+		console.error('Mostrando error', a );
+	}
+
+	showSuccess(msg:string)
+	{
+		console.log('Mostrando mensage de exito:', msg );
+	}
 }
