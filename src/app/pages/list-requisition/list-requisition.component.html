@@ -13,8 +13,8 @@
 		<div class="col-4">
 			<label>Sucursal</label>
 			<select name="store_id" class="form-control">
-			<option [ngValue]="null">Todas</option>
-			<option *ngFor="let s of store_list" [ngValue]="s.id">{{s.name | titlecase}}</option>
+				<option [ngValue]="null">Todas</option>
+				<option *ngFor="let s of store_list" [ngValue]="s.id">{{s.name | titlecase}}</option>
 			</select>
 		</div>
 	</div>
