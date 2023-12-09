@@ -37,8 +37,9 @@ export class ListRequisitionComponent implements OnInit
 	show_add_production: boolean = false;
 	selected_crequistion_item: CRequisitionItem | null = null;
 	rest_check_in:RestSimple<Check_In> = this.rest.initRestSimple('check_in',['current']);
-	rest_users:RestSimple<User> = this.rest.initRestSimple('users',['id']);
+	rest_users:RestSimple<User> = this.rest.initRestSimple('user',['id']);
 	user_list:User[] = [];
+	production_user_id:number | null = null;
 
 	constructor(private rest:RestService,private route:ActivatedRoute,private router:Router,private location:Location)
 	{

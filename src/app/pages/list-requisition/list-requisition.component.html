@@ -4,28 +4,6 @@
 			<h1 class="my-3 text-capitalize">Requisiciones: </h1>
 		</div>
 	</div>
-	<!--div	class="card p-3 mt-3">
-		<div class="table-responsive">
-			<table class="table table-sm table-nowrap mb-0">
-				<thead class="thead-light">
-					<tr>
-						<th>Nombre</th>
-						<th>Creacion</th>
-						<th class="text-end">Actualización</th>
-					</tr>
-				</thead>
-			</table>
-		</div>
-	</div>
-	<div class="row my-3">
-		<div class="col-9">
-			<h2>Procesos de producción</h2>
-		</div>
-		<div class="col-3 text-end">
-			<a class="btn btn-primary" [routerLink]="['/add-process',production_area.id]">Agregar Nuevo</a>
-		</div>
-	</div-->
-
 	<div class="card p-3 mt-3">
 	<div class="row">
 		<div class="col-4">
@@ -113,9 +91,16 @@
 			<h2>{{selected_crequistion_item.item.name}}</h2>
 			<form name="show_add_production" (submit)="addProduction($event)" ngNativeValidate>
 				<div class="row">
-					<div class="col-12">
+					<div class="col-6">
 						<label>Cantidad Producida</label>
 						<input class="form-control" type="number" name="qty" min="1" required>
+					</div>
+					<div class="col-6">
+						<label>Usuario</label>
+						<select name="user_id" class="form-control" [(ngModel)]="production_user_id">
+							<option value="null">Seleccionar</option>
+							<option *ngFor="let user of user_list" [ngValue]="user.id">{{user.name | uppercase}}</option>
+						</select>
 					</div>
 					<div class="col-6 mt-3">
 						<button class="btn btn-secondary w-100" (click)="closeModal('modal-add-production')">Cerrar</button>

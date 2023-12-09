@@ -6,15 +6,15 @@ import { Subscription, forkJoin, mergeMap, of } from 'rxjs';
 import { Check_In, User } from '../../modules/shared/RestModels';
 import { Rest, RestResponse, RestSimple } from '../../modules/shared/Rest';
 import { BaseComponent } from '../../modules/shared/base/base.component';
+import { Utils } from '../../modules/shared/Utils';
 
 interface CUser
 {
 	user:User;
 	check_ins:Check_In[];
 	total_seconds:number;
-	worked_hours:number;
-	worked_seconds:number;
-	worked_minutes:number;
+	seconds_by_day:number[];
+	worked_hours:string[];
 }
 
 
@@ -59,7 +59,7 @@ export class ListUserAttendanceComponent extends BaseComponent
 			}),
 			mergeMap((response:RestResponse<User>)=>
 			{
-				if( response.data.length )
+				if( !response.data.length )
 				{
 					return forkJoin
 					({
@@ -92,16 +92,40 @@ export class ListUserAttendanceComponent extends BaseComponent
 
 				for(let user of response.users.data)
 				{
+					let seconds_by_day = new Array(7);
+					seconds_by_day.fill( 0 );
+
+					let worked_hours= new Array(7);
+					worked_hours.fill('');
+
+
 					result.push
 					({
 						user,
 						check_ins: response.check_ins.data.filter(ci=>ci.user_id == user.id ),
 						total_seconds:0,
-						worked_hours: 0,
-						worked_seconds:0,
-						worked_minutes:0,
+						seconds_by_day,
+						worked_hours
 					});
 					//current_check_in: response.check_ins.data.find(checkin=>i.id == checkin.user_id ) || null
+				}
+
+
+				for(let u of result )
+				{
+					let total_seconds = 0;
+
+					for(let ci of u.check_ins)
+					{
+						let seconds = ci.timestamp_end
+							? Math.floor( (ci.timestamp_end.getTime() - ci.timestamp_start.getTime() )/1000 )
+							: 0;
+
+						total_seconds += seconds;
+						u.seconds_by_day[ ci.timestamp_start.getDay() ] += seconds;
+					}
+
+					u.seconds_by_day.forEach((v,i)=>{ u.worked_hours[i] = this.getStringHours( v ) });
 				}
 
 				return of(result)
@@ -109,6 +133,24 @@ export class ListUserAttendanceComponent extends BaseComponent
 		)
 		.subscribe((response)=>
 		{
+			this.cuser_list = response;
 		})
+	}
+	getStringHours(seconds:number)
+	{
+		if( seconds == 0 )
+			return '-';
+
+		const seconds_by_hour = 3600;
+		let worked_hours		= Math.floor( seconds/seconds_by_hour );
+		let worked_minutes	= Math.floor( seconds/60)%60;
+		let worked_seconds	= seconds%60;
+
+
+		return Utils.zero(worked_hours)
+			+':'
+			+Utils.zero( worked_minutes )
+			+':'
+			+Utils.zero(worked_seconds );
 	}
 }

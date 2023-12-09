@@ -6,7 +6,6 @@ import { RestResponse } from '../../modules/shared/Rest';
 import { BaseComponent } from '../../modules/shared/base/base.component';
 
 
-
 export interface UserCheckInfo
 {
 	user:User;
@@ -64,40 +63,40 @@ export class UsersCheckingClockComponent extends BaseComponent implements OnInit
 			}),
 			mergeMap((response)=>
 			{
-				let result:UserCheckInfo[] = [];
+					let result:UserCheckInfo[] = [];
 
-				for(let i of response.users.data)
-				{
-					result.push
-					({
-						user: i,
-						current_check_in: response.check_ins.data.find(checkin=>i.id == checkin.user_id ) || null
-					});
-				}
+					for(let i of response.users.data)
+					{
+						result.push
+						({
+							user: i,
+							current_check_in: response.check_ins.data.find(checkin=>i.id == checkin.user_id ) || null
+						});
+					}
 
-				return of(result)
+					return of(result)
+				})
+			)
+			.subscribe((response)=>
+			{
+				this.user_checkin_info_list = response;
+				this.is_loading = false;
 			})
-		)
-		.subscribe((response)=>
+		}
+
+
+		checkIn(ucil: UserCheckInfo)
 		{
-			this.user_checkin_info_list = response;
-			this.is_loading = false;
-		})
-	}
 
+		}
 
-	checkIn(ucil: UserCheckInfo)
-	{
-
-	}
-
-	checkOut(ucil: UserCheckInfo)
-	{
-		this.subs.sink = this.rest_check_in.create
-		({
-			user_id: ucil.user.id
-		})
-		.subscribe((response)=>
+		checkOut(ucil: UserCheckInfo)
+		{
+			this.subs.sink = this.rest_check_in.create
+			({
+				user_id: ucil.user.id
+			})
+			.subscribe((response)=>
 		{
 			ucil.current_check_in = response;
 		},(error)=>{
