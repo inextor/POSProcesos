@@ -1,15 +1,13 @@
 import { Component,OnInit, Pipe } from '@angular/core';
 import {CommonModule, Location} from '@angular/common';
-// import { Process, Production_Area } from '../../modules/shared/RestModels';
 import { RestService } from '../../modules/shared/services/rest.service';
-import { Rest} from '../../modules/shared/Rest';
+import { Rest, RestResponse} from '../../modules/shared/Rest';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { GetEmpty } from '../../modules/shared/GetEmpty';
 import { forkJoin,mergeMap, of } from 'rxjs';
 import { RestSimple } from '../../modules/shared/Rest';
 import { FormsModule } from '@angular/forms';
 import { RequisitionInfo,RequisitionItemInfo } from '../../modules/shared/Models';
-import { Requisition,Store,Category,Item} from '../../modules/shared/RestModels';
+import { Requisition,Store,Category,Item, Check_In, User} from '../../modules/shared/RestModels';
 
 
 interface CRequisitionItem
@@ -38,6 +36,9 @@ export class ListRequisitionComponent implements OnInit
 	is_loading:boolean = false;
 	show_add_production: boolean = false;
 	selected_crequistion_item: CRequisitionItem | null = null;
+	rest_check_in:RestSimple<Check_In> = this.rest.initRestSimple('check_in',['current']);
+	rest_users:RestSimple<User> = this.rest.initRestSimple('users',['id']);
+	user_list:User[] = [];
 
 	constructor(private rest:RestService,private route:ActivatedRoute,private router:Router,private location:Location)
 	{
@@ -51,10 +52,22 @@ export class ListRequisitionComponent implements OnInit
 			mergeMap((param_map)=>
 			{
 				this.is_loading = true;
+
 				return forkJoin
 				({
-					stores:this.rest_store.search({limit:999999}),
+					stores: this.rest_store.search({limit:999999}),
 					requisition: this.rest_requistion.search(param_map),
+					users: this.rest_check_in.search({eq:{current:1},limit:999999}).pipe
+					(
+						mergeMap((response)=>
+						{
+							if( response.total == 0 )
+								return of({total:0, data:[]} as RestResponse<User>);
+
+							let user_ids = response.data.map(ci=>ci.user_id);
+							return this.rest_users.search({csv:{ id: user_ids },limit:response.total });
+						})
+					)
 				})
 			})
 		)
@@ -65,6 +78,7 @@ export class ListRequisitionComponent implements OnInit
 
 			this.requisition_list = response.requisition.data;
 			this.store_list = response.stores.data;
+			this.user_list = response.users.data;
 
 			let find= (rii:RequisitionItemInfo,r_info:RequisitionInfo,cri:CRequisitionItem, todas:boolean):boolean =>
 			{
