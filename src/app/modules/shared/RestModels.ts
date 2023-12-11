@@ -248,24 +248,21 @@ export interface Category_Type{
 	TYPE:'PRODUCT_FOR_SALE'|'TOOL'|'RAW_MATERIAL';
 	id:string;
 }
-
-export interface Check_In
-{
-	id: number;
+export interface Check_In{
+	created_by_user_id:number | null;
 	current:number;
-	user_id:number;
-	timestamp_start: Date;
-	timestamp_end: Date | null;
+	id:number;
+	timestamp_end:Date;
+	timestamp_start:Date;
+	updated_by_user_id:number | null;
+	user_id:number
 }
-
-export interface Check_In_Raw
-{
-	id: number;
-	user_id:number;
-	created: Date;
+export interface Check_In_Raw{
+	created:Date;
+	created_by_user_id:number
+	id:number;
+	user_id:number
 }
-
-
 export interface Commanda{
 	commanda_type_id:number
 	has_sound:number;
@@ -874,20 +871,24 @@ export interface Price_Type{
 	type:'RETAIL'|'WHOLESALE';
 	updated:Date;
 	wholesale_min_qty:number;
+	wholesale_type:'BY_ARTICLE'|'BY_CATEGORY';
 }
 export interface Process{
+	category_id:number | null;
 	created:Date;
 	id:number;
-	name:string;
+	item_id:number | null;
+	name:number
 	production_area_id:number
 	status:'ACTIVE'|'DELETED';
+	type:'SALE_ITEM'|'SALE_CATEGORY'|'SHIPPING'|'SHIPPING_ITEM';
 	updated:Date;
 }
 export interface Process_Status{
 	created:Date;
 	id:number;
 	mark_task_as_done:number;
-	name:number
+	name:string;
 	process_id:number
 	status:'ACTIVE'|'DELETED';
 	updated:Date;
@@ -895,6 +896,18 @@ export interface Process_Status{
 export interface Product{
 	id:number;
 	name:number
+}
+export interface Production{
+	created:Date;
+	created_by_user_id:number
+	id:number;
+	item_id:number
+	merma_qty:number | null;
+	produced_by_user_id:number
+	qty:number
+	store_id:number
+	updated:Date;
+	verified_by_user_id:number | null;
 }
 export interface Production_Area{
 	created:Date;
@@ -1239,6 +1252,7 @@ export interface Store{
 	pos_category_preferences:'DEFAULT_BY_PRODUCT'|'HIDE_BY_DEFAULT'|'SHOW_BY_DEFAULT';
 	price_list_id:number | null;
 	print_receipt:number | null;
+	print_receipt_copies:number | null;
 	printer_ticket_config:string | null;
 	qr_size:'PERCENT_25'|'PERCENT_50'|'PERCENT_75'|'PERCENT_100';
 	rfc:string | null;
@@ -1301,6 +1315,7 @@ export interface Table{
 	updated_by_user_id:number | null;
 }
 export interface Task{
+	category_id:number | null;
 	counter:number | null;
 	created:Date;
 	description:string;
@@ -1309,9 +1324,12 @@ export interface Task{
 	is_done:number;
 	item_id:number | null;
 	order_id:number | null;
+	over_extend_qty:number | null;
 	parent_task_id:number | null;
 	process_id:number
 	process_status_id:number | null;
+	qty:number | null;
+	requisition_id:number | null;
 	status:'ACTIVE'|'DELETED';
 	updated:Date;
 }
