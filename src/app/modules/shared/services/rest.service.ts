@@ -6,7 +6,8 @@ import { GetEmpty } from '../GetEmpty';
 import { OFFLINE_DB_SCHEMA } from '../OfflineDBSchema';
 import { Utils } from '../Utils';
 import { Preferences, User, User_Permission } from '../RestModels';
-import { HttpHeaders, HttpClient } from '@angular/common/http'
+import { HttpHeaders, HttpClient, HttpParams } from '@angular/common/http'
+import { Observable } from 'rxjs';
 
 export const USER_PERMISSION_KEY = 'user_permission';
 const USER_KEY = 'user';
@@ -374,6 +375,25 @@ export class RestService
 	{
 		this.hades_counter++;
 		this.has_hades = this.user_permission.hades>0 && this.hades_counter >= 5;
+	}
+
+	getReport(report_name:string, query:Record<string,any>):Observable<any>
+	{
+		let params = new HttpParams();
+
+		for(let i in query)
+		{
+			if(query[i] instanceof Date )
+			{
+				params = params.set(i,Utils.getUTCMysqlStringFromDate( query[i] ));
+			}
+			else if( query[i] )
+			{
+				params = params.set( i, ''+query[ i ] );
+			}
+		}
+		params = params.set('report_name',report_name);
+		return this.http.get<any>(`${this.domain_configuration.domain}/${this.url_base}/reportes.php`, { params, headers: this.getSessionHeaders(), withCredentials: true });
 	}
 }
 

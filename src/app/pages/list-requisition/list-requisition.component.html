@@ -34,7 +34,7 @@
 					</tr>
 				</thead>
 				<tbody>
-					<tr *ngFor="let cri of c_req_item_list">
+					<!--tr *ngFor="let cri of c_req_item_list">
 						<td>{{cri.item.name}}</td>
 						<td>{{cri?.store?.name??'TODAS'}}</td>
 						<td>{{cri.qty | number}}</td>
@@ -43,7 +43,20 @@
 						<td>
 							<button class="btn btn-primary" type="button" (click)="showProduction(cri)">Agregar Prod</button>
 						</td>
+					</tr-->
+          <tr *ngFor="let cri of requsition_obj_list">
+            <td>{{cri.requisition.item_id}} - {{cri.requisition.category_name??''}} {{cri.requisition.item_name }}</td>
+            <td>TODAS</td>
+						<td>{{cri.requisition.sum_qty}}</td>
+						<td>{{(cri?.production?.produced || 0) | number}}</td>
+						<td>{{cri.requisition.sum_qty - (cri?.production?.produced||0) | number}}</td>
+						<td>{{cri.qty - floor( cri.qty/2) | number}}</td>
+						<td>
+							<button class="btn btn-primary" type="button" (click)="showProduction(cri)">Agregar Prod</button>
+						</td>
+						<!-- td>{{cri.requisition | json}}</td -->
 					</tr>
+
 				</tbody>
 			</table>
 		</div>
@@ -88,17 +101,17 @@
 	</div-->
 	<dialog id="modal-add-production">
 		<div *ngIf="selected_crequistion_item">
-			<h2>{{selected_crequistion_item.item.name}}</h2>
+			<h2>{{selected_crequistion_item.requisition.item_name}}</h2>
 			<form name="show_add_production" (submit)="addProduction($event)" ngNativeValidate>
 				<div class="row">
 					<div class="col-6">
 						<label>Cantidad Producida</label>
-						<input class="form-control" type="number" name="production_qty"  [min]="production.merma_qty==0?1:0" [(ngModel)]="production.qty" required>
+						<input class="form-control" type="number" name="production_qty"	[min]="production.merma_qty==0?1:0" [(ngModel)]="production.qty" required>
 					</div>
 
 					<div class="col-6">
 						<label>Merma</label>
-						<input class="form-control" type="number" name="production_merma_qty" [min]="production.qty==0?1:0" [(ngModel)]="production.merma_qty"  required>
+						<input class="form-control" type="number" name="production_merma_qty" [min]="production.qty==0?1:0" [(ngModel)]="production.merma_qty"	required>
 					</div>
 
 					<div class="col-6">

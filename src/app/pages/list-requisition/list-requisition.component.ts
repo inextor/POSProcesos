@@ -10,14 +10,29 @@ import { Requisition,Store,Category,Item, Check_In, User, Production} from '../.
 import { GetEmpty } from '../../modules/shared/GetEmpty';
 import { BaseComponent } from '../../modules/shared/base/base.component';
 
-interface CRequisitionItem
+interface CRequistionItem
 {
-	item:Item;
-	category:Category | null;
-	qty:number;
-	store:Store | null
+	item_id:number,
+	item_name:string;
+	category_name:string | null;
+	min_created: string;
+	requisition_ids: string;
+	sum_qty:number;
 }
 
+interface CProduction
+{
+	item_id:number;
+	produced:number;
+	production_merma_qty:number;
+}
+
+
+interface CRequisitionItem
+{
+	production: CProduction | null;
+	requisition: CRequistionItem;
+}
 
 @Component({
 	selector: 'app-list-requisition',
@@ -38,10 +53,12 @@ export class ListRequisitionComponent extends BaseComponent implements OnInit
 	rest_check_in:RestSimple<Check_In> = this.rest.initRestSimple('check_in',['current']);
 	rest_users:RestSimple<User> = this.rest.initRestSimple('user',['id']);
 	rest_production:RestSimple<Production> = this.rest.initRestSimple('production',['id','created_by_user_id','produced_by_user_id','verified_by_user_id']);
+
 	user_list:User[] = [];
 	production_user_id:number | null = null;
 	production = GetEmpty.production();
 	production_list:Production[] = [];
+    requsition_obj_list: any[] = [];
 
 	ngOnInit()
 	{
@@ -54,13 +71,7 @@ export class ListRequisitionComponent extends BaseComponent implements OnInit
 				return forkJoin
 				({
 					stores: this.rest_store.search({limit:999999}),
-					requisition: this.rest_requistion.search(param_map).pipe
-					(
-						mergeMap((response)=>
-						{
-
-						})
-					),
+					requisition: this.rest.getReport('requisition_items',{}),
 					users: this.rest_check_in.search({eq:{current:1},limit:999999}).pipe
 					(
 						mergeMap((response)=>
@@ -80,47 +91,48 @@ export class ListRequisitionComponent extends BaseComponent implements OnInit
 			this.is_loading = false;
 			let todas:boolean = true;
 
-			this.requisition_list = response.requisition.data;
-			this.store_list = response.stores.data;
+			this.requsition_obj_list = response.requisition as any[];
+			//this.requisition_list = response.requisition;
+			//this.store_list = response.stores.data;
 			this.user_list = response.users.data;
 
-			let find= (rii:RequisitionItemInfo, r_info:RequisitionInfo, cri:CRequisitionItem, todas:boolean):boolean =>
-			{
-				if( cri.item.id != rii.item.id )
-					return false
+			//let find= (rii:RequisitionItemInfo, r_info:RequisitionInfo, cri:CRequisitionItem, todas:boolean):boolean =>
+			//{
+			//	if( cri.item.id != rii.item.id )
+			//		return false
 
-				return todas || cri?.store?.id == r_info.required_by_store.id;
-			};
+			//	return todas || cri?.store?.id == r_info.required_by_store.id;
+			//};
 
-			for(let r_info of this.requisition_list)
-			{
-				for(let r_item_info of r_info.items)
-				{
-					let c_req_item =this.c_req_item_list.find( rqi =>
-					{
-						return find( r_item_info, r_info, rqi, todas)
-					});
+			//for(let r_info of this.requisition_list)
+			//{
+			//	for(let r_item_info of r_info.items)
+			//	{
+			//		let c_req_item =this.c_req_item_list.find( rqi =>
+			//		{
+			//			return find( r_item_info, r_info, rqi, todas)
+			//		});
 
-					if( c_req_item )
-					{
-						c_req_item.qty += r_item_info.requisition_item.qty;
-					}
-					else
-					{
-						let store = todas
-							? null
-							: this.store_list.find(s=>r_info.required_by_store.id == s.id ) as Store;
+			//		if( c_req_item )
+			//		{
+			//			c_req_item.qty += r_item_info.requisition_item.qty;
+			//		}
+			//		else
+			//		{
+			//			let store = todas
+			//				? null
+			//				: this.store_list.find(s=>r_info.required_by_store.id == s.id ) as Store;
 
-						this.c_req_item_list.push
-						({
-							item: r_item_info.item,
-							category: r_item_info.category,
-							store,
-							qty: r_item_info.requisition_item.qty
-						});
-					}
-				}
-			}
+			//			this.c_req_item_list.push
+			//			({
+			//				item: r_item_info.item,
+			//				category: r_item_info.category,
+			//				store,
+			//				qty: r_item_info.requisition_item.qty
+			//			});
+			//		}
+			//	}
+			//}
 		});
 	}
 
@@ -141,7 +153,7 @@ export class ListRequisitionComponent extends BaseComponent implements OnInit
 		this.show_add_production = true;
 		this.selected_crequistion_item = cri;
 		this.production.store_id = user.store_id as number;
-		this.production.item_id = cri.item.id;
+		this.production.item_id = cri.requisition.item_id;
 		this.production.created_by_user_id = user.id;
 		this.showModal('modal-add-production');
 	}
