@@ -878,7 +878,7 @@ export interface Process{
 	created:Date;
 	id:number;
 	item_id:number | null;
-	name:number
+	name:string;
 	production_area_id:number
 	status:'ACTIVE'|'DELETED';
 	type:'SALE_ITEM'|'SALE_CATEGORY'|'SHIPPING'|'SHIPPING_ITEM';
@@ -902,7 +902,7 @@ export interface Production{
 	created_by_user_id:number
 	id:number;
 	item_id:number
-	merma_qty:number | null;
+	merma_qty:number;
 	produced_by_user_id:number
 	qty:number
 	store_id:number

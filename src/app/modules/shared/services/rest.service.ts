@@ -51,8 +51,7 @@ export class RestService
 	//);
 	constructor(private http:HttpClient)
 	{
-
-
+		this.user = this.getUserFromSession();
 	}
 
 	getSessionStart():Date
@@ -128,7 +127,7 @@ export class RestService
 		return new Rest<T,U>(this.platform_domain_configuration,`${this.url_platform}/${path}.php`, this.http);
 	}
 
-	public initRest<T, U>(path: string, fields:string[] | undefined = undefined, extra_keys:string[] | undefined  = undefined)
+	public initRest<T, U>(path: string, fields:string[] | undefined = undefined, extra_keys:string[] | undefined	= undefined)
 	{
 
 		//constructor(domain_configuration:DomainConfiguration,url_base:string,http:HttpClient,public fields:string[]=[],public extra_keys=[])
@@ -173,7 +172,7 @@ export class RestService
 
 		if( permissions )
 		{
-			this.user_permission= JSON.parse( permissions );
+			this.user_permission = Utils.transformJson( permissions );
 		}
 
 		if( usr )

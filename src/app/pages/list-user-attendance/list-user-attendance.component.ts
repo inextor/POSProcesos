@@ -78,7 +78,7 @@ export class ListUserAttendanceComponent extends BaseComponent
 				search_object.eq.current = 1;
 
 				search_object.ge.timestamp_start = this.start;
-				search_object.le.timestamp_end = this.end;
+				search_object.le.timestamp_end = this.end || undefined;
 
 				return forkJoin
 				({

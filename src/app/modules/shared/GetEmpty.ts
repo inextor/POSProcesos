@@ -1,4 +1,4 @@
-import { User_Permission,Preferences,Production_Area,Process } from "./RestModels";
+import { User_Permission,Preferences,Production_Area,Process, Production } from "./RestModels";
 
 export class GetEmpty
 {
@@ -9,7 +9,10 @@ export class GetEmpty
 			created: new Date(),
 			id:0,
 			name:'',
+			category_id: null,
 			production_area_id:0,
+			type: 'SALE_ITEM',
+			item_id: null,
 			status:'ACTIVE',
 			updated: new Date(),
 		};
@@ -168,6 +171,22 @@ export class GetEmpty
 			id:0,
 			name:'',
 			updated: new Date(),
+		}
+	}
+
+	static production():Production
+	{
+		return {
+			created: new Date(),
+			created_by_user_id: 0,
+			id: 0,
+			item_id: 0,
+			merma_qty: 0,
+			produced_by_user_id: 0,
+			qty: 0,
+			store_id: 0,
+			updated: new Date(),
+			verified_by_user_id: null,
 		}
 	}
 }

@@ -5,7 +5,6 @@ import { mergeMap, of, forkJoin } from 'rxjs';
 import { RestResponse } from '../../modules/shared/Rest';
 import { BaseComponent } from '../../modules/shared/base/base.component';
 
-
 export interface UserCheckInfo
 {
 	user:User;
@@ -40,7 +39,7 @@ export class UsersCheckingClockComponent extends BaseComponent implements OnInit
 			}),
 			mergeMap((response:RestResponse<User>)=>
 			{
-				if( response.data.length )
+				if( !response.data.length )
 				{
 					return forkJoin
 					({
@@ -63,44 +62,40 @@ export class UsersCheckingClockComponent extends BaseComponent implements OnInit
 			}),
 			mergeMap((response)=>
 			{
-					let result:UserCheckInfo[] = [];
+				let result:UserCheckInfo[] = [];
 
-					for(let i of response.users.data)
-					{
-						result.push
-						({
-							user: i,
-							current_check_in: response.check_ins.data.find(checkin=>i.id == checkin.user_id ) || null
-						});
-					}
+				for(let user of response.users.data)
+				{
+					let current_check_in = response. check_ins. data. find(checkin=>user.id == checkin.user_id ) || null;
+					result.push({ user, current_check_in });
+				}
 
-					return of(result)
-				})
-			)
-			.subscribe((response)=>
-			{
-				this.user_checkin_info_list = response;
-				this.is_loading = false;
+				return of(result)
 			})
-		}
-
-
-		checkIn(ucil: UserCheckInfo)
+		)
+		.subscribe((response)=>
 		{
+			this.user_checkin_info_list = response;
+			this.is_loading = false;
+		})
+	}
 
-		}
+	checkInOut(ucil: UserCheckInfo)
+	{
+		let user_id = ucil.user.id;
 
-		checkOut(ucil: UserCheckInfo)
-		{
-			this.subs.sink = this.rest_check_in.create
-			({
-				user_id: ucil.user.id
-			})
-			.subscribe((response)=>
+		this.subs.sink = this.rest_check_in.create({ user_id })
+		.subscribe((response)=>
 		{
 			ucil.current_check_in = response;
-		},(error)=>{
-			this.showError( error );
-		})
+			if( response.timestamp_end == null )
+			{
+				ucil.current_check_in = response;
+			}
+			else
+			{
+				ucil.current_check_in = null;
+			}
+		},(error)=> this.showError( error ))
 	}
 }
