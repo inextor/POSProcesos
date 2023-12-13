@@ -24,7 +24,7 @@ export class RestService
 	has_hades:boolean = false;
 
 	user_permission:User_Permission = GetEmpty.user_permission();
-	preferences:Preferences = GetEmpty.preferences();
+	preferences = this.getPreferencesFromSession();
 
 	public domain_configuration = {
 		domain: window.location.protocol+'//'+window.location.hostname
@@ -53,6 +53,7 @@ export class RestService
 	constructor(private http:HttpClient)
 	{
 		this.user = this.getUserFromSession();
+		this.preferences = this.getPreferencesFromSession();
 	}
 
 	getSessionStart():Date

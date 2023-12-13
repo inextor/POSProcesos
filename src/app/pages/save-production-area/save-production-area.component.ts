@@ -1,56 +1,48 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { HttpClientModule, withFetch } from '@angular/common/http';
-import { RestService } from '../../modules/shared/services/rest.service';
-import { Production_Area } from '../../modules/shared/RestModels';
+import { Production_Area, Store } from '../../modules/shared/RestModels';
 import { RestSimple } from '../../modules/shared/Rest';
 import { GetEmpty } from '../../modules/shared/GetEmpty';
 import { FormsModule } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
-import { mergeMap, of } from 'rxjs';
-import {Location} from '@angular/common';
+import { forkJoin, mergeMap, of } from 'rxjs';
+import { BaseComponent } from '../../modules/shared/base/base.component';
 
 @Component({
 	selector: 'app-save-production-area',
 	standalone: true,
-	imports: [CommonModule,HttpClientModule,FormsModule],
+	imports: [CommonModule,FormsModule],
 	templateUrl: './save-production-area.component.html',
 	styleUrl: './save-production-area.component.css'
 })
 
-export class SaveProductionAreaComponent implements OnInit
+export class SaveProductionAreaComponent extends BaseComponent implements OnInit
 {
-	production_area_rest: RestSimple<Production_Area>;
+	production_area_rest: RestSimple<Production_Area> = this.rest.initRestSimple('production_area');
+	rest_store: RestSimple<Store> = this.rest.initRestSimple('store');
 	production_area = GetEmpty.production_area();
-	is_loading:boolean = false;
-
-	constructor(private rest:RestService,private route:ActivatedRoute,private router:Router, private location:Location)
-	{
-		this.production_area_rest = rest.initRestSimple<Production_Area>('production_area');
-	}
+	store_list:Store[] = [];
 
 	ngOnInit()
 	{
-		//this.subs.sync =
-		this.route.paramMap.pipe
+		this.subs.sink = this.route.paramMap.pipe
 		(
 			mergeMap((paramMap)=>
 			{
-				return paramMap.has('id')
-					? this.production_area_rest.get( paramMap.get('id' ) )
-					: of( GetEmpty.production_area() );
+				return forkJoin
+				({
+					production_area :	paramMap.has('id')
+						? this.production_area_rest.get( paramMap.get('id' ) )
+						: of( GetEmpty.production_area() ),
+					store: this.rest_store.search({limit:9999999})
+				})
 			}),
 		)
 		.subscribe((response)=>
 		{
 			this.is_loading = false;
-			this.production_area = response;
-		})
-	}
-
-	ngOnDestroy()
-	{
-		//this.subs.unsubscribe();
+			this.store_list = response.store.data;
+			this.production_area = response.production_area;
+		});
 	}
 
 	save(evt:Event)

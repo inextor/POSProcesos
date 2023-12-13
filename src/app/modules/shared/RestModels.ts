@@ -903,7 +903,8 @@ export interface Production{
 	id:number;
 	item_id:number
 	merma_qty:number;
-	produced_by_user_id:number
+	produced_by_user_id: number;
+  production_area_id: number;
 	qty:number
 	store_id:number
 	updated:Date;
@@ -913,6 +914,7 @@ export interface Production_Area{
 	created:Date;
 	id:number;
 	name:string;
+  store_id:number;
 	updated:Date;
 }
 export interface Production_Area_Item{

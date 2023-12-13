@@ -7,10 +7,16 @@
 					<label class="">Nombre</label>
 					<input type="text" name="name" [(ngModel)]="production_area.name" class="form-control">
 				</div>
+				<div class="col-6 col-md-4">
+					<label class="">Sucursal</label>
+					<select>
+						<option *ngFor="let s of store_list" [value]="s.id">{{s.name}}</option>
+					</select>
+				</div>
 			</div>
 			<div class="row p-3">
 				<div class="col-12 text-right">
-					<button type="submit"  [disabled]="is_loading" class="btn btn-primary">Guardar</button>
+					<button type="submit"	[disabled]="is_loading" class="btn btn-primary">Guardar</button>
 				</div>
 			</div>
 		</div>

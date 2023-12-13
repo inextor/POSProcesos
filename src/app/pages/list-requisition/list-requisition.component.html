@@ -27,36 +27,25 @@
 					<tr>
 						<th>Artículo</th>
 						<th>Sucursal</th>
-						<th>Requeridos</th>
-						<th>Producidos</th>
-						<th>Pendientes</th>
-						<th>Acciones</th>
+						<th class="text-end">Requeridos</th>
+						<th class="text-end">Producidos</th>
+						<th class="text-end">Merma</th>
+						<th class="text-end">Pendientes</th>
+						<th class="text-end">Acciones</th>
 					</tr>
 				</thead>
 				<tbody>
-					<!--tr *ngFor="let cri of c_req_item_list">
-						<td>{{cri.item.name}}</td>
-						<td>{{cri?.store?.name??'TODAS'}}</td>
-						<td>{{cri.qty | number}}</td>
-						<td>{{floor( cri.qty/2 ) | number}}</td>
-						<td>{{cri.qty - floor( cri.qty/2) | number}}</td>
-						<td>
+					<tr *ngFor="let cri of requsition_obj_list">
+						<td>{{cri.requisition.item_id}} - {{cri.requisition.category_name??''}} {{cri.requisition.item_name }}</td>
+						<td>TODAS</td>
+						<td class="text-end">{{cri.requisition.sum_qty}}</td>
+						<td class="text-end">{{(cri?.production?.produced || 0) | number}}</td>
+						<td class="text-end">{{(cri?.production?.production_merma_qty || 0) | number}}</td>
+						<td class="text-end" [ngClass]="{'text-danger': cri.requisition.sum_qty > (cri?.production?.produced||0)}">{{cri.requisition.sum_qty - (cri?.production?.produced||0) | number}}</td>
+						<td class="text-end">
 							<button class="btn btn-primary" type="button" (click)="showProduction(cri)">Agregar Prod</button>
 						</td>
-					</tr-->
-          <tr *ngFor="let cri of requsition_obj_list">
-            <td>{{cri.requisition.item_id}} - {{cri.requisition.category_name??''}} {{cri.requisition.item_name }}</td>
-            <td>TODAS</td>
-						<td>{{cri.requisition.sum_qty}}</td>
-						<td>{{(cri?.production?.produced || 0) | number}}</td>
-						<td>{{cri.requisition.sum_qty - (cri?.production?.produced||0) | number}}</td>
-						<td>{{cri.qty - floor( cri.qty/2) | number}}</td>
-						<td>
-							<button class="btn btn-primary" type="button" (click)="showProduction(cri)">Agregar Prod</button>
-						</td>
-						<!-- td>{{cri.requisition | json}}</td -->
 					</tr>
-
 				</tbody>
 			</table>
 		</div>

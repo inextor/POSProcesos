@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, RouterOutlet } from '@angular/router';
+import { RestService } from './modules/shared/services/rest.service';
 
 @Component({
   selector: 'app-root',
@@ -11,4 +12,9 @@ import { RouterModule, RouterOutlet } from '@angular/router';
 })
 export class AppComponent {
   title = 'POSProcesos';
+
+  constructor(protected rest:RestService)
+  {
+
+  }
 }

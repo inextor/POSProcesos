@@ -1,8 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RestService } from '../../modules/shared/services/rest.service';
-import { ActivatedRoute, Router } from '@angular/router';
-import { Subscription, forkJoin, mergeMap, of } from 'rxjs';
+import { forkJoin, mergeMap, of } from 'rxjs';
 import { Check_In, User } from '../../modules/shared/RestModels';
 import { Rest, RestResponse, RestSimple } from '../../modules/shared/Rest';
 import { BaseComponent } from '../../modules/shared/base/base.component';
@@ -42,7 +40,9 @@ export class ListUserAttendanceComponent extends BaseComponent
 	ngOnInit()
 	{
 		let d = new Date();
-		d.setDate( d.getDate() - 1 );
+	let current_date = d.getDay();
+
+		d.setDate( d.getDate() - d.getDay()	);
 		d.setHours( 0,0,0,0);
 
 		this.start.setTime( d.getTime() );
@@ -75,7 +75,7 @@ export class ListUserAttendanceComponent extends BaseComponent
 				start.setDate(start.getDate() -1 );
 
 				search_object.csv['user_id'] = ids;
-				search_object.eq.current = 1;
+				//search_object.eq.current = 1;
 
 				search_object.ge.timestamp_start = this.start;
 				search_object.le.timestamp_end = this.end || undefined;
@@ -111,15 +111,17 @@ export class ListUserAttendanceComponent extends BaseComponent
 				}
 
 
+				let now = new Date();
+
 				for(let u of result )
 				{
 					let total_seconds = 0;
 
 					for(let ci of u.check_ins)
 					{
-						let seconds = ci.timestamp_end
-							? Math.floor( (ci.timestamp_end.getTime() - ci.timestamp_start.getTime() )/1000 )
-							: 0;
+						let time = ci.timestamp_end || now;
+
+						let seconds = Math.floor( (time.getTime() - ci.timestamp_start.getTime() )/1000 );
 
 						total_seconds += seconds;
 						u.seconds_by_day[ ci.timestamp_start.getDay() ] += seconds;

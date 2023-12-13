@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { RestService } from '../services/rest.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { SubSink } from 'subsink';
+import {Location} from '@angular/common';
 
 @Component({
 	selector: 'app-base',
@@ -16,7 +17,7 @@ export class BaseComponent	implements OnDestroy
 	subs = new SubSink();
 	is_loading = false;
 
-	constructor(public rest:RestService, public route:ActivatedRoute, public router:Router)
+	constructor(public rest:RestService, public route:ActivatedRoute,public router:Router, public location:Location)
 	{
 
 	}

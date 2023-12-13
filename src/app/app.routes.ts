@@ -6,6 +6,7 @@ import { SaveProcessComponent } from './pages/save-process/save-process.componen
 import { ListRequisitionComponent } from './pages/list-requisition/list-requisition.component';
 import { UsersCheckingClockComponent } from './pages/users-checking-clock/users-checking-clock.component';
 import { ListUserAttendanceComponent } from './pages/list-user-attendance/list-user-attendance.component';
+import { ValidateProductionComponent } from './pages/validate-production/validate-production.component';
 
 export const routes: Routes = [
   {path: '', component: ListProductionAreaComponent},
@@ -18,4 +19,5 @@ export const routes: Routes = [
   {path: 'list-requisition', component: ListRequisitionComponent},
   {path: 'users-checking-clock', component: UsersCheckingClockComponent },
   {path: 'users-attendance', component: ListUserAttendanceComponent},
+  {path: 'validate-production', component: ValidateProductionComponent},
 ];
