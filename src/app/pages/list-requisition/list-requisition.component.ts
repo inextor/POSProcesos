@@ -58,7 +58,7 @@ export class ListRequisitionComponent extends BaseComponent implements OnInit
 	production_user_id:number | null = null;
 	production = GetEmpty.production();
 	production_list:Production[] = [];
-    requsition_obj_list: any[] = [];
+	requsition_obj_list: any[] = [];
 
 	ngOnInit()
 	{

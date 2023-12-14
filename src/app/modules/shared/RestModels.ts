@@ -906,6 +906,7 @@ export interface Production{
 	produced_by_user_id: number;
 	production_area_id: number;
 	qty:number
+  qty_reported:number;
 	store_id:number
 	updated:Date;
 	verified_by_user_id:number | null;

@@ -169,7 +169,7 @@ export class GetEmpty
 		return {
 			created: new Date(),
 			id:0,
-      store_id: 0,
+		store_id: 0,
 			name:'',
 			updated: new Date(),
 		}
@@ -186,6 +186,7 @@ export class GetEmpty
 			produced_by_user_id: 0,
       production_area_id: 0,
 			qty: 0,
+      qty_reported: 0,
 			store_id: 0,
 			updated: new Date(),
 			verified_by_user_id: null,

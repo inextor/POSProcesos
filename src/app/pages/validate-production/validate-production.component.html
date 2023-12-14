@@ -1,10 +1,43 @@
 <div class="container-fluid">
-  <h1>Validar Produccion</h1>
-  <div class="card">
-    <div *ngFor="let pl of production_list">
-      <div *ngFor="let p of production_list">
-        p.item
-      </div>
-    </div>
-  </div>
+	<h1>Validar Produccion</h1>
+	<div class="card p-3">
+		<div class="row border-last align-items-center">
+			<div class="col-6 text-end">Hora</div>
+			<div class="col-2 text-end">Producido</div>
+			<div class="col-2 text-end">Validado</div>
+			<div class="col-2 text-end">Acciones</div>
+		</div>
+		@for(pl of production_info_list;track pl.expand)
+		{
+			<div class="row border-last align-items-center py-1">
+				<div class="col-6">
+					{{pl.category?.name}}
+					{{pl.item.name}}
+				</div>
+				<div class="col-2 text-end">{{pl.total | number}}</div>
+				<div class="col-2 text-end">{{pl.validated}}</div>
+				<div class="col-2 text-end">
+					<button type="button" class="btn btn-primary" (click)="pl.expand=!pl.expand">toggle</button>
+				</div>
+			</div>
+			@if( pl.expand )
+			{
+				@for(p of pl.production_list; track $index)
+				{
+					<div class="row align-items-center py-1" [ngClass]="{'border-bottom':$last}">
+						<div class="col-3 text-end">{{p.user.name | titlecase}}</div>
+						<div class="col-3 text-end">{{p.production.created | shortDate:'relative'}}</div>
+						<div class="col-2 text-end">{{p.production.qty_reported | number}}</div>
+						<div class="col-2 text-end" >
+							<input  *ngIf="!p.production.verified_by_user_id" type="number" name="'qty'+p.id" [(ngModel)]="p.qty" class="form-control text-end">
+              <span *ngIf="p.production.verified_by_user_id">{{p.production.qty | number }}</span>
+						</div>
+						<div class="col-2 text-end">
+							<button *ngIf="!p.production.verified_by_user_id" type="button" class="btn btn-primary" (click)="validate(p)">Validar</button>
+						</div>
+					</div>
+				}
+			}
+		}
+	</div>
 </div>

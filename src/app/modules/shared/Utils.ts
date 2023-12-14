@@ -304,6 +304,52 @@ export class Utils
 	}
 
 
+
+	static getFullRelativeDateString(value:any, today:Date = new Date()):string
+	{
+		let date = Utils.getDateFromValue( value );
+
+		if( date == null )
+			return '';
+
+		const monthNames = [
+			"Enero", "Feb", "Mar", "Apr", "May", "Jun",
+			"Jul", "Ago", "Sep", "Oct", "Nov", "Dic"
+		];
+
+		const hour = date.getHours();
+		const minutes = date.getMinutes();
+		const amOrPm = hour >= 12 ? "pm" : "am";
+
+		const formattedHour = (hour % 12 === 0 ? 12 : hour % 12).toString().padStart(2, "0");
+
+		const formattedMinutes = minutes.toString().padStart(2, "0");
+
+		const hours_str = `${formattedHour}:${formattedMinutes}${amOrPm}`;
+
+		if (
+			date.getDate() === today.getDate() &&
+			date.getMonth() === today.getMonth() &&
+			date.getFullYear() === today.getFullYear()
+		)
+		{
+			return hours_str;
+		}
+
+		const formattedDay = date.getDate().toString().padStart(2, "0");
+		const formattedMonth = monthNames[date.getMonth()];
+
+		if (date.getFullYear() === today.getFullYear())
+		{
+			// Same year
+			return `${formattedMonth} ${formattedDay}, ${hours_str}`;
+		}
+
+		const formattedYear = date.getFullYear().toString();
+		return `${formattedMonth} ${formattedDay}, ${formattedYear} - ${formattedHour}`;
+	}
+
+
 	static getRelativeDateString(value:any, today:Date = new Date()):string
 	{
 		let date = Utils.getDateFromValue( value );
@@ -456,9 +502,9 @@ export class Utils
 		{
 			const value = body[key];
 
-			if( isIso8601( value ) && ( key === 'created' || key==='updated' || key.includes('system') || key.includes('timestamp') )  )
+			if( isIso8601( value ) && ( key === 'created' || key==='updated' || key.includes('system') || key.includes('timestamp') )	)
 			{
-				body[key] = Utils.getDateFromUTCMysqlString( value );   //fromUTCStringToLocalDate( value as string )
+				body[key] = Utils.getDateFromUTCMysqlString( value );	//fromUTCStringToLocalDate( value as string )
 			}
 			else if (typeof value === 'object')
 			{

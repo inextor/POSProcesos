@@ -4,6 +4,7 @@ import { RestService } from '../services/rest.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { SubSink } from 'subsink';
 import {Location} from '@angular/common';
+import { ShortDatePipe } from '../pipes/short-date.pipe';
 
 @Component({
 	selector: 'app-base',

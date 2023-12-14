@@ -1,4 +1,4 @@
-import { Category, Item, Requisition, Requisition_Item, Shipping, Store, User } from "./RestModels";
+import { Category, Item, Production, Requisition, Requisition_Item, Shipping, Store, User } from "./RestModels";
 
 export interface RequisitionItemInfo
 {
@@ -17,3 +17,11 @@ export interface RequisitionInfo
 	shipping:Shipping | null;
 }
 
+
+export interface ProductionInfo
+{
+	user: User;
+	production:Production;
+	item:Item;
+	category:Category | null;
+}

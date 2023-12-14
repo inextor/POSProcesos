@@ -1,29 +1,42 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { BaseComponent } from '../../modules/shared/base/base.component';
-import { forkJoin, mergeMap, of } from 'rxjs';
-import { Production } from '../../modules/shared/RestModels';
+import { mergeMap, of } from 'rxjs';
+import { Category, Item, Production } from '../../modules/shared/RestModels';
 import { Rest, RestSimple } from '../../modules/shared/Rest';
+import { ProductionInfo } from '../../modules/shared/Models';
+import { ShortDatePipe } from '../../modules/shared/pipes/short-date.pipe';
+import { FormsModule } from '@angular/forms';
+
+interface CProductionInfo extends ProductionInfo
+{
+	qty:number;
+}
 
 interface CProduction
 {
-	production_list:Production[];
+	production_list:CProductionInfo[];
 	item_id:number;
+	item:Item;
+	category:Category | null;
+	total:number;
+	validated:number;
+	expand:boolean;
 }
 
 @Component({
 	selector: 'app-validate-production',
 	standalone: true,
-	imports: [CommonModule],
+	imports: [CommonModule,ShortDatePipe,FormsModule],
 	templateUrl: './validate-production.component.html',
 	styleUrl: './validate-production.component.css'
 })
 
 export class ValidateProductionComponent extends BaseComponent
 {
-	rest_production:RestSimple<Production> = this.rest.initRestSimple('production');
-	production_list:CProduction[] = [];
-	rest_item:Rest<Item,Item
+	rest_production_info:Rest<Production,ProductionInfo> = this.rest.initRest('production_info');
+	rest_production:RestSimple<Production> = this.rest.initRest('production');
+	production_info_list:CProduction[] = [];
 
 	ngOnInit()
 	{
@@ -31,40 +44,52 @@ export class ValidateProductionComponent extends BaseComponent
 		(
 			mergeMap((param_map)=>
 			{
-				let production_area_id = parseInt( param_map.get('production_area_id')  as string ) as number;
-				return  this.rest_production.search({ eq:{ production_area_id } });
+				let production_area_id = parseInt( param_map.get('production_area_id')	as string ) as number;
+				return	this.rest_production_info.search({ eq:{ production_area_id } });
 			}),
-			mergeMap((response)=>{
-
-				let ids = new Map<number,number>();
-
-				response.data.forEach((i)=>ids.set(i.item_id, i.item_id ));
-
-				return forkJoin
-				({
-					production: of( response )
-					items: of(
-				})
-			})
 		)
 		.subscribe((response)=>
 		{
-			for(let r of response.production.data)
+			for(let r of response.data)
 			{
-				let pl = this.production_list.find(i => i.item_id == r.item_id );
+				let pl = this.production_info_list.find(i => i.item_id == r.item.id );
 
-				if( pl )
+				if( pl == undefined )
 				{
-					pl.production_list.push( r );
+					pl = {
+						item_id: r.item.id,
+						production_list: [],
+						item: r.item,
+						category: r.category,
+						total: 0,
+						validated: 0,
+						expand: false
+					};
+					this.production_info_list.push( pl );
 				}
-				else
-				{
-					this.production_list.push
-					({
-						item_id: r.item_id,
-						production_list: [ r ]
-					});
-				}
+
+				pl.production_list.push({...r, qty: r.production.qty });
+				pl.total += r.production.qty;
+				pl.validated += r.production.verified_by_user_id ? r.production.qty : 0;
+			}
+		})
+	}
+
+	validate(pi: CProductionInfo)
+	{
+		let p = {...pi.production};
+		p.qty = pi.qty;
+
+		this.subs.sink = this.rest_production
+		.update(p)
+		.subscribe({
+			next: (response)=>
+			{
+				pi.production = response;
+			},
+			error: (error)=>
+			{
+				this.showError( error )
 			}
 		})
 	}

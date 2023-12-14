@@ -1,0 +1,5 @@
+.border-last:not(:last-child),
+.border-only-last:last-child
+{
+	border-bottom: 1px solid #DDD;
+}
