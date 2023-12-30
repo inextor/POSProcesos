@@ -5,6 +5,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { SubSink } from 'subsink';
 import {Location} from '@angular/common';
 import { ShortDatePipe } from '../pipes/short-date.pipe';
+import { Title } from '@angular/platform-browser';
 
 @Component({
 	selector: 'app-base',
@@ -17,8 +18,11 @@ export class BaseComponent	implements OnDestroy
 {
 	subs = new SubSink();
 	is_loading = false;
+	current_page:number = 0;
+	path:string = '';
+	total_pages:number = 0;
 
-	constructor(public rest:RestService, public route:ActivatedRoute,public router:Router, public location:Location)
+	constructor(public rest:RestService, public route:ActivatedRoute,public router:Router, public location:Location,public title_service:Title)
 	{
 
 	}

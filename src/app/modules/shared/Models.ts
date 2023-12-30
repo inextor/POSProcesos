@@ -1,4 +1,4 @@
-import { Category, Item, Production, Requisition, Requisition_Item, Shipping, Store, User } from "./RestModels";
+import { Category, Item, Order, Order_Item, Process, Production, Requisition, Requisition_Item, Shipping, Store, Task, User } from "./RestModels";
 
 export interface RequisitionItemInfo
 {
@@ -24,4 +24,16 @@ export interface ProductionInfo
 	production:Production;
 	item:Item;
 	category:Category | null;
+}
+
+export interface TaskInfo
+{
+	proccess	: Process;
+	task		: Task;
+	category	: Category | null;
+	item		: Item | null;
+	Order		: Order | null;
+	OrderItem	: Order_Item | null;
+	requisition	: Requisition | null;
+	in_charge	: User | null;
 }

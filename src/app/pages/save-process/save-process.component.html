@@ -3,7 +3,6 @@
 	<form ngNativeValidate (submit)="save()">
 		<div class="card p-3">
 			<div class="row p-3">
-
 				<div class="col-12 col-md-4 form-group">
 					<label class="">Area de Produccion</label>
 					<div class="fw-bold">{{production_area.name}}</div>
@@ -11,6 +10,20 @@
 				<div class="col-12 col-md-4 form-group">
 					<label class="">Nombre del Proceso</label>
 					<input type="text" name="name" [(ngModel)]="process.name" class="form-control">
+				</div>
+				<div class="col-12 col-md-4 form-group">
+					<label class="">Categoria</label>
+					<select name="process_category" [(ngModel)]="process.category_id" class="form-control">
+						<option [ngValue]="null">Todos</option>
+						<option *ngFor="let c of category_list" [ngValue]="c.id">{{c.id}} - {{c.name}}</option>
+					</select>
+				</div>
+				<div class="col-12 col-md-4 form-group">
+					<label class="">Articulo</label>
+					<select name="process_item" [(ngModel)]="process.item_id" class="form-control">
+						<option [ngValue]="null"></option>
+						<option *ngFor="let c of citem_list" [ngValue]="c.item.id">{{c.item.id}} - {{c?.category?.name}} {{c.item.name}}</option>
+					</select>
 				</div>
 				<div class="d-flex d-md-none col-6"></div>
 				<div class="col-12 col-md-4 text-right">
@@ -23,3 +36,12 @@
 		</div>
 	</form>
 </div>
+
+
+
+Task->task2-------->task 4
+Task->Task3-------->task 4
+
+
+
+
