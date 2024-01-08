@@ -36,6 +36,7 @@ export class ListTaskComponent extends BaseComponent implements OnInit
 			this.title_service.setTitle('task');
 
 			this.is_loading = true;
+
 			this.subs.sink = forkJoin({
 				task : this.rest_task_info.search(queryParamMap),
 			})
