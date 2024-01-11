@@ -1,9 +1,9 @@
 import { Component,OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Rest, RestResponse} from '../../modules/shared/Rest';
+import { Rest, RestResponse} from '../../modules/shared/services/Rest';
 import { RouterModule } from '@angular/router';
 import { forkJoin,mergeMap, of } from 'rxjs';
-import { RestSimple } from '../../modules/shared/Rest';
+import { RestSimple } from '../../modules/shared/services/Rest';
 import { FormsModule } from '@angular/forms';
 import { RequisitionInfo,RequisitionItemInfo } from '../../modules/shared/Models';
 import { Requisition,Store,Category,Item, Check_In, User, Production} from '../../modules/shared/RestModels';

@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Production_Area, Store } from '../../modules/shared/RestModels';
-import { RestSimple } from '../../modules/shared/Rest';
+import { RestSimple } from '../../modules/shared/services/Rest';
 import { GetEmpty } from '../../modules/shared/GetEmpty';
 import { FormsModule } from '@angular/forms';
 import { forkJoin, mergeMap, of } from 'rxjs';

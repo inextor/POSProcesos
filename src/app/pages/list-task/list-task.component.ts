@@ -4,7 +4,7 @@ import { BaseComponent } from '../../modules/shared/base/base.component';
 import { forkJoin } from 'rxjs';
 import { Task } from '../../modules/shared/RestModels';
 import { TaskInfo } from '../../modules/shared/Models';
-import { SearchObject } from '../../modules/shared/Rest';
+import { SearchObject } from '../../modules/shared/services/Rest';
 
 @Component({
 	selector: 'app-list-task',

@@ -1,0 +1,11 @@
+.logo
+{
+	width: 350px;
+}
+.col-centered
+{
+	float: none;
+	margin: 0 auto;
+	margin-top: 25px; /* Added */
+}
+

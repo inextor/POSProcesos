@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { User,Check_In } from '../../modules/shared/RestModels';
 import { mergeMap, of, forkJoin } from 'rxjs';
-import { RestResponse } from '../../modules/shared/Rest';
+import { RestResponse } from '../../modules/shared/services/Rest';
 import { BaseComponent } from '../../modules/shared/base/base.component';
 
 export interface UserCheckInfo

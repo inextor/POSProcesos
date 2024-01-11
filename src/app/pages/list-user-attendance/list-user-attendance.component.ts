@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { forkJoin, mergeMap, of } from 'rxjs';
 import { Check_In, User } from '../../modules/shared/RestModels';
-import { Rest, RestResponse, RestSimple } from '../../modules/shared/Rest';
+import { Rest, RestResponse, RestSimple } from '../../modules/shared/services/Rest';
 import { BaseComponent } from '../../modules/shared/base/base.component';
 import { Utils } from '../../modules/shared/Utils';
 

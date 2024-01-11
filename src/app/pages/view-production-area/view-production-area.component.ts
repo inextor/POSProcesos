@@ -4,7 +4,7 @@ import { GetEmpty } from '../../modules/shared/GetEmpty';
 import { Production_Area,Item,Production_Area_Item, Process } from '../../modules/shared/RestModels';
 import { forkJoin,of,mergeMap, Observable, Subscription } from 'rxjs';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { RestSimple } from '../../modules/shared/Rest';
+import { RestSimple } from '../../modules/shared/services/Rest';
 import { RestService } from '../../modules/shared/services/rest.service';
 
 

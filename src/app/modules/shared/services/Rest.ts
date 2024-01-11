@@ -1,6 +1,6 @@
 import { Observable, of } from 'rxjs';
 import { HttpClient, HttpHeaders,HttpParams } from '@angular/common/http';
-import { Utils} from './Utils';
+import { Utils} from '../Utils';
 import {mergeMap, retry} from 'rxjs/operators';
 import { ParamMap } from '@angular/router';
 //import { HttpErrorResponse } from '@angular/common/http';

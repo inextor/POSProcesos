@@ -5,7 +5,7 @@ import { RestService } from '../../modules/shared/services/rest.service';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { GetEmpty } from '../../modules/shared/GetEmpty';
 import { forkJoin,mergeMap, of } from 'rxjs';
-import { RestSimple } from '../../modules/shared/Rest';
+import { RestSimple } from '../../modules/shared/services/Rest';
 import { FormsModule } from '@angular/forms';
 
 interface CItem

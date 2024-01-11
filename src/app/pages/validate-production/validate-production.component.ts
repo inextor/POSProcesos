@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { BaseComponent } from '../../modules/shared/base/base.component';
 import { mergeMap, of } from 'rxjs';
 import { Category, Item, Production } from '../../modules/shared/RestModels';
-import { Rest, RestSimple } from '../../modules/shared/Rest';
+import { Rest, RestSimple } from '../../modules/shared/services/Rest';
 import { ProductionInfo } from '../../modules/shared/Models';
 import { ShortDatePipe } from '../../modules/shared/pipes/short-date.pipe';
 import { FormsModule } from '@angular/forms';

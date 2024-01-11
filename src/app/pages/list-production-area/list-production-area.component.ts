@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { GetEmpty } from '../../modules/shared/GetEmpty';
-import { RestSimple } from '../../modules/shared/Rest';
+import { RestSimple } from '../../modules/shared/services/Rest';
 import { Production_Area } from '../../modules/shared/RestModels';
 import { RestService } from '../../modules/shared/services/rest.service';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';

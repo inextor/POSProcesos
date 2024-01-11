@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import { DatePipe } from '@angular/common';
-import { Rest,RestResponse } from '../Rest';
-import { RestSimple } from '../Rest';
+import { Rest,RestResponse, RestSimple, SearchObject } from './Rest';
 import { GetEmpty } from '../GetEmpty';
 import { OFFLINE_DB_SCHEMA } from '../OfflineDBSchema';
 import { Utils } from '../Utils';

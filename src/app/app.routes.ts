@@ -8,6 +8,7 @@ import { UsersCheckingClockComponent } from './pages/users-checking-clock/users-
 import { ListUserAttendanceComponent } from './pages/list-user-attendance/list-user-attendance.component';
 import { ValidateProductionComponent } from './pages/validate-production/validate-production.component';
 import { ListTaskComponent } from './pages/list-task/list-task.component';
+import { LoginComponent } from './pages/login/login.component';
 
 export const routes: Routes = [
 	{path: '', component: ListProductionAreaComponent},
@@ -23,4 +24,5 @@ export const routes: Routes = [
 	{path: 'users-attendance', component: ListUserAttendanceComponent},
 	{path: 'validate-production', component: ValidateProductionComponent},
 	{path: 'list-task', component: ListTaskComponent},
+	{path: 'login', component: LoginComponent},
 ];
