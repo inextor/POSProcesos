@@ -11,6 +11,7 @@ import { ListTaskComponent } from './pages/list-task/list-task.component';
 import { LoginComponent } from './pages/login/login.component';
 
 export const routes: Routes = [
+	{path: '', component: LoginComponent},
 	{path: '', component: ListProductionAreaComponent},
 	{path: 'add-production-area', component: SaveProductionAreaComponent},
 	{path: 'edit-production-area/:id', component: SaveProductionAreaComponent},

@@ -80,7 +80,7 @@ error_message: any;
 
 	doLogin_starter(username: string, password: string): Observable<LoginResponse>
 	{
-		let rest_login: Rest<CLogin,LoginResponse> = this.rest.initRest("login.php");
+		let rest_login: Rest<CLogin,LoginResponse> = this.rest.initRest("login");
 		return rest_login.create({username, password}).pipe(map(response => {
 				if (response && response.session.id) {
 					//this.rest.current_user = response.user;
