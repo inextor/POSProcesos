@@ -1,0 +1,24 @@
+<div class="container-fluid">
+	<h1>Envios</h1>
+	<div class="card p-3">
+		<table>
+			<thead>
+				<th>Sucursal</th>
+				<th>Piezas Requeridas</th>
+				<th>Piezas Enviadas</th>
+				<th>Pendientes</th>
+			</thead>
+			<tbody>
+				<tr *ngFor="let creq of crequisition_info_list">
+					<td>{{creq.required_by_store.name}}</td>
+					<td>{{creq.required | number}}</td>
+					<td>{{creq.shipped | number}}</td>
+					<td>{{creq.shipped >= creq.required ? 0 : creq.required-creq.shipped | number}}</td>
+					<td>
+						<a class="btn btn-primary" [routerLink]="['/add-shipping',creq.requisition.id]">Crear Envio</a>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+</div>

@@ -9,6 +9,8 @@ import { ListUserAttendanceComponent } from './pages/list-user-attendance/list-u
 import { ValidateProductionComponent } from './pages/validate-production/validate-production.component';
 import { ListTaskComponent } from './pages/list-task/list-task.component';
 import { LoginComponent } from './pages/login/login.component';
+import { SaveShippingComponent } from './pages/save-shipping/save-shipping.component';
+import { ListShippingComponent } from './pages/list-shipping/list-shipping.component';
 
 export const routes: Routes = [
 	{path: '', component: LoginComponent},
@@ -25,5 +27,7 @@ export const routes: Routes = [
 	{path: 'users-attendance', component: ListUserAttendanceComponent},
 	{path: 'validate-production', component: ValidateProductionComponent},
 	{path: 'list-task', component: ListTaskComponent},
+	{path: 'list-shipping', component: ListShippingComponent},
+	{path: 'add-shipping/:requisition_id', component: SaveShippingComponent},
 	{path: 'login', component: LoginComponent},
 ];

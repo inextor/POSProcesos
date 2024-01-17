@@ -19,7 +19,7 @@
 				<div class="col-2 text-end">{{pl.validated}}</div>
 				<div class="col-2 text-end">{{pl.merma}}</div>
 				<div class="col-2 text-end">
-					<button type="button" class="btn btn-primary" (click)="pl.expand=!pl.expand">Validar</button>
+					<button type="button" class="btn btn-primary" (click)="pl.expand=!pl.expand">Ver</button>
 				</div>
 			</div>
 			@if( pl.expand )
@@ -31,13 +31,13 @@
 						<div class="col-2 text-end">{{p.production.created | shortDate:'relative'}}</div>
 						<div class="col-2 text-end">{{p.production.qty_reported | number}}</div>
 						<div class="col-2 text-end" >
-							<input  *ngIf="!p.production.verified_by_user_id" type="number" name="'qty'+p.id" [(ngModel)]="p.qty" class="form-control text-end">
-              				<span *ngIf="p.production.verified_by_user_id">{{p.production.qty | number }}</span>
+							<input *ngIf="!p.production.verified_by_user_id" type="number" name="'qty'+p.id" [(ngModel)]="p.qty" class="form-control text-end">
+							<span *ngIf="p.production.verified_by_user_id">{{p.production.qty | number }}</span>
 						</div>
-						
+
 						<div class="col-2 text-end" >
-							<input  *ngIf="!p.production.verified_by_user_id" type="number" name="'merma_qty'+p.id" [(ngModel)]="p.merma_qty" class="form-control text-end">
-              				<span *ngIf="p.production.verified_by_user_id">{{p.production.merma_qty | number }}</span>
+							<input *ngIf="!p.production.verified_by_user_id" type="number" name="'merma_qty'+p.id" [(ngModel)]="p.merma_qty" class="form-control text-end">
+							<span *ngIf="p.production.verified_by_user_id">{{p.production.merma_qty | number }}</span>
 						</div>
 
 						<!-- <div class="col-2 text-end">{{p.production.merma_qty| number}}</div> -->
