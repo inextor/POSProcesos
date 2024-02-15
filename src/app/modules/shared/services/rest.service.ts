@@ -7,6 +7,7 @@ import { Utils } from '../Utils';
 import { Preferences, User, User_Permission } from '../RestModels';
 import { HttpHeaders, HttpClient, HttpParams } from '@angular/common/http'
 import { Observable } from 'rxjs';
+import { environment } from '../../../../environments/environment';
 
 export const USER_PERMISSION_KEY = 'user_permission';
 const USER_KEY = 'user';
@@ -22,26 +23,30 @@ export class RestService
 	hades_counter:number = 0;
 	has_hades:boolean = false;
 
-	user_permission:User_Permission = GetEmpty.user_permission();
 	preferences = this.getPreferencesFromSession();
+	public session_start?: Date | null;
+	public user:User | null = null;	
+	public user_permission:User_Permission = GetEmpty.user_permission();
 
-	public domain_configuration = {
-		domain: window.location.protocol+'//'+window.location.hostname
-	};
-
-	public url_base = '/PointOfSale';
-	public url_platform = '';
+	public url_base = this.getUrlBase();
+	public url_platform:string = this.getUrlPlatform();
 
 	public _is_offline:boolean = false;
 	public _offline_search_enabled = false;
 
 	public local_db:any;
 
+	public path:string = environment.app_settings.path_api;
+
+	public domain_configuration = {
+		//cambiar hostname por el dominio de test para que funcione en local
+		//ignore on commit
+		domain: environment.app_settings?.test_url  || window.location.protocol+'//'+window.location.hostname
+	};
+
 	private platform_domain_configuration = {
 		domain: this.getPlatformDomain()
 	};
-
-	user:User | null = null;
 
 	//private offline_db: DatabaseStore	= DatabaseStore.builder
 	//(
@@ -53,6 +58,7 @@ export class RestService
 	{
 		this.user = this.getUserFromSession();
 		this.preferences = this.getPreferencesFromSession();
+		this.session_start = this.getSessionStart();
 	}
 
 	getSessionStart():Date
@@ -113,10 +119,10 @@ export class RestService
 			return 'api';
 
 		if (window.location.hostname.indexOf('127.0.') == 0 || window.location.hostname.indexOf('192.168') == 0 )
-			return 'PointOfSale'
+			return 'PointOfSale';
 
 		if (window.location.hostname.indexOf('localhost') == 0)
-			return 'PointOfSale'
+			return 'PointOfSale';
 
 		return 'api';
 	}
@@ -180,6 +186,43 @@ export class RestService
 			return Utils.transformJson( usr );
 
 		return null;
+	}
+
+	logout(redirect:boolean = true)
+	{
+		let obj = {
+			method: 'logout',
+		};
+
+		let path = '/';
+		if( this.user )
+			path = this.user.type == 'USER' ? '/#/admin' : '/';
+
+		this.http.post<any>
+		(
+			`${this.domain_configuration.domain}/${this.url_base}/updates.php`,
+			obj,
+			{ withCredentials: true, headers: this.getSessionHeaders() }
+		)
+		.subscribe(
+		{
+			next: (response) =>
+			{
+				this.user = null;
+				localStorage.clear();
+
+				if( redirect )
+					window.location.href=path;
+
+			},
+			error: (error:any)=>
+			{
+				console.log('ocurrio un error al finalizar la sesion',error);
+				this.user = null;
+				localStorage.clear();
+				window.location.href = path
+			}
+		});
 	}
 	//doLoginPlatform(email:string,password:string):Observable<LoginResponse>
 	//{

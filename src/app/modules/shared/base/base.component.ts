@@ -1,11 +1,12 @@
 import { Component, OnInit, OnDestroy} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RestService } from '../services/rest.service';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, ParamMap, Router } from '@angular/router';
 import { SubSink } from 'subsink';
 import {Location} from '@angular/common';
 import { ShortDatePipe } from '../pipes/short-date.pipe';
 import { Title } from '@angular/platform-browser';
+import { Observable, combineLatest, startWith } from 'rxjs';
 
 @Component({
 	selector: 'app-base',
@@ -40,5 +41,21 @@ export class BaseComponent	implements OnDestroy
 	showSuccess(msg:string)
 	{
 		console.log('Mostrando mensage de exito:', msg );
+	}
+
+	getQueryParamObservable():Observable<ParamMap[]>
+	{
+		let p:ParamMap = {
+			has:(_prop)=>false,
+			keys:[],
+			get:(_value:string)=>{ return null},
+			getAll:()=>{ return []},
+		};
+
+		return combineLatest
+		([
+			this.route.queryParamMap.pipe(startWith(p)),
+			this.route.paramMap
+		])
 	}
 }
