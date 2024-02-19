@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ErrorMessage } from '../Utils';
+import { RestService } from '../services/rest.service';
 
 @Component({
 	selector: 'app-toast-error',

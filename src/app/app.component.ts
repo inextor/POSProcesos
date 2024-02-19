@@ -3,7 +3,6 @@ import { CommonModule } from '@angular/common';
 import { RouterModule, RouterOutlet } from '@angular/router';
 import { RestService } from './modules/shared/services/rest.service';
 import { SharedModule } from './modules/shared/SharedModule';
-import { ToastErrorComponent } from './modules/shared/toast-error/ToastErrorComponent';
 
 @Component({
 	selector: 'app-root',
