@@ -3,10 +3,10 @@ import { DatePipe } from '@angular/common';
 import { Rest,RestResponse, RestSimple, SearchObject } from './Rest';
 import { GetEmpty } from '../GetEmpty';
 import { OFFLINE_DB_SCHEMA } from '../OfflineDBSchema';
-import { Utils } from '../Utils';
+import { ErrorMessage, Utils } from '../Utils';
 import { Preferences, User, User_Permission } from '../RestModels';
 import { HttpHeaders, HttpClient, HttpParams } from '@angular/common/http'
-import { Observable } from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
 import { environment } from '../../../../environments/environment';
 
 export const USER_PERMISSION_KEY = 'user_permission';
@@ -23,9 +23,13 @@ export class RestService
 	hades_counter:number = 0;
 	has_hades:boolean = false;
 
+  errorBehaviorSubject = new BehaviorSubject<ErrorMessage>(new ErrorMessage('',''));
+	errorObservable = this.errorBehaviorSubject.asObservable();
+
+
 	preferences = this.getPreferencesFromSession();
 	public session_start?: Date | null;
-	public user:User | null = null;	
+	public user:User | null = null;
 	public user_permission:User_Permission = GetEmpty.user_permission();
 
 	public url_base = this.getUrlBase();
@@ -41,7 +45,7 @@ export class RestService
 	public domain_configuration = {
 		//cambiar hostname por el dominio de test para que funcione en local
 		//ignore on commit
-		domain: environment.app_settings?.test_url  || window.location.protocol+'//'+window.location.hostname
+		domain: environment.app_settings?.test_url	|| window.location.protocol+'//'+window.location.hostname
 	};
 
 	private platform_domain_configuration = {

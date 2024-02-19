@@ -1,4 +1,4 @@
-import { Routes } from '@angular/router';
+import { PreloadAllModules, RouterModule, Routes } from '@angular/router';
 import { SaveProductionAreaComponent } from './pages/save-production-area/save-production-area.component';
 import { ListProductionAreaComponent } from './pages/list-production-area/list-production-area.component';
 import { ViewProductionAreaComponent } from './pages/view-production-area/view-production-area.component';
@@ -11,6 +11,7 @@ import { ListTaskComponent } from './pages/list-task/list-task.component';
 import { LoginComponent } from './pages/login/login.component';
 import { SaveShippingComponent } from './pages/save-shipping/save-shipping.component';
 import { ListShippingComponent } from './pages/list-shipping/list-shipping.component';
+import { NgModule } from '@angular/core';
 
 export const routes: Routes = [
 	{path: '', component: LoginComponent},
@@ -31,3 +32,11 @@ export const routes: Routes = [
 	{path: 'add-shipping/:requisition_id', component: SaveShippingComponent},
 	{path: 'login', component: LoginComponent},
 ];
+
+
+@NgModule({
+	imports: [RouterModule.forRoot(routes, { preloadingStrategy: PreloadAllModules, useHash:true})],
+	exports: [RouterModule]
+})
+export class AppRoutingModule { }
+

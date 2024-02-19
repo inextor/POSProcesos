@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { RestService } from '../services/rest.service';
 import { ActivatedRoute, ParamMap, Router } from '@angular/router';
 import { SubSink } from 'subsink';
-import {Location} from '@angular/common';
+import { Location} from '@angular/common';
 import { ShortDatePipe } from '../pipes/short-date.pipe';
 import { Title } from '@angular/platform-browser';
 import { Observable, combineLatest, startWith } from 'rxjs';

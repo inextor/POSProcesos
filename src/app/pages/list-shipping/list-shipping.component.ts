@@ -33,6 +33,7 @@ interface CRequisitionInfo extends RequisitionInfo
 	templateUrl: './list-shipping.component.html',
 	styleUrl: './list-shipping.component.css'
 })
+
 export class ListShippingComponent extends BaseComponent
 {
 	rest_requsition_info:Rest<Requisition,RequisitionInfo> = this.rest.initRest('requisition_info');
@@ -97,9 +98,9 @@ export class ListShippingComponent extends BaseComponent
 						};
 					});
 
-					let required  = citems.reduce((p,citem)=>p+citem.required,0);
-					let shipped	  = citems.reduce((p,citem)=>p+citem.shipped,0);
-					let required_by_store  = ri.required_by_store;
+					let required	= citems.reduce((p,citem)=>p+citem.required,0);
+					let shipped		= citems.reduce((p,citem)=>p+citem.shipped,0);
+					let required_by_store	= ri.required_by_store;
 
 					return { ...ri, required_by_store, shippings, citems, required, shipped };
 				});

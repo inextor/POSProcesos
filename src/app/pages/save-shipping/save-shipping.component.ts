@@ -14,7 +14,7 @@ interface CItem
 	category: Category | null;
 	required: number;
 	shipped: number;
-    to_ship_qty:number;
+	to_ship_qty:number;
 }
 
 interface CRequisitionInfo extends RequisitionInfo
@@ -50,7 +50,7 @@ export class SaveShippingComponent extends BaseComponent
 			}),
 			mergeMap((requisition)=>
 			{
-            console.log('Req  is ', requisition);
+				console.log('Req	is ', requisition);
 				let production_search = this.rest_production.getEmptySearch();
 				let start = new Date();
 				start.setHours( 0, 0, 0, 0 );
@@ -69,7 +69,7 @@ export class SaveShippingComponent extends BaseComponent
 			}),
 			mergeMap((response)=>
 			{
-                let ri = response.requsition;
+					let ri = response.requsition;
 				let shippings = response.shippings.data;
 
 				let citems:CItem[] = ri.items.map((rii)=>
@@ -84,16 +84,16 @@ export class SaveShippingComponent extends BaseComponent
 					let productions = response.production.data.filter(p=>p.item_id = rii.item.id);
 
 					let produced = productions.reduce((p,c)=>p+c.qty,0);
-                    let to_ship_qty = 0;
+							let to_ship_qty = 0;
 
 					return {
 						item: rii.item, category: rii.category, required, shipped, produced, to_ship_qty
 					};
 				});
 
-				let required  = citems.reduce((p,citem)=>p+citem.required,0);
-				let shipped	  = citems.reduce((p,citem)=>p+citem.shipped,0);
-				let required_by_store  = ri.required_by_store;
+				let required	= citems.reduce((p,citem)=>p+citem.required,0);
+				let shipped		= citems.reduce((p,citem)=>p+citem.shipped,0);
+				let required_by_store	= ri.required_by_store;
 
 				return of( { ...ri, required_by_store, shippings, citems, required, shipped } );
 			})
@@ -104,27 +104,27 @@ export class SaveShippingComponent extends BaseComponent
 		});
 	}
 
-    onSubmit(evt:Event)
-    {
-        evt.stopPropagation();
-        evt.preventDefault();
+	onSubmit(evt:Event)
+	{
+			evt.stopPropagation();
+			evt.preventDefault();
 
-        if( this.crequisition_info == null )
-        {
-          return;
-        }
-        this.rest_shipping_info.create({
-            shipping: {
-              requisition_id: this.crequisition_info.requisition.id,
-              to_store_id: this.crequisition_info.requisition.required_by_store_id
-            },
-            items: this.crequisition_info.citems.map((citem)=>
-            {
-                return{ item_id: citem.item.id, qty: citem.to_ship_qty }
-            })
-        }).subscribe((response)=>
-        {
-            this.showSuccess('Se guardo correctamente toooooo');
-        });
-    }
+			if( this.crequisition_info == null )
+			{
+			return;
+			}
+			this.rest_shipping_info.create({
+				shipping: {
+					requisition_id: this.crequisition_info.requisition.id,
+					to_store_id: this.crequisition_info.requisition.required_by_store_id
+				},
+				items: this.crequisition_info.citems.map((citem)=>
+				{
+					return{ item_id: citem.item.id, qty: citem.to_ship_qty }
+				})
+			}).subscribe((response)=>
+			{
+				this.showSuccess('Se guardo correctamente toooooo');
+			});
+	}
 }

@@ -198,7 +198,6 @@ export class ListRequisitionComponent extends BaseComponent implements OnInit
 			this.show_add_production = false;
 			this.selected_crequistion_item = null;
 			this.closeModal('modal-add-production');
-
 			console.log( evt );
 			let form = evt.target as HTMLFormElement;
 			form.reset();
