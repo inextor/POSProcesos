@@ -1,0 +1,11 @@
+<div class="alert-modal hightlight d-print-none" *ngIf="error_list.length">
+	<div *ngFor="let error of error_list">
+		<div [ngClass]="{ 'red': error.color == 'red', 'green':error.color == 'green','alert':true,'alert-danger': error.type == 'alert-danger','alert-success': error.type == 'alert-success','alert-warning': error.type == 'alert-warning'}" role="alert" style="line-height:24px;">
+				{{error.message}}
+				<span class="badge text-white"
+						[ngClass]="{ 'bg-danger': error.type == 'alert-danger', 'bg-success':error.type== 'alert-success', 'bg-warning': error.type == 'alert-warning'}"
+				*ngIf="error.count">{{error.count}}</span>
+			<span	style="margin-left:20px;font-size: 24px;line-heigh: 24px;cursor:pointer;position:relative;vertical-align:bottom" (click)="clicked(error)">{{error.msg_button}}</span>
+		</div>
+	</div>
+</div>
