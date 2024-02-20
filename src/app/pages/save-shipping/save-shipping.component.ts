@@ -148,6 +148,7 @@ export class SaveShippingComponent extends BaseComponent
 		shipping_info.shipping.to_store_id = this.crequisition_info.requisition.required_by_store_id;
 		shipping_info.shipping.shipping_guide = this.shipping_guide;
 		shipping_info.shipping.shipping_company = this.shipping_company;
+		shipping_info.shipping.requisition_id = this.crequisition_info.requisition.id;
 
 		shipping_info.items = this.crequisition_info.citems.map((cri)=>{
 			return {
