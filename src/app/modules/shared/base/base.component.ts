@@ -46,7 +46,7 @@ export class BaseComponent	implements OnDestroy
 	}
 	showWarning(msg:string)
 	{
-		this.rest.warning( msg );
+		this.rest.showWarning( msg );
 	}
 
 	getQueryParamObservable():Observable<ParamMap[]>

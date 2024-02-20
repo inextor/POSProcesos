@@ -351,6 +351,10 @@ export class RestService
 		})
 	}
 
+	showWarning(msg:string)
+	{
+		this.showErrorMessage(new ErrorMessage(msg, 'alert-warning'));
+	}
 	showSuccess(msg:string):void
 	{
 		this.showErrorMessage(new ErrorMessage(msg, 'alert-success'));
