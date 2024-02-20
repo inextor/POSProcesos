@@ -49,10 +49,17 @@
 						Distribuir
 					</a>
 				</li>
-				<li>
-					<a class="nav-link text-white" type="button" (click)="rest.logout()" *ngIf="rest.user">
+				<hr>
+				<li *ngIf="rest.user">
+					<a class="nav-link text-white" type="button" (click)="rest.logout()">
 						<svg class="bi me-2" width="16" height="16"><use xlink:href="#table"/></svg>
 						<b>Cerrar Sesión</b>
+					</a>
+				</li>
+				<li *ngIf="!rest.user">
+					<a href="/" class="nav-link text-white">
+						<svg class="bi me-2" width="16" height="16"><use xlink:href="#table"/></svg>
+						<b>Iniciar Sesión</b>
 					</a>
 				</li>
 

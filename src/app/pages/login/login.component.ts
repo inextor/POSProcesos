@@ -85,7 +85,7 @@ export class LoginComponent extends BaseComponent implements OnInit {
 					this.rest.user = response.user;
 					this.rest.user_permission = response.user_permission;
 
-					localStorage.setItem('user', JSON.stringify(response));
+					localStorage.setItem('user', JSON.stringify(response.user));
 					localStorage.setItem('session_token', response.session.id);
 					localStorage.setItem("user_permission", JSON.stringify(response.user_permission));
 					localStorage.setItem('session', JSON.stringify(response.session));

@@ -184,23 +184,31 @@ export class ListRequisitionComponent extends BaseComponent implements OnInit
 
 		if( this.production.qty <= 0 && this.production.merma_qty <= 0 )
 		{
-			this.showSuccess('La cantidad de produccion + cantidad de merma debe ser mayor o igual a 1');
+			this.showError('La cantidad de produccion + cantidad de merma debe ser mayor o igual a 1');
 			return;
 		}
 
-		let user = this.user_list.find(user=>user.id == this.production.produced_by_user_id ) as User;
-
+		//let user = this.user_list.find(user=>user.id == this.production.produced_by_user_id ) as User;
 		this.subs.sink = this.rest_production.create( this.production )
-		.subscribe(()=>
+		.subscribe(
 		{
-			this.production = this.production = GetEmpty.production();
-			this.production.store_id = user.store_id as number; //Los usuario tienen que tener store_id;
-			this.show_add_production = false;
-			this.selected_crequistion_item = null;
-			this.closeModal('modal-add-production');
-			console.log( evt );
-			let form = evt.target as HTMLFormElement;
-			form.reset();
+			next: (response:any) =>
+			{
+				this.production = this.production = GetEmpty.production();
+				this.production.store_id = this.rest.user?.store_id as number; //Los usuario tienen que tener store_id; Cambiando al usuario de la sesion
+				this.production.produced_by_user_id = this.rest.user?.id as number; //Utilizando el id del usuario de la sesion
+				this.show_add_production = false;
+				this.selected_crequistion_item = null;
+				this.closeModal('modal-add-production');
+				console.log( evt );
+				let form = evt.target as HTMLFormElement;
+				form.reset();
+				this.showSuccess('Produccion agregada');
+			},
+			error: (error:any) =>
+			{
+				this.showError(error);
+			}
 		});
 	}
 }

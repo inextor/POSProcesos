@@ -1,4 +1,4 @@
-<div class="alert-modal hightlight d-print-none" *ngIf="error_list.length">
+<div class="alert-modal hightlight d-print-none" style="display: absolute;" *ngIf="error_list.length">
 	<div *ngFor="let error of error_list">
 		<div [ngClass]="{ 'red': error.color == 'red', 'green':error.color == 'green','alert':true,'alert-danger': error.type == 'alert-danger','alert-success': error.type == 'alert-success','alert-warning': error.type == 'alert-warning'}" role="alert" style="line-height:24px;">
 				{{error.message}}

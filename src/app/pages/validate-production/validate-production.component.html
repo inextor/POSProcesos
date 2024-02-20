@@ -27,7 +27,7 @@
 				@for(p of pl.production_list; track $index)
 				{
 					<div class="row align-items-center py-1" [ngClass]="{'border-bottom':$last}">
-						<div class="col-2 text-start">{{p.user.name | titlecase}}</div>
+						<div class="col-2 text-start">{{p.user.name| titlecase}}</div>
 						<div class="col-2 text-end">{{p.production.created | shortDate:'relative'}}</div>
 						<div class="col-2 text-end">{{p.production.qty_reported | number}}</div>
 						<div class="col-2 text-end" >

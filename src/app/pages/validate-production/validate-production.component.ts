@@ -70,7 +70,6 @@ export class ValidateProductionComponent extends BaseComponent
 					};
 					this.production_info_list.push( pl );
 				}
-
 				pl.production_list.push({...r, qty: r.production.qty, merma_qty: r.production.merma_qty });
 				pl.total += r.production.qty;
 				pl.validated += r.production.verified_by_user_id ? r.production.qty : 0;
