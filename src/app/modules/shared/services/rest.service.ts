@@ -351,27 +351,27 @@ export class RestService
 		})
 	}
 
-	//showSuccess(msg:string):void
-	//{
-	//	this.showErrorMessage(new ErrorMessage(msg, 'alert-success'));
-	//}
+	showSuccess(msg:string):void
+	{
+		this.showErrorMessage(new ErrorMessage(msg, 'alert-success'));
+	}
 
-	//showError(error: any)
-	//{
-	//	console.log('Error to display is', error);
-	//	if( error instanceof ErrorMessage )
-	//	{
-	//		this.showErrorMessage(error);
-	//		return;
-	//	}
-	//	let str_error = Utils.getErrorString(error);
-	//	this.showErrorMessage(new ErrorMessage(str_error, 'alert-danger'));
-	//}
+	showError(error: any)
+	{
+		console.log('Error to display is', error);
+		if( error instanceof ErrorMessage )
+		{
+			this.showErrorMessage(error);
+			return;
+		}
+		let str_error = Utils.getErrorString(error);
+		this.showErrorMessage(new ErrorMessage(str_error, 'alert-danger'));
+	}
 
-	//showErrorMessage(error: ErrorMessage)
-	//{
-	//	this.errorBehaviorSubject.next(error);
-	//}
+	showErrorMessage(error: ErrorMessage)
+	{
+		this.errorBehaviorSubject.next(error);
+	}
 
 	getApiPath()
 	{

@@ -33,14 +33,16 @@ export class BaseComponent	implements OnDestroy
 		this.subs.unsubscribe();
 	}
 
-	showError(a:any)
+	showError(error:any):void
 	{
-		console.error('Mostrando error', a );
+		this.is_loading = false;
+		this.rest.showError(error);
 	}
 
 	showSuccess(msg:string)
 	{
-		console.log('Mostrando mensage de exito:', msg );
+		this.is_loading = false;
+		this.rest.showSuccess(msg);
 	}
 
 	getQueryParamObservable():Observable<ParamMap[]>
