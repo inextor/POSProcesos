@@ -513,13 +513,13 @@ export interface Order{
 	billing_address_id:number | null;
 	billing_data_id:number | null;
 	cancellation_reason:string | null;
-	cancellation_timestamp:Date;
+	cancellation_timestamp:Date | null;
 	cancelled_by_user_id:number | null;
 	cashier_user_id:number | null;
 	city:string | null;
 	client_name:string | null;
 	client_user_id:number | null;
-	closed_timestamp:Date;
+	closed_timestamp:Date | null;
 	created:Date;
 	currency_id:string;
 	delivery_status:'PENDING'|'SENT'|'DELIVERED'|'CANCELLED'|'READY_TO_PICKUP';
@@ -906,7 +906,7 @@ export interface Production{
 	produced_by_user_id: number;
 	production_area_id: number;
 	qty:number
-  qty_reported:number;
+	qty_reported:number;
 	store_id:number
 	updated:Date;
 	verified_by_user_id:number | null;
@@ -1109,7 +1109,7 @@ export interface Shipping{
 	created:Date;
 	created_by_user_id:number | null;
 	date:string | null;
-	delivery_timestamp:string | null;
+	delivery_timestamp: Date | null;
 	from_store_id:number | null;
 	id:number;
 	note:string | null;

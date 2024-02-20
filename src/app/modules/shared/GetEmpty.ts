@@ -1,7 +1,36 @@
-import { User_Permission,Preferences,Production_Area,Process, Production } from "./RestModels";
+import { ShippingInfo } from "./Models";
+import { User_Permission,Preferences,Production_Area,Process, Production, Shipping } from "./RestModels";
 
 export class GetEmpty
 {
+	static shipping_info(): ShippingInfo
+	{
+		return {
+			shipping: GetEmpty.shipping(),
+			items: []
+		};
+	}
+    static shipping(): Shipping
+	{
+		return {
+			created: new Date(),
+			created_by_user_id: null,
+			date: '',
+			delivery_timestamp: null,
+			from_store_id: null,
+			id:0,
+			note: '',
+			purchase_id: null,
+			received_by_user_id : null,
+			requisition_id : null,
+			shipping_company: '',
+			shipping_guide: '',
+			status:'PENDING',
+			to_store_id: 0,
+			updated: new Date(),
+			updated_by_user_id: 0,
+		}
+    }
 
 	static process():Process
 	{
@@ -184,9 +213,9 @@ export class GetEmpty
 			item_id: 0,
 			merma_qty: 0,
 			produced_by_user_id: 0,
-      production_area_id: 0,
+		production_area_id: 0,
 			qty: 0,
-      qty_reported: 0,
+		qty_reported: 0,
 			store_id: 0,
 			updated: new Date(),
 			verified_by_user_id: null,

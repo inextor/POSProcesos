@@ -7,6 +7,7 @@ import { Rest, RestSimple } from '../../modules/shared/services/Rest';
 import { forkJoin, mergeMap, of } from 'rxjs';
 import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
+import { GetEmpty } from '../../modules/shared/GetEmpty';
 
 interface CItem
 {
@@ -35,10 +36,14 @@ interface CRequisitionInfo extends RequisitionInfo
 })
 export class SaveShippingComponent extends BaseComponent
 {
+
 	rest_requisition_info:Rest<Requisition,RequisitionInfo> = this.rest.initRest('requisition_info');
 	rest_shipping_info:Rest<Shipping,ShippingInfo> = this.rest.initRest('shipping_info');
 	rest_production:RestSimple<Production> = this.rest.initRestSimple('production',['id','created_by_user_id','produced_by_user_id','verified_by_user_id']);
 	crequisition_info: CRequisitionInfo | null = null;
+
+	shipping_guide:string = '';
+	shipping_company:string = '';
 
 	ngOnInit()
 	{
@@ -69,7 +74,7 @@ export class SaveShippingComponent extends BaseComponent
 			}),
 			mergeMap((response)=>
 			{
-					let ri = response.requsition;
+				let ri = response.requsition;
 				let shippings = response.shippings.data;
 
 				let citems:CItem[] = ri.items.map((rii)=>
@@ -84,7 +89,7 @@ export class SaveShippingComponent extends BaseComponent
 					let productions = response.production.data.filter(p=>p.item_id = rii.item.id);
 
 					let produced = productions.reduce((p,c)=>p+c.qty,0);
-							let to_ship_qty = 0;
+					let to_ship_qty = 0;
 
 					return {
 						item: rii.item, category: rii.category, required, shipped, produced, to_ship_qty
@@ -106,25 +111,77 @@ export class SaveShippingComponent extends BaseComponent
 
 	onSubmit(evt:Event)
 	{
-			evt.stopPropagation();
-			evt.preventDefault();
+		evt.stopPropagation();
+		evt.preventDefault();
 
-			if( this.crequisition_info == null )
-			{
+		if( this.crequisition_info == null )
+		{
 			return;
-			}
-			this.rest_shipping_info.create({
-				shipping: {
-					requisition_id: this.crequisition_info.requisition.id,
-					to_store_id: this.crequisition_info.requisition.required_by_store_id
-				},
-				items: this.crequisition_info.citems.map((citem)=>
-				{
-					return{ item_id: citem.item.id, qty: citem.to_ship_qty }
-				})
-			}).subscribe((response)=>
+		}
+
+		this.rest_shipping_info.create
+		({
+			shipping: {
+				requisition_id: this.crequisition_info.requisition.id,
+				to_store_id: this.crequisition_info.requisition.required_by_store_id
+			},
+			items: this.crequisition_info.citems.map((citem)=>
 			{
-				this.showSuccess('Se guardo correctamente toooooo');
-			});
+				return{ item_id: citem.item.id, qty: citem.to_ship_qty }
+			})
+		})
+		.subscribe((response)=>
+		{
+			this.showSuccess('Se guardo correctamente toooooo');
+		});
+	}
+
+	saveShipping(evt:Event)
+	{
+		evt.preventDefault();
+		evt.stopPropagation();
+
+		if( this.crequisition_info == null )
+			return;
+
+		let shipping_info:ShippingInfo = GetEmpty.shipping_info();
+		shipping_info.shipping.to_store_id = this.crequisition_info.requisition.required_by_store_id;
+		shipping_info.shipping.shipping_guide = this.shipping_guide;
+		shipping_info.shipping.shipping_company = this.shipping_company;
+
+		shipping_info.items = this.crequisition_info.citems.map((cri)=>{
+			return {
+				item: cri.item,
+				category: cri.category,
+				shipping_item: {
+					item_id: cri.item.id,
+					qty: cri.to_ship_qty,
+					box_id: null,
+					created:new Date(),
+					id:0,
+					pallet_id: null,
+					received_qty: 0,
+					requisition_item_id: null,
+					serial_number:null,
+					shipping_id: 0,
+					shrinkage_qty: 0,
+					updated:new Date()
+				}
+			};
+		})
+
+		this.subs.sink = this.rest_shipping_info.create( shipping_info ).subscribe
+		({
+			next:(response)=>
+			{
+				this.showSuccess('El envio se creo exitosamente');
+				this.is_loading = false;
+				return response;
+			},
+			error:(error)=>
+			{
+				this.showError(error);
+			}
+		});
 	}
 }

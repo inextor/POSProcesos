@@ -44,6 +44,10 @@ export class BaseComponent	implements OnDestroy
 		this.is_loading = false;
 		this.rest.showSuccess(msg);
 	}
+	showWarning(msg:string)
+	{
+		this.rest.warning( msg );
+	}
 
 	getQueryParamObservable():Observable<ParamMap[]>
 	{
