@@ -155,6 +155,7 @@ export class ListRequisitionComponent extends BaseComponent implements OnInit
 		this.production.store_id = user.store_id as number;
 		this.production.item_id = cri.requisition.item_id;
 		this.production.created_by_user_id = user.id;
+		this.production.produced_by_user_id = user.id;
 		this.showModal('modal-add-production');
 	}
 
