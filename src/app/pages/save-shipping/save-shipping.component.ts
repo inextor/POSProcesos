@@ -40,13 +40,17 @@ export class SaveShippingComponent extends BaseComponent
 	rest_requisition_info:Rest<Requisition,RequisitionInfo> = this.rest.initRest('requisition_info');
 	rest_shipping_info:Rest<Shipping,ShippingInfo> = this.rest.initRest('shipping_info');
 	rest_production:RestSimple<Production> = this.rest.initRestSimple('production',['id','created_by_user_id','produced_by_user_id','verified_by_user_id']);
+	rest_store:Rest<Store,Store> = this.rest.initRest('store');
 	crequisition_info: CRequisitionInfo | null = null;
 
 	shipping_guide:string = '';
 	shipping_company:string = '';
+	shipping_date:string = '';
+	shipping_from_store:Store | null = null;
+	shipping_to_store:Store | null = null;
 
 	ngOnInit()
-	{
+	{	
 		this.route.paramMap.pipe
 		(
 			mergeMap((param_map)=>
@@ -56,11 +60,12 @@ export class SaveShippingComponent extends BaseComponent
 			mergeMap((requisition)=>
 			{
 				console.log('Req	is ', requisition);
+				this.shipping_to_store = requisition.required_by_store;
 				let production_search = this.rest_production.getEmptySearch();
 				let start = new Date();
 				start.setHours( 0, 0, 0, 0 );
 				production_search.ge.created = start;
-
+				this.shipping_date = start.toISOString().split('T')[0];
 				return forkJoin
 				({
 					shippings: this.rest_shipping_info.search
@@ -69,13 +74,18 @@ export class SaveShippingComponent extends BaseComponent
 						limit: 999999
 					}),
 					production: this.rest_production.search(production_search),
-					requsition: of( requisition )
+					requsition: of( requisition ),
+					stores: this.rest_store.search
+					({
+						limit: 999999
+					})
 				})
 			}),
 			mergeMap((response)=>
 			{
 				let ri = response.requsition;
 				let shippings = response.shippings.data;
+				this.shipping_from_store = response.stores.data.find((s)=>s.id == this.rest.user?.store_id) || null;
 
 				let citems:CItem[] = ri.items.map((rii)=>
 				{
@@ -149,6 +159,9 @@ export class SaveShippingComponent extends BaseComponent
 		shipping_info.shipping.shipping_guide = this.shipping_guide;
 		shipping_info.shipping.shipping_company = this.shipping_company;
 		shipping_info.shipping.requisition_id = this.crequisition_info.requisition.id;
+		shipping_info.shipping.date = this.shipping_date;
+		shipping_info.shipping.from_store_id = this.shipping_from_store?.id || 0;
+		shipping_info.shipping.created_by_user_id = this.rest.user?.id || 0;
 
 		shipping_info.items = this.crequisition_info.citems.map((cri)=>{
 			return {
@@ -177,6 +190,8 @@ export class SaveShippingComponent extends BaseComponent
 			{
 				this.showSuccess('El envio se creo exitosamente');
 				this.is_loading = false;
+				//navegar a list-shipping
+				this.router.navigate(['/list-shipping']);
 				return response;
 			},
 			error:(error)=>

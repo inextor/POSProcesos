@@ -5,11 +5,25 @@
 				<div class="row">
 					<div class="col-3 form-group">
 						<label>GUIA</label>
-						<input type="text" name="shipping_guide" [(ngModel)]="shipping_guide" class="form-control">
+						<input type="text" name="shipping_guide" [(ngModel)]="shipping_guide" class="form-control" required>
 					</div>
 					<div class="col-3">
-						<label>Co</label>
+						<label>Compañia</label>
 						<input type="text" name="shipping_company" [(ngModel)]="shipping_company" class="form-control">
+					</div>
+					<div class="col-6">
+						<label>Fecha de Envío</label>
+						<input type="date" name="shipping_date" [(ngModel)]="shipping_date" class="form-control" required>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-3 form-group">
+						<label class="">Sucursal Origen</label>
+						<input name="shipping_from_store" [value]="shipping_from_store?.name" class="form-control" disabled>
+					</div>
+					<div class="col-3 form-group">
+						<label class="">Sucursal Destino</label>
+						<input name="shipping_to_store" [value]="shipping_to_store?.name" class="form-control" disabled>
 					</div>
 				</div>
 				<table class="w-100 mx-0">
