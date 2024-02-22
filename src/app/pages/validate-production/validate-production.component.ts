@@ -88,11 +88,20 @@ export class ValidateProductionComponent extends BaseComponent
 			next: (response)=>
 			{
 				pi.production = response;
+				this.showSuccess('Producción validada');
 			},
 			error: (error)=>
 			{
 				this.showError( error )
 			}
 		})
+	}
+
+	validateAll(pi: CProduction)
+	{
+		for(let p of pi.production_list)
+		{
+			this.validate(p);
+		}
 	}
 }

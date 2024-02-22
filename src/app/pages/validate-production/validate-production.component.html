@@ -19,6 +19,7 @@
 				<div class="col-2 text-end">{{pl.validated}}</div>
 				<div class="col-2 text-end">{{pl.merma}}</div>
 				<div class="col-2 text-end">
+					<button type="button" class="btn btn-primary me-2" (click)="validateAll(pl)">Validar</button>
 					<button type="button" class="btn btn-primary" (click)="pl.expand=!pl.expand">Ver</button>
 				</div>
 			</div>
