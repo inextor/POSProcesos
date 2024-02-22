@@ -1257,8 +1257,10 @@ export interface Store{
 	print_receipt:number | null;
 	print_receipt_copies:number | null;
 	printer_ticket_config:string | null;
+	production_enabled:number | null;
 	qr_size:'PERCENT_25'|'PERCENT_50'|'PERCENT_75'|'PERCENT_100';
 	rfc:string | null;
+	sales_enabled:number | null;
 	show_facturacion_qr:'NO'|'YES';
 	state:string | null;
 	status:'ACTIVE'|'DISABLED';

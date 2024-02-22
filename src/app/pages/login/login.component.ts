@@ -109,8 +109,13 @@ export class LoginComponent extends BaseComponent implements OnInit {
 				{
 					this.router.navigate(['/list-requisition']);
 				}
+				this.showSuccess('Sesion iniciada con exito');
 			},
-			error: (error) => {console.log(error), this.is_loading = false;}
+			error: (error) => 
+			{
+				this.showError(error); 
+				this.is_loading = false;
+			}
 		});
 	}
 }
