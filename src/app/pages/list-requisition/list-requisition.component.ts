@@ -80,7 +80,7 @@ export class ListRequisitionComponent extends BaseComponent implements OnInit
 								return of({total:0, data:[]} as RestResponse<User>);
 
 							let user_ids = response.data.map(ci=>ci.user_id);
-							return this.rest_users.search({csv:{ id: user_ids },limit:response.total });
+							return this.rest_users.search({csv:{ id: user_ids },eq:{store_id:this.rest.user?.store_id},limit:response.total });
 						})
 					)
 				})
@@ -189,7 +189,7 @@ export class ListRequisitionComponent extends BaseComponent implements OnInit
 			return;
 		}
 
-		//let user = this.user_list.find(user=>user.id == this.production.produced_by_user_id ) as User;
+		let user = this.user_list.find(user=>user.id == this.production.produced_by_user_id ) as User;
 		this.subs.sink = this.rest_production.create( this.production )
 		.subscribe(
 		{
@@ -197,7 +197,7 @@ export class ListRequisitionComponent extends BaseComponent implements OnInit
 			{
 				this.production = this.production = GetEmpty.production();
 				this.production.store_id = this.rest.user?.store_id as number; //Los usuario tienen que tener store_id; Cambiando al usuario de la sesion
-				this.production.produced_by_user_id = this.rest.user?.id as number; //Utilizando el id del usuario de la sesion
+				//this.production.produced_by_user_id = this.rest.user?.id as number; //Utilizando el id del usuario de la sesion
 				this.show_add_production = false;
 				this.selected_crequistion_item = null;
 				this.closeModal('modal-add-production');

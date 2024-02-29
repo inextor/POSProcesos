@@ -32,6 +32,7 @@
 							<th>Artículo</th>
 							<th class="text-end">Requeridos</th>
 							<th class="text-end">Producidos</th>
+							<th class="text-end">Inventario</th>
 							<th class="text-end">Acciones</th>
 						</tr>
 					</thead>
@@ -40,6 +41,7 @@
 							<td class="border">{{cri.item.id}} - {{cri?.category?.name??''}} {{cri.item.name }}</td>
 							<td class="text-end border">{{cri.required}}</td>
 							<td class="text-end border">{{cri.shipped | number}}</td>
+							<td class="text-end border">{{ '1' | number}}</td>
 							<td class="text-end border">
 								<button type="button" (click)="cri.to_ship_qty = (cri.required-cri.shipped)" class="btn btn-primary">
 									<b>+</b>

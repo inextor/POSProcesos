@@ -16,6 +16,7 @@ interface CItem
 	required: number;
 	shipped: number;
 	to_ship_qty:number;
+	stock: number;
 }
 
 interface CRequisitionInfo extends RequisitionInfo
@@ -101,8 +102,12 @@ export class SaveShippingComponent extends BaseComponent
 					let produced = productions.reduce((p,c)=>p+c.qty,0);
 					let to_ship_qty = 0;
 
+					//make a call to get the stock of the item in the store
+					//let stock = 0;
+					
+
 					return {
-						item: rii.item, category: rii.category, required, shipped, produced, to_ship_qty
+						item: rii.item, category: rii.category, required, shipped, produced, to_ship_qty, stock: produced-shipped
 					};
 				});
 

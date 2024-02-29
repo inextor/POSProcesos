@@ -105,8 +105,9 @@
 
 					<div class="col-6">
 						<label>Usuario</label>
-						<select name="production_user_id" class="form-control" disabled>
-							<option>{{rest.user?.name | uppercase}}</option>
+						<select name="production_user_id" class="form-control" [(ngModel)]="production.produced_by_user_id">
+							<option value="null">Seleccionar</option>
+							<option *ngFor="let user of user_list" [ngValue]="user.id" >{{user.name | uppercase}}</option>
 						</select>
 					</div>
 				</div>
