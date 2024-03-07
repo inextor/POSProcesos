@@ -7,6 +7,7 @@ import { Location} from '@angular/common';
 import { ShortDatePipe } from '../pipes/short-date.pipe';
 import { Title } from '@angular/platform-browser';
 import { Observable, combineLatest, startWith } from 'rxjs';
+import { SearchObject } from '../services/Rest';
 
 @Component({
 	selector: 'app-base',
@@ -22,6 +23,7 @@ export class BaseComponent	implements OnDestroy
 	current_page:number = 0;
 	path:string = '';
 	total_pages:number = 0;
+	page_size:number = 50;
 
 	constructor(public rest:RestService, public route:ActivatedRoute,public router:Router, public location:Location,public title_service:Title)
 	{
@@ -63,5 +65,28 @@ export class BaseComponent	implements OnDestroy
 			this.route.queryParamMap.pipe(startWith(p)),
 			this.route.paramMap
 		])
+	}
+
+	getEmptySearch<T>():SearchObject<T>
+	{
+		let item_search:SearchObject<T> = {
+			eq:{} as T,
+			le:{} as T,
+			lt:{} as T,
+			ge:{} as T,
+			gt:{} as T,
+			lk:{} as T,
+			nn:[] as string[],
+			sort_order:[] as string[],
+			start:{} as T,
+			ends:{} as T,
+			csv:{},
+			different:{},
+			is_null:[],
+			search_extra: {} as Record<string,string|null|number|Date>,
+			page:0,
+			limit: this.page_size
+		};
+		return item_search;
 	}
 }

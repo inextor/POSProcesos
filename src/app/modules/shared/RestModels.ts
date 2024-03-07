@@ -440,6 +440,38 @@ export interface Item_Store{
 	updated:Date;
 	updated_by_user_id:number
 }
+export interface ItemOptionValueInfo
+{
+	item_option_value: Item_Option_Value;
+	item:Item;
+	category?:Category;
+}
+export interface ItemOptionInfo
+{
+	item_option:Item_Option;
+	values:ItemOptionValueInfo[];
+}
+export interface ItemInfo
+{
+	item:Item;
+	category:Category | null;
+	//product?:Product; //Category
+	//item_options?:ItemOptionInfo[];
+	//attributes?:Item_Attribute[];
+
+	price?:Price;
+	prices:Price[];
+	records:Stock_Record[];
+	stock_record?:Stock_Record;
+	options:ItemOptionInfo[];
+	exceptions:Item_Exception[];
+	display_category?:boolean;
+	serials:SerialInfo[];
+}
+export interface ItemStockInfo extends ItemInfo
+{
+	total:number;
+}
 export interface Keyboard_Shortcut{
 	created:Date;
 	created_by_user_id:number | null;
@@ -1084,6 +1116,17 @@ export interface Serial{
 	updated:Date;
 	updated_by_user_id:number | null;
 }
+interface CSerial extends Serial
+{
+	store_name?:string;
+}
+export interface SerialInfo
+{
+	serial:CSerial;
+	images:Serial_Image[];
+	order_item_serial?:Order_Item_Serial;
+	selected: boolean; //Just a help variable used in lists
+}
 export interface Serial_Image{
 	created:Date;
 	description:string | null;
@@ -1097,6 +1140,11 @@ export interface Serie_Counter{
 	created:Date;
 	id:string;
 	updated:Date;
+}
+export interface SerialItemInfo
+{
+	serial_info:SerialInfo;
+	item_info:ItemInfo;
 }
 export interface Session{
 	created:Date;
@@ -1119,23 +1167,23 @@ export interface Shipping{
 	shipping_company:string;
 	shipping_guide:string;
 	status:'PENDING'|'DELIVERED'|'SENT'|'CANCELLED';
-	to_store_id:number
+	to_store_id:number | null;
 	updated:Date;
 	updated_by_user_id:number | null;
 }
 export interface Shipping_Item{
-	box_id:number | null;
-	created:Date;
-	id:number;
+	box_id?:number | null;
+	created?:Date;
+	id?:number;
 	item_id:number | null;
-	pallet_id:number | null;
-	qty:number
-	received_qty:number | null;
-	requisition_item_id:number | null;
+	pallet_id?:number | null;
+	qty?:number | null;
+	received_qty?:number | null;
+	requisition_item_id?:number | null;
 	serial_number:string | null;
-	shipping_id:number
-	shrinkage_qty:number | null;
-	updated:Date;
+	shipping_id?:number
+	shrinkage_qty?:number | null;
+	updated?:Date;
 }
 export interface Stock_Alert{
 	created:Date;
@@ -1167,6 +1215,26 @@ export interface Stock_Record{
 	store_id:number
 	updated:Date;
 	updated_by_user_id:number
+}
+export interface Stock_Record{
+	created:Date;
+	created_by_user_id:number;
+	description:string | null;
+	id:number;
+	is_current:number;
+	item_id:number;
+	movement_qty:number;
+	movement_type:'POSITIVE'|'NEGATIVE'|'ADJUSTMENT';
+	order_item_id:number | null;
+	previous_qty:number;
+	production_item_id:number | null;
+	purchase_detail_id:number | null;
+	qty:number;
+	serial_number_record_id:number | null;
+	shipping_item_id:number | null;
+	store_id:number;
+	updated:Date;
+	updated_by_user_id:number;
 }
 export interface Stocktake{
 	created:Date;

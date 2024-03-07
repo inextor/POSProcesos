@@ -266,6 +266,29 @@ export class RestService
 
 	//	});
 	//}
+	getUrlSafe(url:string):string
+	{
+		return url;
+		//return this.dom_sanitizer.bypassSecurityTrustUrl(url);
+	}
+	getImagePath(image1_id:SuperEmpty<number>,image2_id:SuperEmpty<number> = null,image3_id:SuperEmpty<number> = null,image4_id:SuperEmpty<number> = null ,image5_id:SuperEmpty<number> = null):string
+	{
+		if (image1_id)
+			return this.getUrlSafe(this.domain_configuration.domain+'/'+this.url_base + '/image.php?id=' + image1_id);
+		//console.log('dos');
+		if (image2_id)
+			return this.getUrlSafe(this.domain_configuration.domain+'/'+this.url_base + '/image.php?id=' + image2_id);
+		//console.log('tres');
+		if (image3_id)
+			return this.getUrlSafe(this.domain_configuration.domain+'/'+this.url_base + '/image.php?id=' + image3_id);
+		//console.log('cuatro');
+		if (image4_id)
+			return this.getUrlSafe(this.domain_configuration.domain+'/'+this.url_base + '/image.php?id=' + image4_id);
+		//console.log('cinco');
+		if( image5_id )
+			return this.getUrlSafe(this.domain_configuration.domain+'/'+this.url_base + '/image.php?id=' + image5_id);
+		return this.getUrlSafe('/assets/2px_transparent.png');
+	}
 	getFilePath(file_id: number,download=false): string
 	{
 		let d_string = download ?'&download=1':'';

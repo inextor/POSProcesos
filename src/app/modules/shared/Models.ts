@@ -44,12 +44,13 @@ export interface ShippingItemInfo
 	item: Item;
 	shipping_item:Shipping_Item;
 	category:Category | null;
+	available?:number;
 }
 
 export interface ShippingInfo
 {
-	shipping:Shipping;
-	items:ShippingItemInfo[];
+	shipping:Partial<Shipping>;
+	items:Partial<ShippingItemInfo>[];
 	//purchase:Purchase;
 }
 
