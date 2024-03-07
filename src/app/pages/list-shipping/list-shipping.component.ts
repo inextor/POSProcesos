@@ -83,15 +83,15 @@ export class ListShippingComponent extends BaseComponent
 					let citems:CItem[] = ri.items.map((rii)=>
 					{
 						let required = rii.requisition_item.qty;
-						let shipped = shippings.reduce((p,si)=>
+						let shipped = shippings.reduce((p, si) => 
 						{
-							let items = si.items.filter((x)=>x.item.id == rii.item.id);
-							return p+items.reduce((prev_c,item)=>prev_c+item.shipping_item.qty,0);
-						},0);
+							let items = si.items.filter((x) => x.item?.id == rii.item.id);
+							return p + items.reduce((prev_c, item) => prev_c + (item.shipping_item?.qty || 0), 0);
+						}, 0);
 
-						let productions = response.production.data.filter(p=>p.item_id = rii.item.id);
+						let productions = response.production.data.filter(p => p.item_id = rii.item.id);
 
-						let produced = productions.reduce((p,c)=>p+c.qty,0);
+						let produced = productions.reduce((p, c) => p + c.qty, 0);
 
 						return {
 							item: rii.item, category: rii.category, required, shipped, produced

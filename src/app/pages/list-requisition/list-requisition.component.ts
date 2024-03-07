@@ -5,7 +5,7 @@ import { RouterModule } from '@angular/router';
 import { forkJoin,mergeMap, of } from 'rxjs';
 import { RestSimple } from '../../modules/shared/services/Rest';
 import { FormsModule } from '@angular/forms';
-import { RequisitionInfo,RequisitionItemInfo } from '../../modules/shared/Models';
+import { ProductionInfo, RequisitionInfo,RequisitionItemInfo } from '../../modules/shared/Models';
 import { Requisition,Store,Category,Item, Check_In, User, Production} from '../../modules/shared/RestModels';
 import { GetEmpty } from '../../modules/shared/GetEmpty';
 import { BaseComponent } from '../../modules/shared/base/base.component';
@@ -56,12 +56,13 @@ export class ListRequisitionComponent extends BaseComponent implements OnInit
 
 	user_list:User[] = [];
 	production_user_id:number | null = null;
-	production = GetEmpty.production();
+	production:Production = GetEmpty.production();
 	production_list:Production[] = [];
-	requsition_obj_list: any[] = [];
+	requsition_obj_list: CRequisitionItem[] = [];
 
 	ngOnInit()
 	{
+		this.production = GetEmpty.production();
 		this.route.params.pipe
 		(
 			mergeMap((param_map)=>
@@ -193,7 +194,7 @@ export class ListRequisitionComponent extends BaseComponent implements OnInit
 		this.subs.sink = this.rest_production.create( this.production )
 		.subscribe(
 		{
-			next: (response:any) =>
+			next: (response:Production) =>
 			{
 				this.production = this.production = GetEmpty.production();
 				this.production.store_id = this.rest.user?.store_id as number; //Los usuario tienen que tener store_id; Cambiando al usuario de la sesion
@@ -204,6 +205,17 @@ export class ListRequisitionComponent extends BaseComponent implements OnInit
 				console.log( evt );
 				let form = evt.target as HTMLFormElement;
 				form.reset();
+				//we must update the requisition_obj_list
+				this.requsition_obj_list.forEach((req_obj)=>
+				{
+					if( req_obj.production?.item_id == response.item_id )
+					{
+						req_obj.production.produced += response.qty;
+						console.log( 'req_obj.production.produced', req_obj.production.produced );
+						req_obj.production.production_merma_qty = response.merma_qty;
+					}
+				});
+				
 				this.showSuccess('Produccion agregada');
 			},
 			error: (error:any) =>
