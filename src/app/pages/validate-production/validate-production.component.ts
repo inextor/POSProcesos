@@ -81,6 +81,7 @@ export class ValidateProductionComponent extends BaseComponent
 	{
 		let p = {...pi.production};
 		p.qty = pi.qty;
+		p.merma_qty = pi.merma_qty;
 
 		this.subs.sink = this.rest_production
 		.update(p)
@@ -99,9 +100,30 @@ export class ValidateProductionComponent extends BaseComponent
 
 	validateAll(pi: CProduction)
 	{
-		for(let p of pi.production_list)
-		{
-			this.validate(p);
-		}
+		//se filtran las producciones que no han sido validadas
+		let production_info_list = pi.production_list.filter(p => !p.production.verified_by_user_id)
+		//se obtiene la lista de producciones con la cantidad y merma
+		let production_list = production_info_list.map(p => ({...p.production, qty: p.qty, merma_qty: p.merma_qty}));
+
+		this.subs.sink = this.rest_production
+		.batchUpdate(production_list)
+		.subscribe({
+			next: (response)=>
+			{
+				//se actualizan las producciones con la respuesta del servidor
+				for(let p of production_info_list)
+				{
+					p.production = response.find(r => r.id == p.production.id) as Production;
+				}
+				//se actualiza el cProduction para que no muestre el boton de validar todo
+				pi.validated = pi.total;
+				this.showSuccess('Producción validada');
+			},
+			error: (error)=>
+			{
+				this.showError( error )
+			}
+		})
+
 	}
 }
