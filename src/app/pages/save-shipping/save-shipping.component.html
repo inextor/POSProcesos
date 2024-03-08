@@ -1,62 +1,105 @@
 <form (submit)="saveShipping($event)" ngNativeValidate>
 	<div class="container-fluid">
+		<h1 class="text-capitalize my-3">{{shipping_info.shipping.id ? 'Actualizar':'Agregar'}} Envío</h1>
 		<div class="card p-3 mt-3">
 			<div *ngIf="crequisition_info">
 				<div class="row">
 					<div class="col-3 form-group">
 						<label>GUIA</label>
-						<input type="text" name="shipping_guide" [(ngModel)]="shipping_guide" class="form-control" required>
+						<input type="text" name="shipping_guide" [(ngModel)]="shipping_info.shipping.shipping_guide" class="form-control" required>
 					</div>
 					<div class="col-3">
 						<label>Compañia</label>
-						<input type="text" name="shipping_company" [(ngModel)]="shipping_company" class="form-control">
+						<input type="text" name="shipping_company" [(ngModel)]="shipping_info.shipping.shipping_company" class="form-control">
 					</div>
 					<div class="col-6">
 						<label>Fecha de Envío</label>
-						<input type="date" name="shipping_date" [(ngModel)]="shipping_date" class="form-control" required>
+						<input type="date" name="shipping_date" [(ngModel)]="shipping_info.shipping.date" class="form-control" required>
 					</div>
 				</div>
 				<div class="row">
 					<div class="col-3 form-group">
 						<label class="">Sucursal Origen</label>
-						<input name="shipping_from_store" [value]="shipping_from_store?.name" class="form-control" disabled>
+						<input name="shipping_from_store" [value]="from_store_name" class="form-control" disabled>
 					</div>
 					<div class="col-3 form-group">
 						<label class="">Sucursal Destino</label>
-						<input name="shipping_to_store" [value]="shipping_to_store?.name" class="form-control" disabled>
+						<input name="shipping_to_store" [value]="to_store_name" class="form-control" disabled>
 					</div>
 				</div>
+				<div class="py-3 text-end">
+					<button type="submit" [disabled]="is_loading" class="btn btn-primary">Crear</button>
+				</div>
+			</div>
+		</div>
+		<h4 class="mt-3">Artículos de Requisición</h4>
+		<div class="card p-3 mt-3">
+			<div class="" *ngIf="crequisition_info">
 				<table class="w-100 mx-0">
 					<thead class="thead-light">
 						<tr>
 							<th>Artículo</th>
 							<th class="text-end">Requeridos</th>
-							<th class="text-end">Producidos</th>
+							<th class="text-end">Enviados</th>
 							<th class="text-end">Inventario</th>
+							<th class="text-end">Cantidad a Enviar</th>
 							<th class="text-end">Acciones</th>
 						</tr>
 					</thead>
 					<tbody>
 						<tr *ngFor="let cri of crequisition_info.citems">
-							<td class="border">{{cri.item.id}} - {{cri?.category?.name??''}} {{cri.item.name }}</td>
+							<td class="border">{{cri.item_info.item.id}} - {{cri?.category?.name??''}} {{cri.item_info.item.name }}</td>
 							<td class="text-end border">{{cri.required}}</td>
 							<td class="text-end border">{{cri.shipped | number}}</td>
-							<td class="text-end border">{{ '1' | number}}</td>
+							<td class="text-end border">{{ cri.stock| number}}</td> 
 							<td class="text-end border">
-								<button type="button" (click)="cri.to_ship_qty = (cri.required-cri.shipped)" class="btn btn-primary">
-									<b>+</b>
-									{{cri.required - cri.shipped | number}}
-								</button>
+								{{qty_by_item_id[ cri.item_info.item.id] || 0 | number }}
 							</td>
 							<td class="text-end border">
-								<input type="number" class="form-control text-end" name="'item-'+cri.item.id" [(ngModel)]="cri.to_ship_qty">
+								<button type="button" (click)="addShippingItem(cri.item_info)" class="btn btn-primary">
+									<b>+</b>
+								</button>
 							</td>
 							<!--td class="text-end">{{(cri.production?.production_merma_qty || 0) | number}}</td-->
 						</tr>
 					</tbody>
 				</table>
-				<div class="py-3 text-end">
-					<button type="submit" [disabled]="is_loading" class="btn btn-primary">Crear</button>
+			</div>
+		</div>
+		<h4 class="mt-3">Agregar a envío</h4>
+		<div class="card my-3 py-3 px-1">
+			<div class="row">
+				<div class="col-12 col-lg-4 form-group">
+					<app-search-items (item_selected)="onItemSelected($event)" [reset_on_search]="true"></app-search-items>
+				</div>
+			</div>
+			<div class="container-fluid">
+				<div class="row d-none d-lg-flex">
+					<div class="col-6">Nombre</div>
+					<div class="col-2 text-end">Disponibles</div>
+					<div class="col-2 text-end">Cantidad</div>
+					<div class="col-2 text-end">Acciones</div>
+				</div>
+				<div class="row align-items-center border-bottom mb-3 mb-1 pb-3" *ngFor="let sii of shipping_info.items;let i=index">
+					<div class="col-9 col-lg-6 pb-3 px-1 pb-lg-0">
+						<img [src]="rest.getImagePath(sii.item?.image_id,sii?.category?.image_id)" style="max-height:30px;max-width:30px;margin-right:10px">
+						<span *ngIf="sii.category">{{sii.category.name | titlecase}}</span>
+						{{sii.item?.name | titlecase }}
+					</div>
+					<div class="col-3 col-lg-2 pb-3 px-1 pb-lg-0 order-lg-last">
+						<button type="button" class="btn btn-primary w-100" (click)="removeItem(sii)" >
+							<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" width="1.3em" height="1.3em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 20 20"><g fill="none"><path d="M10 1.25a2.75 2.75 0 0 1 2.739 2.5H17a.75.75 0 0 1 .102 1.493L17 5.25h-.583L15.15 16.23A2 2 0 0 1 13.163 18H6.837a2 2 0 0 1-1.987-1.77L3.582 5.25H3a.75.75 0 0 1-.743-.648L2.25 4.5a.75.75 0 0 1 .648-.743L3 3.75h4.261A2.75 2.75 0 0 1 10 1.25zM8.5 7.5c-.245 0-.45.155-.492.359L8 7.938v6.125l.008.078c.042.204.247.359.492.359s.45-.155.492-.359L9 14.062V7.939l-.008-.08C8.95 7.656 8.745 7.5 8.5 7.5zm3 0c-.245 0-.45.155-.492.359L11 7.938v6.125l.008.078c.042.204.247.359.492.359s.45-.155.492-.359l.008-.079V7.939l-.008-.08c-.042-.203-.247-.358-.492-.358zM10 2.75c-.605 0-1.11.43-1.225 1h2.45c-.116-.57-.62-1-1.225-1z" fill="currentColor"/></g></svg>
+							<span class="d-none d-md-inline">Eliminar</span>
+						</button>
+					</div>
+					<div class="col-6 col-lg-2 text-lg-end px-1">
+						<label class="d-lg-none">Disponibles</label>
+						<div>{{sii.available| number}}</div>
+					</div>
+					<div class="col-6 col-lg-2 text-end px-1">
+						<label class="d-lg-none">Cantidad</label>
+						<input *ngIf="sii && sii.shipping_item" type="number" [name]="'shippint_item'+sii.item?.id" [(ngModel)]="sii.shipping_item.qty" (ngModelChange)="updateValues()" class="form-control text-end" [step]="sii.item?.partial_sale == 'NO'?'1':'any'">
+					</div>
 				</div>
 			</div>
 		</div>
