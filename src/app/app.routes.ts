@@ -29,7 +29,7 @@ export const routes: Routes = [
 	{path: 'validate-production', component: ValidateProductionComponent},
 	{path: 'list-task', component: ListTaskComponent},
 	{path: 'list-shipping', component: ListShippingComponent},
-	{path: 'add-shipping/:requisition_id', component: SaveShippingComponent},
+	{path: 'add-shipping/:store_id/:shipping_id', component: SaveShippingComponent},
 	{path: 'login', component: LoginComponent},
 ];
 

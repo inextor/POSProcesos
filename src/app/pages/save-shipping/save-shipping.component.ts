@@ -4,7 +4,7 @@ import { BaseComponent } from '../../modules/shared/base/base.component';
 import { Category, Item, ItemInfo, ItemStockInfo, Production, Requisition, Serial, SerialInfo, SerialItemInfo, Shipping, Stock_Record, Store } from '../../modules/shared/RestModels';
 import { RequisitionInfo, ShippingInfo, ShippingItemInfo } from '../../modules/shared/Models';
 import { Rest, RestSimple, SearchObject } from '../../modules/shared/services/Rest';
-import { forkJoin, mergeMap, of } from 'rxjs';
+import { forkJoin, from, mergeMap, of } from 'rxjs';
 import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { GetEmpty } from '../../modules/shared/GetEmpty';
@@ -47,13 +47,9 @@ export class SaveShippingComponent extends BaseComponent
 	rest_serial_info:Rest<Serial,SerialInfo> = this.rest.initRest('serial_info');
 	rest_category:Rest<Category,Category> = this.rest.initRest('category');
 	crequisition_info: CRequisitionInfo | null = null;
+	to_store:Store | null = null;
+	from_store:Store | null = null;
 
-	from_store_name:string | null = null;
-	to_store_name:string | null = null;
-	from_store_id:number | string = '';
-	to_store_id:number | string = '';
-	store_list:Store[] = [];
-	category_dictionary:Record<number,Category> = {};
 	requisition_info:RequisitionInfo | null = null;
 	item_list:ItemStockInfo[] = [];
 	serial_search:string = '';
@@ -65,148 +61,118 @@ export class SaveShippingComponent extends BaseComponent
 	shipping_info:ShippingInfo = GetEmpty.shipping_info();
 	//WARNING: PENDIENTE REESTRUCTURAR EL FLUJO Y MODELO DE ENVIOS PARA EL CORRECTO FUNCIONAMIENTO DE ESTE COMPONENTE
 
+	//NO SE PUEDEN EDITAR ENVIOS POR LO PRONTO
+	
+	//--CLIENTE--// 
+
+	//POR LO PRONTO SE CONSTRUIRA CON SOPORTE PARA VARIAS REQUISICIONES MOSTRANDOSE EN EL ENVIO, ESO SIGNIFICA QUE EL ENVIO NO NECESARIAMENTE
+	//TENDRA REQUISICIONES ASOCIADAS, PERO SI PODRA TENER VARIOS ITEMS DE VARIAS REQUISICIONES
+	
+	//EN LA RUTA DEL ENVIO SE OBTENDRA EL ID DE LA TIENDA A LA QUE SE LE ENVIA
+	//DESPUES EN EL COMPONENTE SE OBTENDRA LAS REQUISICIONES CON ITEMS PENDIENTES DE ENVIAR A ESA TIENDA
+	//TOMANDO EN CUENTA QUE PODRIA NO HABER REQUISICIONES PENDIENTES
+	//DE SI HABER, CON LOS ID DE LAS REQUISICIONES SE OBTENDRAN LOS REQUISITION_ITEMS Y SE MOSTRARAN EN EL COMPONENTE
+
+	//----LLAMADAS AL SERVIDOR----//
+
+	//AUN NO HAY MUCHO QUE HABLAR RESPECTO A COMO SE GUARDARAN LOS DATOS
+	//EL PRIMER BOSQUEJO CONSISTE EN QUE EL ENVIO SE GENERARA NORMALMENTE
+	//EN DONDE HABRA UN CAMBIO SERA EN LA RELACION DE REQUISICTION_ITEMS CON LOS SHIPPING_ITEMS
+	//POR AHORA, SE CREARA UN SHIPPING_ITEM POR CADA REQUISITION_ITEM
+	//POR EJEMPLO, SI SE ENVIAN 2 REQUISICIONES, Y EN AMBAS SE ENCUENTRA EL MISMO ITEM, SE CREARAN 2 SHIPPING_ITEMS
+
+	//PARA SABER CUANTO PONER EN LA QTY DEL SHIPPING_ITEM ESTARA CABRON, NO HAY UNA FORMA DIRECTA DE SABERLO
+	//POR EJEMPLO, SI SE ENCUENTRAN 2 REQUISICIONES, Y AMBAS VIENE "BOLLO DE PAN", Y EN UNA REQUISICION REQUIEREN 2 Y EN OTRA REQUIEREN 3
+	//HAREMOS UNA SUMA DE LOS ITEMS DE AMBAS REQUISICIONES, Y ESO SERA LO QUE SE PONDRA EN QTY DEL SHIPPING_ITEM
+	//EN ESTE CASO, 5, OSEA QUE SE HARAN 2 SHIPPING_ITEMS CON QTY 5 (CON EL REQUISITION_ITEM_ID DE CADA REQUISICION)
+	//EL PROBLEMA SE ENCUENTRA A LA HORA DE OBTENER EL NUMERO CORRECTO DE ITEMS ENVIADOS, YA QUE EL QTY SERA EL MISMO PARA AMBOS SHIPPING_ITEMS
+	//Y NO HABRA FORMA DIRECTA DE SABER, DE ESOS 5, CUANTOS FUERON PARA UNA REQUISICION Y CUANTOS PARA LA OTRA
+
+	//ESTE PROBLEMA TIENE UNA COMPLEJIDAD MUY CHISTOSONA, YA QUE NO HAY UNA FORMA DIRECTA DE SABER CUANTOS ITEMS FUERON PARA UNA REQUISICION Y CUANTOS PARA LA OTRA
+
+	//DUDAS
+	//cuale sera el requisition_id del shipping?, se usara el requisition_id de la primera requisicion que se encuentre?
+	//de los shipping_items no hay problema ya que se puede saber a que requisition_item pertenece
 	ngOnInit()
 	{
 		this.subs.sink = this.route.paramMap.subscribe( params =>
 		{
-			//this.company = this.rest.getCompanyFromSession();
 			this.is_loading = true;
+			let to_store_id = parseInt(params.get('store_id') || '');
+			let from_store_id = Number(this.rest.user?.store_id || '');
+			//se usara un segundo parametro para obtener informacion del envio (en caso de que ya haya sido creado)
+			let shipping_id = params.has('shipping_id') ? parseInt(params.get('shipping_id') ?? '') : null;
 
 			let empty:ShippingInfo = {
 				shipping: {
-					from_store_id: this.rest.user?.store_id || null,
-					to_store_id: null,
+					from_store_id: from_store_id,
+					to_store_id: to_store_id,
 				},
 				items: [],
 			};
-			//obteniendo envio en caso de edicion
+
+			//obteniendo informacion de tienda, categorias (para construir los CItems), y las requisiciones_info
+			//las requisiciones seran las que sean requeridas a la tienda del usuario y requeridas por la tienda de los parametros 
+			//traer tambien las producciones, solo que tendremos que traer los de los items de las requisiciones
 			this.subs.sink = forkJoin
 			({
-				shipping_info : params.has('requisition_id') ? this.rest_shipping_info.get( params.get('requisition_id')): of( this.shipping_info ),
-				store : this.rest_store.search({limit:9999}),
-				category: this.rest_category.search({limit:99999,sort_order:['name_ASC']})
+				shipping_info: shipping_id != 0 ? this.rest_shipping_info.get(shipping_id) : of( empty ),
+				to_store : this.rest_store.get(to_store_id),
+				from_store: this.rest_store.get(from_store_id),
+				category: this.rest_category.search({limit:99999,sort_order:['name_ASC']}),
+				requisitions: this.rest_requisition_info.search({eq:{required_by_store_id: to_store_id},limit:9999})
 			})
 			.pipe
 			(
-				//obteniendo requisicion, asignando valores a envio en caso de nuevo envio
+				//las requisitions ya tienen todas las requisition_items de todas las requisiciones
+				//ahora hay que traer las producciones, asi que haremos un un arreglo de ids de los items de las requisiciones
 				mergeMap((response)=>
 				{
-					console.log('response shipping_info',response.shipping_info);
-					this.from_store_id = '';
-					this.to_store_id = '';
-
-					//let requisition_id = params.has('requisition_id') ? parseInt(params.get('requisition_id') ?? '') : 0;
-					let requisition_id = response.shipping_info.shipping?.requisition_id;
-					console.log('requisition id',requisition_id);
-					//si no hay requisicion, no se hace nada
-					//en teoria siempre deberia haber requisicion desde este sistema?
-
-					if( response.shipping_info.shipping?.requisition_id )
-						requisition_id = response.shipping_info.shipping?.requisition_id;
-
-					response.shipping_info.shipping.requisition_id = requisition_id;
-					response.shipping_info.shipping.date = new Date().toISOString().split('T')[0];
-
-					//se obtienen los envios para conocer el total de lo enviado por cada item (ya que pueden ser varios envio desde una sola requisicion)
-					//se obtienen las producciones para conocer el total producido por cada item
-					return forkJoin
-					({
-						shipping_info: of( response.shipping_info ),
-						store: of( response.store),
-						category: of( response.category ),
-						requisition: requisition_id ? this.rest_requisition_info.get(requisition_id) : of( null ),
-						shippings: this.rest_shipping_info.search({eq:{requisition_id},limit:9999}),
-						production: this.rest_production.search
-						({
-							ge:{created:new Date()},
-							limit:9999
-						})
-					})
-				}),
-				mergeMap((response)=>
-				{
-
-					let ids = response.requisition?.items.map((rii)=>rii.item.id) || [];
-					//esto es solo para agregar el stock de los items en la sucursal de produccion
-					return forkJoin
-					({
-						shipping_info: of( response.shipping_info ),
-						store: of( response.store),
-						category: of( response.category ),
-						requisition: of( response.requisition ),
-						shippings: of( response.shippings ),
-						production: of( response.production ),
-						item_stock: this.rest_item_stock.search
-						({
-							search_extra: { store_id: this.rest.user?.store_id as number},
-							csv: { id: ids }
-						})
-					})
-				}),
-				mergeMap((response)=>
-				{
-					//se empieza a construir el crquisition info
-
-					let ri = response.requisition;
-					let shippings = response.shippings.data;
-					let item_stock_list = response.item_stock.data;
-					let productions_list = response.production.data;
-
-					if( ri == null )
+					let ids:number[] = []
+					//comprobar que existan requisiciones, recordando que podemos hacer envios sin requisiciones
+					if( response.requisitions.total != 0 )
 					{
-						this.showError('No se encontro la requisicion');
-						return of( null );
+						ids = response.requisitions.data.map((r)=>r.items.map((ri)=>ri.item.id)).flat();
 					}
-					//items de la requisicion
-					let citems:CItem[] = ri.items.map((rii)=>
-					{ 
-						let item_stock_info = item_stock_list.find((x)=>x.item.id == rii.item.id);
-						let item_info:ItemInfo = {
-							item: rii.item,
-							category: rii.category,
-							price: item_stock_info?.price || undefined,
-							prices: item_stock_info?.prices || [],
-							records: item_stock_info?.records || [],
-							stock_record: item_stock_info?.stock_record || undefined,
-							options: item_stock_info?.options || [],
-							exceptions: item_stock_info?.exceptions || [],
-							display_category: item_stock_info?.display_category || false,
-							serials: item_stock_info?.serials || [],
+					//tambien necesitamos el stock de los items en la sucursal de produccion
+					//podemos sacarlo con los mismos ids
+					//por lo pronto no se adjuntara la cantidad de enviados, o se podria, pero habria mucha inconsistencia de datos si hay mas personas trabajando en el
+					//tendran que ser todos los enviados previamente, despues de todo esto es solo para tener una nocion, no tendra nada que ver en el shipping_item
+					return forkJoin
+					({
+						shipping_info: of( response.shipping_info ),
+						to_store: of( response.to_store),
+						from_store: of( response.from_store ),
+						category: of( response.category ),
+						shippings: ids.length > 0 ? this.rest_shipping_info.search({ csv:{ids}, eq:{from_store_id: Number(response.from_store.id), to_store_id: Number(response.to_store.id)},limit:9999}) : of( null ),
+						requisitions: ids.length > 0 ? of( response.requisitions ) : of( null ),
+						production: ids.length > 0 ? this.rest_production.search({csv:{id:ids}}) : of( null ),
+						item_stock: ids.length > 0 ? this.rest_item_stock.search({search_extra:{store_id: this.rest.user?.store_id as number},csv:{id:ids}}) : of( null ),
+					})
+				}),
+				mergeMap((response)=>
+				{
+					//se empieza a construir el crquisition info si es que se encontraron requisiciones
+					if( response.requisitions )
+					{
+						let requisitions_info_list = response.requisitions.data;
+						//obtener en un solo arreglo todos los requisition_items
+						let ri = requisitions_info_list?.map((r)=>r.items).flat();
+						let shippings = response.shippings?.data;
+						let item_stock_list = response.item_stock?.data;
+						let productions_list = response.production?.data;
 
-						};
-
-						let required = rii.requisition_item.qty;
-						let shipped = shippings.reduce((p, si) => {
-							let items = si.items.filter((x) => x.item?.id == rii.item.id);
-							return p + items.reduce((prev_c, item) => prev_c + (item.shipping_item?.qty ?? 0), 0);
-						}, 0);
-
-						let productions = productions_list.filter(p => p.item_id = rii.item.id);
-
-						let produced = productions.reduce((p, c) => p + c.qty, 0);
-						let to_ship_qty = 0;
-						let stock = item_stock_list.find((x) => x.item.id == rii.item.id)?.total || 0;
-
-						return {
-							item_info, category: rii.category, required, shipped, produced, to_ship_qty, stock: stock
-						};
-					});
-					//se obtiene el total requerido y enviado
-					let required	= citems.reduce((p,citem)=>p+citem.required,0);
-					let shipped		= citems.reduce((p,citem)=>p+citem.shipped,0);
-					let required_by_store	= ri.required_by_store;
-
+						//se construye el crquisition_info
+						this.initializeCRequisitionInfo(ri, shippings, item_stock_list, productions_list, response.to_store);
+						console.log('requisitions found')
+					}
+					
 					return forkJoin
 					({
 						category: of( response.category ),
-						store: of( response.store ),
+						to_store: of( response.to_store ),
+						from_store: of( response.from_store ),
 						shipping_info: of( response.shipping_info ),
-						requisition: of( ri ),
-						shippings: of( shippings ),
-						citems: of( citems ),
-						required: of( required ),
-						shipped: of( shipped ),
-						required_by_store: of( required_by_store )
 					});
 				})
 			)
@@ -214,49 +180,13 @@ export class SaveShippingComponent extends BaseComponent
 			({
 				next: (responses)=>
 				{
-					if( responses == null )
-					{
-						this.showError('No se encontro la requisicion');
-						return;
-					}
-						
-					this.is_loading = false;
-					responses?.category.data.forEach(c=>this.category_dictionary[c.id]=c);
-					this.store_list = responses?.store.data ?? [];
-					this.shipping_info = responses?.shipping_info ?? GetEmpty.shipping_info(); ;
+					this.to_store = responses.to_store;
+					this.from_store = responses.from_store;
 
-					this.requisition_info = responses?.requisition ?? null;
-
-					this.to_store_name = this.requisition_info?.required_by_store.name || null;
-					this.from_store_name = this.store_list.find((s) => s.id == this.rest.user?.store_id)?.name || null;
-
-					this.from_store_id = this.shipping_info.shipping.from_store_id || '';
-					this.to_store_id = this.shipping_info.shipping.to_store_id || '';
-
-					if (!this.from_store_id) {
-						this.from_store_id = this.requisition_info?.requisition?.requested_to_store_id || '';
-						this.shipping_info.shipping.from_store_id = this.requisition_info?.requisition.requested_to_store_id || null;
-					}
-
-					if(!this.to_store_id)
-					{
-						this.to_store_id = this.requisition_info?.requisition.required_by_store_id || '';
-						this.shipping_info.shipping.to_store_id = this.requisition_info?.requisition.required_by_store_id || null;
-					}
-
-					//x
-					this.requisition_info = responses?.requisition ?? null;
-
-					this.crequisition_info = {
-						...responses?.requisition,
-						required_by_store: responses?.required_by_store,
-						shippings: responses?.shippings,
-						citems: responses?.citems,
-						required: responses?.required,
-						shipped: responses?.shipped
-					};
+					this.shipping_info = responses?.shipping_info ?? GetEmpty.shipping_info(); 
 
 					console.log('shipping_info', this.shipping_info);
+					this.is_loading = false;
 				},
 				error: (error)=> 
 				{
@@ -265,6 +195,71 @@ export class SaveShippingComponent extends BaseComponent
 				}
 			});
 		});
+	}
+
+	initializeCRequisitionInfo(requisition_items_info:RequisitionInfo['items'], shipping_info_list:ShippingInfo[] = [], item_stock_info_list:ItemStockInfo[] = [], production_list:Production[] = [], required_by_store:Store)
+	{
+		
+		// let filtered_items = requisition_items_info?.reduce((p, c)=>
+		// {
+		// 	let index = p.findIndex((x)=>x.item.id == c.item.id);
+		// 	if( index == -1 )
+		// 	{
+		// 		p.push(c);
+		// 	}
+		// 	else
+		// 	{
+		// 		p[index].requisition_item.qty += c.requisition_item.qty;
+		// 	}
+		// 	return p;
+		// }, [] as RequisitionItemInfo[]); 
+
+		let citems:CItem[] = requisition_items_info?.map((rii)=>
+		{ 
+			let item_stock_info = item_stock_info_list?.find((x)=>x.item.id == rii.item.id);
+			let item_info:ItemInfo = {
+				item: rii.item,
+				category: rii.category,
+				price: item_stock_info?.price || undefined,
+				prices: item_stock_info?.prices || [],
+				records: item_stock_info?.records || [],
+				stock_record: item_stock_info?.stock_record || undefined,
+				options: item_stock_info?.options || [],
+				exceptions: item_stock_info?.exceptions || [],
+				display_category: item_stock_info?.display_category || false,
+				serials: item_stock_info?.serials || [],
+
+			};
+
+			let required = rii.requisition_item.qty;
+			let shipped = shipping_info_list?.reduce((p, si) => {
+				let items = si.items.filter((x) => x.item?.id == rii.item.id);
+				return p + items.reduce((prev_c, item) => prev_c + (item.shipping_item?.qty ?? 0), 0);
+			}, 0);
+
+			let productions = production_list?.filter(p => p.item_id = rii.item.id);
+
+			let produced = productions?.reduce((p, c) => p + c.qty, 0);
+			let to_ship_qty = 0;
+			let stock = item_stock_info_list?.find((x) => x.item.id == rii.item.id)?.total || 0;
+
+			return {
+				item_info, category: rii.category, required, shipped, produced, to_ship_qty, stock: stock
+			};
+		});
+		//se obtiene el total requerido y enviado
+		let required	= citems.reduce((p,citem)=>p+citem.required,0);
+		let shipped		= citems.reduce((p,citem)=>p+citem.shipped,0);
+
+		this.crequisition_info = {
+			...this.requisition_info!,
+			required_by_store,
+			shippings: shipping_info_list,
+			citems: citems,
+			required: required,
+			shipped: shipped
+		};
+		console.log('crequisition_info', this.crequisition_info);
 	}
 
 	updateValues()
