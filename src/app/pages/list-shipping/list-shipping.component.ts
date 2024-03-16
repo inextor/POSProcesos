@@ -26,6 +26,13 @@ interface CRequisitionInfo extends RequisitionInfo
 	required_by_store:Store;
 }
 
+interface CRequisitionByStore
+{
+	store:Store;
+	required:number;
+	shipped:number;
+}
+
 @Component({
 	selector: 'app-list-shipping',
 	standalone: true,
@@ -39,7 +46,9 @@ export class ListShippingComponent extends BaseComponent
 	rest_requsition_info:Rest<Requisition,RequisitionInfo> = this.rest.initRest('requisition_info');
 	rest_shipping_info:Rest<Shipping,ShippingInfo> = this.rest.initRest('shipping_info');
 	rest_production:RestSimple<Production> = this.rest.initRestSimple('production',['id','created_by_user_id','produced_by_user_id','verified_by_user_id']);
-	crequisition_info_list: CRequisitionInfo[] = [];
+	rest_stores:RestSimple<Store> = this.rest.initRestSimple('store',['id','name']);
+	crequisition_info_list: CRequisitionInfo[] = []; //old
+	crequisition_by_store_list: CRequisitionByStore[] = [];
 
 	ngOnInit()
 	{
@@ -70,7 +79,8 @@ export class ListShippingComponent extends BaseComponent
 						limit: 999999
 					}),
 					production: this.rest_production.search(production_search),
-					requsitions: of( rest_resonse )
+					requsitions: of( rest_resonse ),
+					stores: this.rest_stores.search({limit:999999})
 				})
 			}),
 			mergeMap((response)=>
@@ -105,12 +115,44 @@ export class ListShippingComponent extends BaseComponent
 					return { ...ri, required_by_store, shippings, citems, required, shipped };
 				});
 
-				return of( creqs );
+				return forkJoin
+				({
+					creq : of(creqs),
+					stores: of(response.stores.data)
+				});
 			})
 		)
 		.subscribe((response)=>
 		{
-			this.crequisition_info_list = response;
+			this.crequisition_info_list = response.creq;
+
+			//now we need to calculate the required and shipped for each store
+			//from the crequisition_info_list, we will calculate the required and shipped for each store in the crequisition_by_store_list
+			//first lets create a partial list of the required and shipped for each store getting the stores from the response.stores
+			this.crequisition_by_store_list = response.stores.map((store)=>
+			{
+				let required = this.crequisition_info_list.reduce((p,creq)=>
+				{
+					if(creq.required_by_store.id == store.id)
+					{
+						return p + creq.required;
+					}
+					return p;
+				},0);
+
+				let shipped = this.crequisition_info_list.reduce((p,creq)=>
+				{
+					if(creq.required_by_store.id == store.id)
+					{
+						return p + creq.shipped;
+					}
+					return p;
+				},0);
+
+				return {store,required,shipped};
+			});
+
+			console.log(this.crequisition_by_store_list);
 		});
 	}
 }
