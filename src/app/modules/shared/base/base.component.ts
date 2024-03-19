@@ -8,6 +8,7 @@ import { ShortDatePipe } from '../pipes/short-date.pipe';
 import { Title } from '@angular/platform-browser';
 import { Observable, combineLatest, startWith } from 'rxjs';
 import { SearchObject } from '../services/Rest';
+import { ConfirmationService } from '../services/confirmation.service';
 
 @Component({
 	selector: 'app-base',
@@ -25,7 +26,7 @@ export class BaseComponent	implements OnDestroy
 	total_pages:number = 0;
 	page_size:number = 50;
 
-	constructor(public rest:RestService, public route:ActivatedRoute,public router:Router, public location:Location,public title_service:Title)
+	constructor(public rest:RestService, public route:ActivatedRoute,public router:Router, public location:Location,public title_service:Title,public confirmation:ConfirmationService)
 	{
 
 	}

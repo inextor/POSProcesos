@@ -1,0 +1,62 @@
+:host
+{
+	
+}
+
+.app-modal
+{
+	display: none;
+	position: fixed; 
+	top: 0; 
+	left: 0; 
+	bottom: 0; 
+	right: 0; 
+	z-index: 1001;
+	background-color: rgba( 0,0,0,0.6); 
+	pointer-events: all;
+}
+
+.app-modal > div
+{
+	color: #464646;
+	background-color: var(--card-background-color-plain);
+	background-image: var(--card-background-image);
+	min-width: 300px;
+	min-height: 50px;
+	overflow-x: auto;
+	overflow-y: auto;
+	position: fixed;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	z-index: 1001;
+	font-size: 16px;
+}
+
+.app-modal > div.biggest_posible
+{
+	width: 90%;
+	max-width: 1100px;
+}
+
+.close-button
+{
+	position:absolute;
+	top: 5px;
+	right: 5px;
+	width: 40px;
+	height: 40px;
+	text-align:center;
+	cursor: pointer;
+}
+
+.rounded
+{
+	max-height: 95vh;
+}
+
+.app-modal dialog
+{
+	padding: 0;
+	border: 0;
+}
