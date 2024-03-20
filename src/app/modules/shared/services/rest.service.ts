@@ -37,6 +37,7 @@ export class RestService
 
 	public _is_offline:boolean = false;
 	public _offline_search_enabled = false;
+	public show_menu:boolean = false;
 
 	public local_db:any;
 
@@ -63,6 +64,17 @@ export class RestService
 		this.user = this.getUserFromSession();
 		this.preferences = this.getPreferencesFromSession();
 		this.session_start = this.getSessionStart();
+	}
+
+	public hideMenu():void
+	{
+		this.show_menu = false;
+	}
+
+	toggleMenu():void
+	{
+		this.show_menu = !this.show_menu;
+		console.log('Show menu', this.show_menu);
 	}
 
 	getSessionStart():Date
