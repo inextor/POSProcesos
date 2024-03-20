@@ -9,6 +9,7 @@ import { Title } from '@angular/platform-browser';
 import { Observable, combineLatest, startWith } from 'rxjs';
 import { SearchObject } from '../services/Rest';
 import { ConfirmationService } from '../services/confirmation.service';
+import { Utils } from '../Utils';
 
 @Component({
 	selector: 'app-base',
@@ -89,5 +90,35 @@ export class BaseComponent	implements OnDestroy
 			limit: this.page_size
 		};
 		return item_search;
+	}
+
+	onDateChange(date:string,obj:any, attr:string,hour='', seconds:number =0)
+	{
+		if( date == '' )
+		{
+			obj[attr] = null;
+			return;
+		}
+
+		let d_str = date.trim();
+		if( /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/.test( d_str ) )
+		{
+			d_str = date.trim()+':00';
+		}
+
+		if( hour != '')
+		{
+			d_str = date.substring(0,10)+' '+hour;
+		}
+
+		let d = Utils.getLocalDateFromMysqlString( d_str );
+
+		if( seconds )
+		{
+			d?.setSeconds( seconds );
+		}
+
+		obj[attr] = d;
+		return;
 	}
 }

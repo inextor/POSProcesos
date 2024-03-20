@@ -5,19 +5,28 @@
 		</div>
 	</div>
 	<div class="card p-3 mt-3">
-	<div class="row">
-		<div class="col-4">
-			<label>Articulo</label>
-			<input type="text" name="name" class="form-control">
-		</div>
-		<div class="col-4">
+	<form (submit)="filterRequisitions()" class="row">
+		<div class="col-3">
 			<label>Sucursal</label>
-			<select name="store_id" class="form-control">
+			<select name="store_id" class="form-control" [(ngModel)]="search_required_by_store_id">
 				<option [ngValue]="null">Todas</option>
 				<option *ngFor="let s of store_list" [ngValue]="s.id">{{s.name | titlecase}}</option>
 			</select>
 		</div>
-	</div>
+		<div class="col-3">
+			<label>Fecha Inicial</label>
+			<input type="datetime-local" class="form-control" name="start_date" [(ngModel)]="search_start_date">
+		</div>
+		<div class="col-3">
+			<label>Fecha Final</label>
+			<input type="datetime-local" class="form-control" name="end_date" [(ngModel)]="search_end_date">
+		</div>
+		<div class="col-3">
+			<label>&nbsp;</label>
+			<button type="submit" class="btn btn-primary w-100">Buscar</button>
+		</div>
+
+	</form>
 	</div>
 
 	<div class="card p-3 mt-3">
@@ -37,7 +46,7 @@
 				<tbody>
 					<tr *ngFor="let cri of requsition_obj_list">
 						<td>{{cri.requisition.item_id}} - {{cri.requisition.category_name??''}} {{cri.requisition.item_name }}</td>
-						<td>TODAS</td>
+						<td>{{store_dict[cri.requisition.required_by_store_id].name}}</td>
 						<td class="text-end">{{cri.requisition.sum_qty}}</td>
 						<td class="text-end">{{(cri?.production?.produced || 0) | number}}</td>
 						<td class="text-end">{{(cri?.production?.production_merma_qty || 0) | number}}</td>
@@ -99,15 +108,24 @@
 					</div>
 
 					<div class="col-6">
+						<label>Usuario</label>
+						<select name="production_user_id" class="form-control" [(ngModel)]="production.produced_by_user_id">
+							<option selected value="null">Seleccionar</option>
+							<option *ngFor="let user of user_list" [ngValue]="user.id" >{{user.name | uppercase}}</option>
+						</select>
+					</div>
+
+					<div class="col-6">
 						<label>Merma</label>
 						<input class="form-control" type="number" name="production_merma_qty" [min]="production.qty==0?1:0" [(ngModel)]="production.merma_qty"	required>
 					</div>
 
-					<div class="col-6">
-						<label>Usuario</label>
-						<select name="production_user_id" class="form-control" [(ngModel)]="production.produced_by_user_id">
-							<option value="null">Seleccionar</option>
-							<option *ngFor="let user of user_list" [ngValue]="user.id" >{{user.name | uppercase}}</option>
+					<div class="col-6" *ngIf="production.merma_qty > 0">
+						<label>Motivo de merma</label>
+						<select name="production_merma_reason" class="form-control" [(ngModel)]="production.merma_reason">
+							<option value="">Seleccionar</option>
+							<option value="Producción">Producción</option>
+							<option value="Calidad">Calidad</option>
 						</select>
 					</div>
 				</div>

@@ -9,6 +9,7 @@ import { ProductionInfo, RequisitionInfo,RequisitionItemInfo } from '../../modul
 import { Requisition,Store,Category,Item, Check_In, User, Production} from '../../modules/shared/RestModels';
 import { GetEmpty } from '../../modules/shared/GetEmpty';
 import { BaseComponent } from '../../modules/shared/base/base.component';
+import { Utils } from '../../modules/shared/Utils';
 
 interface CRequistionItem
 {
@@ -18,6 +19,7 @@ interface CRequistionItem
 	min_created: string;
 	requisition_ids: string;
 	sum_qty:number;
+	required_by_store_id:number;
 }
 
 interface CProduction
@@ -45,6 +47,7 @@ export class ListRequisitionComponent extends BaseComponent implements OnInit
 {
 	requisition_list:RequisitionInfo[] =[];
 	store_list:Store[] = [];
+	store_dict:Record<number,Store> = {};
 	rest_requistion:Rest<Requisition,RequisitionInfo> = this.rest.initRest('requisition_info');
 	rest_store:RestSimple<Store> = this.rest.initRest('store',['id','name','created','updated']);
 	c_req_item_list:CRequisitionItem[] = [];
@@ -57,22 +60,28 @@ export class ListRequisitionComponent extends BaseComponent implements OnInit
 	user_list:User[] = [];
 	production_user_id:number | null = null;
 	production:Production = GetEmpty.production();
+	search_start_date:string = '';
+	search_end_date:string = '';
+	search_required_by_store_id:number | null = null;
 	production_list:Production[] = [];
 	requsition_obj_list: CRequisitionItem[] = [];
 
 	ngOnInit()
 	{
-		this.production = GetEmpty.production();
 		this.route.params.pipe
 		(
 			mergeMap((param_map)=>
 			{
+				let start = new Date();
+				this.search_end_date = Utils.getLocalMysqlStringFromDate(start);
+				start.setHours(0,0,0,0);
+				this.search_start_date = Utils.getLocalMysqlStringFromDate(start);
 				this.is_loading = true;
 
 				return forkJoin
 				({
 					stores: this.rest_store.search({limit:999999}),
-					requisition: this.rest.getReport('requisition_items',{}),
+					requisition: this.rest.getReport('requisition_items',{store_id:this.rest.user?.store_id, start: Utils.getDateFromLocalMysqlString(this.search_start_date), end: Utils.getDateFromLocalMysqlString(this.search_end_date)}),
 					users: this.rest_check_in.search({eq:{current:1},limit:999999}).pipe
 					(
 						mergeMap((response)=>
@@ -94,7 +103,9 @@ export class ListRequisitionComponent extends BaseComponent implements OnInit
 
 			this.requsition_obj_list = response.requisition as any[];
 			//this.requisition_list = response.requisition;
-			//this.store_list = response.stores.data;
+			this.store_list = response.stores.data;
+			response.stores.data.forEach((store)=>this.store_dict[store.id]=store);
+
 			this.user_list = response.users.data;
 
 			//let find= (rii:RequisitionItemInfo, r_info:RequisitionInfo, cri:CRequisitionItem, todas:boolean):boolean =>
@@ -142,6 +153,19 @@ export class ListRequisitionComponent extends BaseComponent implements OnInit
 
 	}
 
+	filterRequisitions()
+	{
+		let start = Utils.getDateFromLocalMysqlString(this.search_start_date);
+		let end = Utils.getDateFromLocalMysqlString(this.search_end_date);
+		this.is_loading = true;
+		this.rest.getReport('requisition_items',{store_id:this.rest.user?.store_id, start:start, end: end, required_by_store_id: this.search_required_by_store_id})
+		.subscribe((response)=>
+		{
+			this.is_loading = false;
+			this.requsition_obj_list = response as any[];
+		});
+	}
+
 	floor(n:number)
 	{
 		return Math.floor( n );
@@ -149,6 +173,8 @@ export class ListRequisitionComponent extends BaseComponent implements OnInit
 
 	showProduction(cri: CRequisitionItem)
 	{
+		this.production = GetEmpty.production();
+
 		let user = this.rest.user as User;
 
 		this.show_add_production = true;
@@ -156,7 +182,7 @@ export class ListRequisitionComponent extends BaseComponent implements OnInit
 		this.production.store_id = user.store_id as number;
 		this.production.item_id = cri.requisition.item_id;
 		this.production.created_by_user_id = user.id;
-		this.production.produced_by_user_id = user.id;
+
 		this.showModal('modal-add-production');
 	}
 
@@ -206,7 +232,7 @@ export class ListRequisitionComponent extends BaseComponent implements OnInit
 				let form = evt.target as HTMLFormElement;
 				form.reset();
 				//we must update the requisition_obj_list
-				this.requsition_obj_list.forEach((req_obj)=>
+				this.requsition_obj_list.map((req_obj)=>
 				{
 					if( req_obj.production?.item_id == response.item_id )
 					{
