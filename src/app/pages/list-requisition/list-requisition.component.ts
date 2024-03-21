@@ -164,6 +164,8 @@ export class ListRequisitionComponent extends BaseComponent implements OnInit
 		{
 			this.is_loading = false;
 
+			this.requsition_obj_list = response as any[];
+
 			this.requsition_obj_list = response.map((cri:CRequisitionItem)=>
 			{
 				cri.requisition.required_by_store = this.store_list.find(s=>cri.requisition.required_by_store_id) || null;
