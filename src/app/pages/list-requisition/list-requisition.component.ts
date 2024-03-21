@@ -20,6 +20,7 @@ interface CRequistionItem
 	requisition_ids: string;
 	sum_qty:number;
 	required_by_store_id:number;
+	required_by_store:Store | null;
 }
 
 interface CProduction
@@ -162,7 +163,12 @@ export class ListRequisitionComponent extends BaseComponent implements OnInit
 		.subscribe((response)=>
 		{
 			this.is_loading = false;
-			this.requsition_obj_list = response as any[];
+
+			this.requsition_obj_list = response.map((cri:CRequisitionItem)=>
+			{
+				cri.requisition.required_by_store = this.store_list.find(s=>cri.requisition.required_by_store_id) || null;
+				return cri;
+			});
 		});
 	}
 
@@ -241,7 +247,7 @@ export class ListRequisitionComponent extends BaseComponent implements OnInit
 						req_obj.production.production_merma_qty = response.merma_qty;
 					}
 				});
-				
+
 				this.showSuccess('Produccion agregada');
 			},
 			error: (error:any) =>

@@ -5,6 +5,7 @@ import { Check_In, User } from '../../modules/shared/RestModels';
 import { Rest, RestResponse, RestSimple } from '../../modules/shared/services/Rest';
 import { BaseComponent } from '../../modules/shared/base/base.component';
 import { Utils } from '../../modules/shared/Utils';
+import { FormsModule } from '@angular/forms';
 
 interface CUser
 {
@@ -15,14 +16,12 @@ interface CUser
 	worked_hours:string[];
 }
 
-
 const ci_fields = ['user_id','timestamp_start','timestamp_end'];
-
 
 @Component({
 	selector: 'app-list-user-attendance',
 	standalone: true,
-	imports: [CommonModule],
+	imports: [CommonModule,FormsModule],
 	templateUrl: './list-user-attendance.component.html',
 	styleUrl: './list-user-attendance.component.css'
 })
@@ -33,6 +32,8 @@ export class ListUserAttendanceComponent extends BaseComponent
 	check_in_search = this.rest_check_in.getEmptySearch();
 	start:Date = new Date();
 	end:Date | null = new Date();
+	start_date:string = '';
+	dates:string[] = ',,,,,,'.split(',');
 
 	//public initRestSimple<T>(path: string, fields:string[]|undefined = undefined, extra_keys:string[]|undefined = undefined)
 	cuser_list:CUser[] = [];
@@ -40,14 +41,14 @@ export class ListUserAttendanceComponent extends BaseComponent
 	ngOnInit()
 	{
 		let d = new Date();
-	let current_date = d.getDay();
+		let current_date = d.getDay();
 
 		d.setDate( d.getDate() - d.getDay()	);
 		d.setHours( 0,0,0,0);
 
 		this.start.setTime( d.getTime() );
 
-		this.subs.sink = this.route.paramMap.pipe
+		this.subs.sink = this.route.queryParamMap.pipe
 		(
 			mergeMap((param_map)=>
 			{
@@ -73,8 +74,21 @@ export class ListUserAttendanceComponent extends BaseComponent
 
 				let start = new Date();
 				start.setDate(start.getDate() -1 );
-
 				search_object.csv['user_id'] = ids;
+
+				this.start_date = Utils.getLocalMysqlStringFromDate( start ).substring(0,10);
+
+				let date_name = 'Lunes,Martes,Miercoles,Jueves,Viernes,Sabado,Domingo'.split(',');
+
+				this.dates.forEach((x,index)=>
+				{
+					let d = new Date();
+					d.setTime( start.getTime() )
+					d.setDate( d.getDate()+index );
+
+					this.dates[index] =date_name[ d.getDay() ]+' '+d.getDate();
+				});
+
 				//search_object.eq.current = 1;
 
 				search_object.ge.timestamp_start = this.start;
@@ -138,6 +152,7 @@ export class ListUserAttendanceComponent extends BaseComponent
 			this.cuser_list = response;
 		})
 	}
+
 	getStringHours(seconds:number)
 	{
 		if( seconds == 0 )
