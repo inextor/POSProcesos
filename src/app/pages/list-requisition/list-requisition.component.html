@@ -44,6 +44,13 @@
 					</tr>
 				</thead>
 				<tbody>
+					<ng-container *ngIf="requsition_obj_list.length == 0">
+						<tr>
+							<td colspan="7" class="text-center">
+								<div class="alert alert-light m-3" role="alert">No se encontraron requisiciones</div>
+							</td>
+						</tr>
+					</ng-container>
 					<tr *ngFor="let cri of requsition_obj_list">
 						<td>{{cri.requisition.item_id}} - {{cri.requisition.category_name??''}} {{cri.requisition.item_name }}</td>
 						<td>{{cri.requisition.required_by_store?.name}}</td>

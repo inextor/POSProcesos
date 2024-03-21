@@ -5,6 +5,7 @@ import { mergeMap, of, forkJoin } from 'rxjs';
 import { RestResponse } from '../../modules/shared/services/Rest';
 import { BaseComponent } from '../../modules/shared/base/base.component';
 import { FormsModule } from '@angular/forms';
+import { ShortDatePipe } from '../../modules/shared/pipes/short-date.pipe';
 
 export interface UserCheckInfo
 {
@@ -18,7 +19,7 @@ export interface UserCheckInfo
 @Component({
 	selector: 'app-users-checking-clock',
 	standalone: true,
-	imports: [CommonModule, FormsModule],
+	imports: [CommonModule, FormsModule, ShortDatePipe],
 	templateUrl: './users-checking-clock.component.html',
 	styleUrl: './users-checking-clock.component.css'
 })

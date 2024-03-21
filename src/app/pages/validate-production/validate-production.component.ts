@@ -25,6 +25,7 @@ interface CProduction
 	total:number;
 	validated:number;
 	merma:number;
+	merma_reason?:string | null;
 	expand:boolean;
 }
 
@@ -45,8 +46,10 @@ export class ValidateProductionComponent extends BaseComponent
 	search_start_date:string = '';
 	search_end_date:string = '';
 
-	show_merma_option:boolean = false;
-	selected_merma_option:string = '';
+	// show_merma_option:boolean = false;
+	// selected_merma_option:string = '';
+	// selected_production:CProduction | null = null;
+	// selected_production_info:CProductionInfo | null = null;
 
 	ngOnInit()
 	{
@@ -103,7 +106,8 @@ export class ValidateProductionComponent extends BaseComponent
 					total: 0,
 					validated: 0,
 					expand: false,
-					merma: 0
+					merma: 0,
+					merma_reason: ''
 				};
 				production_info_list.push( pl );
 			}
@@ -143,45 +147,43 @@ export class ValidateProductionComponent extends BaseComponent
 	validateAll(pi: CProduction)
 	{
 		//si hay mermas, se abre un modal para seleccionar la opcion de merma
-		if(pi.merma > 0 && this.selected_merma_option == '')
+		if(pi.merma > 0 && pi.merma_reason == '')
 		{
-			this.show_merma_option = true;
-		}
-		else
+			return this.showError('Selecciona una opción de merma');
+		}	
+		this.subs.sink = this.confirmation.showConfirmAlert(pi,'Validar todo?' ,'¿Estás seguro de validar todas las producciones?')
+		.subscribe((response)=>
 		{
-			// this.subs.sink = this.confirmation.showConfirmAlert(pi,'Validar todo?' ,'¿Estás seguro de validar todas las producciones?')
-			// .subscribe((response)=>
-			// {
-			// 	if(response.accepted)
-			// 	{
-			// 		//se filtran las producciones que no han sido validadas
-			// 		let production_info_list = pi.production_list.filter(p => !p.production.verified_by_user_id)
-			// 		//se obtiene la lista de producciones con la cantidad y merma
-			// 		let production_list = production_info_list.map(p => ({...p.production, qty: p.qty, merma_qty: p.merma_qty}));
+			if(response.accepted)
+			{
+				//se filtran las producciones que no han sido validadas
+				let production_info_list = pi.production_list.filter(p => !p.production.verified_by_user_id)
+				//se obtiene la lista de producciones con la cantidad y merma
+				let production_list = production_info_list.map(p => ({...p.production, qty: p.qty, merma_qty: p.merma_qty, merma_reason: pi.merma_reason}));
 
-			// 		this.rest_production
-			// 		.batchUpdate(production_list)
-			// 		.subscribe({
-			// 			next: (response)=>
-			// 			{
-			// 				//se actualizan las producciones con la respuesta del servidor
-			// 				for(let p of production_info_list)
-			// 				{
-			// 					p.production = response.find(r => r.id == p.production.id) as Production;
-			// 				}
-			// 				//se actualiza el cProduction para que no muestre el boton de validar todo
-			// 				pi.validated = pi.total;
-			// 				this.showSuccess('Producción validada');
-			// 			},
-			// 			error: (error)=>
-			// 			{
-			// 				this.showError( error )
-			// 			}
-			// 		})
-			// 	}
-			// })
-			this.selected_merma_option = '';	
-		}
+				this.rest_production
+				.batchUpdate(production_list)
+				.subscribe({
+					next: (response)=>
+					{
+						//se actualizan las producciones con la respuesta del servidor
+						for(let p of production_info_list)
+						{
+							p.production = response.find(r => r.id == p.production.id) as Production;
+						}
+						//se actualiza el cProduction para que no muestre el boton de validar todo
+						pi.validated = pi.total;
+						//se elimina de la lista de producciones
+						this.production_info_list = this.production_info_list.filter(p => p.item_id != pi.item_id);
+						this.showSuccess('Producción validada');
+					},
+					error: (error)=>
+					{
+						this.showError( error )
+					}
+				})
+			}
+		})
 		
 	}
 }
