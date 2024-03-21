@@ -70,9 +70,17 @@ export class ValidateProductionComponent extends BaseComponent
 					};
 					this.production_info_list.push( pl );
 				}
-				pl.production_list.push({...r, qty: r.production.qty, merma_qty: r.production.merma_qty });
-				pl.total += r.production.qty;
-				pl.validated += r.production.verified_by_user_id ? r.production.qty : 0;
+				if( r.production.verified_by_user_id == null )
+				{
+					pl.production_list.push({...r, qty: r.production.qty, merma_qty: r.production.merma_qty });
+				}
+				pl.merma += r.production.merma_qty;
+				//el total deberia de ser unicamente de las producciones que han sido validadas
+				if(r.production.verified_by_user_id)
+				{
+					pl.total += r.production.qty;
+					pl.validated += r.production.qty;
+				}
 			}
 		})
 	}

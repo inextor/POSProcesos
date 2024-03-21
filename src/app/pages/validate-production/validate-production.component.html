@@ -2,7 +2,7 @@
 	<h1>Validar Produccion</h1>
 	<div class="card p-3">
 		<div class="row border-last align-items-center">
-			<div class="col-4 text-end">Hora</div>
+			<div class="col-4 text-end">Requerido</div>
 			<div class="col-2 text-end">Producido</div>
 			<div class="col-2 text-end">Validado</div>
 			<div class="col-2 text-end">Merma</div>
@@ -19,10 +19,10 @@
 				<div class="col-2 text-end">{{pl.validated}}</div>
 				<div class="col-2 text-end">{{pl.merma}}</div>
 				<div class="col-1 text-end">
-					<button type="button" class="btn btn-primary" (click)="pl.expand=!pl.expand">Ver</button>
+					<button *ngIf="pl.production_list.length > 0" type="button" class="btn btn-primary" (click)="pl.expand=!pl.expand">Ver</button>
 				</div>
 				<div class="col-1 p-0 text-end">
-					<button *ngIf="pl.total != pl.validated" type="button" class="btn btn-primary me-2" (click)="validateAll(pl)">Validar todo</button>
+					<button *ngIf="pl.production_list.length > 0" type="button" class="btn btn-primary me-2" (click)="validateAll(pl)">Validar todo</button>
 				</div>
 			</div>
 			@if( pl.expand )
@@ -30,7 +30,7 @@
 				@for(p of pl.production_list; track $index)
 				{
 					<div class="row align-items-center py-1" [ngClass]="{'border-bottom':$last}">
-						<div class="col-2 text-start">{{p.user.name| titlecase}}</div>
+						<div class="col-2 text-start">{{p.user ? p.user.name : 'No registrado'| titlecase}}</div>
 						<div class="col-2 text-end">{{p.production.created | shortDate:'relative'}}</div>
 						<div class="col-2 text-end">{{p.production.qty_reported | number}}</div>
 						<div class="col-2 text-end" >
