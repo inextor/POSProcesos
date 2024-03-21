@@ -1,8 +1,27 @@
 <div class="container-fluid">
 	<h1>Validar Produccion</h1>
+	<div class="card p-3 mb-2">
+		<div class="row">
+			<div class="col-12 col-md-4">
+				<label>Fecha Inicial</label>
+				<input type="datetime-local" class="form-control" [(ngModel)]="search_start_date">
+			</div>
+			<div class="col-12 col-md-4">
+				<label>Fecha Final</label>
+				<input type="datetime-local" class="form-control" [(ngModel)]="search_end_date">
+			</div>
+			<div class="col-12 col-md-4">
+				<label>&nbsp;</label>
+				<button type="submit" class="btn btn-primary w-100" (click)="search()">
+					<svg xmlns="http://www.w3.org/2000/svg" width="1.06em" height="1.2em" viewBox="0 0 740 840"><path fill="currentColor" d="M734 668q8 9 0 17l-49 49q-3 3-8 3t-8-3L519 584q-50 38-112 55t-133 6q-53-8-99-33t-83-61t-59-85T3 366q-10-79 16-150T96 95t121-76T367 3q53 7 100 30t84 59t62 82t33 100q11 69-6 131t-55 114zM325 557q48 0 90-18t74-50t50-74t18-90t-18-90t-50-74t-74-50t-90-18t-90 18t-73 50t-50 74t-18 90t18 90t50 74t73 50t90 18"/></svg>
+					Buscar
+				</button>
+			</div>
+		</div>
+	</div>
 	<div class="card p-3">
 		<div class="row border-last align-items-center">
-			<div class="col-4 text-end">Requerido</div>
+			<div class="col-4 text-end"></div>
 			<div class="col-2 text-end">Producido</div>
 			<div class="col-2 text-end">Validado</div>
 			<div class="col-2 text-end">Merma</div>
@@ -11,18 +30,25 @@
 		@for(pl of production_info_list;track pl.expand)
 		{
 			<div class="row border-last align-items-center py-1">
-				<div class="col-4">
+				<div class="col-4 ">
 					{{pl.category?.name}}
 					{{pl.item.name}}
 				</div>
 				<div class="col-2 text-end">{{pl.total | number}}</div>
 				<div class="col-2 text-end">{{pl.validated}}</div>
 				<div class="col-2 text-end">{{pl.merma}}</div>
-				<div class="col-1 text-end">
-					<button *ngIf="pl.production_list.length > 0" type="button" class="btn btn-primary" (click)="pl.expand=!pl.expand">Ver</button>
-				</div>
-				<div class="col-1 p-0 text-end">
-					<button *ngIf="pl.production_list.length > 0" type="button" class="btn btn-primary me-2" (click)="validateAll(pl)">Validar todo</button>
+				<div class="col-2 text-end">
+					<div class="row ">
+						<div class="col-12 col-lg-6 mb-2 m-0 mb-lg-0 p-0">
+							<button *ngIf="pl.production_list.length > 0" type="button" class="btn btn-primary" (click)="pl.expand=!pl.expand">Ver</button>
+						</div>
+						<div class="col-12 col-lg-6 m-0 p-0">
+							<button *ngIf="pl.production_list.length > 0" type="button" class="btn btn-primary" (click)="validateAll(pl)">
+								<svg class="d-inline d-md-none" xmlns="http://www.w3.org/2000/svg" width="1.06em" height="1.2em" viewBox="0 0 740 840"><path fill="currentColor" d="M734 668q8 9 0 17l-49 49q-3 3-8 3t-8-3L519 584q-50 38-112 55t-133 6q-53-8-99-33t-83-61t-59-85T3 366q-10-79 16-150T96 95t121-76T367 3q53 7 100 30t84 59t62 82t33 100q11 69-6 131t-55 114zM325 557q48 0 90-18t74-50t50-74t18-90t-18-90t-50-74t-74-50t-90-18t-90 18t-73 50t-50 74t-18 90t18 90t50 74t73 50t90 18"/></svg>
+								<span class="d-none d-md-inline">Validar</span>
+							</button>
+						</div>
+					</div>
 				</div>
 			</div>
 			@if( pl.expand )

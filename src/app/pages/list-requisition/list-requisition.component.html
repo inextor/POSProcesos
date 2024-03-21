@@ -6,22 +6,22 @@
 	</div>
 	<div class="card p-3 mt-3">
 	<form (submit)="filterRequisitions()" class="row">
-		<div class="col-3">
+		<div class="col-12 col-md-3">
 			<label>Sucursal</label>
 			<select name="store_id" class="form-control" [(ngModel)]="search_required_by_store_id">
 				<option [ngValue]="null">Todas</option>
 				<option *ngFor="let s of store_list" [ngValue]="s.id">{{s.name | titlecase}}</option>
 			</select>
 		</div>
-		<div class="col-3">
+		<div class="col-12 col-md-3">
 			<label>Fecha Inicial</label>
 			<input type="datetime-local" class="form-control" name="start_date" [(ngModel)]="search_start_date">
 		</div>
-		<div class="col-3">
+		<div class="col-12 col-md-3">
 			<label>Fecha Final</label>
 			<input type="datetime-local" class="form-control" name="end_date" [(ngModel)]="search_end_date">
 		</div>
-		<div class="col-3">
+		<div class="col-12 col-md-3">
 			<label>&nbsp;</label>
 			<button type="submit" class="btn btn-primary w-100">Buscar</button>
 		</div>
