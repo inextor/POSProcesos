@@ -1,8 +1,8 @@
-import { Component } from '@angular/core';
+import { Component, Pipe } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { BaseComponent } from '../../modules/shared/base/base.component';
-import { Category, Item, ItemInfo, ItemStockInfo, Production, Requisition, Serial, SerialInfo, SerialItemInfo, Shipping, Stock_Record, Store } from '../../modules/shared/RestModels';
-import { RequisitionInfo, ShippingInfo, ShippingItemInfo } from '../../modules/shared/Models';
+import { Category, Item, ItemInfo, ItemStockInfo, Production, Requisition, Requisition_Item, Serial, SerialInfo, SerialItemInfo, Shipping, Stock_Record, Store } from '../../modules/shared/RestModels';
+import { RequisitionInfo, RequisitionItemInfo, ShippingInfo, ShippingItemInfo } from '../../modules/shared/Models';
 import { Rest, RestSimple, SearchObject } from '../../modules/shared/services/Rest';
 import { forkJoin, from, mergeMap, of } from 'rxjs';
 import { RouterModule } from '@angular/router';
@@ -18,6 +18,7 @@ interface CItem
 	shipped: number;
 	to_ship_qty:number;
 	stock: number;
+	display: boolean;
 }
 
 interface CRequisitionInfo extends RequisitionInfo
@@ -38,6 +39,7 @@ interface CRequisitionInfo extends RequisitionInfo
 })
 export class SaveShippingComponent extends BaseComponent
 {
+
 
 	rest_requisition_info:Rest<Requisition,RequisitionInfo> = this.rest.initRest('requisition_info');
 	rest_shipping_info:Rest<Shipping,ShippingInfo> = this.rest.initRest('shipping_info');
@@ -62,12 +64,12 @@ export class SaveShippingComponent extends BaseComponent
 	//WARNING: PENDIENTE REESTRUCTURAR EL FLUJO Y MODELO DE ENVIOS PARA EL CORRECTO FUNCIONAMIENTO DE ESTE COMPONENTE
 
 	//NO SE PUEDEN EDITAR ENVIOS POR LO PRONTO
-	
-	//--CLIENTE--// 
+
+	//--CLIENTE--//
 
 	//POR LO PRONTO SE CONSTRUIRA CON SOPORTE PARA VARIAS REQUISICIONES MOSTRANDOSE EN EL ENVIO, ESO SIGNIFICA QUE EL ENVIO NO NECESARIAMENTE
 	//TENDRA REQUISICIONES ASOCIADAS, PERO SI PODRA TENER VARIOS ITEMS DE VARIAS REQUISICIONES
-	
+
 	//EN LA RUTA DEL ENVIO SE OBTENDRA EL ID DE LA TIENDA A LA QUE SE LE ENVIA
 	//DESPUES EN EL COMPONENTE SE OBTENDRA LAS REQUISICIONES CON ITEMS PENDIENTES DE ENVIAR A ESA TIENDA
 	//TOMANDO EN CUENTA QUE PODRIA NO HABER REQUISICIONES PENDIENTES
@@ -112,7 +114,7 @@ export class SaveShippingComponent extends BaseComponent
 			};
 
 			//obteniendo informacion de tienda, categorias (para construir los CItems), y las requisiciones_info
-			//las requisiciones seran las que sean requeridas a la tienda del usuario y requeridas por la tienda de los parametros 
+			//las requisiciones seran las que sean requeridas a la tienda del usuario y requeridas por la tienda de los parametros
 			//traer tambien las producciones, solo que tendremos que traer los de los items de las requisiciones
 			this.subs.sink = forkJoin
 			({
@@ -156,8 +158,24 @@ export class SaveShippingComponent extends BaseComponent
 					if( response.requisitions )
 					{
 						let requisitions_info_list = response.requisitions.data;
+
 						//obtener en un solo arreglo todos los requisition_items
-						let ri = requisitions_info_list?.map((r)=>r.items).flat();
+						let tmp_ri = requisitions_info_list?.map((r)=>r.items).flat();
+						//let ri = requisitions_info_list?.map((r)=>r.items).flat();
+
+						let ri_by_item_id = new Map();
+						let ri = tmp_ri.filter((ri:RequisitionItemInfo)=>{
+							if(ri_by_item_id.has( ri.item.id ) )
+							{
+								let ri2 = ri_by_item_id.get( ri.requisition_item.item_id );
+								ri2.requisition_item.qty += ri.requisition_item.qty;
+								return false;
+							}
+							ri_by_item_id.set(ri.requisition_item.item_id, ri );
+							return true;
+						});
+
+
 						let shippings = response.shippings?.data;
 						let item_stock_list = response.item_stock?.data;
 						let productions_list = response.production?.data;
@@ -166,7 +184,7 @@ export class SaveShippingComponent extends BaseComponent
 						this.initializeCRequisitionInfo(ri, shippings, item_stock_list, productions_list, response.to_store);
 						console.log('requisitions found')
 					}
-					
+
 					return forkJoin
 					({
 						category: of( response.category ),
@@ -183,12 +201,12 @@ export class SaveShippingComponent extends BaseComponent
 					this.to_store = responses.to_store;
 					this.from_store = responses.from_store;
 
-					this.shipping_info = responses?.shipping_info ?? GetEmpty.shipping_info(); 
+					this.shipping_info = responses?.shipping_info ?? GetEmpty.shipping_info();
 
 					console.log('shipping_info', this.shipping_info);
 					this.is_loading = false;
 				},
-				error: (error)=> 
+				error: (error)=>
 				{
 					this.showError(error);
 					this.is_loading = false;
@@ -199,24 +217,25 @@ export class SaveShippingComponent extends BaseComponent
 
 	initializeCRequisitionInfo(requisition_items_info:RequisitionInfo['items'], shipping_info_list:ShippingInfo[] = [], item_stock_info_list:ItemStockInfo[] = [], production_list:Production[] = [], required_by_store:Store)
 	{
-		
+
 		// let filtered_items = requisition_items_info?.reduce((p, c)=>
 		// {
-		// 	let index = p.findIndex((x)=>x.item.id == c.item.id);
-		// 	if( index == -1 )
-		// 	{
-		// 		p.push(c);
-		// 	}
-		// 	else
-		// 	{
-		// 		p[index].requisition_item.qty += c.requisition_item.qty;
-		// 	}
-		// 	return p;
-		// }, [] as RequisitionItemInfo[]); 
+		//	let index = p.findIndex((x)=>x.item.id == c.item.id);
+		//	if( index == -1 )
+		//	{
+		//		p.push(c);
+		//	}
+		//	else
+		//	{
+		//		p[index].requisition_item.qty += c.requisition_item.qty;
+		//	}
+		//	return p;
+		// }, [] as RequisitionItemInfo[]);
 
 		let citems:CItem[] = requisition_items_info?.map((rii)=>
-		{ 
+		{
 			let item_stock_info = item_stock_info_list?.find((x)=>x.item.id == rii.item.id);
+
 			let item_info:ItemInfo = {
 				item: rii.item,
 				category: rii.category,
@@ -228,7 +247,6 @@ export class SaveShippingComponent extends BaseComponent
 				exceptions: item_stock_info?.exceptions || [],
 				display_category: item_stock_info?.display_category || false,
 				serials: item_stock_info?.serials || [],
-
 			};
 
 			let required = rii.requisition_item.qty;
@@ -243,8 +261,9 @@ export class SaveShippingComponent extends BaseComponent
 			let to_ship_qty = 0;
 			let stock = item_stock_info_list?.find((x) => x.item.id == rii.item.id)?.total || 0;
 
+
 			return {
-				item_info, category: rii.category, required, shipped, produced, to_ship_qty, stock: stock
+				item_info, category: rii.category, required, shipped, produced, to_ship_qty, stock: stock, display: true
 			};
 		});
 		//se obtiene el total requerido y enviado
@@ -424,5 +443,27 @@ export class SaveShippingComponent extends BaseComponent
 
 			this.show_serial_numbers = true;
 		});
+	}
+
+	addRequired(evt: MouseEvent)
+	{
+		if( !this.crequisition_info )
+		{
+			return;
+		}
+
+		for(let cri of this.crequisition_info.citems)
+		{
+
+			if( cri.stock == 0 )
+			{
+				continue;
+			}
+
+			let faltante = cri.required - cri.shipped;
+			let qty = faltante > cri.stock ? cri.stock : faltante;
+
+			this.addShippingItem(cri.item_info, qty )
+		}
 	}
 }
