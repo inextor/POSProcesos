@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { BaseComponent } from '../../modules/shared/base/base.component';
-import { mergeMap, of } from 'rxjs';
+import { forkJoin, mergeMap, of } from 'rxjs';
 import { Category, Item, Production } from '../../modules/shared/RestModels';
 import { Rest, RestSimple } from '../../modules/shared/services/Rest';
 import { ProductionInfo } from '../../modules/shared/Models';
@@ -9,6 +9,7 @@ import { ShortDatePipe } from '../../modules/shared/pipes/short-date.pipe';
 import { FormsModule } from '@angular/forms';
 import { Utils } from '../../modules/shared/Utils';
 import { ModalComponent } from '../../components/modal/modal.component';
+import { GetEmpty } from '../../modules/shared/GetEmpty';
 
 interface CProductionInfo extends ProductionInfo
 {
@@ -62,7 +63,7 @@ export class ValidateProductionComponent extends BaseComponent
 				date.setHours(0,0,0,0);
 				this.search_start_date = Utils.getLocalMysqlStringFromDate( date );
 				let production_area_id = parseInt( param_map.get('production_area_id')	as string ) as number;
-				return	this.rest_production_info.search({ eq:{ production_area_id } });
+				return	this.rest_production_info.search({ eq:{ production_area_id }, ge:{ created: Utils.getDateFromLocalMysqlString(this.search_start_date) }, le:{ created:Utils.getDateFromLocalMysqlString(this.search_end_date) } });
 			}),
 		)
 		.subscribe((response)=>
@@ -158,22 +159,37 @@ export class ValidateProductionComponent extends BaseComponent
 			{
 				//se filtran las producciones que no han sido validadas
 				let production_info_list = pi.production_list.filter(p => !p.production.verified_by_user_id)
-				//se obtiene la lista de producciones con la cantidad y merma
-				let production_list = production_info_list.map(p => ({...p.production, qty: p.qty, merma_qty: p.merma_qty, merma_reason: pi.merma_reason}));
+	
+				//ya que en el front se totaliza lo validado y la merma
+				//ahora tendremos que "repartir" entre cada una de las producciones la cantidad y merma
+				//osea, lo de los campos pl.validated y pl.merma
 
+				//se ira restando conforme a lo producido y merma de cada produccion
+				//osea que en teoria, si se reparte bien, al final todas las producciones deberian de tener la misma cantidad y merma
+				// y si hubo cambios, o salieron menos, se deberia de notificar al usuario
+
+				//por lo pronto, se hara la eliminacion de las producciones y creacion de una nueva con los datos de pl.validated y pl.merma
+				//esto poniendo el status de la produccion a DELETED
+				let production_list = production_info_list.map(p => ({...p.production, qty: p.qty, merma_qty: p.merma_qty, merma_reason: pi.merma_reason, status: 'DELETED'}));
 				this.rest_production
-				.batchUpdate(production_list)
+				.batchUpdate(production_list as Partial<Production>[])
 				.subscribe({
 					next: (response)=>
 					{
-						//se actualizan las producciones con la respuesta del servidor
-						for(let p of production_info_list)
-						{
-							p.production = response.find(r => r.id == p.production.id) as Production;
-						}
-						//se actualiza el cProduction para que no muestre el boton de validar todo
-						pi.validated = pi.total;
-						//se elimina de la lista de producciones
+						//se crea una sola nueva produccion en base a los datos de pl.validated y pl.merma
+						let newProduction:Production = GetEmpty.production();
+						newProduction.qty = pi.validated;
+						newProduction.merma_qty = pi.merma;
+						newProduction.item_id = pi.item_id;
+						newProduction.produced_by_user_id = pi.production_list[0].production.produced_by_user_id; //se toma el usuario de la primera produccion
+						newProduction.merma_reason = pi.merma_reason ? pi.merma_reason : null;
+						newProduction.qty_reported = pi.validated + pi.merma;
+						newProduction.store_id = pi.production_list[0].production.store_id; //se toma la tienda de la primera produccion
+						newProduction.verified_by_user_id = this.rest.user?.id as number;
+
+						//llamada de rest------------------------------------------
+
+						//se eliminan las producciones de la lista
 						this.production_info_list = this.production_info_list.filter(p => p.item_id != pi.item_id);
 						this.showSuccess('Producción validada');
 					},

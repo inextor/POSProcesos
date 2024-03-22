@@ -218,6 +218,7 @@ export class GetEmpty
 			qty: 0,
 			qty_reported: 0,
 			store_id: 0,
+			status: 'ACTIVE',
 			updated: new Date(),
 			verified_by_user_id: null,
 		}

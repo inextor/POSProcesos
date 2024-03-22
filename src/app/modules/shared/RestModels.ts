@@ -940,7 +940,8 @@ export interface Production{
 	production_area_id: number;
 	qty:number
 	qty_reported:number;
-	store_id:number
+	store_id:number;
+	status:'ACTIVE'|'DELETED';
 	updated:Date;
 	verified_by_user_id:number | null;
 }
