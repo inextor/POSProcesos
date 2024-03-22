@@ -15,11 +15,11 @@
 		</div>
 		<div class="col-12 col-md-3">
 			<label>Fecha Inicial</label>
-			<input type="datetime-local" class="form-control" name="start_date" [(ngModel)]="search_start_date">
+			<input type="date" class="form-control" name="start_date" [(ngModel)]="search_start_date">
 		</div>
 		<div class="col-12 col-md-3">
 			<label>Fecha Final</label>
-			<input type="datetime-local" class="form-control" name="end_date" [(ngModel)]="search_end_date">
+			<input type="date" class="form-control" name="end_date" [(ngModel)]="search_end_date">
 		</div>
 		<div class="col-12 col-md-3">
 			<label>&nbsp;</label>
@@ -129,11 +129,17 @@
 
 					<div class="col-6" *ngIf="production.merma_qty > 0">
 						<label>Motivo de merma</label>
-						<select name="production_merma_reason" class="form-control" [(ngModel)]="production.merma_reason">
+						<input type="text" name="production_merma_reason" [(ngModel)]="production.merma_reason" class="form-control" [required]="production.merma_qty > 0" list="mermalist">
+
+						<datalist id="mermalist">
+							<option value="Producción">
+							<option value="Calidad">
+						</datalist>
+						<!-- <select name="production_merma_reason" class="form-control" [(ngModel)]="production.merma_reason">
 							<option value="">Seleccionar</option>
 							<option value="Producción">Producción</option>
 							<option value="Calidad">Calidad</option>
-						</select>
+						</select> -->
 					</div>
 				</div>
 				<div class="row">

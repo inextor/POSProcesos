@@ -187,11 +187,22 @@ export class ValidateProductionComponent extends BaseComponent
 						newProduction.store_id = pi.production_list[0].production.store_id; //se toma la tienda de la primera produccion
 						newProduction.verified_by_user_id = this.rest.user?.id as number;
 
-						//llamada de rest------------------------------------------
+						//llamada de rest para crear la nueva produccion
+						this.subs.sink = this.rest_production.create(newProduction).subscribe({
+							next: (response)=>
+							{
+								console.log('new',response);
+								this.showSuccess('Nueva produccion validada creada');
+							},
+							error: (error)=>
+							{
+								this.showError( error )
+							}
+						})
 
 						//se eliminan las producciones de la lista
 						this.production_info_list = this.production_info_list.filter(p => p.item_id != pi.item_id);
-						this.showSuccess('Producción validada');
+						this.showSuccess('Producción anteriores eliminadas');
 					},
 					error: (error)=>
 					{

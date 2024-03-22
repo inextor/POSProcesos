@@ -58,11 +58,18 @@
 				
 				<div class="col-6 col-md-2">
 					<label class="d-md-none fw-bold text-start">Motivo de Merma</label>
-					<select name="production_merma_reason" class="form-control" [(ngModel)]="pl.merma_reason" [disabled]="pl.merma <= 0" [required]="pl.merma > 0">
+					<input type="text" name="'merma_reason'+pl.id" [(ngModel)]="pl.merma_reason" class="form-control text-end" [disabled]="pl.merma <= 0" autocomplete="off" [required]="pl.merma > 0" list="mermalist">
+
+					<datalist id="mermalist">
+						<option value="Producción">
+						<option value="Calidad">
+					</datalist>
+
+					<!-- <select name="production_merma_reason" class="form-control" [(ngModel)]="pl.merma_reason" [disabled]="pl.merma <= 0" [required]="pl.merma > 0">
 						<option value="" *ngIf="pl.merma > 0" >Seleccionar</option>
 						<option value="Producción">Producción</option>
 						<option value="Calidad">Calidad</option>
-					</select>
+					</select> -->
 				</div>
 				<div class="col-12 col-md-2 text-end">
 					<div class="row ">

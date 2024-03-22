@@ -74,15 +74,16 @@ export class ListRequisitionComponent extends BaseComponent implements OnInit
 			mergeMap((param_map)=>
 			{
 				let start = new Date();
-				this.search_end_date = Utils.getLocalMysqlStringFromDate(start);
+				this.search_end_date = Utils.getLocalMysqlStringFromDate(start).split(' ')[0];
 				start.setHours(0,0,0,0);
-				this.search_start_date = Utils.getLocalMysqlStringFromDate(start);
+				this.search_start_date = Utils.getLocalMysqlStringFromDate(start).split(' ')[0];
+				console.log( this.search_start_date, this.search_end_date );
 				this.is_loading = true;
 
 				return forkJoin
 				({
 					stores: this.rest_store.search({limit:999999}),
-					requisition: this.rest.getReport('requisition_items',{store_id:this.rest.user?.store_id, start: Utils.getDateFromLocalMysqlString(this.search_start_date), end: Utils.getDateFromLocalMysqlString(this.search_end_date)}),
+					requisition: this.rest.getReport('requisition_items',{store_id:this.rest.user?.store_id, start: this.search_start_date, end: this.search_end_date}),
 					users: this.rest_check_in.search({eq:{current:1},limit:999999}).pipe
 					(
 						mergeMap((response)=>
