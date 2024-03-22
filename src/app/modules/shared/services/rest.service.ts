@@ -204,6 +204,24 @@ export class RestService
 		return null;
 	}
 
+	update<T>(method:string,data:any):Observable<T>
+	{
+		let obj:Record<string,string> = { };
+
+		for(let i in data)
+		{
+			if( data[i] === null )
+				continue;
+
+			obj[i] = data[i];
+		}
+		obj['method'] = method;
+
+    let url = `${this.domain_configuration.domain}/${this.url_base}/updates.php`;
+		return this.http.post<T>(`${url}`,obj , { withCredentials: true, headers: this.getSessionHeaders() });
+	}
+
+
 	logout(redirect:boolean = true)
 	{
 		let obj = {

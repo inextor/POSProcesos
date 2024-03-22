@@ -90,15 +90,18 @@ export class ListShippingComponent extends BaseComponent
 					let filter = (si:ShippingInfo)=>si.shipping.requisition_id == ri.requisition.id ;
 					let shippings = response.shippings.data.filter( filter );
 
+					console.log('NO shippings ???', shippings);
 					let citems:CItem[] = ri.items.map((rii)=>
 					{
 						let required = rii.requisition_item.qty;
-						let shipped = shippings.reduce((p, si) => 
+						let shipped = shippings.reduce((p, si) =>
 						{
+							console.log('FOOO',si.items);
 							let items = si.items.filter((x) => x.item?.id == rii.item.id);
 							return p + items.reduce((prev_c, item) => prev_c + (item.shipping_item?.qty || 0), 0);
 						}, 0);
 
+						console.log('SHippend',''+shipped);
 						let productions = response.production.data.filter(p => p.item_id = rii.item.id);
 
 						let produced = productions.reduce((p, c) => p + c.qty, 0);
@@ -107,6 +110,7 @@ export class ListShippingComponent extends BaseComponent
 							item: rii.item, category: rii.category, required, shipped, produced
 						};
 					});
+
 
 					let required	= citems.reduce((p,citem)=>p+citem.required,0);
 					let shipped		= citems.reduce((p,citem)=>p+citem.shipped,0);

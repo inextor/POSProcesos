@@ -392,6 +392,13 @@ export class SaveShippingComponent extends BaseComponent
 			this.shipping_info.shipping.updated_by_user_id = this.rest.user?.id;
 			this.shipping_info.shipping.received_by_user_id = this.rest.user?.id;
 			this.subs.sink	= this.rest_shipping_info.create( this.shipping_info )
+			.pipe
+			(
+				mergeMap((response)=>
+				{
+					return this.rest.update('markShippingAsSent',{shipping_id:response.shipping.id});
+				})
+			)
 			.subscribe({
 				next: (response)=>
 				{
