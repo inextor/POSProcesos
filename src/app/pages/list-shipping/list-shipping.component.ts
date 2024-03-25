@@ -32,6 +32,7 @@ interface CRequisitionByStore
 	store:Store;
 	required:number;
 	shipped:number;
+	pending?:number;
 }
 
 @Component({
@@ -94,7 +95,7 @@ export class ListShippingComponent extends BaseComponent
 
 				
 				return forkJoin({
-					requisitions: this.rest_requsition_info.search({ le: { date: this.fecha_final }, ge: { date: this.fecha_inicial }, eq: {status : 'PENDING'} }),
+					requisitions: this.rest_requsition_info.search({ le: { date: this.fecha_final }, ge: { date: this.fecha_inicial }, eq: {status : 'PENDING', requested_to_store_id: this.rest.user?.store_id} }),
 					shippings_info: this.rest_shipping_info.search( this.shipping_search )
 				});
 			}),
@@ -117,20 +118,19 @@ export class ListShippingComponent extends BaseComponent
 			{
 				let creqs:CRequisitionInfo[] = response.requsitions.data.map((ri)=>
 				{
-					let filter = (si:ShippingInfo)=>si.shipping.requisition_id == ri.requisition.id ;
+					let filter = (si:ShippingInfo)=>si.shipping.to_store_id == ri.required_by_store.id ;
 					let shippings = response.shippings_info.data.filter( filter ); 
 
 					let citems:CItem[] = ri.items.map((rii)=>
 					{
 						let required = rii.requisition_item.qty;
-						// let shipped = shippings.reduce((p, si) =>
-						// {
-						// 	//console.log('FOOO',si.items);
-						// 	let items = si.items.filter((x) => x.item?.id == rii.item.id);
-						// 	return p + items.reduce((prev_c, item) => prev_c + (item.shipping_item?.qty || 0), 0);
-						// }, 0);
+						let shipped = shippings.reduce((p, si) =>
+						{
+							let items = si.items.filter((x) => x.item?.id == rii.item.id);
+							console.log('items', items);
+							return p + items.reduce((prev_c, item) => prev_c + (item.shipping_item?.qty || 0), 0);
+						}, 0);
 
-						let shipped =  0;
 						let productions = response.production.data.filter(p => p.item_id = rii.item.id);
 
 						let produced = productions.reduce((p, c) => p + c.qty, 0);
@@ -142,7 +142,7 @@ export class ListShippingComponent extends BaseComponent
 
 
 					let required	= citems.reduce((p,citem)=>p+citem.required,0);
-					//let shipped	= citems.reduce((p,citem)=>p+citem.shipped,0);
+					//este valor se calcula en el siguiente paso, aqui solo se inicializa
 					let shipped = 0;
 					let required_by_store	= ri.required_by_store;
 
@@ -171,7 +171,19 @@ export class ListShippingComponent extends BaseComponent
 					return p;
 				},0);
 
-				//de shippings_info, obtener los ids de los shippings que coincidan en to_store_id con el store.id
+				let required_shipped = this.crequisition_info_list.reduce((p,creq)=>
+				{
+					return p + creq.citems.reduce((p,citem)=>
+					{
+						if(creq.required_by_store.id == store.id)
+						{
+							return p + citem.shipped;
+						}
+						return p;
+					},0);
+				},0);
+
+				let pending = required - required_shipped;
 				let shippings = response.shippings_info.filter((si)=>
 				{
 					return si.shipping.to_store_id == store.id;
@@ -188,7 +200,7 @@ export class ListShippingComponent extends BaseComponent
 						}, 0);
 					}, 0);
 
-				return { store, required, shipped };
+				return { store, required, shipped, pending };
 			});
 
 		});
