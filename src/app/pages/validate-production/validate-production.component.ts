@@ -73,7 +73,7 @@ export class ValidateProductionComponent extends BaseComponent
 		})
 	}
 
-	search()
+	searchValidations()
 	{
 		let start = Utils.getDateFromLocalMysqlString( this.search_start_date );
 		let end = Utils.getDateFromLocalMysqlString( this.search_end_date );
