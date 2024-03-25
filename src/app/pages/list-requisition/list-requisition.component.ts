@@ -75,9 +75,7 @@ export class ListRequisitionComponent extends BaseComponent implements OnInit
 			{
 				let start = new Date();
 				this.search_end_date = Utils.getLocalMysqlStringFromDate(start).split(' ')[0];
-				start.setHours(0,0,0,0);
 				this.search_start_date = Utils.getLocalMysqlStringFromDate(start).split(' ')[0];
-				console.log( this.search_start_date, this.search_end_date );
 				this.is_loading = true;
 
 				return forkJoin
@@ -103,10 +101,14 @@ export class ListRequisitionComponent extends BaseComponent implements OnInit
 			this.is_loading = false;
 			let todas:boolean = true;
 
-			this.requsition_obj_list = response.requisition as any[];
-			//this.requisition_list = response.requisition;
 			this.store_list = response.stores.data;
 			response.stores.data.forEach((store)=>this.store_dict[store.id]=store);
+
+			this.requsition_obj_list = response.requisition.map((cri:CRequisitionItem)=>
+			{
+				cri.requisition.required_by_store = this.store_list.find(s=>cri.requisition.required_by_store_id) || null;
+				return cri;
+			});
 
 			this.user_list = response.users.data;
 
@@ -160,12 +162,10 @@ export class ListRequisitionComponent extends BaseComponent implements OnInit
 		let start = Utils.getDateFromLocalMysqlString(this.search_start_date);
 		let end = Utils.getDateFromLocalMysqlString(this.search_end_date);
 		this.is_loading = true;
-		this.rest.getReport('requisition_items',{store_id:this.rest.user?.store_id, start:start, end: end, required_by_store_id: this.search_required_by_store_id})
+		this.rest.getReport('requisition_items',{store_id:this.rest.user?.store_id, start:Utils.getMysqlStringFromLocalDate(start).split(' ')[0], end: Utils.getMysqlStringFromLocalDate(end).split(' ')[0], required_by_store_id: this.search_required_by_store_id})
 		.subscribe((response)=>
 		{
 			this.is_loading = false;
-
-			this.requsition_obj_list = response as any[];
 
 			this.requsition_obj_list = response.map((cri:CRequisitionItem)=>
 			{
