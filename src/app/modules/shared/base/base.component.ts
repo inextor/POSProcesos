@@ -121,4 +121,72 @@ export class BaseComponent	implements OnDestroy
 		obj[attr] = d;
 		return;
 	}
+
+	search(item_search:Partial<SearchObject<any>> | null = null )
+	{
+		let to_search = item_search == null ? this.getEmptySearch() : item_search;
+
+		let search:Record<string,string|null> = {};
+
+		for(let i in to_search.search_extra )
+		{
+			if( to_search.search_extra[ i ] && to_search.search_extra[ i ] !== 'null' )
+			{
+				let v = to_search.search_extra[ i ] as any;
+				if( (v instanceof Date) )
+				{
+					search['search_extra.'+i] = Utils.getUTCMysqlStringFromDate( v );
+				}
+				else
+				{
+					search['search_extra.'+i] = ''+to_search.search_extra[ i ];
+				}
+			}
+		}
+
+		if( to_search != null )
+		{
+			to_search.page = 0;
+
+			let array = ['eq','le','lt','ge','gt','csv','lk','nn','start'];
+
+			let i: keyof typeof to_search;
+
+			for(i in to_search )
+			{
+				if(array.indexOf( i ) > -1 )
+				{
+					let ivalue = to_search[i] as any;
+					let j: keyof typeof ivalue;
+
+					for(j in ivalue)
+					{
+						let value = ivalue[j];
+
+						if( value !== null && value !== 'null' && value !== undefined )
+						{
+							if( value instanceof Date )
+							{
+								search[i+'.'+j] = Utils.getUTCMysqlStringFromDate( value );
+							}
+							else
+							{
+								//Non Null assertion operator (! )
+								//https://www.typescriptlang.org/docs/handbook/release-notes/typescript-2-0.html
+								search[i+'.'+j] = ''+value!;
+							}
+						}
+					}
+				}
+			}
+		}
+
+		if (item_search && 'sort_order' in item_search && item_search.sort_order?.length) {
+			search['sort_order'] = item_search.sort_order.join(',');
+		}
+
+		this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
+			this.router.navigate([this.path], { queryParams: search });
+		});
+	}
 }
