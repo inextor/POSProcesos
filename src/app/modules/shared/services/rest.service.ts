@@ -74,7 +74,6 @@ export class RestService
 	toggleMenu():void
 	{
 		this.show_menu = !this.show_menu;
-		console.log('Show menu', this.show_menu);
 	}
 
 	getSessionStart():Date

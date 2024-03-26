@@ -97,12 +97,13 @@
 			</div>
 			<div class="d-md-none col-6">Tipo de merma</div>
 			<div class="col-6 col-md-2 text-start text-md-end fw-bold">
-				<input type="text" name="emptyProduction_merma_reason" [(ngModel)]="cri.emptyProduction.merma_reason" class="form-control" [required]="production.merma_qty > 0" list="mermalist">
-
-						<datalist id="mermalist">
-							<option value="Producción">
-							<option value="Calidad">
-						</datalist>
+				<input type="text" name="emptyProduction_merma_reason" [(ngModel)]="cri.emptyProduction.merma_reason" class="form-control" [required]="cri.emptyProduction.qty > 0" [disabled]="cri.emptyProduction.merma_qty <= 0" list="mermalist">
+				<datalist id="mermalist">
+					<option value="Producción">
+					<option value="Calidad">
+					<option value="Quemado">
+					<option value="Mal hecho">
+				</datalist>
 			</div>
 			<div class="d-md-none col-6">Acciones</div>
 			<div class="col-6 col-md-2 text-start text-md-end">
@@ -151,7 +152,7 @@
 	<dialog id="modal-add-production">
 		<div *ngIf="selected_crequistion_item">
 			<h2>{{selected_crequistion_item.requisition.item_name}}</h2>
-			<form name="show_add_production" (submit)="addProduction($event)" ngNativeValidate>
+			<form name="show_add_production" (submit)="addProduction()" ngNativeValidate>
 				<div class="row">
 					<div class="col-6">
 						<label>Cantidad Producida</label>

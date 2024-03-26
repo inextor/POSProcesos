@@ -189,16 +189,22 @@ export class ListRequisitionComponent extends BaseComponent implements OnInit
 
 		let user = this.rest.user as User;
 
-		this.show_add_production = true;
-		this.selected_crequistion_item = cri;
+		//this.show_add_production = true;
+		//this.selected_crequistion_item = cri;
 		this.production.store_id = user.store_id as number;
 		this.production.item_id = cri.requisition.item_id;
 		this.production.created_by_user_id = user.id;
 		this.production.qty = cri.emptyProduction.qty;
+		this.production.merma_qty = cri.emptyProduction.merma_qty;
+		this.production.merma_reason = cri.emptyProduction.merma_reason;
 
 		cri.emptyProduction.qty = 0;
+		cri.emptyProduction.merma_qty = 0;
+		cri.emptyProduction.merma_reason = '';
 
-		this.showModal('modal-add-production');
+		//this.showModal('modal-add-production');
+		this.addProduction();
+
 	}
 
 	showModal(id:string)
@@ -219,15 +225,21 @@ export class ListRequisitionComponent extends BaseComponent implements OnInit
 		this.is_loading = false;
 	}
 
-	addProduction(evt: SubmitEvent)
+	addProduction()
 	{
-		evt.preventDefault();
-		evt.stopPropagation();
+		//evt.preventDefault();
+		//evt.stopPropagation();
 		this.is_loading = true;
 
 		if( this.production.qty <= 0 && this.production.merma_qty <= 0 )
 		{
 			this.showError('La cantidad de produccion + cantidad de merma debe ser mayor o igual a 1');
+			return;
+		}
+
+		if( this.production.merma_reason == '' && this.production.merma_qty > 0 )
+		{
+			this.showError('La razon de la merma es requerida');
 			return;
 		}
 
@@ -238,14 +250,12 @@ export class ListRequisitionComponent extends BaseComponent implements OnInit
 			next: (response:Production) =>
 			{
 				this.production = this.production = GetEmpty.production();
-				this.production.store_id = this.rest.user?.store_id as number; //Los usuario tienen que tener store_id; Cambiando al usuario de la sesion
-				//this.production.produced_by_user_id = this.rest.user?.id as number; //Utilizando el id del usuario de la sesion
-				this.show_add_production = false;
-				this.selected_crequistion_item = null;
-				this.closeModal('modal-add-production');
-				console.log( evt );
-				let form = evt.target as HTMLFormElement;
-				form.reset();
+				//this.show_add_production = false;
+				//this.selected_crequistion_item = null;
+				//this.closeModal('modal-add-production');
+				//console.log( evt );
+				//let form = evt.target as HTMLFormElement;
+				//form.reset();
 				//we must update the requisition_obj_list
 				this.requsition_obj_list.map((req_obj)=>
 				{
