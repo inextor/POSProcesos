@@ -1,12 +1,11 @@
 import { Component,OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Rest, RestResponse, SearchObject} from '../../modules/shared/services/Rest';
+import { RestResponse, SearchObject} from '../../modules/shared/services/Rest';
 import { RouterModule } from '@angular/router';
 import { forkJoin,mergeMap, of } from 'rxjs';
 import { RestSimple } from '../../modules/shared/services/Rest';
 import { FormsModule } from '@angular/forms';
-import { ProductionInfo, RequisitionInfo,RequisitionItemInfo } from '../../modules/shared/Models';
-import { Requisition,Store,Category,Item, Check_In, User, Production} from '../../modules/shared/RestModels';
+import { Store,Check_In, User, Production} from '../../modules/shared/RestModels';
 import { GetEmpty } from '../../modules/shared/GetEmpty';
 import { BaseComponent } from '../../modules/shared/base/base.component';
 import { Utils } from '../../modules/shared/Utils';
@@ -99,7 +98,7 @@ export class ListRequisitionComponent extends BaseComponent implements OnInit
 				return forkJoin
 				({
 					stores: this.rest_store.search({limit:999999}),
-					requisition: this.rest.getReport('requisition_items',{required_by_store_id: this.requisition_search.search_extra['required_by_store_id'] , start_timestamp: this.requisition_search.search_extra['start_timestamp'], end_timestamp: this.requisition_search.search_extra['end_timestamp']}),
+					requisition: this.rest.getReport('requisition_items',{required_by_store_id: this.requisition_search.search_extra['required_by_store_id'] , start_timestamp: this.requisition_search.search_extra['start_timestamp'], end_timestamp: this.requisition_search.search_extra['end_timestamp'], _sort: this.requisition_search.sort_order }),
 					users: this.rest_check_in.search({eq:{current:1},limit:999999}).pipe
 					(
 						mergeMap((response)=>

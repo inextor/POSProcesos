@@ -68,8 +68,8 @@
 			</table>
 		</div> -->
 		<div class="row d-none d-md-flex fw-bold border-bottom align-items-end">
-			<div class="col-2" (click)="sort('name', requisition_search)" >Artículo</div>
-			<div class="col-2 text-end">Req/Pendientes</div>
+			<div class="col-2 px-2" style="cursor: pointer;" (click)="sort('item_name', requisition_search)">Artículo</div>
+			<div class="col-2 text-end pointer" style="cursor: pointer;" (click)="sort('sum_qty', requisition_search)">Req/Pendientes</div>
 			<div class="col-2 text-end">Agregar</div>
 			<div class="col-2 text-end">Merma</div>
 			<div class="col-2 text-end">Tipo de merma</div>
