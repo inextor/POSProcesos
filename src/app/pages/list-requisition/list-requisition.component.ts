@@ -1,6 +1,6 @@
 import { Component,OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Rest, RestResponse} from '../../modules/shared/services/Rest';
+import { Rest, RestResponse, SearchObject} from '../../modules/shared/services/Rest';
 import { RouterModule } from '@angular/router';
 import { forkJoin,mergeMap, of } from 'rxjs';
 import { RestSimple } from '../../modules/shared/services/Rest';
@@ -47,12 +47,8 @@ interface CRequisitionItem
 })
 export class ListRequisitionComponent extends BaseComponent implements OnInit
 {
-	requisition_list:RequisitionInfo[] =[];
 	store_list:Store[] = [];
-	store_dict:Record<number,Store> = {};
-	rest_requistion:Rest<Requisition,RequisitionInfo> = this.rest.initRest('requisition_info');
 	rest_store:RestSimple<Store> = this.rest.initRest('store',['id','name','created','updated']);
-	c_req_item_list:CRequisitionItem[] = [];
 	show_add_production: boolean = false;
 	selected_crequistion_item: CRequisitionItem | null = null;
 	rest_check_in:RestSimple<Check_In> = this.rest.initRestSimple('check_in',['current']);
@@ -60,29 +56,50 @@ export class ListRequisitionComponent extends BaseComponent implements OnInit
 	rest_production:RestSimple<Production> = this.rest.initRestSimple('production',['id','created_by_user_id','produced_by_user_id','verified_by_user_id']);
 
 	user_list:User[] = [];
-	production_user_id:number | null = null;
 	production:Production = GetEmpty.production();
-	search_start_date:string = '';
-	search_end_date:string = '';
-	search_required_by_store_id:number | null = null;
-	production_list:Production[] = [];
+	fecha_inicial:string = '';
+	fecha_final:string = '';
+	requisition_search:SearchObject<CRequisitionItem> = this.getEmptySearch();
 	requsition_obj_list: CRequisitionItem[] = [];
 
 	ngOnInit()
 	{
-		this.route.params.pipe
+		this.route.queryParamMap.pipe
 		(
 			mergeMap((param_map)=>
 			{
-				let start = new Date();
-				this.search_end_date = Utils.getLocalMysqlStringFromDate(start).split(' ')[0];
-				this.search_start_date = Utils.getLocalMysqlStringFromDate(start).split(' ')[0];
+				this.path = 'list-requisition';
 				this.is_loading = true;
+				let fields = ['required_by_store_id', 'end_timestamp', 'start_timestamp']
+				this.requisition_search = this.getSearch(param_map, [], fields)
+				console.log( 'this.requisition_search', this.requisition_search );
+				let start = new Date();
+				let end = new Date();
+
+				if( !param_map.has('search_extra.end_timestamp') )
+				{
+					end.setHours(23,59,59);
+					this.requisition_search.search_extra['end_timestamp'] = end;
+				}
+				this.fecha_final = Utils.getLocalMysqlStringFromDate(this.requisition_search.search_extra['end_timestamp'] as Date);
+
+				if( !param_map.has('search_extra.start_timestamp') )
+				{
+					start.setHours(0,0,0,0);
+					this.requisition_search.search_extra['start_timestamp'] = start;
+			
+				}
+				this.fecha_inicial = Utils.getLocalMysqlStringFromDate(this.requisition_search.search_extra['start_timestamp'] as Date);
+
+				if( !param_map.has('search_extra.required_by_store_id') )
+				{
+					this.requisition_search.search_extra['required_by_store_id'] = null;
+				}
 
 				return forkJoin
 				({
 					stores: this.rest_store.search({limit:999999}),
-					requisition: this.rest.getReport('requisition_items',{store_id:this.rest.user?.store_id, start: this.search_start_date, end: this.search_end_date}),
+					requisition: this.rest.getReport('requisition_items',{required_by_store_id: this.requisition_search.search_extra['required_by_store_id'] , start_timestamp: this.requisition_search.search_extra['start_timestamp'], end_timestamp: this.requisition_search.search_extra['end_timestamp']}),
 					users: this.rest_check_in.search({eq:{current:1},limit:999999}).pipe
 					(
 						mergeMap((response)=>
@@ -103,7 +120,6 @@ export class ListRequisitionComponent extends BaseComponent implements OnInit
 			let todas:boolean = true;
 
 			this.store_list = response.stores.data;
-			response.stores.data.forEach((store)=>this.store_dict[store.id]=store);
 
 			this.requsition_obj_list = response.requisition.map((cri:CRequisitionItem)=>
 			{
@@ -114,43 +130,6 @@ export class ListRequisitionComponent extends BaseComponent implements OnInit
 
 			this.user_list = response.users.data;
 
-			//let find= (rii:RequisitionItemInfo, r_info:RequisitionInfo, cri:CRequisitionItem, todas:boolean):boolean =>
-			//{
-			//	if( cri.item.id != rii.item.id )
-			//		return false
-
-			//	return todas || cri?.store?.id == r_info.required_by_store.id;
-			//};
-
-			//for(let r_info of this.requisition_list)
-			//{
-			//	for(let r_item_info of r_info.items)
-			//	{
-			//		let c_req_item =this.c_req_item_list.find( rqi =>
-			//		{
-			//			return find( r_item_info, r_info, rqi, todas)
-			//		});
-
-			//		if( c_req_item )
-			//		{
-			//			c_req_item.qty += r_item_info.requisition_item.qty;
-			//		}
-			//		else
-			//		{
-			//			let store = todas
-			//				? null
-			//				: this.store_list.find(s=>r_info.required_by_store.id == s.id ) as Store;
-
-			//			this.c_req_item_list.push
-			//			({
-			//				item: r_item_info.item,
-			//				category: r_item_info.category,
-			//				store,
-			//				qty: r_item_info.requisition_item.qty
-			//			});
-			//		}
-			//	}
-			//}
 		});
 	}
 
@@ -159,23 +138,28 @@ export class ListRequisitionComponent extends BaseComponent implements OnInit
 
 	}
 
-	filterRequisitions()
+	fechaInicialChange(fecha:string)
 	{
-		let start = Utils.getDateFromLocalMysqlString(this.search_start_date);
-		let end = Utils.getDateFromLocalMysqlString(this.search_end_date);
-		this.is_loading = true;
-		this.rest.getReport('requisition_items',{store_id:this.rest.user?.store_id, start:Utils.getMysqlStringFromLocalDate(start).split(' ')[0], end: Utils.getMysqlStringFromLocalDate(end).split(' ')[0], required_by_store_id: this.search_required_by_store_id})
-		.subscribe((response)=>
+		if( fecha )
 		{
-			this.is_loading = false;
+			this.requisition_search.search_extra['start_timestamp'] = Utils.getUTCMysqlStringFromDate(new Date(fecha));
+		}
+		else
+		{
+			this.requisition_search.search_extra['start_timestamp'] = null;
+		}
+	}
 
-			this.requsition_obj_list = response.map((cri:CRequisitionItem)=>
-			{
-				cri.requisition.required_by_store = this.store_list.find(s=>cri.requisition.required_by_store_id) || null;
-				cri.emptyProduction = GetEmpty.production();
-				return cri;
-			});
-		});
+	fechaFinalChange(fecha:string)
+	{
+		if( fecha )
+		{
+			this.requisition_search.search_extra['end_timestamp']= Utils.getUTCMysqlStringFromDate(new Date(fecha));
+		}
+		else
+		{
+			this.requisition_search.search_extra['end_timestamp'] = null;
+		}
 	}
 
 	floor(n:number)

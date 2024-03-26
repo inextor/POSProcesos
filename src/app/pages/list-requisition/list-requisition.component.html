@@ -5,21 +5,21 @@
 		</div>
 	</div>
 	<div class="card p-3 mt-3">
-	<form (submit)="filterRequisitions()" class="row">
+	<form (submit)="search(requisition_search)" class="row">
 		<div class="col-12 col-md-3">
 			<label>Sucursal</label>
-			<select name="store_id" class="form-control" [(ngModel)]="search_required_by_store_id">
+			<select name="store_id" class="form-control" [(ngModel)]="requisition_search.search_extra['required_by_store_id']">
 				<option [ngValue]="null">Todas</option>
-				<option *ngFor="let s of store_list" [ngValue]="s.id">{{s.name | titlecase}}</option>
+				<option *ngFor="let s of store_list" [value]="s.id">{{s.name | titlecase}}</option>
 			</select>
 		</div>
 		<div class="col-12 col-md-3">
 			<label>Fecha Inicial</label>
-			<input type="date" class="form-control" name="start_date" [(ngModel)]="search_start_date">
+			<input type="datetime-local" class="form-control" name="fecha_inicial" [(ngModel)]="fecha_inicial" (ngModelChange)="onDateChange($event,requisition_search.search_extra,'start_timestamp')">
 		</div>
 		<div class="col-12 col-md-3">
 			<label>Fecha Final</label>
-			<input type="date" class="form-control" name="end_date" [(ngModel)]="search_end_date">
+			<input type="datetime-local" class="form-control" name="fecha_final" [(ngModel)]="fecha_final" (ngModelChange)="onDateChange($event,requisition_search.search_extra,'end_timestamp','',59)">
 		</div>
 		<div class="col-12 col-md-3">
 			<label>&nbsp;</label>
@@ -68,7 +68,7 @@
 			</table>
 		</div> -->
 		<div class="row d-none d-md-flex fw-bold border-bottom align-items-end">
-			<div class="col-2">Artículo</div>
+			<div class="col-2" (click)="sort('name', requisition_search)" >Artículo</div>
 			<div class="col-2 text-end">Req/Pendientes</div>
 			<div class="col-2 text-end">Agregar</div>
 			<div class="col-2 text-end">Merma</div>
