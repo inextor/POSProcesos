@@ -34,6 +34,7 @@ interface CProduction
 interface CRequisitionItem
 {
 	production: CProduction | null;
+	emptyProduction: Production;
 	requisition: CRequistionItem;
 }
 
@@ -107,6 +108,7 @@ export class ListRequisitionComponent extends BaseComponent implements OnInit
 			this.requsition_obj_list = response.requisition.map((cri:CRequisitionItem)=>
 			{
 				cri.requisition.required_by_store = this.store_list.find(s=>cri.requisition.required_by_store_id) || null;
+				cri.emptyProduction = GetEmpty.production();
 				return cri;
 			});
 
@@ -170,6 +172,7 @@ export class ListRequisitionComponent extends BaseComponent implements OnInit
 			this.requsition_obj_list = response.map((cri:CRequisitionItem)=>
 			{
 				cri.requisition.required_by_store = this.store_list.find(s=>cri.requisition.required_by_store_id) || null;
+				cri.emptyProduction = GetEmpty.production();
 				return cri;
 			});
 		});
@@ -191,6 +194,9 @@ export class ListRequisitionComponent extends BaseComponent implements OnInit
 		this.production.store_id = user.store_id as number;
 		this.production.item_id = cri.requisition.item_id;
 		this.production.created_by_user_id = user.id;
+		this.production.qty = cri.emptyProduction.qty;
+
+		cri.emptyProduction.qty = 0;
 
 		this.showModal('modal-add-production');
 	}
