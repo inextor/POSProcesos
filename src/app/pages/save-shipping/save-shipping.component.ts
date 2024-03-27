@@ -122,7 +122,7 @@ export class SaveShippingComponent extends BaseComponent
 				to_store : this.rest_store.get(to_store_id),
 				from_store: this.rest_store.get(from_store_id),
 				category: this.rest_category.search({limit:99999,sort_order:['name_ASC']}),
-				requisitions: this.rest_requisition_info.search({eq:{required_by_store_id: to_store_id},limit:9999})
+				requisitions: this.rest_requisition_info.search({eq:{required_by_store_id: to_store_id, requested_to_store_id: from_store_id},limit:9999})
 			})
 			.pipe
 			(
