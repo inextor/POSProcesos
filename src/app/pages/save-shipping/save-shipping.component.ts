@@ -260,10 +260,8 @@ export class SaveShippingComponent extends BaseComponent
 	//vuleve a buscar las requisiciones para volver a inicializar el crequisition_info
 	onFechaRequisitionsChange(fecha: string)
 	{
-		let start = new Date(fecha);
-		let end = new Date(fecha);
-		start.setHours(0,0,0,0);
-		end.setHours(23,59,59);
+		let start = new Date(fecha + 'T00:00:00');
+		let end = new Date(fecha + 'T23:59:59');
 		
 		//solving null for to_store
 		let to_store_id = this.to_store?.id || 0;
