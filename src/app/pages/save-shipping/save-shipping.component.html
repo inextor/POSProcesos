@@ -34,16 +34,19 @@
 			</div>
 		</div>
 		<div class="my-3 row align-items-center">
-			<div class="col-8">
+			<div class="col-3">
 				<h4>Artículos de Requisición</h4>
 			</div>
-			<div class="col-4 text-end">
+			<div class="col-3">
+				<input type="date" name="requisitions_timestamp" [(ngModel)]="fecha_requisitions" class="form-control" (ngModelChange)="onFechaRequisitionsChange($event)" required>
+			</div>
+			<div class="col-6 text-end">
 				<button type="button" (click)="addRequired($event)" class="btn btn-primary">Agregar Disponibles</button>
 			</div>
 		</div>
 		<div class="card p-1 p-lg-3 mt-3">
 			<ng-template [ngIf]="!crequisition_info">
-				No hay requisiciones pendientes para esta tienda
+				No hay requisiciones pendientes para esta fecha
 			</ng-template>
 			<div class="" *ngIf="crequisition_info">
 				<table class="w-100 mx-0">
