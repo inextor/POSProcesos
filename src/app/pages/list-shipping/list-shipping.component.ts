@@ -52,10 +52,11 @@ export class ListShippingComponent extends BaseComponent
 	crequisition_info_list: CRequisitionInfo[] = []; //old
 	crequisition_by_store_list: CRequisitionByStore[] = [];
 
-	fecha_inicial: string = '';
-	fecha_final: string = '';
+	fecha_inicial: string | Date = '';
+	fecha_final: string | Date = '';
 
 	shipping_search = this.rest_shipping_info.getEmptySearch();
+	requisition_search = this.rest_requsition_info.getEmptySearch();
 
 	ngOnInit()
 	{
@@ -69,33 +70,45 @@ export class ListShippingComponent extends BaseComponent
 				this.shipping_search.limit = 999999;
 				this.shipping_search.eq.from_store_id = this.rest.user?.store_id;
 
-				let date = new Date();
+				this.requisition_search.limit = 999999;
+				this.requisition_search.eq.status = 'PENDING';
+				this.requisition_search.eq.requested_to_store_id = this.rest.user?.store_id;
 
 				if(paramMap.has('ge.date'))
 				{
 					this.shipping_search.ge.date = paramMap.get('ge.date') as string;
+					let start = new Date(paramMap.get('ge.date') as string + 'T00:00:00');
+					this.requisition_search.ge.required_by_timestamp = Utils.getUTCMysqlStringFromDate(start);
 					this.fecha_inicial = paramMap.get('ge.date') as string;
 				}
 				else
 				{
-					this.fecha_inicial = Utils.getLocalMysqlStringFromDate(date).split(' ')[0];
+					let start = new Date();
+					start.setHours(0, 0, 0, 0);
+					this.fecha_inicial = start.toISOString().split('T')[0];
 					this.shipping_search.ge.date = this.fecha_inicial;
+					this.requisition_search.ge.required_by_timestamp = Utils.getUTCMysqlStringFromDate(start);
 				}
 
 				if(paramMap.has('le.date'))
 				{
 					this.shipping_search.le.date = paramMap.get('le.date') as string;
+					let end = new Date(paramMap.get('le.date') as string + 'T23:59:59');
+					this.requisition_search.le.required_by_timestamp = Utils.getUTCMysqlStringFromDate(end);
 					this.fecha_final = paramMap.get('le.date') as string;
 				}
 				else
 				{
-					this.fecha_final = Utils.getLocalMysqlStringFromDate(date).split(' ')[0];
+					let end = new Date();
+					this.fecha_final = end.toISOString().split('T')[0];
+					end.setHours(23, 59, 59);
 					this.shipping_search.le.date = this.fecha_final;
+					this.requisition_search.le.required_by_timestamp = Utils.getUTCMysqlStringFromDate(end);
 				}
 
-				
+				console.log('search', this.shipping_search, this.requisition_search);
 				return forkJoin({
-					requisitions: this.rest_requsition_info.search({ le: { date: this.fecha_final }, ge: { date: this.fecha_inicial }, eq: {status : 'PENDING', requested_to_store_id: this.rest.user?.store_id} }),
+					requisitions: this.rest_requsition_info.search(this.requisition_search),
 					shippings_info: this.rest_shipping_info.search( this.shipping_search )
 				});
 			}),
