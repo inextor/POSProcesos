@@ -71,7 +71,6 @@ export class ListRequisitionComponent extends BaseComponent implements OnInit
 				this.is_loading = true;
 				let fields = ['required_by_store_id', 'end_timestamp', 'start_timestamp']
 				this.requisition_search = this.getSearch(param_map, [], fields)
-				console.log( 'this.requisition_search', this.requisition_search );
 				let start = new Date();
 				let end = new Date();
 
@@ -98,7 +97,7 @@ export class ListRequisitionComponent extends BaseComponent implements OnInit
 				return forkJoin
 				({
 					stores: this.rest_store.search({limit:999999}),
-					requisition: this.rest.getReport('requisition_items',{required_by_store_id: this.requisition_search.search_extra['required_by_store_id'] , start_timestamp: this.requisition_search.search_extra['start_timestamp'], end_timestamp: this.requisition_search.search_extra['end_timestamp'], _sort: this.requisition_search.sort_order }),
+					requisition: this.rest.getReport('requisition_items',{required_by_store_id: this.requisition_search.search_extra['required_by_store_id'] , requested_to_store_id: this.rest.user?.store_id ,start_timestamp: this.requisition_search.search_extra['start_timestamp'], end_timestamp: this.requisition_search.search_extra['end_timestamp'], _sort: this.requisition_search.sort_order }),
 					users: this.rest_check_in.search({eq:{current:1},limit:999999}).pipe
 					(
 						mergeMap((response)=>
