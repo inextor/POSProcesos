@@ -19,6 +19,28 @@
 			</div>
 		</div>
 	</div>
+	<div class="px-1 my-3">
+		<div class="row text-center">
+			<div class="col-12 col-md-4 my-2">
+				<div class="card mx-3 px-4">
+					<b class="fs-6">Total Requeridos</b>
+					<div class="fw-bold fs-2">{{total_required}}</div>
+				</div>
+			</div>
+			<div class="col-12 col-md-4 my-2">
+				<div class="card mx-3 px-4">
+					<b class="fs-6 fs-md-1">Total Pendientes</b>
+					<div class="fw-bold fs-2" [ngClass]="{'text-danger': total_pending > 0, 'text-success': total_pending <= 0}">{{total_pending}}</div>
+				</div>
+			</div>
+			<div class="col-12 col-md-4 my-2">
+				<div class="card mx-3 px-4">
+					<b class="fs-6 fs-md-1">Total Enviados</b>
+					<div class="fw-bold fs-2">{{total_shipped}}</div>
+				</div>
+			</div>
+		</div>
+	</div>
 	<div class="card p-1 p-lg-3">
 		<!--table>
 			<thead>
@@ -44,8 +66,8 @@
 			<div class="col-9">
 				<div class="row text-end align-items-end">
 					<div class="col-4 col-lg-3">Unidades Requeridas</div>
-					<div class="col-4 col-lg-3">Unidades Globales Enviadas</div>
 					<div class="col-4 col-lg-3">Pendientes Requeridas</div>
+					<div class="col-4 col-lg-3">Globales Enviadas</div>
 				</div>
 			</div>
 		</div>
@@ -58,10 +80,10 @@
 				<div class="row align-items-center">
 					<div class="d-md-none col-6">Piezas Requeridas</div>
 					<div class="col-6 col-md-4 col-lg-3 text-end">{{creq.required | number}}</div>
-					<div class="d-md-none col-6">Piezas Globales Enviadas</div>
-					<div class="col-6 col-md-4 col-lg-3 text-end">{{creq.shipped | number}}</div>
 					<div class="d-md-none col-6">Pendientes Requeridas</div>
 					<div class="col-6 col-md-4 col-lg-3 text-end">{{creq.pending ?? creq.required| number}}</div>
+					<div class="d-md-none col-6">Globales Enviadas</div>
+					<div class="col-6 col-md-4 col-lg-3 text-end">{{creq.shipped | number}}</div>
 					<div class="d-none d-lg-block col-md-3 text-end">
 						<a class="btn btn-primary my-1" [routerLink]="['/add-shipping',creq.store.id, 0]">Crear Envio</a>
 					</div>

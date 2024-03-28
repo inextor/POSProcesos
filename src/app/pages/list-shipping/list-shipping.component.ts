@@ -58,6 +58,10 @@ export class ListShippingComponent extends BaseComponent
 	shipping_search = this.rest_shipping_info.getEmptySearch();
 	requisition_search = this.rest_requsition_info.getEmptySearch();
 
+	total_required = 0;
+	total_shipped = 0;
+	total_pending = 0;
+
 	ngOnInit()
 	{
 		this.route.queryParamMap.pipe
@@ -106,7 +110,6 @@ export class ListShippingComponent extends BaseComponent
 					this.requisition_search.le.required_by_timestamp = Utils.getUTCMysqlStringFromDate(end);
 				}
 
-				console.log('search', this.shipping_search, this.requisition_search);
 				return forkJoin({
 					requisitions: this.rest_requsition_info.search(this.requisition_search),
 					shippings_info: this.rest_shipping_info.search( this.shipping_search )
@@ -215,6 +218,10 @@ export class ListShippingComponent extends BaseComponent
 
 				return { store, required, shipped, pending };
 			});
+
+			this.total_required = this.crequisition_by_store_list.reduce((p,c)=>p+c.required,0);
+			this.total_shipped = this.crequisition_by_store_list.reduce((p,c)=>p+c.shipped,0);
+			this.total_pending = this.crequisition_by_store_list.reduce((p,c)=>p+(c.pending ?? c.required),0);
 
 		});
 	}
