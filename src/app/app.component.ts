@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule, RouterOutlet } from '@angular/router';
+import { Router, RouterModule, RouterOutlet } from '@angular/router';
 import { RestService } from './modules/shared/services/rest.service';
 import { SharedModule } from './modules/shared/SharedModule';
 import { ConfirmationService } from './modules/shared/services/confirmation.service';
@@ -17,7 +17,7 @@ import { ModalComponent } from './components/modal/modal.component';
 export class AppComponent {
 	title = 'POSProcesos';
 
-	constructor(protected rest:RestService, public confirmation:ConfirmationService)
+	constructor(protected rest:RestService, public confirmation:ConfirmationService, public router:Router)
 	{
 
 	}
@@ -40,5 +40,12 @@ export class AppComponent {
 				this.confirmation.onCancel();
 			}
 		}
+	}
+
+	logout()
+	{
+		this.rest.logout();
+		this.rest.show_menu = false;
+		this.router.navigate(['/login']);
 	}
 }

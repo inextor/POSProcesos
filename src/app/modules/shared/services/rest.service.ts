@@ -229,7 +229,7 @@ export class RestService
 
 		let path = '/';
 		if( this.user )
-			path = this.user.type == 'USER' ? '/#/admin' : '/';
+			path = this.user.type == 'USER' ? '/#/login' : '/';
 
 		this.http.post<any>
 		(
@@ -256,6 +256,16 @@ export class RestService
 				window.location.href = path
 			}
 		});
+	}
+
+	getClientPlatformFromSession():any
+	{
+		let usr:string|null = localStorage.getItem('platform_client');
+
+		if( usr )
+			return Utils.transformJson( usr );
+
+		return null;
 	}
 	//doLoginPlatform(email:string,password:string):Observable<LoginResponse>
 	//{
