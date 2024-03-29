@@ -1446,6 +1446,7 @@ export interface User{
 	updated:Date;
 	updated_by_user_id:number | null;
 	username:string | null;
+	workshift_id:number | null;
 }
 export interface User_Permission{
 	add_bills:number;
@@ -1506,3 +1507,41 @@ export interface User_Permission{
 	view_stock:number;
 }
 
+export interface Work_Log
+{
+	disciplinary_actions:string | null;
+	docking_pay:number;
+	end_timestamp:Date | null;
+	extra_hours:number;
+	hours:number;
+	id:number;
+	in_out_count: number;
+	on_time:'YES'|'NO';
+	seconds_log:number | null;
+	break_seconds: number;
+	start_timestamp:Date | null;
+	updated:Date;
+	user_id:number;
+}
+export interface Workshift
+{
+	sun_start :string | null;
+	mon_start :string | null;
+	tue_start :string | null;
+	thu_start :string | null;
+	wed_start :string | null;
+	fri_start :string | null;
+	sat_start :string | null;
+	created:Date;
+	id:number;
+	name:string;
+	sun_hours:number | null;
+	mon_hours:number | null;
+	tue_hours:number | null;
+	wed_hours:number | null;
+	sat_hours:number | null;
+	thu_hours:number | null;
+	fri_hours:number | null;
+	tolerance:number | null;
+	updated:Date;
+}
