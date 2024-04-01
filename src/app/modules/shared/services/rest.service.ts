@@ -6,8 +6,10 @@ import { OFFLINE_DB_SCHEMA } from '../OfflineDBSchema';
 import { ErrorMessage, Utils } from '../Utils';
 import { Preferences, User, User_Permission } from '../RestModels';
 import { HttpHeaders, HttpClient, HttpParams } from '@angular/common/http'
-import { BehaviorSubject, Observable } from 'rxjs';
+import { BehaviorSubject, Observable, Subject } from 'rxjs';
 import { environment } from '../../../../environments/environment';
+import { io, Socket } from 'socket.io-client';
+import { SocketMessage } from '../Models';
 
 export const USER_PERMISSION_KEY = 'user_permission';
 const USER_KEY = 'user';
@@ -22,12 +24,13 @@ export class RestService
 {
 	hades_counter:number = 0;
 	has_hades:boolean = false;
-
+	private socket: Socket | null = null;
+	socket_is_connected:boolean = false;
+	private updatesSubject = new Subject<SocketMessage>();
+	public notification = new BehaviorSubject({});
 	errorBehaviorSubject = new BehaviorSubject<ErrorMessage>(new ErrorMessage('',''));
 	errorObservable = this.errorBehaviorSubject.asObservable();
-
-
-	preferences = this.getPreferencesFromSession();
+	public local_preferences = this.getPreferencesFromSession();
 	public session_start?: Date | null;
 	public user:User | null = null;
 	public user_permission:User_Permission = GetEmpty.user_permission();
@@ -62,8 +65,56 @@ export class RestService
 	constructor(private http:HttpClient)
 	{
 		this.user = this.getUserFromSession();
-		this.preferences = this.getPreferencesFromSession();
+		this.local_preferences = this.getPreferencesFromSession();
 		this.session_start = this.getSessionStart();
+	}
+
+	initSocketIo()
+	{
+		if( this.socket )
+		{
+			return;
+		}
+
+		let url = 'https://notifications.integranet.xyz:5000';
+
+		if( window.location.href.indexOf('127.0.0.') > -1 || environment.app_settings.test_url)
+			url = 'http://127.0.0.1:5000';
+
+		this.socket = io( url );
+
+		this.socket.on("connect",()=>{
+
+		});
+
+		this.socket.on('connect',()=>{
+			this.socket_is_connected = true;
+			console.log('Socket Connected');
+		});
+
+		this.socket.on('connect',()=>{
+			this.socket_is_connected = true;
+			console.log('Socket Connected');
+		});
+
+		this.socket.on('disconnect',()=>{
+			console.log('Socket Disconected');
+			this.socket_is_connected = false;
+		});
+
+		this.socket.on('update',(mensage)=>{
+			console.log('Lleego mensaje de sockete',mensage);
+			this.updatesSubject.next(mensage);
+		});
+
+		this.socket.on('order',(mensage)=>{
+			console.log('Lleego mensaje de sockete',mensage);
+			this.updatesSubject.next(mensage);
+		});
+
+		this.socket.on("updateCommandas", (message: any) => {
+			this.updatesSubject.next(message);
+		});
 	}
 
 	public hideMenu():void
@@ -360,9 +411,9 @@ export class RestService
 
 		if( preferences )
 		{
-			this.preferences = JSON.parse( preferences );
+			this.local_preferences = JSON.parse( preferences );
 			this.applyTheme();
-			return this.preferences;
+			return this.local_preferences;
 		}
 
 		return GetEmpty.preferences();
@@ -398,18 +449,18 @@ export class RestService
 			if( response.data.length )
 			{
 
-				this.preferences = response.data[0];
+				this.local_preferences = response.data[0];
 				this.applyTheme();
 				//console.log('Preferencias en getPreferencesInfo');
-				localStorage.setItem('preferences', JSON.stringify( this.preferences ) );
+				localStorage.setItem('preferences', JSON.stringify( this.local_preferences ) );
 			}
 			else
 			{
-				this.preferences = this.getPreferencesFromSession();
-				this.preferences.name = '';
+				this.local_preferences = this.getPreferencesFromSession();
+				this.local_preferences.name = '';
 				//this.preferences.menu_background_color = '#FFFFFF';
 			}
-			return Promise.resolve( this.preferences );
+			return Promise.resolve( this.local_preferences );
 		})
 	}
 
@@ -436,7 +487,7 @@ export class RestService
 
 	showErrorMessage(error: ErrorMessage)
 	{
-		this.errorBehaviorSubject.next(error);
+		this.errorBehaviorSubject?.next(error);
 	}
 
 	getApiPath()

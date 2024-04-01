@@ -53,5 +53,12 @@ export interface ShippingInfo
 	items:Partial<ShippingItemInfo>[];
 	//purchase:Purchase;
 }
-
+export interface SocketMessage
+{
+	type:string;
+	store_id:number;
+	order_id?:number;
+	message?:string;
+	id?:string | number;
+}
 
