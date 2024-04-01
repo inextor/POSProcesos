@@ -1,0 +1,50 @@
+<div class="navbar navbar-expand-md	bd-navbar py-1 bg-white shadow-bar">
+	<nav class="d-flex justify-content-between w-100 align-items-center" aria-label="Main navigation">
+		<div>
+			<button style="margin-top: 7px" class="btn" (click)="rest.toggleMenu()" *ngIf="rest.user">
+				<!-- <svg xmlns="http://www.w3.org/2000/svg" width="1.2em" height="1.2em" viewBox="0 0 24 24"><path fill="currentColor" d="M6.4 19L5 17.6l5.6-5.6L5 6.4L6.4 5l5.6 5.6L17.6 5L19 6.4L13.4 12l5.6 5.6l-1.4 1.4l-5.6-5.6z"/></svg> -->
+				<svg xmlns="http://www.w3.org/2000/svg" width="1.4em" height="1.4em" viewBox="0 0 24 24"><path fill="currentColor" d="M3 18v-2h18v2zm0-5v-2h18v2zm0-5V6h18v2z"/></svg>
+			</button>
+			<a href="#" routerLink="/" class="d-none d-sm-inline">
+				<img [src]="rest.getImagePath(rest.local_preferences.default_file_logo_image_id)" height="30">	
+			</a>
+		</div>
+		<div class="px-3 pt-1 dropdown">
+			<a id="notification_link" class="dropdown-toggle" (click)="markAsRead($event)">
+				<div class="d-inline-block">
+					<div class="w-100 text-center">
+						<img [src]="rest.getImagePath(rest.user?.image_id, rest.local_preferences.default_user_logo_image_id)"	height="20">
+						<span class="badge rounded-pill bg-danger ms-3" *ngIf="unread_notifications">
+							{{unread_notifications}}
+						</span>
+					</div>
+					<div></div>
+					<div style="font-size: 9px;" class="header_user_name" [ngClass]="{'connected':rest.socket_is_connected}">{{rest.user?.name}}</div>
+				</div>
+			</a>
+			<ul class="dropdown-menu dropdown-menu-end me-1" [ngClass]="{show:show_dropdown}" style="right: 10px">
+				<li *ngIf="push_notification_list.length == 0" class="p-3">No hay notificaciones</li>
+				<li *ngFor="let push_notification of push_notification_list">
+					<a class="dropdown-item" href="#" *ngIf="push_notification.app_path" routerLink="{{push_notification.app_path}}" (click)="show_dropdown=false">
+						<b>{{push_notification.title}}</b>
+						<br>
+						<span>{{push_notification.body}}</span>
+					</a>
+					<span class="dropdown-item" *ngIf="!push_notification?.app_path">
+						<b>{{push_notification?.title}}</b>
+						<br>
+						<span>{{push_notification?.body}}</span>
+					</span>
+				</li>
+				<li>
+					<a class="dropdown-item side-nav-link pointer" aria-expanded="false" (click)="logout()" title="Cerrar Sesión">
+						<i class="svg-icon">
+							<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" focusable="false" width="1em" height="1em" style="-ms-transform: rotate(360deg); -webkit-transform: rotate(360deg); transform: rotate(360deg);" preserveAspectRatio="xMidYMid meet" viewBox="0 0 24 24"><path d="M5 22a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1h14a1 1 0 0 1 1 1v18a1 1 0 0 1-1 1H5zm10-6l5-4l-5-4v3H9v2h6v3z"/></svg>
+						</i>
+						<span>Cerrar Sesión</span>
+					</a>
+				</li>
+			</ul>
+		</div>
+	</nav>
+</div>

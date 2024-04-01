@@ -8,11 +8,12 @@ import { KeyboardShortcutEvent } from './modules/shared/Utils';
 import { ModalComponent } from './components/modal/modal.component';
 import { RestSimple } from './modules/shared/services/Rest';
 import { Store } from './modules/shared/RestModels';
+import { HeaderComponent } from './components/header/header.component';
 
 @Component({
 	selector: 'app-root',
 	standalone: true,
-	imports: [CommonModule, RouterOutlet,RouterModule, SharedModule, ModalComponent ],
+	imports: [CommonModule, RouterOutlet,RouterModule, SharedModule, ModalComponent, HeaderComponent],
 	templateUrl: './app.component.html',
 	styleUrl: './app.component.css'
 })

@@ -1,0 +1,32 @@
+.dropdown-item .svg-icon
+{
+	fill: #9d8b60;
+	margin-right: 5px;
+}
+
+.header_user_name
+{
+	color: var(--header-text-color );
+}
+
+a#notification_link
+{
+	color: var( --header-text-color );
+}
+
+.header_user_name 
+{
+	text-decoration: underline;
+	text-decoration-color: red;
+}
+
+.header_user_name.connected
+{
+	text-decoration: underline;
+	text-decoration-color: green;
+}
+
+.shadow-bar
+{
+	box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+}
