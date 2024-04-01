@@ -33,7 +33,7 @@ interface CProduction
 interface CRequisitionItem
 {
 	production: CProduction | null;
-	emptyProduction: Production;
+	input_production: Production;
 	requisition: CRequistionItem;
 }
 
@@ -55,7 +55,7 @@ export class ListRequisitionComponent extends BaseComponent implements OnInit
 	rest_production:RestSimple<Production> = this.rest.initRestSimple('production',['id','created_by_user_id','produced_by_user_id','verified_by_user_id']);
 
 	user_list:User[] = [];
-	production:Production = GetEmpty.production();
+	new_production:Production = GetEmpty.production();
 	fecha_inicial:string = '';
 	fecha_final:string = '';
 	requisition_search:SearchObject<CRequisitionItem> = this.getEmptySearch();
@@ -122,7 +122,7 @@ export class ListRequisitionComponent extends BaseComponent implements OnInit
 			this.requsition_obj_list = response.requisition.map((cri:CRequisitionItem)=>
 			{
 				cri.requisition.required_by_store = this.store_list.find(s=>cri.requisition.required_by_store_id) || null;
-				cri.emptyProduction = GetEmpty.production();
+				cri.input_production = GetEmpty.production();
 				return cri;
 			});
 
@@ -165,30 +165,6 @@ export class ListRequisitionComponent extends BaseComponent implements OnInit
 		return Math.floor( n );
 	}
 
-	showProduction(cri: CRequisitionItem)
-	{
-		this.production = GetEmpty.production();
-
-		let user = this.rest.user as User;
-
-		//this.show_add_production = true;
-		//this.selected_crequistion_item = cri;
-		this.production.store_id = user.store_id as number;
-		this.production.item_id = cri.requisition.item_id;
-		this.production.created_by_user_id = user.id;
-		this.production.qty = cri.emptyProduction.qty;
-		this.production.merma_qty = cri.emptyProduction.merma_qty;
-		this.production.merma_reason = cri.emptyProduction.merma_reason;
-
-		cri.emptyProduction.qty = 0;
-		cri.emptyProduction.merma_qty = 0;
-		cri.emptyProduction.merma_reason = '';
-
-		//this.showModal('modal-add-production');
-		this.addProduction();
-
-	}
-
 	showModal(id:string)
 	{
 		let e = document.getElementById(id) as HTMLDialogElement;
@@ -207,38 +183,41 @@ export class ListRequisitionComponent extends BaseComponent implements OnInit
 		this.is_loading = false;
 	}
 
-	addProduction()
+	addProduction(cri:CRequisitionItem)
 	{
 		//evt.preventDefault();
 		//evt.stopPropagation();
 		this.is_loading = true;
+		
+		this.new_production = GetEmpty.production();
 
-		if( this.production.qty <= 0 && this.production.merma_qty <= 0 )
+		let user = this.rest.user as User;
+
+		this.new_production.store_id = user.store_id as number;
+		this.new_production.item_id = cri.requisition.item_id;
+		this.new_production.created_by_user_id = user.id;
+		this.new_production.qty = cri.input_production.qty;
+		this.new_production.merma_qty = cri.input_production.merma_qty;
+		this.new_production.merma_reason = cri.input_production.merma_reason;
+
+		if( this.new_production.qty <= 0 && this.new_production.merma_qty <= 0 )
 		{
 			this.showError('La cantidad de produccion + cantidad de merma debe ser mayor o igual a 1');
 			return;
 		}
 
-		if( this.production.merma_reason == '' && this.production.merma_qty > 0 )
+		if( this.new_production.merma_reason == '' && this.new_production.merma_qty > 0 )
 		{
 			this.showError('La razon de la merma es requerida');
 			return;
 		}
 
-		let user = this.user_list.find(user=>user.id == this.production.produced_by_user_id ) as User;
-		this.subs.sink = this.rest_production.create( this.production )
+		this.subs.sink = this.rest_production.create( this.new_production )
 		.subscribe(
 		{
 			next: (response:Production) =>
 			{
-				this.production = this.production = GetEmpty.production();
-				//this.show_add_production = false;
-				//this.selected_crequistion_item = null;
-				//this.closeModal('modal-add-production');
-				//console.log( evt );
-				//let form = evt.target as HTMLFormElement;
-				//form.reset();
-				//we must update the requisition_obj_list
+				this.new_production = this.new_production = GetEmpty.production();
 				this.requsition_obj_list.map((req_obj)=>
 				{
 					if( req_obj.production?.item_id == response.item_id )
@@ -248,6 +227,10 @@ export class ListRequisitionComponent extends BaseComponent implements OnInit
 						req_obj.production.production_merma_qty = response.merma_qty;
 					}
 				});
+
+				cri.input_production.qty = 0;
+				cri.input_production.merma_qty = 0;
+				cri.input_production.merma_reason = '';
 
 				this.showSuccess('Produccion agregada');
 			},

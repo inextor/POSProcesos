@@ -56,7 +56,7 @@
 						<td>{{cri.requisition.required_by_store?.name}}</td>
 						<td class="text-end">{{cri.requisition.sum_qty}}</td>
 						<td class="text-end">
-							<input type="number" class="form-control text-end" name="emptyProduction_new" [(ngModel)]="cri.emptyProduction.qty" [min]="0" required>
+							<input type="number" class="form-control text-end" name="input_production_new" [(ngModel)]="cri.input_production.qty" [min]="0" required>
 						</td>
 						<td class="text-end">{{(cri?.production?.production_merma_qty || 0) | number}}</td>
 						<td class="text-end" [ngClass]="{'text-danger': cri.requisition.sum_qty > (cri?.production?.produced||0)}">{{cri.requisition.sum_qty - (cri?.production?.produced||0) | number}}</td>
@@ -78,7 +78,7 @@
 		<div class="row border-bottom align-items-center" *ngFor="let cri of requsition_obj_list">
 			<div class="col-12 col-md-2 fw-bold">
 				
-				{{cri.requisition.item_id}} - {{cri.requisition.category_name??''}} {{cri.requisition.item_name }}
+				{{cri.requisition.category_name??''}} {{cri.requisition.item_name }}
 			</div>
 			<div class="d-md-none col-6">Req/Pedientes</div>
 			<div class="col-6 col-md-2 text-start text-md-end fw-bold">
@@ -89,15 +89,15 @@
 			</div>
 			<div class="d-md-none col-6">Agregar</div>
 			<div class="col-6 col-md-2 text-start text-md-end fw-bold">
-				<input type="number" class="form-control text-start text-md-end" name="emptyProduction_new_qty" [(ngModel)]="cri.emptyProduction.qty" [min]="0" required>
+				<input type="number" class="form-control text-start text-md-end" name="input_production_new_qty" [(ngModel)]="cri.input_production.qty" [min]="0" required>
 			</div>
 			<div class="d-md-none col-6">Merma</div>
 			<div class="col-6 col-md-2 text-start text-md-end fw-bold">
-				<input type="number" class="form-control text-start text-md-end" name="emptyProduction_new_merma_qty" [(ngModel)]="cri.emptyProduction.merma_qty" [min]="0">
+				<input type="number" class="form-control text-start text-md-end" name="input_production_new_merma_qty" [(ngModel)]="cri.input_production.merma_qty" [min]="0">
 			</div>
 			<div class="d-md-none col-6">Tipo de merma</div>
 			<div class="col-6 col-md-2 text-start text-md-end fw-bold">
-				<input type="text" name="emptyProduction_merma_reason" [(ngModel)]="cri.emptyProduction.merma_reason" class="form-control" [required]="cri.emptyProduction.qty > 0" [disabled]="cri.emptyProduction.merma_qty <= 0" list="mermalist">
+				<input type="text" name="input_production_merma_reason" [(ngModel)]="cri.input_production.merma_reason" class="form-control" [required]="cri.input_production.qty > 0" [disabled]="cri.input_production.merma_qty <= 0" list="mermalist">
 				<datalist id="mermalist">
 					<option value="Producción">
 					<option value="Calidad">
@@ -107,7 +107,7 @@
 			</div>
 			<div class="d-md-none col-6">Acciones</div>
 			<div class="col-6 col-md-2 text-start text-md-end">
-				<button class="btn btn-primary w-100" type="button" (click)="showProduction(cri)">Agregar</button>
+				<button class="btn btn-primary w-100" type="button" (click)="addProduction(cri)">Agregar</button>
 			</div>
 		</div>
 	</div>
@@ -149,7 +149,7 @@
 			</table>
 		</div>
 	</div-->
-	<dialog id="modal-add-production">
+	<!-- <dialog id="modal-add-production">
 		<div *ngIf="selected_crequistion_item">
 			<h2>{{selected_crequistion_item.requisition.item_name}}</h2>
 			<form name="show_add_production" (submit)="addProduction()" ngNativeValidate>
@@ -180,11 +180,11 @@
 							<option value="Producción">
 							<option value="Calidad">
 						</datalist>
-						<!-- <select name="production_merma_reason" class="form-control" [(ngModel)]="production.merma_reason">
+						<select name="production_merma_reason" class="form-control" [(ngModel)]="production.merma_reason">
 							<option value="">Seleccionar</option>
 							<option value="Producción">Producción</option>
 							<option value="Calidad">Calidad</option>
-						</select> -->
+						</select> 
 					</div>
 				</div>
 				<div class="row">
@@ -197,5 +197,5 @@
 				</div>
 			</form>
 		</div>
-	</dialog>
+	</dialog> -->
 </div>
