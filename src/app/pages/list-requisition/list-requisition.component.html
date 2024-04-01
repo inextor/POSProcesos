@@ -83,7 +83,7 @@
 			<div class="d-md-none col-6">Req/Pedientes</div>
 			<div class="col-6 col-md-2 text-start text-md-end fw-bold">
 				{{cri.requisition.sum_qty + ' / '}}
-				<span [ngClass]="{'text-danger': cri.requisition.sum_qty > (cri?.production?.produced||0)}">
+				<span [ngClass]="{'text-danger': cri.requisition.sum_qty > (cri?.production?.produced||0), 'text-success': cri.requisition.sum_qty <= (cri.production?.produced || 0)}">
 					{{cri.requisition.sum_qty - (cri?.production?.produced||0) | number}}
 				</span>				
 			</div>
