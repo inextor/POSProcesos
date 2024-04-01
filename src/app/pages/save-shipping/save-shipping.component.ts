@@ -237,12 +237,14 @@ export class SaveShippingComponent extends BaseComponent
 			let to_ship_qty = 0;
 			let stock = item_stock_info_list?.find((x) => x.item.id == rii.item.id)?.total || 0;
 
-
 			return {
 				item_info, category: rii.category, required, shipped, produced, to_ship_qty, stock: stock, display: true
 			};
 		});
-		//se obtiene el total requerido y enviado
+
+		//se filtran los citems que hayan sido completados
+		citems = citems.filter((citem)=>citem.required > citem.shipped);
+
 		let required	= citems.reduce((p,citem)=>p+citem.required,0);
 		let shipped		= citems.reduce((p,citem)=>p+citem.shipped,0);
 
@@ -506,6 +508,13 @@ export class SaveShippingComponent extends BaseComponent
 	{
 		if( !this.crequisition_info )
 		{
+			this.showError('No hay requisiciones para agregar');
+			return;
+		}
+
+		if( this.crequisition_info.citems.length == 0 )
+		{
+			this.showError('No hay productos por agregar');
 			return;
 		}
 
@@ -514,6 +523,7 @@ export class SaveShippingComponent extends BaseComponent
 
 			if( cri.stock == 0 )
 			{
+				this.showError('No hay stock de ' + cri.item_info.item.name);
 				continue;
 			}
 

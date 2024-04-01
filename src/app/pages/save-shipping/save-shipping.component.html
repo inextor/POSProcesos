@@ -46,7 +46,7 @@
 		</div>
 		<div class="card p-1 p-lg-3 mt-3">
 			<ng-template [ngIf]="!crequisition_info">
-				No hay requisiciones pendientes para esta fecha
+				No hay requisiciones para esta fecha
 			</ng-template>
 			<div class="" *ngIf="crequisition_info">
 				<table class="w-100 mx-0">
@@ -61,6 +61,11 @@
 						</tr>
 					</thead>
 					<tbody>
+						<ng-template [ngIf]="crequisition_info.citems.length == 0">
+							<tr>
+								<td colspan="6" class="text-center">Todas las requisiciones fueron enviadas </td>
+							</tr>
+						</ng-template>
 						<ng-container *ngFor="let cri of crequisition_info.citems">
 							<tr >
 								<td class="border">{{cri.item_info.item.id}} - {{cri?.category?.name??''}} {{cri.item_info.item.name }}</td>
