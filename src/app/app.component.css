@@ -2,6 +2,12 @@
 	display: none;
 }
 
+.menu_container
+{
+	background: var(--menu-background-image );
+	background-color: var(--menu-background-color);
+}
+
 .side-nav
 {
 	padding-left: 0%;

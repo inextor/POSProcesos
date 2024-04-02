@@ -84,6 +84,20 @@
 	background-color: var(--menu-background-color);
 }
 
+.header_container
+{
+	-webkit-order: 0;
+	-ms-flex-order: 0;
+	order: 0;
+	-webkit-flex: 0 1 auto;
+	-ms-flex: 0 1 auto;
+	flex: 0 1 auto;
+	-webkit-align-self: stretch;
+	-ms-flex-item-align: stretch;
+	align-self: stretch;
+	background-color: var(--header-background-color);
+}
+
 .card {
     background-color: var(--card-background-color);
     background-image: var(--card-background-image);
