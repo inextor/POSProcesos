@@ -78,6 +78,12 @@
     background: var(--background-image);
 }
 
+.menu_container
+{
+	background: var(--menu-background-image );
+	background-color: var(--menu-background-color);
+}
+
 .card {
     background-color: var(--card-background-color);
     background-image: var(--card-background-image);
