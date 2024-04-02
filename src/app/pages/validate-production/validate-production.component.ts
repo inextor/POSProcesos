@@ -47,6 +47,7 @@ export class ValidateProductionComponent extends BaseComponent
 	search_start_date:string = '';
 	search_end_date:string = '';
 
+	search_str:string = '';
 	// show_merma_option:boolean = false;
 	// selected_merma_option:string = '';
 	// selected_production:CProduction | null = null;
@@ -63,7 +64,7 @@ export class ValidateProductionComponent extends BaseComponent
 				date.setHours(0,0,0,0);
 				this.search_start_date = Utils.getLocalMysqlStringFromDate( date );
 				let production_area_id = parseInt( param_map.get('production_area_id')	as string ) as number;
-				return	this.rest_production_info.search({ eq:{ production_area_id }, ge:{ created: Utils.getDateFromLocalMysqlString(this.search_start_date) }, le:{ created:Utils.getDateFromLocalMysqlString(this.search_end_date) } });
+				return	this.rest_production_info.search({ eq:{ production_area_id }, ge:{ created: Utils.getDateFromLocalMysqlString(this.search_start_date) }, le:{ created:Utils.getDateFromLocalMysqlString(this.search_end_date) }, limit:9999 });
 			}),
 		)
 		.subscribe((response)=>
@@ -77,7 +78,7 @@ export class ValidateProductionComponent extends BaseComponent
 	{
 		let start = Utils.getDateFromLocalMysqlString( this.search_start_date );
 		let end = Utils.getDateFromLocalMysqlString( this.search_end_date );
-		this.subs.sink = this.rest_production_info.search({ ge:{ created:start }, le:{ created:end }})
+		this.subs.sink = this.rest_production_info.search({ ge:{ created:start }, le:{ created:end }, limit:9999})
 		.subscribe((response)=>
 		{
 			this.production_info_list = this.buildProductionInfoList(response.data);
@@ -122,6 +123,36 @@ export class ValidateProductionComponent extends BaseComponent
 			
 		}
 		return production_info_list;
+	}
+
+	filterValidations(evt:Event)
+	{
+		let str = (evt.target as HTMLInputElement).value as string;
+		if(str == '')
+		{
+			this.production_info_list = this.production_info_list.sort((a,b)=> a.item.name.localeCompare(b.item.name));
+			return;
+		}
+		this.production_info_list = this.production_info_list.sort((a,b)=>
+		{
+			let a_name = a.item.name.toLowerCase();
+			let b_name = b.item.name.toLowerCase();
+			let a_index = a_name.indexOf(str.toLowerCase());
+			let b_index = b_name.indexOf(str.toLowerCase());
+			if(a_index == -1 && b_index == -1)
+			{
+				return a_name.localeCompare(b_name);
+			}
+			if(a_index == -1)
+			{
+				return 1;
+			}
+			if(b_index == -1)
+			{
+				return -1;
+			}
+			return a_index - b_index;
+		})
 	}
 
 	validate(pi: CProductionInfo)

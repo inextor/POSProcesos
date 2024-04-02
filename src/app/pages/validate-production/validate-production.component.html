@@ -19,6 +19,7 @@
 			</div>
 		</div>
 	</div>
+	<input type="text" class="form-control w-25 my-2" placeholder="Buscar" [(ngModel)]="search_str" (keyup)="filterValidations($event)">
 	<div class="card p-3">
 		<div class="row border-last align-items-center d-none d-md-flex ">
 			<div class="col-2 text-end"></div>
@@ -30,20 +31,19 @@
 		</div>
 		<ng-container *ngIf="production_info_list.length == 0">
 			<div class="text-center fw-bold mt-2">
-				No hay producciones para validar
+				No hay producciones por validar
 			</div>
 		</ng-container>
 		@for(pl of production_info_list;track pl.expand)
 		{
 			<div class="row border-last border-4 align-items-center py-1">
-				<div class="col-12 col-md-2 fw-bold fs-5">
+				<div class="col-12 col-md-2 fw-bold">
 					{{pl.category?.name}}
 					{{pl.item.name}}
 				</div>
 				
 				<div class="col-6 col-md-2">
 					<label class="d-md-none fw-bold text-start">Producido</label>
-					<!-- <input type="number" name="'qty'+pl.id" [(ngModel)]="pl.total" class="form-control text-end" disabled> -->
 					<div class="text-end">
 						{{pl.total | number}}
 					</div>
@@ -68,17 +68,9 @@
 						<option value="Calidad">
 					</datalist>
 
-					<!-- <select name="production_merma_reason" class="form-control" [(ngModel)]="pl.merma_reason" [disabled]="pl.merma <= 0" [required]="pl.merma > 0">
-						<option value="" *ngIf="pl.merma > 0" >Seleccionar</option>
-						<option value="Producción">Producción</option>
-						<option value="Calidad">Calidad</option>
-					</select> -->
 				</div>
 				<div class="col-12 col-md-2 text-end">
 					<div class="row ">
-						<!-- <div class="col-6 mb-2 mb-lg-0 p-2 p-md-1 ">
-							<button *ngIf="pl.production_list.length > 0" type="button" class="btn btn-primary w-100" (click)="pl.expand=!pl.expand">Ver</button>
-						</div> -->
 						<div class="col-12 mb-2 mb-lg-0 p-2 p-md-1">
 							<button *ngIf="pl.production_list.length > 0" type="button" class="btn btn-primary w-100" (click)="validateAll(pl)">
 								<span class="">Validar</span>
@@ -87,51 +79,6 @@
 					</div>
 				</div>
 			</div>
-			@if( pl.expand )
-			{
-				@for(p of pl.production_list; track $index)
-				{
-					<div class="row align-items-center py-1" [ngClass]="{'border-bottom':$last}">
-						<div class="col-6 col-md-2 text-start">{{p.user ? p.user.name : 'No registrado'| titlecase}}</div>
-						<div class="col-6 col-md-2 text-end">{{p.production.created | shortDate:'relative'}}</div>
-						<div class="col-6 col-md-2 text-end">{{p.production.qty_reported | number}}</div>
-						<div class="col-6 col-md-2 text-end" >
-							<input *ngIf="!p.production.verified_by_user_id" type="number" name="'qty'+p.id" [(ngModel)]="p.qty" class="form-control text-end">
-							<span *ngIf="p.production.verified_by_user_id">{{p.production.qty | number }}</span>
-						</div>
-
-						<div class="col-6 col-md-2 text-end" >
-							<input *ngIf="!p.production.verified_by_user_id" type="number" name="'merma_qty'+p.id" [(ngModel)]="p.merma_qty" class="form-control text-end">
-							<span *ngIf="p.production.verified_by_user_id">{{p.production.merma_qty | number }}</span>
-						</div>
-
-						<div class="col-6 col-md-2 text-end">
-							<button *ngIf="!p.production.verified_by_user_id" type="button" class="btn btn-primary" (click)="validate(p)">Validar</button>
-						</div>
-					</div>
-				}
-			}
 		}
 	</div>
 </div>
-<!-- 
-<app-modal [(show)]="show_merma_option" [biggest_posible]="true">
-	<div class="p-3">
-		<h4>Motivo de Merma</h4>
-		<p>Se ha detectado merma en validacion, elige el motivo</p>
-		<div class="row">
-			<div class="col-6">
-				<select name="production_merma_reason" class="form-control" [(ngModel)]="selected_merma_option" required>
-					<option value="">Seleccionar</option>
-					<option value="Producción">Producción</option>
-					<option value="Calidad">Calidad</option>
-				</select>
-			</div>
-			<div class="col-6">
-				<button type="button" class="btn btn-primary w-100">
-					Aceptar
-				</button>
-			</div>
-		</div>
-	</div>
-</app-modal> -->
