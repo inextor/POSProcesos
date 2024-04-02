@@ -213,11 +213,20 @@ export class RestService
 			if( data[i] === null )
 				continue;
 
-			obj[i] = data[i];
+			let d = data[i];
+
+			if( d instanceof Date )
+			{
+				obj[i] = Utils.getUTCMysqlStringFromDate( d );
+			}
+			else
+			{
+				obj[i] = d;
+			}
 		}
 		obj['method'] = method;
 
-    let url = `${this.domain_configuration.domain}/${this.url_base}/updates.php`;
+		let url = `${this.domain_configuration.domain}/${this.url_base}/updates.php`;
 		return this.http.post<T>(`${url}`,obj , { withCredentials: true, headers: this.getSessionHeaders() });
 	}
 
