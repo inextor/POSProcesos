@@ -36,14 +36,17 @@
 		@for(pl of production_info_list;track pl.expand)
 		{
 			<div class="row border-last border-4 align-items-center py-1">
-				<div class="col-12 col-md-2 fw-bold">
+				<div class="col-12 col-md-2 fw-bold fs-5">
 					{{pl.category?.name}}
 					{{pl.item.name}}
 				</div>
 				
 				<div class="col-6 col-md-2">
-					<label class="d-md-none fw-bold text-start">Total</label>
-					<input type="number" name="'qty'+pl.id" [(ngModel)]="pl.total" class="form-control text-end" disabled>
+					<label class="d-md-none fw-bold text-start">Producido</label>
+					<!-- <input type="number" name="'qty'+pl.id" [(ngModel)]="pl.total" class="form-control text-end" disabled> -->
+					<div class="text-end">
+						{{pl.total | number}}
+					</div>
 				</div>
 				
 				<div class="col-6 col-md-2">
