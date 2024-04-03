@@ -48,6 +48,7 @@ export class ValidateProductionComponent extends BaseComponent
 	search_end_date:string = '';
 
 	search_str:string = '';
+	search_by_code:boolean = false;
 	// show_merma_option:boolean = false;
 	// selected_merma_option:string = '';
 	// selected_production:CProduction | null = null;
@@ -71,6 +72,7 @@ export class ValidateProductionComponent extends BaseComponent
 		{
 			this.production_info_list = this.buildProductionInfoList(response.data);
 			console.log(this.production_info_list);
+			this.filterValidations('');
 		})
 	}
 
@@ -125,34 +127,74 @@ export class ValidateProductionComponent extends BaseComponent
 		return production_info_list;
 	}
 
-	filterValidations(evt:Event)
+	changeSearch()
 	{
-		let str = (evt.target as HTMLInputElement).value as string;
+		this.search_by_code = !this.search_by_code;
+		this.filterValidations(this.search_str);
+	}
+
+	filterValidations(str:string)
+	{
 		if(str == '')
 		{
 			this.production_info_list = this.production_info_list.sort((a,b)=> a.item.name.localeCompare(b.item.name));
 			return;
 		}
-		this.production_info_list = this.production_info_list.sort((a,b)=>
+		if ( this.search_by_code )
 		{
-			let a_name = a.item.name.toLowerCase();
-			let b_name = b.item.name.toLowerCase();
-			let a_index = a_name.indexOf(str.toLowerCase());
-			let b_index = b_name.indexOf(str.toLowerCase());
-			if(a_index == -1 && b_index == -1)
+			this.production_info_list = this.production_info_list.sort((a,b)=>
 			{
-				return a_name.localeCompare(b_name);
-			}
-			if(a_index == -1)
+				//si el item no tiene codigo, se va al final
+				if(a.item.code == null)
+				{
+					return 1;
+				}
+				if(b.item.code == null)
+				{
+					return -1;
+				}
+				let a_code = a.item.code.toLowerCase();
+				let b_code = b.item.code.toLowerCase();
+				let a_index = a_code.indexOf(str.toLowerCase());
+				let b_index = b_code.indexOf(str.toLowerCase());
+				if(a_index == -1 && b_index == -1)
+				{
+					return a_code.localeCompare(b_code);
+				}
+				if(a_index == -1)
+				{
+					return 1;
+				}
+				if(b_index == -1)
+				{
+					return -1;
+				}
+				return a_index - b_index;
+			});
+		}
+		else
+		{
+			this.production_info_list = this.production_info_list.sort((a,b)=>
 			{
-				return 1;
-			}
-			if(b_index == -1)
-			{
-				return -1;
-			}
-			return a_index - b_index;
-		})
+				let a_name = a.item.name.toLowerCase();
+				let b_name = b.item.name.toLowerCase();
+				let a_index = a_name.indexOf(str.toLowerCase());
+				let b_index = b_name.indexOf(str.toLowerCase());
+				if(a_index == -1 && b_index == -1)
+				{
+					return a_name.localeCompare(b_name);
+				}
+				if(a_index == -1)
+				{
+					return 1;
+				}
+				if(b_index == -1)
+				{
+					return -1;
+				}
+				return a_index - b_index;
+			})
+		}
 	}
 
 	validate(pi: CProductionInfo)

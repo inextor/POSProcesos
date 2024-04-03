@@ -19,7 +19,16 @@
 			</div>
 		</div>
 	</div>
-	<input type="text" class="form-control w-25 my-2" placeholder="Buscar" [(ngModel)]="search_str" (keyup)="filterValidations($event)">
+	<div class="row my-3">
+		<div class="col-6">
+			<input type="text" class="form-control" [placeholder]="search_by_code == true ? 'Escribe un Código' : 'Escribe un Nombre'" [(ngModel)]="search_str" (ngModelChange)="filterValidations($event)" > 
+		</div>
+		<div class="col-6">
+			<button type="button" class="btn btn-primary" (click)="changeSearch()" >
+				{{ search_by_code == true ? 'Buscar por Nombre' : 'Buscar por Código'}}
+			</button>
+		</div>
+	</div>
 	<div class="card p-3">
 		<div class="row border-last align-items-center d-none d-md-flex ">
 			<div class="col-2 text-end"></div>
@@ -40,6 +49,9 @@
 				<div class="col-12 col-md-2 fw-bold">
 					{{pl.category?.name}}
 					{{pl.item.name}}
+					<span style="color: gray;">
+						{{pl.item.code}}
+					</span>
 				</div>
 				
 				<div class="col-6 col-md-2">
