@@ -6,6 +6,7 @@ import { RestResponse } from '../../modules/shared/services/Rest';
 import { BaseComponent } from '../../modules/shared/base/base.component';
 import { FormsModule } from '@angular/forms';
 import { ShortDatePipe } from '../../modules/shared/pipes/short-date.pipe';
+import { RouterModule, RouterOutlet } from '@angular/router';
 
 export interface UserCheckInfo
 {
@@ -19,7 +20,7 @@ export interface UserCheckInfo
 @Component({
 	selector: 'app-users-checking-clock',
 	standalone: true,
-	imports: [CommonModule, FormsModule, ShortDatePipe],
+	imports: [CommonModule, FormsModule, ShortDatePipe, RouterOutlet, RouterModule],
 	templateUrl: './users-checking-clock.component.html',
 	styleUrl: './users-checking-clock.component.css'
 })
@@ -36,7 +37,8 @@ export class UsersCheckingClockComponent extends BaseComponent implements OnInit
 		this.subs.sink = this.route.paramMap.pipe
 		(
 			mergeMap((param_map)=>
-			{	this.is_loading = true;
+			{
+				this.is_loading = true;
 				let search_obj = this.rest_user.getSearchObject(param_map);
 				search_obj.eq.type = 'USER';
 				search_obj.eq.store_id = this.rest.user?.store_id;
@@ -91,18 +93,25 @@ export class UsersCheckingClockComponent extends BaseComponent implements OnInit
 		let user_id = ucil.user.id;
 
 		this.subs.sink = this.rest_check_in.create({ user_id })
-		.subscribe((response)=>
+		.subscribe(
 		{
-			ucil.current_check_in = response;
-			if( response.timestamp_end == null )
+			next:(response)=>
 			{
 				ucil.current_check_in = response;
-			}
-			else
+				if( response.end_timestamp == null )
+				{
+					ucil.current_check_in = response;
+				}
+				else
+				{
+					ucil.current_check_in = null;
+				}
+			},
+			error:(error:any )=>
 			{
-				ucil.current_check_in = null;
+				this.showError( error )
 			}
-		},(error)=> this.showError( error ))
+		})
 	}
 
 	endTurn()
@@ -117,6 +126,6 @@ export class UsersCheckingClockComponent extends BaseComponent implements OnInit
 				this.showSuccess('Se han registrado las horas de los usuarios (proximamente)')
 			}
 		});
-		
+
 	}
 }

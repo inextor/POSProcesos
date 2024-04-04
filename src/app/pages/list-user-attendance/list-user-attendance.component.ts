@@ -16,7 +16,7 @@ interface CUser
 	worked_hours:string[];
 }
 
-const ci_fields = ['user_id','timestamp_start','timestamp_end'];
+const ci_fields = ['user_id','start_timestamp','end_timestamp'];
 
 @Component({
 	selector: 'app-list-user-attendance',
@@ -91,8 +91,8 @@ export class ListUserAttendanceComponent extends BaseComponent
 
 				//search_object.eq.current = 1;
 
-				search_object.ge.timestamp_start = this.start;
-				search_object.le.timestamp_end = this.end || undefined;
+				search_object.ge.start_timestamp = this.start;
+				search_object.le.end_timestamp = this.end || undefined;
 
 				return forkJoin
 				({
@@ -133,12 +133,12 @@ export class ListUserAttendanceComponent extends BaseComponent
 
 					for(let ci of u.check_ins)
 					{
-						let time = ci.timestamp_end || now;
+						let time = ci.end_timestamp || now;
 
-						let seconds = Math.floor( (time.getTime() - ci.timestamp_start.getTime() )/1000 );
+						let seconds = Math.floor( (time.getTime() - ci.start_timestamp.getTime() )/1000 );
 
 						total_seconds += seconds;
-						u.seconds_by_day[ ci.timestamp_start.getDay() ] += seconds;
+						u.seconds_by_day[ ci.start_timestamp.getDay() ] += seconds;
 					}
 
 					u.seconds_by_day.forEach((v,i)=>{ u.worked_hours[i] = this.getStringHours( v ) });

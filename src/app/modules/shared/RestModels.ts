@@ -252,8 +252,8 @@ export interface Check_In{
 	created_by_user_id:number | null;
 	current:number;
 	id:number;
-	timestamp_end:Date;
-	timestamp_start:Date;
+	end_timestamp:Date;
+	start_timestamp:Date;
 	updated_by_user_id:number | null;
 	user_id:number
 }
@@ -1509,16 +1509,17 @@ export interface User_Permission{
 
 export interface Work_Log
 {
+	id:number;
+	break_seconds: number;
+  date:string;
 	disciplinary_actions:string | null;
 	docking_pay:number;
 	end_timestamp:Date | null;
 	extra_hours:number;
 	hours:number;
-	id:number;
 	in_out_count: number;
 	on_time:'YES'|'NO';
 	seconds_log:number | null;
-	break_seconds: number;
 	start_timestamp:Date | null;
 	updated:Date;
 	user_id:number;

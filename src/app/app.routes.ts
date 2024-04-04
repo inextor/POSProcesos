@@ -12,6 +12,7 @@ import { LoginComponent } from './pages/login/login.component';
 import { SaveShippingComponent } from './pages/save-shipping/save-shipping.component';
 import { ListShippingComponent } from './pages/list-shipping/list-shipping.component';
 import { NgModule } from '@angular/core';
+import { CloseShiftComponent } from './pages/close-shift/close-shift.component';
 
 export const routes: Routes = [
 	{path: '', component: LoginComponent},
@@ -31,6 +32,7 @@ export const routes: Routes = [
 	{path: 'list-shipping', component: ListShippingComponent},
 	{path: 'add-shipping/:store_id/:shipping_id', component: SaveShippingComponent},
 	{path: 'login', component: LoginComponent},
+	{path: 'close-shift', component: CloseShiftComponent},
 ];
 
 

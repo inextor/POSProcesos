@@ -53,7 +53,6 @@ export class CloseShiftComponent extends BaseComponent implements OnInit
 		(
 			mergeMap((params)=>
 			{
-				console.log('FOOOO');
 				let param_map = params[0];
 
 				if( param_map.has('date') )
