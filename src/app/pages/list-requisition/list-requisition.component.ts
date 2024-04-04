@@ -1,14 +1,16 @@
 import { Component,OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RestResponse, SearchObject} from '../../modules/shared/services/Rest';
+import { Rest, RestResponse, SearchObject} from '../../modules/shared/services/Rest';
 import { RouterModule } from '@angular/router';
 import { forkJoin,mergeMap, of } from 'rxjs';
 import { RestSimple } from '../../modules/shared/services/Rest';
 import { FormsModule } from '@angular/forms';
-import { Store,Check_In, User, Production} from '../../modules/shared/RestModels';
+import { Store,Check_In, User, Production, ItemInfo, Serial, SerialInfo, SerialItemInfo, Item} from '../../modules/shared/RestModels';
 import { GetEmpty } from '../../modules/shared/GetEmpty';
 import { BaseComponent } from '../../modules/shared/base/base.component';
 import { Utils } from '../../modules/shared/Utils';
+import { SearchItemsComponent } from '../../components/search-items/search-items.component';
+import { ModalComponent } from '../../components/modal/modal.component';
 
 interface CRequistionItem
 {
@@ -32,15 +34,16 @@ interface CProduction
 
 interface CRequisitionItem
 {
+	item: Item;
 	production: CProduction | null;
 	input_production: Production;
-	requisition: CRequistionItem;
+	requisition: CRequistionItem | null;
 }
 
 @Component({
 	selector: 'app-list-requisition',
 	standalone: true,
-	imports: [CommonModule,RouterModule,FormsModule],
+	imports: [CommonModule,RouterModule,FormsModule, SearchItemsComponent, ModalComponent],
 	templateUrl: './list-requisition.component.html',
 	styleUrl: './list-requisition.component.css'
 })
@@ -53,6 +56,7 @@ export class ListRequisitionComponent extends BaseComponent implements OnInit
 	rest_check_in:RestSimple<Check_In> = this.rest.initRestSimple('check_in',['current']);
 	rest_users:RestSimple<User> = this.rest.initRestSimple('user',['id']);
 	rest_production:RestSimple<Production> = this.rest.initRestSimple('production',['id','created_by_user_id','produced_by_user_id','verified_by_user_id']);
+	rest_serial_info:Rest<Serial,SerialInfo> = this.rest.initRest('serial_info');
 
 	user_list:User[] = [];
 	new_production:Production = GetEmpty.production();
@@ -60,6 +64,13 @@ export class ListRequisitionComponent extends BaseComponent implements OnInit
 	fecha_final:string = '';
 	requisition_search:SearchObject<CRequisitionItem> = this.getEmptySearch();
 	requsition_obj_list: CRequisitionItem[] = [];
+	
+	serial_list:SerialItemInfo[] = [];
+	tmp_serial_list: SerialItemInfo[] = [];
+	show_serial_numbers: boolean = false;
+
+	search_str:string = '';
+	search_by_code:boolean = false;
 
 	ngOnInit()
 	{
@@ -121,7 +132,8 @@ export class ListRequisitionComponent extends BaseComponent implements OnInit
 
 			this.requsition_obj_list = response.requisition.map((cri:CRequisitionItem)=>
 			{
-				cri.requisition.required_by_store = this.store_list.find(s=>cri.requisition.required_by_store_id) || null;
+				if( cri.requisition != null)
+					cri.requisition.required_by_store = this.store_list.find(s=>cri.requisition?.required_by_store_id) || null;
 				cri.input_production = GetEmpty.production();
 				return cri;
 			});
@@ -131,9 +143,118 @@ export class ListRequisitionComponent extends BaseComponent implements OnInit
 		});
 	}
 
-	copyRequisition()
+	onItemSelected(item_info:ItemInfo):void
 	{
+		if( item_info.item.has_serial_number == 'NO' )
+		{
+			//se construye el objeto crequisition_item para agregar la produccion
+			let cri:CRequisitionItem = {
+				item: item_info.item,
+				production: null,
+				input_production: GetEmpty.production(),
+				requisition: null
+			};
 
+			this.selected_crequistion_item = cri;
+			return;
+		}
+
+		let search_obj:SearchObject<Serial> =	this.getEmptySearch();
+
+		search_obj.eq.item_id = item_info.item.id;
+		search_obj.eq.store_id = this.rest.user?.store_id as number;
+		search_obj.eq.status = 'ACTIVE';
+		search_obj.limit = 99999999;
+
+		this.subs.sink = this.rest_serial_info.search( search_obj )
+		.subscribe((response)=>
+		{
+			this.serial_list = response.data.map((si)=>
+			{
+				return {
+					serial_info: si,
+					item_info: item_info
+				};
+			});
+			this.tmp_serial_list = this.serial_list;
+
+			this.show_serial_numbers = true;
+		});
+	}
+
+	closeModal()
+	{
+		this.show_add_production = false;
+		this.selected_crequistion_item = null;
+	}
+	filterValidations(str:string)
+	{
+		if(str == '')
+		{
+			this.requsition_obj_list = this.requsition_obj_list.sort((a,b)=> a.item.name.localeCompare(b.item.name));
+			return;
+		}
+		if ( this.search_by_code )
+		{
+			this.requsition_obj_list = this.requsition_obj_list.sort((a,b)=>
+			{
+				//si el item no tiene codigo, se va al final
+				if(a.item.code == null)
+				{
+					return 1;
+				}
+				if(b.item.code == null)
+				{
+					return -1;
+				}
+				let a_code = a.item.code.toLowerCase();
+				let b_code = b.item.code.toLowerCase();
+				let a_index = a_code.indexOf(str.toLowerCase());
+				let b_index = b_code.indexOf(str.toLowerCase());
+				if(a_index == -1 && b_index == -1)
+				{
+					return a_code.localeCompare(b_code);
+				}
+				if(a_index == -1)
+				{
+					return 1;
+				}
+				if(b_index == -1)
+				{
+					return -1;
+				}
+				return a_index - b_index;
+			});
+		}
+		else
+		{
+			this.requsition_obj_list = this.requsition_obj_list.sort((a,b)=>
+			{
+				let a_name = a.item.name.toLowerCase();
+				let b_name = b.item.name.toLowerCase();
+				let a_index = a_name.indexOf(str.toLowerCase());
+				let b_index = b_name.indexOf(str.toLowerCase());
+				if(a_index == -1 && b_index == -1)
+				{
+					return a_name.localeCompare(b_name);
+				}
+				if(a_index == -1)
+				{
+					return 1;
+				}
+				if(b_index == -1)
+				{
+					return -1;
+				}
+				return a_index - b_index;
+			})
+		}
+	}
+
+	changeSearch()
+	{
+		this.search_by_code = !this.search_by_code;
+		this.filterValidations(this.search_str);
 	}
 
 	fechaInicialChange(fecha:string)
@@ -160,29 +281,6 @@ export class ListRequisitionComponent extends BaseComponent implements OnInit
 		}
 	}
 
-	floor(n:number)
-	{
-		return Math.floor( n );
-	}
-
-	showModal(id:string)
-	{
-		let e = document.getElementById(id) as HTMLDialogElement;
-
-		if( e )
-			e.showModal();
-	}
-
-	closeModal(id:string)
-	{
-		let e = document.getElementById(id) as HTMLDialogElement;
-
-		if( e )
-			e.close();
-
-		this.is_loading = false;
-	}
-
 	addProduction(cri:CRequisitionItem)
 	{
 		//evt.preventDefault();
@@ -194,7 +292,7 @@ export class ListRequisitionComponent extends BaseComponent implements OnInit
 		let user = this.rest.user as User;
 
 		this.new_production.store_id = user.store_id as number;
-		this.new_production.item_id = cri.requisition.item_id;
+		this.new_production.item_id = cri.item.id as number;
 		this.new_production.created_by_user_id = user.id;
 		this.new_production.qty = cri.input_production.qty;
 		this.new_production.merma_qty = cri.input_production.merma_qty;
@@ -218,20 +316,53 @@ export class ListRequisitionComponent extends BaseComponent implements OnInit
 			next: (response:Production) =>
 			{
 				this.new_production = this.new_production = GetEmpty.production();
-				this.requsition_obj_list.map((req_obj)=>
+
+				//si aun no existe el cri en la lista, se añade a this,requsition_obj_list
+				if( this.requsition_obj_list.find(cri=>cri.item.id == response.item_id) == null )
 				{
-					if( req_obj.production?.item_id == response.item_id )
+					this.requsition_obj_list.push(
 					{
-						req_obj.production.produced += response.qty;
-						console.log( 'req_obj.production.produced', req_obj.production.produced );
-						req_obj.production.production_merma_qty = response.merma_qty;
+						item: cri.item,
+						production: {
+							item_id: response.item_id,
+							produced: response.qty,
+							production_merma_qty: response.merma_qty
+						},
+						input_production: GetEmpty.production(),
+						requisition: null
 					}
-				});
+					);
+				}
+				else
+				{
+					//si ya existe el cri en la lista, se suma la produccion
+					this.requsition_obj_list.map((req_obj)=>
+					{
+						if( req_obj.item.id == response.item_id )
+						{
+							if( req_obj.production != null)
+							{
+								//si ya hay produccion, se suma la produccion
+								req_obj.production.produced += response.qty;
+								req_obj.production.production_merma_qty = response.merma_qty;
+							}
+							else
+							{
+								//si no hay produccion, se añade la produccion en donde este el item
+								req_obj.production = {
+									item_id: response.item_id,
+									produced: response.qty,
+									production_merma_qty: response.merma_qty
+								};
+							}
+						}
+					});
 
-				cri.input_production.qty = 0;
-				cri.input_production.merma_qty = 0;
-				cri.input_production.merma_reason = '';
-
+					cri.input_production.qty = 0;
+					cri.input_production.merma_qty = 0;
+					cri.input_production.merma_reason = '';
+				}
+				this.show_add_production = false;
 				this.showSuccess('Produccion agregada');
 			},
 			error: (error:any) =>
