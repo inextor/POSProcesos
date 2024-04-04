@@ -9,6 +9,7 @@ import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { GetEmpty } from '../../modules/shared/GetEmpty';
 import { SearchItemsComponent } from "../../components/search-items/search-items.component";
+import { Utils } from '../../modules/shared/Utils';
 
 interface CItem
 {
@@ -56,45 +57,13 @@ export class SaveShippingComponent extends BaseComponent
 	item_list:ItemStockInfo[] = [];
 	serial_search:string = '';
 	qty_by_item_id:Record<number,number> = {};
+	fecha_requisitions:string = '';
 
 	serial_list:SerialItemInfo[] = [];
 	tmp_serial_list: SerialItemInfo[] = [];
 	show_serial_numbers: boolean = false;
 	shipping_info:ShippingInfo = GetEmpty.shipping_info();
-	//WARNING: PENDIENTE REESTRUCTURAR EL FLUJO Y MODELO DE ENVIOS PARA EL CORRECTO FUNCIONAMIENTO DE ESTE COMPONENTE
-
-	//NO SE PUEDEN EDITAR ENVIOS POR LO PRONTO
-
-	//--CLIENTE--//
-
-	//POR LO PRONTO SE CONSTRUIRA CON SOPORTE PARA VARIAS REQUISICIONES MOSTRANDOSE EN EL ENVIO, ESO SIGNIFICA QUE EL ENVIO NO NECESARIAMENTE
-	//TENDRA REQUISICIONES ASOCIADAS, PERO SI PODRA TENER VARIOS ITEMS DE VARIAS REQUISICIONES
-
-	//EN LA RUTA DEL ENVIO SE OBTENDRA EL ID DE LA TIENDA A LA QUE SE LE ENVIA
-	//DESPUES EN EL COMPONENTE SE OBTENDRA LAS REQUISICIONES CON ITEMS PENDIENTES DE ENVIAR A ESA TIENDA
-	//TOMANDO EN CUENTA QUE PODRIA NO HABER REQUISICIONES PENDIENTES
-	//DE SI HABER, CON LOS ID DE LAS REQUISICIONES SE OBTENDRAN LOS REQUISITION_ITEMS Y SE MOSTRARAN EN EL COMPONENTE
-
-	//----LLAMADAS AL SERVIDOR----//
-
-	//AUN NO HAY MUCHO QUE HABLAR RESPECTO A COMO SE GUARDARAN LOS DATOS
-	//EL PRIMER BOSQUEJO CONSISTE EN QUE EL ENVIO SE GENERARA NORMALMENTE
-	//EN DONDE HABRA UN CAMBIO SERA EN LA RELACION DE REQUISICTION_ITEMS CON LOS SHIPPING_ITEMS
-	//POR AHORA, SE CREARA UN SHIPPING_ITEM POR CADA REQUISITION_ITEM
-	//POR EJEMPLO, SI SE ENVIAN 2 REQUISICIONES, Y EN AMBAS SE ENCUENTRA EL MISMO ITEM, SE CREARAN 2 SHIPPING_ITEMS
-
-	//PARA SABER CUANTO PONER EN LA QTY DEL SHIPPING_ITEM ESTARA CABRON, NO HAY UNA FORMA DIRECTA DE SABERLO
-	//POR EJEMPLO, SI SE ENCUENTRAN 2 REQUISICIONES, Y AMBAS VIENE "BOLLO DE PAN", Y EN UNA REQUISICION REQUIEREN 2 Y EN OTRA REQUIEREN 3
-	//HAREMOS UNA SUMA DE LOS ITEMS DE AMBAS REQUISICIONES, Y ESO SERA LO QUE SE PONDRA EN QTY DEL SHIPPING_ITEM
-	//EN ESTE CASO, 5, OSEA QUE SE HARAN 2 SHIPPING_ITEMS CON QTY 5 (CON EL REQUISITION_ITEM_ID DE CADA REQUISICION)
-	//EL PROBLEMA SE ENCUENTRA A LA HORA DE OBTENER EL NUMERO CORRECTO DE ITEMS ENVIADOS, YA QUE EL QTY SERA EL MISMO PARA AMBOS SHIPPING_ITEMS
-	//Y NO HABRA FORMA DIRECTA DE SABER, DE ESOS 5, CUANTOS FUERON PARA UNA REQUISICION Y CUANTOS PARA LA OTRA
-
-	//ESTE PROBLEMA TIENE UNA COMPLEJIDAD MUY CHISTOSONA, YA QUE NO HAY UNA FORMA DIRECTA DE SABER CUANTOS ITEMS FUERON PARA UNA REQUISICION Y CUANTOS PARA LA OTRA
-
-	//DUDAS
-	//cuale sera el requisition_id del shipping?, se usara el requisition_id de la primera requisicion que se encuentre?
-	//de los shipping_items no hay problema ya que se puede saber a que requisition_item pertenece
+	
 	ngOnInit()
 	{
 		this.subs.sink = this.route.paramMap.subscribe( params =>
@@ -104,6 +73,13 @@ export class SaveShippingComponent extends BaseComponent
 			let from_store_id = Number(this.rest.user?.store_id || '');
 			//se usara un segundo parametro para obtener informacion del envio (en caso de que ya haya sido creado)
 			let shipping_id = params.has('shipping_id') ? parseInt(params.get('shipping_id') ?? '') : null;
+			
+			let start = new Date();
+			let end = new Date();
+			start.setHours(0,0,0,0);
+			end.setHours(23,59,59);
+
+			this.fecha_requisitions = Utils.getLocalMysqlStringFromDate(start).split(' ')[0];
 
 			let empty:ShippingInfo = {
 				shipping: {
@@ -122,7 +98,7 @@ export class SaveShippingComponent extends BaseComponent
 				to_store : this.rest_store.get(to_store_id),
 				from_store: this.rest_store.get(from_store_id),
 				category: this.rest_category.search({limit:99999,sort_order:['name_ASC']}),
-				requisitions: this.rest_requisition_info.search({eq:{required_by_store_id: to_store_id},limit:9999})
+				requisitions: this.rest_requisition_info.search({eq:{required_by_store_id: to_store_id, requested_to_store_id: from_store_id}, ge:{required_by_timestamp:Utils.getUTCMysqlStringFromDate(start)}, le: {required_by_timestamp: Utils.getUTCMysqlStringFromDate(end)} ,limit:9999})
 			})
 			.pipe
 			(
@@ -261,12 +237,14 @@ export class SaveShippingComponent extends BaseComponent
 			let to_ship_qty = 0;
 			let stock = item_stock_info_list?.find((x) => x.item.id == rii.item.id)?.total || 0;
 
-
 			return {
 				item_info, category: rii.category, required, shipped, produced, to_ship_qty, stock: stock, display: true
 			};
 		});
-		//se obtiene el total requerido y enviado
+
+		//se filtran los citems que hayan sido completados
+		citems = citems.filter((citem)=>citem.required > citem.shipped);
+
 		let required	= citems.reduce((p,citem)=>p+citem.required,0);
 		let shipped		= citems.reduce((p,citem)=>p+citem.shipped,0);
 
@@ -279,6 +257,80 @@ export class SaveShippingComponent extends BaseComponent
 			shipped: shipped
 		};
 		console.log('crequisition_info', this.crequisition_info);
+	}
+
+	//vuleve a buscar las requisiciones para volver a inicializar el crequisition_info
+	onFechaRequisitionsChange(fecha: string)
+	{
+		let start = new Date(fecha + 'T00:00:00');
+		let end = new Date(fecha + 'T23:59:59');
+		
+		//solving null for to_store
+		let to_store_id = this.to_store?.id || 0;
+
+		this.subs.sink = forkJoin({
+			requisitions: this.rest_requisition_info.search({eq:{required_by_store_id: to_store_id, requested_to_store_id: this.from_store?.id}, ge:{required_by_timestamp:Utils.getUTCMysqlStringFromDate(start)}, le: {required_by_timestamp: Utils.getUTCMysqlStringFromDate(end)} ,limit:9999})
+		}).pipe
+		(
+			mergeMap((response)=>
+			{
+				let ids:number[] = []
+			
+				if( response.requisitions.total != 0 )
+				{
+					ids = response.requisitions.data.map((r)=>r.items.map((ri)=>ri.item.id)).flat();
+				}
+
+				return forkJoin
+				({
+					shippings: ids.length > 0 ? this.rest_shipping_info.search({ csv:{ids}, eq:{from_store_id: Number(this.from_store?.id), to_store_id: Number(this.to_store?.id)},limit:9999}) : of( null ),
+					requisitions: ids.length > 0 ? of( response.requisitions ) : of( null ),
+					production: ids.length > 0 ? this.rest_production.search({csv:{id:ids}}) : of( null ),
+					item_stock: ids.length > 0 ? this.rest_item_stock.search({search_extra:{store_id: this.rest.user?.store_id as number},csv:{id:ids}}) : of( null ),
+				})
+			})
+
+		).subscribe({
+			next: (response)=>
+			{
+				this.is_loading = false;
+				
+				if( response.requisitions && this.to_store )
+				{
+					let requisitions_info_list = response.requisitions.data;
+
+					let tmp_ri = requisitions_info_list?.map((r)=>r.items).flat();
+
+					let ri_by_item_id = new Map();
+					let ri = tmp_ri.filter((ri:RequisitionItemInfo)=>{
+						if(ri_by_item_id.has( ri.item.id ) )
+						{
+							let ri2 = ri_by_item_id.get( ri.requisition_item.item_id );
+							ri2.requisition_item.qty += ri.requisition_item.qty;
+							return false;
+						}
+						ri_by_item_id.set(ri.requisition_item.item_id, ri );
+						return true;
+					});
+
+					let shippings = response.shippings?.data;
+					let item_stock_list = response.item_stock?.data;
+					let productions_list = response.production?.data;
+
+					this.initializeCRequisitionInfo(ri, shippings, item_stock_list, productions_list, this.to_store);
+					console.log('requisitions found')
+				}
+				else
+				{
+					this.crequisition_info = null;
+				}
+			},
+			error: (error)=>
+			{
+				this.showError(error);
+				this.is_loading = false;
+			}
+		});
 	}
 
 	updateValues()
@@ -456,6 +508,13 @@ export class SaveShippingComponent extends BaseComponent
 	{
 		if( !this.crequisition_info )
 		{
+			this.showError('No hay requisiciones para agregar');
+			return;
+		}
+
+		if( this.crequisition_info.citems.length == 0 )
+		{
+			this.showError('No hay productos por agregar');
 			return;
 		}
 
@@ -464,6 +523,7 @@ export class SaveShippingComponent extends BaseComponent
 
 			if( cri.stock == 0 )
 			{
+				this.showError('No hay stock de ' + cri.item_info.item.name);
 				continue;
 			}
 

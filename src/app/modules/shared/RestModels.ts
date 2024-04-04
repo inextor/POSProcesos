@@ -1048,6 +1048,7 @@ export interface Requisition{
 	id:number;
 	requested_to_store_id:number | null;
 	required_by_store_id:number
+	required_by_timestamp:string | null;
 	status:'PENDING'|'CANCELLED'|'NOT_APPROVED'|'SHIPPED'|'CLOSED'|'APPROVED';
 	updated:Date;
 	updated_by_user_id:number | null;
@@ -1296,51 +1297,56 @@ export interface Storage_Item{
 	updated_by_user_id:number | null;
 }
 export interface Store{
-	address:string | null;
-	autofacturacion_day_limit:number | null;
-	autofacturacion_enabled:'YES'|'NO';
+	address?:string | null;
+	accept_cash:number;
+	accept_credit_card:number;
+	accept_check:number;
+	accept_transfer:number;
+	autofacturacion_day_limit?:number | null;
+	autofacturacion_enabled?:'YES'|'NO';
 	autofacturacion_settings:'ONLY_SAME_MONTH'|'ONLY_DAY_LIMIT'|'BOTH'|'DISABLED';
-	business_name:string | null;
-	city:string | null;
-	client_user_id:number | null;
-	created:Date;
-	created_by_user_id:number | null;
-	default_billing_data_id:number | null;
-	default_claveprodserv:string | null;
-	default_currency_id:string | null;
-	default_sat_item_name:string | null;
-	default_sat_serie:string | null;
-	electronic_transfer_percent_fee:number;
-	exchange_rate:number;
-	id:number;
-	image_id:number | null;
+	business_name?:string | null;
+	city?:string | null;
+	client_user_id?:number | null;
+	created?:Date;
+	created_by_user_id?:number | null;
+	default_billing_data_id?:number | null;
+	default_claveprodserv:string;
+	default_currency_id:string;
+	default_sat_item_name:string;
+	default_sat_serie:string;
+	electronic_transfer_percent_fee?:number | null;
+	//exchange_rate:number | null;
+	id?:number | null;
+	image_id?:number | null;
 	lat:number | null;
 	lng:number | null;
 	main_pc_ip:string | null;
 	max_cash_amount:number;
 	modo_facturacion:'DESGLOSADA'|'COMPACTA';
-	name:string | null;
-	paypal_email:string | null;
-	phone:string | null;
-	pos_category_preferences:'DEFAULT_BY_PRODUCT'|'HIDE_BY_DEFAULT'|'SHOW_BY_DEFAULT';
-	price_list_id:number | null;
-	print_receipt:number | null;
-	print_receipt_copies:number | null;
+	name?:string | null;
+	offline_search_enabled:number;
+	paypal_email?:string | null;
+	phone?:string | null;
+	pos_category_preferences?:'DEFAULT_BY_PRODUCT'|'HIDE_BY_DEFAULT'|'SHOW_BY_DEFAULT';
+	price_list_id?:number | null;
+	print_receipt?:number | null;
+	print_receipt_copies:number;
 	printer_ticket_config:string | null;
 	production_enabled:number | null;
 	qr_size:'PERCENT_25'|'PERCENT_50'|'PERCENT_75'|'PERCENT_100';
-	rfc:string | null;
+	rfc?:string | null;
 	sales_enabled:number | null;
-	show_facturacion_qr:'NO'|'YES';
-	state:string | null;
+	show_facturacion_qr:'NO'|'YES',
+	state?:string | null;
 	status:'ACTIVE'|'DISABLED';
-	suggested_tip:number | null;
-	tax_percent:number;
-	ticket_footer_text:string | null;
-	ticket_image_id:number | null;
-	updated:Date;
-	updated_by_user_id:number | null;
-	zipcode:string | null;
+	suggested_tip:number;
+	tax_percent?:number | null;
+	ticket_footer_text?:string | null;
+	ticket_image_id?:number | null;
+	updated?:Date;
+	updated_by_user_id?:number | null;
+	zipcode?:string | null;
 }
 export interface Store_Bank_Account{
 	bank_account_id:number

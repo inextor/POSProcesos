@@ -1,5 +1,5 @@
 <div class="container-fluid">
-	<h1>Validar Produccion</h1>
+	<h1 class="my-3">Validar Producción</h1>
 	<div class="card p-3 mb-2">
 		<div class="row">
 			<div class="col-12 col-md-4">
@@ -12,11 +12,21 @@
 			</div>
 			<div class="col-12 col-md-4">
 				<label>&nbsp;</label>
-				<button type="submit" class="btn btn-primary w-100" (click)="search()">
+				<button type="submit" class="btn btn-primary w-100" (click)="searchValidations()">
 					<svg xmlns="http://www.w3.org/2000/svg" width="1.06em" height="1.2em" viewBox="0 0 740 840"><path fill="currentColor" d="M734 668q8 9 0 17l-49 49q-3 3-8 3t-8-3L519 584q-50 38-112 55t-133 6q-53-8-99-33t-83-61t-59-85T3 366q-10-79 16-150T96 95t121-76T367 3q53 7 100 30t84 59t62 82t33 100q11 69-6 131t-55 114zM325 557q48 0 90-18t74-50t50-74t18-90t-18-90t-50-74t-74-50t-90-18t-90 18t-73 50t-50 74t-18 90t18 90t50 74t73 50t90 18"/></svg>
 					Buscar
 				</button>
 			</div>
+		</div>
+	</div>
+	<div class="row my-3">
+		<div class="col-6">
+			<input type="text" class="form-control" [placeholder]="search_by_code == true ? 'Escribe un Código' : 'Escribe un Nombre'" [(ngModel)]="search_str" (ngModelChange)="filterValidations($event)" > 
+		</div>
+		<div class="col-6">
+			<button type="button" class="btn btn-primary" (click)="changeSearch()" >
+				{{ search_by_code == true ? 'Buscar por Nombre' : 'Buscar por Código'}}
+			</button>
 		</div>
 	</div>
 	<div class="card p-3">
@@ -30,7 +40,7 @@
 		</div>
 		<ng-container *ngIf="production_info_list.length == 0">
 			<div class="text-center fw-bold mt-2">
-				No hay producciones para validar
+				No hay producciones por validar
 			</div>
 		</ng-container>
 		@for(pl of production_info_list;track pl.expand)
@@ -39,11 +49,16 @@
 				<div class="col-12 col-md-2 fw-bold">
 					{{pl.category?.name}}
 					{{pl.item.name}}
+					<span style="color: gray;">
+						{{pl.item.code}}
+					</span>
 				</div>
 				
 				<div class="col-6 col-md-2">
-					<label class="d-md-none fw-bold text-start">Total</label>
-					<input type="number" name="'qty'+pl.id" [(ngModel)]="pl.total" class="form-control text-end" disabled>
+					<label class="d-md-none fw-bold text-start">Producido</label>
+					<div class="text-end">
+						{{pl.total | number}}
+					</div>
 				</div>
 				
 				<div class="col-6 col-md-2">
@@ -65,17 +80,9 @@
 						<option value="Calidad">
 					</datalist>
 
-					<!-- <select name="production_merma_reason" class="form-control" [(ngModel)]="pl.merma_reason" [disabled]="pl.merma <= 0" [required]="pl.merma > 0">
-						<option value="" *ngIf="pl.merma > 0" >Seleccionar</option>
-						<option value="Producción">Producción</option>
-						<option value="Calidad">Calidad</option>
-					</select> -->
 				</div>
 				<div class="col-12 col-md-2 text-end">
 					<div class="row ">
-						<!-- <div class="col-6 mb-2 mb-lg-0 p-2 p-md-1 ">
-							<button *ngIf="pl.production_list.length > 0" type="button" class="btn btn-primary w-100" (click)="pl.expand=!pl.expand">Ver</button>
-						</div> -->
 						<div class="col-12 mb-2 mb-lg-0 p-2 p-md-1">
 							<button *ngIf="pl.production_list.length > 0" type="button" class="btn btn-primary w-100" (click)="validateAll(pl)">
 								<span class="">Validar</span>
@@ -84,51 +91,6 @@
 					</div>
 				</div>
 			</div>
-			@if( pl.expand )
-			{
-				@for(p of pl.production_list; track $index)
-				{
-					<div class="row align-items-center py-1" [ngClass]="{'border-bottom':$last}">
-						<div class="col-6 col-md-2 text-start">{{p.user ? p.user.name : 'No registrado'| titlecase}}</div>
-						<div class="col-6 col-md-2 text-end">{{p.production.created | shortDate:'relative'}}</div>
-						<div class="col-6 col-md-2 text-end">{{p.production.qty_reported | number}}</div>
-						<div class="col-6 col-md-2 text-end" >
-							<input *ngIf="!p.production.verified_by_user_id" type="number" name="'qty'+p.id" [(ngModel)]="p.qty" class="form-control text-end">
-							<span *ngIf="p.production.verified_by_user_id">{{p.production.qty | number }}</span>
-						</div>
-
-						<div class="col-6 col-md-2 text-end" >
-							<input *ngIf="!p.production.verified_by_user_id" type="number" name="'merma_qty'+p.id" [(ngModel)]="p.merma_qty" class="form-control text-end">
-							<span *ngIf="p.production.verified_by_user_id">{{p.production.merma_qty | number }}</span>
-						</div>
-
-						<div class="col-6 col-md-2 text-end">
-							<button *ngIf="!p.production.verified_by_user_id" type="button" class="btn btn-primary" (click)="validate(p)">Validar</button>
-						</div>
-					</div>
-				}
-			}
 		}
 	</div>
 </div>
-<!-- 
-<app-modal [(show)]="show_merma_option" [biggest_posible]="true">
-	<div class="p-3">
-		<h4>Motivo de Merma</h4>
-		<p>Se ha detectado merma en validacion, elige el motivo</p>
-		<div class="row">
-			<div class="col-6">
-				<select name="production_merma_reason" class="form-control" [(ngModel)]="selected_merma_option" required>
-					<option value="">Seleccionar</option>
-					<option value="Producción">Producción</option>
-					<option value="Calidad">Calidad</option>
-				</select>
-			</div>
-			<div class="col-6">
-				<button type="button" class="btn btn-primary w-100">
-					Aceptar
-				</button>
-			</div>
-		</div>
-	</div>
-</app-modal> -->

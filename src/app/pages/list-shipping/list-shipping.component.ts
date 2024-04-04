@@ -1,12 +1,13 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { BaseComponent } from '../../modules/shared/base/base.component';
-import { Rest, RestSimple } from '../../modules/shared/services/Rest';
+import { Rest, RestSimple, SearchObject } from '../../modules/shared/services/Rest';
 import { Category, Item, Production, Requisition, Shipping, Store } from '../../modules/shared/RestModels';
 import { RequisitionInfo, ShippingInfo } from '../../modules/shared/Models';
 import { forkJoin, mergeMap, of } from 'rxjs';
 import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
+import { Utils } from '../../modules/shared/Utils';
 
 
 interface CItem
@@ -31,12 +32,13 @@ interface CRequisitionByStore
 	store:Store;
 	required:number;
 	shipped:number;
+	pending?:number;
 }
 
 @Component({
 	selector: 'app-list-shipping',
 	standalone: true,
-	imports: [CommonModule,RouterModule,FormsModule],
+	imports: [CommonModule,RouterModule,FormsModule, BaseComponent],
 	templateUrl: './list-shipping.component.html',
 	styleUrl: './list-shipping.component.css'
 })
@@ -50,22 +52,71 @@ export class ListShippingComponent extends BaseComponent
 	crequisition_info_list: CRequisitionInfo[] = []; //old
 	crequisition_by_store_list: CRequisitionByStore[] = [];
 
+	fecha_inicial: string | Date = '';
+	fecha_final: string | Date = '';
+
+	shipping_search = this.rest_shipping_info.getEmptySearch();
+	requisition_search = this.rest_requsition_info.getEmptySearch();
+
+	total_required = 0;
+	total_shipped = 0;
+	total_pending = 0;
+
 	ngOnInit()
 	{
 		this.route.queryParamMap.pipe
 		(
-			mergeMap((param_map)=>
+			mergeMap((paramMap)=>
 			{
-				return this.rest_requsition_info.search( param_map );
-			}),
-			mergeMap((rest_resonse)=>
-			{
-				let requisition_ids = rest_resonse.data.reduce((p,c)=>
-				{
-					p.push(c.requisition.id)
-					return p;
-				},[] as Array<number>);
+				this.path = 'list-shipping';
+				this.is_loading = true;
 
+				this.shipping_search.limit = 999999;
+				this.shipping_search.eq.from_store_id = this.rest.user?.store_id;
+
+				this.requisition_search.limit = 999999;
+				this.requisition_search.eq.status = 'PENDING';
+				this.requisition_search.eq.requested_to_store_id = this.rest.user?.store_id;
+
+				if(paramMap.has('ge.date'))
+				{
+					this.shipping_search.ge.date = paramMap.get('ge.date') as string;
+					let start = new Date(paramMap.get('ge.date') as string + 'T00:00:00');
+					this.requisition_search.ge.required_by_timestamp = Utils.getUTCMysqlStringFromDate(start);
+					this.fecha_inicial = paramMap.get('ge.date') as string;
+				}
+				else
+				{
+					let start = new Date();
+					start.setHours(0, 0, 0, 0);
+					this.fecha_inicial = start.toISOString().split('T')[0];
+					this.shipping_search.ge.date = this.fecha_inicial;
+					this.requisition_search.ge.required_by_timestamp = Utils.getUTCMysqlStringFromDate(start);
+				}
+
+				if(paramMap.has('le.date'))
+				{
+					this.shipping_search.le.date = paramMap.get('le.date') as string;
+					let end = new Date(paramMap.get('le.date') as string + 'T23:59:59');
+					this.requisition_search.le.required_by_timestamp = Utils.getUTCMysqlStringFromDate(end);
+					this.fecha_final = paramMap.get('le.date') as string;
+				}
+				else
+				{
+					let end = new Date();
+					this.fecha_final = end.toISOString().split('T')[0];
+					end.setHours(23, 59, 59);
+					this.shipping_search.le.date = this.fecha_final;
+					this.requisition_search.le.required_by_timestamp = Utils.getUTCMysqlStringFromDate(end);
+				}
+
+				return forkJoin({
+					requisitions: this.rest_requsition_info.search(this.requisition_search),
+					shippings_info: this.rest_shipping_info.search( this.shipping_search )
+				});
+			}),
+			mergeMap((responses)=>
+			{
 				let production_search = this.rest_production.getEmptySearch();
 				let start = new Date();
 				start.setHours( 0, 0, 0, 0 );
@@ -73,13 +124,9 @@ export class ListShippingComponent extends BaseComponent
 
 				return forkJoin
 				({
-					shippings: this.rest_shipping_info.search
-					({
-						csv:{ id:requisition_ids},
-						limit: 999999
-					}),
+					shippings_info: of( responses.shippings_info ),
 					production: this.rest_production.search(production_search),
-					requsitions: of( rest_resonse ),
+					requsitions: of( responses.requisitions ),
 					stores: this.rest_stores.search({limit:999999})
 				})
 			}),
@@ -87,21 +134,19 @@ export class ListShippingComponent extends BaseComponent
 			{
 				let creqs:CRequisitionInfo[] = response.requsitions.data.map((ri)=>
 				{
-					let filter = (si:ShippingInfo)=>si.shipping.requisition_id == ri.requisition.id ;
-					let shippings = response.shippings.data.filter( filter );
+					let filter = (si:ShippingInfo)=>si.shipping.to_store_id == ri.required_by_store.id ;
+					let shippings = response.shippings_info.data.filter( filter ); 
 
-					console.log('NO shippings ???', shippings);
 					let citems:CItem[] = ri.items.map((rii)=>
 					{
 						let required = rii.requisition_item.qty;
 						let shipped = shippings.reduce((p, si) =>
 						{
-							console.log('FOOO',si.items);
 							let items = si.items.filter((x) => x.item?.id == rii.item.id);
+							console.log('items', items);
 							return p + items.reduce((prev_c, item) => prev_c + (item.shipping_item?.qty || 0), 0);
 						}, 0);
 
-						console.log('SHippend',''+shipped);
 						let productions = response.production.data.filter(p => p.item_id = rii.item.id);
 
 						let produced = productions.reduce((p, c) => p + c.qty, 0);
@@ -113,7 +158,8 @@ export class ListShippingComponent extends BaseComponent
 
 
 					let required	= citems.reduce((p,citem)=>p+citem.required,0);
-					let shipped		= citems.reduce((p,citem)=>p+citem.shipped,0);
+					//este valor se calcula en el siguiente paso, aqui solo se inicializa
+					let shipped = 0;
 					let required_by_store	= ri.required_by_store;
 
 					return { ...ri, required_by_store, shippings, citems, required, shipped };
@@ -122,17 +168,14 @@ export class ListShippingComponent extends BaseComponent
 				return forkJoin
 				({
 					creq : of(creqs),
-					stores: of(response.stores.data)
+					stores: of(response.stores.data),
+					shippings_info: of(response.shippings_info.data)
 				});
 			})
 		)
 		.subscribe((response)=>
 		{
 			this.crequisition_info_list = response.creq;
-
-			//now we need to calculate the required and shipped for each store
-			//from the crequisition_info_list, we will calculate the required and shipped for each store in the crequisition_by_store_list
-			//first lets create a partial list of the required and shipped for each store getting the stores from the response.stores
 			this.crequisition_by_store_list = response.stores.map((store)=>
 			{
 				let required = this.crequisition_info_list.reduce((p,creq)=>
@@ -144,19 +187,69 @@ export class ListShippingComponent extends BaseComponent
 					return p;
 				},0);
 
-				let shipped = this.crequisition_info_list.reduce((p,creq)=>
+				let required_shipped = this.crequisition_info_list.reduce((p,creq)=>
 				{
-					if(creq.required_by_store.id == store.id)
+					return p + creq.citems.reduce((p,citem)=>
 					{
-						return p + creq.shipped;
-					}
-					return p;
+						if(creq.required_by_store.id == store.id)
+						{
+							return p + citem.shipped;
+						}
+						return p;
+					},0);
 				},0);
 
-				return {store,required,shipped};
+				let pending = required - required_shipped;
+				let shippings = response.shippings_info.filter((si)=>
+				{
+					return si.shipping.to_store_id == store.id;
+				});
+
+				if (shippings.length == 0) {
+					return { store, required, shipped: 0 };
+				}
+
+				let shipped = shippings
+					.reduce((p, si) => {
+						return p + si.items.reduce((p, si) => {
+							return p + (si.shipping_item?.qty ?? 0);
+						}, 0);
+					}, 0);
+
+				return { store, required, shipped, pending };
 			});
 
-			console.log(this.crequisition_by_store_list);
+			this.total_required = this.crequisition_by_store_list.reduce((p,c)=>p+c.required,0);
+			this.total_shipped = this.crequisition_by_store_list.reduce((p,c)=>p+c.shipped,0);
+			this.total_pending = this.crequisition_by_store_list.reduce((p,c)=>p+(c.pending ?? c.required),0);
+
 		});
 	}
+
+	fechaInicialChange(fecha:string)
+	{
+		this.fecha_inicial = fecha;
+		if( fecha )
+		{
+			this.shipping_search.ge.date = fecha;
+		}
+		else
+		{
+			this.shipping_search.ge.date = null;
+		}
+	}
+
+	fechaFinalChange(fecha:string)
+	{
+		this.fecha_final = fecha;
+		if( fecha )
+		{
+			this.shipping_search.le.date= fecha;
+		}
+		else
+		{
+			this.shipping_search.le.date = null;
+		}
+	}
+
 }

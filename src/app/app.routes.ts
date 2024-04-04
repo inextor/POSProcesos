@@ -12,25 +12,26 @@ import { LoginComponent } from './pages/login/login.component';
 import { SaveShippingComponent } from './pages/save-shipping/save-shipping.component';
 import { ListShippingComponent } from './pages/list-shipping/list-shipping.component';
 import { NgModule } from '@angular/core';
+import { authGuard } from './modules/shared/finger/auth.guard';
 import { CloseShiftComponent } from './pages/close-shift/close-shift.component';
 
 export const routes: Routes = [
-	{path: '', component: LoginComponent},
-	{path: '', component: ListProductionAreaComponent},
-	{path: 'add-production-area', component: SaveProductionAreaComponent},
-	{path: 'edit-production-area/:id', component: SaveProductionAreaComponent},
-	{path: 'list-production-area', component: ListProductionAreaComponent},
-	{path: 'view-production-area/:id', component: ViewProductionAreaComponent},
-	{path: 'add-process/:production_area_id', component: SaveProcessComponent},
-	{path: 'edit-process/:id', component: SaveProcessComponent },
+	{path: '', component: LoginComponent, canActivate: [authGuard]},
+	{path: '', component: ListProductionAreaComponent, canActivate: [authGuard]},
+	{path: 'add-production-area', component: SaveProductionAreaComponent, canActivate: [authGuard]},
+	{path: 'edit-production-area/:id', component: SaveProductionAreaComponent, canActivate: [authGuard]},
+	{path: 'list-production-area', component: ListProductionAreaComponent, canActivate: [authGuard]},
+	{path: 'view-production-area/:id', component: ViewProductionAreaComponent, canActivate: [authGuard]},
+	{path: 'add-process/:production_area_id', component: SaveProcessComponent, canActivate: [authGuard]},
+	{path: 'edit-process/:id', component: SaveProcessComponent, canActivate: [authGuard]},
 //	{path: 'list-process', component: ListProcessComponent},
-	{path: 'list-requisition', component: ListRequisitionComponent},
-	{path: 'users-checking-clock', component: UsersCheckingClockComponent },
-	{path: 'users-attendance', component: ListUserAttendanceComponent},
-	{path: 'validate-production', component: ValidateProductionComponent},
-	{path: 'list-task', component: ListTaskComponent},
-	{path: 'list-shipping', component: ListShippingComponent},
-	{path: 'add-shipping/:store_id/:shipping_id', component: SaveShippingComponent},
+	{path: 'list-requisition', component: ListRequisitionComponent, canActivate: [authGuard]},
+	{path: 'users-checking-clock', component: UsersCheckingClockComponent, canActivate: [authGuard]},
+	{path: 'users-attendance', component: ListUserAttendanceComponent, canActivate: [authGuard]},
+	{path: 'validate-production', component: ValidateProductionComponent, canActivate: [authGuard]},
+	{path: 'list-task', component: ListTaskComponent, canActivate: [authGuard]},
+	{path: 'list-shipping', component: ListShippingComponent, canActivate: [authGuard]},
+	{path: 'add-shipping/:store_id/:shipping_id', component: SaveShippingComponent, canActivate: [authGuard]},
 	{path: 'login', component: LoginComponent},
 	{path: 'close-shift', component: CloseShiftComponent},
 ];

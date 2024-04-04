@@ -6,8 +6,10 @@ import { OFFLINE_DB_SCHEMA } from '../OfflineDBSchema';
 import { ErrorMessage, Utils } from '../Utils';
 import { Preferences, User, User_Permission } from '../RestModels';
 import { HttpHeaders, HttpClient, HttpParams } from '@angular/common/http'
-import { BehaviorSubject, Observable } from 'rxjs';
+import { BehaviorSubject, Observable, Subject } from 'rxjs';
 import { environment } from '../../../../environments/environment';
+import { io, Socket } from 'socket.io-client';
+import { SocketMessage } from '../Models';
 
 export const USER_PERMISSION_KEY = 'user_permission';
 const USER_KEY = 'user';
@@ -22,12 +24,28 @@ export class RestService
 {
 	hades_counter:number = 0;
 	has_hades:boolean = false;
+	private socket: Socket | null = null;
+	socket_is_connected:boolean = false;
 
+	public local_db:any;
+
+	public path:string = environment.app_settings.path_api;
+
+	public domain_configuration = {
+		//cambiar hostname por el dominio de test para que funcione en local
+		//ignore on commit
+		domain: environment.app_settings.test_url	|| window.location.protocol+'//'+window.location.hostname
+	};
+
+	private platform_domain_configuration = {
+		domain: this.getPlatformDomain()
+	};
+
+	private updatesSubject = new Subject<SocketMessage>();
+	public notification = new BehaviorSubject({});
 	errorBehaviorSubject = new BehaviorSubject<ErrorMessage>(new ErrorMessage('',''));
 	errorObservable = this.errorBehaviorSubject.asObservable();
-
-
-	preferences = this.getPreferencesFromSession();
+	public local_preferences = this.getPreferencesFromSession();
 	public session_start?: Date | null;
 	public user:User | null = null;
 	public user_permission:User_Permission = GetEmpty.user_permission();
@@ -39,19 +57,7 @@ export class RestService
 	public _offline_search_enabled = false;
 	public show_menu:boolean = false;
 
-	public local_db:any;
-
-	public path:string = environment.app_settings.path_api;
-
-	public domain_configuration = {
-		//cambiar hostname por el dominio de test para que funcione en local
-		//ignore on commit
-		domain: environment.app_settings?.test_url	|| window.location.protocol+'//'+window.location.hostname
-	};
-
-	private platform_domain_configuration = {
-		domain: this.getPlatformDomain()
-	};
+	
 
 	//private offline_db: DatabaseStore	= DatabaseStore.builder
 	//(
@@ -62,8 +68,56 @@ export class RestService
 	constructor(private http:HttpClient)
 	{
 		this.user = this.getUserFromSession();
-		this.preferences = this.getPreferencesFromSession();
+		this.local_preferences = this.getPreferencesFromSession();
 		this.session_start = this.getSessionStart();
+	}
+
+	initSocketIo()
+	{
+		if( this.socket )
+		{
+			return;
+		}
+
+		let url = 'https://notifications.integranet.xyz:5000';
+
+		if( window.location.href.indexOf('127.0.0.') > -1 || environment.app_settings.test_url)
+			url = 'http://127.0.0.1:5000';
+
+		this.socket = io( url );
+
+		this.socket.on("connect",()=>{
+
+		});
+
+		this.socket.on('connect',()=>{
+			this.socket_is_connected = true;
+			console.log('Socket Connected');
+		});
+
+		this.socket.on('connect',()=>{
+			this.socket_is_connected = true;
+			console.log('Socket Connected');
+		});
+
+		this.socket.on('disconnect',()=>{
+			console.log('Socket Disconected');
+			this.socket_is_connected = false;
+		});
+
+		this.socket.on('update',(mensage)=>{
+			console.log('Lleego mensaje de sockete',mensage);
+			this.updatesSubject.next(mensage);
+		});
+
+		this.socket.on('order',(mensage)=>{
+			console.log('Lleego mensaje de sockete',mensage);
+			this.updatesSubject.next(mensage);
+		});
+
+		this.socket.on("updateCommandas", (message: any) => {
+			this.updatesSubject.next(message);
+		});
 	}
 
 	public hideMenu():void
@@ -74,7 +128,6 @@ export class RestService
 	toggleMenu():void
 	{
 		this.show_menu = !this.show_menu;
-		console.log('Show menu', this.show_menu);
 	}
 
 	getSessionStart():Date
@@ -231,7 +284,7 @@ export class RestService
 
 		let path = '/';
 		if( this.user )
-			path = this.user.type == 'USER' ? '/#/admin' : '/';
+			path = this.user.type == 'USER' ? '/#/login' : '/';
 
 		this.http.post<any>
 		(
@@ -258,6 +311,16 @@ export class RestService
 				window.location.href = path
 			}
 		});
+	}
+
+	getClientPlatformFromSession():any
+	{
+		let usr:string|null = localStorage.getItem('platform_client');
+
+		if( usr )
+			return Utils.transformJson( usr );
+
+		return null;
 	}
 	//doLoginPlatform(email:string,password:string):Observable<LoginResponse>
 	//{
@@ -352,9 +415,9 @@ export class RestService
 
 		if( preferences )
 		{
-			this.preferences = JSON.parse( preferences );
+			this.local_preferences = JSON.parse( preferences );
 			this.applyTheme();
-			return this.preferences;
+			return this.local_preferences;
 		}
 
 		return GetEmpty.preferences();
@@ -363,6 +426,200 @@ export class RestService
 	applyTheme()
 	{
 
+		if( this.local_preferences == null )
+			return;
+
+
+		let properties:Record<string,string> = {
+			'--menu-icon-color':this.local_preferences.menu_icon_color || '#F66151',
+			'--menu-text-color':this.local_preferences.menu_text_color || '#F66151',
+			'--menu-title-color':this.local_preferences.menu_title_color || '#F66151',
+			'--submenu-icon-color':this.local_preferences.submenu_icon_color || '#FFFFFF',
+			'--submenu-text-color':this.local_preferences.submenu_text_color || '#FFFFFF',
+			'--button-border-radius': this.local_preferences.button_border_radius || '.25em',
+
+			'--btn-primary-bg-color': this.local_preferences.btn_primary_bg_color || '#F66151',
+			'--btn-primary-bg-color-hover': this.local_preferences.btn_primary_bg_color_hover || '#F66151',
+			'--btn-primary-text-color': this.local_preferences.btn_primary_text_color || '#FFFFFF',
+			'--btn-primary-text-color-hover': this.local_preferences.btn_primary_text_color_hover || '#FFFFFF',
+			'--btn-primary-border-color': this.local_preferences.btn_primary_border_color || '#F66151',
+			'--btn-primary-border-color-hover': this.local_preferences.btn_primary_border_color_hover || '#F66151',
+
+			'--btn-secondary-bg-color': this.local_preferences.btn_secondary_bg_color || '#6c757d',
+			'--btn-secondary-bg-color-hover': this.local_preferences.btn_secondary_bg_color_hover || '#6c757d',
+			'--btn-secondary-text-color': this.local_preferences.btn_secondary_text_color || '#000000',
+			'--btn-secondary-text-color-hover': this.local_preferences.btn_secondary_text_color_hover || '#000000',
+			'--btn-secondary-border-color': this.local_preferences.btn_secondary_border_color || '##6c757d',
+			'--btn-secondary-border-color-hover': this.local_preferences.btn_secondary_border_color_hover || '#6c757d',
+
+			'--header-background-color': this.local_preferences.header_background_color || '#F66151',
+			'--header-text-color': this.local_preferences.header_text_color || '#000000',
+			'--link-color': this.local_preferences.link_color || '#F66151',
+			'--link-color-hover': this.local_preferences.link_hover || '#F66151',
+			'--button-style': this.local_preferences.button_style || 'transparent',
+			'--titles-color': this.local_preferences.titles_color || '#000000',
+			'--card-border-radius': this.local_preferences.card_border_radius || '.25em',
+			'--button_border_radius': this.local_preferences.button_border_radius || '.25em',
+			'--text-color': this.local_preferences.text_color || '#000000',
+			'--icon-menu-color':this.local_preferences.pv_bar_background_color || 'white',
+			'--pv-bar-text-color': this.local_preferences.pv_bar_text_color || '#FFFFFF',
+			'--pv-bar-background-color': this.local_preferences.pv_bar_background_color || '#000000',
+			'--pv-bar-total-color': this.local_preferences.pv_bar_total_color || '#FFFFFF',
+			'--item-selected-background-color': this.local_preferences.item_selected_background_color || '#F66151',
+			'--item-selected-text-color': this.local_preferences.item_selected_text_color || '#FFFFFF',
+		};
+
+		let body = window.document.body;
+
+		for(let i in properties )
+		{
+			if( properties[ i ] )
+			{
+				body.style.setProperty( i, properties[i] );
+			}
+		}
+
+		if( this.local_preferences.display_categories_on_items == 'YES' )
+		{
+			body.style.setProperty('--pos_item_height', '56px')
+		}
+		else
+		{
+			body.style.setProperty('--pos_item_height', '44px')
+		}
+
+
+		if( this.local_preferences?.login_background_image_id )
+		{
+			let path = this.getImagePath(this.local_preferences.login_background_image_id);
+
+			if( this.local_preferences.login_background_image_size == 'cover')
+				body.style.setProperty('--login-background-image','url('+path+') no-repeat fixed center/cover transparent');
+			else
+				body.style.setProperty('--login-background-image','url('+path+') repeat fixed');
+		}
+
+		if( this.local_preferences.background_image_id )
+		{
+			let path = this.getImagePath(this.local_preferences.background_image_id);
+
+			if( this.local_preferences.background_image_id )
+			{
+				if( this.local_preferences.background_image_size == 'cover' )
+				{
+					body.style.setProperty('--background-image', 'url('+path+') no-repeat fixed center/cover transparent');
+				}
+				else
+				{
+					body.style.setProperty('--background-image','url('+path+') repeat fixed');
+				}
+			}
+			else if( this.local_preferences.background_image_size == 'cover' )
+			{
+				body.style.setProperty('--menu-background-image','url(/assets/default_background.webp) no-repeat fixed center/cover transparent');
+			}
+			else
+			{
+				body.style.setProperty('--menu-background-image','url(/assets/default_background.webp) repeat fixed');
+			}
+		}
+		else
+		{
+			body.style.setProperty('--menu-background-image','url(/assets/default_background.webp) repeat fixed');
+		}
+
+		if( this.local_preferences.menu_background_type == 'COLOR' && this.local_preferences.menu_background_color)
+		{
+			let hex = this.local_preferences.menu_background_color.substring(1,8);
+			var bigint = parseInt(hex, 16);
+			var r = (bigint >> 16) & 255;
+			var g = (bigint >> 8) & 255;
+			var b = bigint & 255;
+
+			let percent = (this.local_preferences.menu_color_opacity ?? 1 )/100;
+
+			body.style.setProperty('--menu-background-image','none');
+			body.style.setProperty('--menu-background-color','rgba('+r+','+g+','+b+','+percent+')')
+		}
+		else
+		{
+			body.style.setProperty('--menu-background-color','transparent');
+
+			if( this.local_preferences.menu_background_image_id )
+			{
+				if( this.local_preferences.menu_background_image_size == 'cover' )
+				{
+					body.style.setProperty('--menu-background-image', 'url('+this.getImagePath( this.local_preferences.menu_background_image_id )+') no-repeat fixed center/cover transparent');
+				}
+				else
+				{
+					body.style.setProperty('--menu-background-image','url('+this.getImagePath( this.local_preferences.menu_background_image_id )+') repeat fixed');
+				}
+			}
+			else if( this.local_preferences.menu_background_image_size == 'cover' )
+			{
+				body.style.setProperty('--menu-background-image','url(/assets/default_menu_background.jpg) no-repeat fixed center/cover transparent');
+			}
+			else
+			{
+				body.style.setProperty('--menu-background-image','url(/assets/default_menu_background.jpg) repeat fixed');
+			}
+		}
+
+		if( this.local_preferences.submenu_background_color )
+		{
+			let hex = this.local_preferences.submenu_background_color.substring(1,8);
+			var bigint = parseInt(hex, 16);
+			var r = (bigint >> 16) & 255;
+			var g = (bigint >> 8) & 255;
+			var b = bigint & 255;
+
+			let percent = (this.local_preferences.submenu_color_opacity ?? 1 )/100;
+
+			body.style.setProperty('--submenu-background-color','rgba('+r+','+g+','+b+','+percent+')')
+		}
+		else
+		{
+
+			body.style.setProperty('--submenu-background-color','#eb5a4e');
+		}
+
+		if( this.local_preferences.card_background_image_id )
+		{
+			body.style.setProperty('--card-background-color','transparent');
+		}
+		else if( this.local_preferences.card_background_color )
+		{
+			let hex = this.local_preferences.card_background_color.substring(1,8);
+
+			var bigint = parseInt(hex, 16);
+			var r = (bigint >> 16) & 255;
+			var g = (bigint >> 8) & 255;
+			var b = bigint & 255;
+
+			let percent = (this.local_preferences.card_background_opacity ?? 1) /100;
+			body.style.setProperty('--card-background-color','rgba('+r+','+g+','+b+','+percent+')');
+			body.style.setProperty('--card-background-color-plain',this.local_preferences.card_background_color);
+			body.style.setProperty('--card-background-image', 'none');
+		}
+		else
+		{
+			body.style.setProperty('--card-background-color','#FFFFFF');
+			body.style.setProperty('--card-background-color-plain','#FFFFFF');
+			body.style.setProperty('--card-background-image', 'none');
+		}
+
+		if( this.local_preferences.card_border_color == 'transparent' )
+		{
+			body.style.setProperty('--card-border-style', 'none');
+			body.style.setProperty('--card-border-width', '0');
+		}
+		else
+		{
+			body.style.setProperty('--card-border-style', 'solid');
+			body.style.setProperty('--card-border-width', '1px');
+			body.style.setProperty('--card-border-color', this.local_preferences.card_border_color);
+		}
 	}
 
 	getPreferencesInfo():Promise<Preferences>
@@ -390,18 +647,18 @@ export class RestService
 			if( response.data.length )
 			{
 
-				this.preferences = response.data[0];
+				this.local_preferences = response.data[0];
 				this.applyTheme();
 				//console.log('Preferencias en getPreferencesInfo');
-				localStorage.setItem('preferences', JSON.stringify( this.preferences ) );
+				localStorage.setItem('preferences', JSON.stringify( this.local_preferences ) );
 			}
 			else
 			{
-				this.preferences = this.getPreferencesFromSession();
-				this.preferences.name = '';
+				this.local_preferences = this.getPreferencesFromSession();
+				this.local_preferences.name = '';
 				//this.preferences.menu_background_color = '#FFFFFF';
 			}
-			return Promise.resolve( this.preferences );
+			return Promise.resolve( this.local_preferences );
 		})
 	}
 
@@ -428,7 +685,7 @@ export class RestService
 
 	showErrorMessage(error: ErrorMessage)
 	{
-		this.errorBehaviorSubject.next(error);
+		this.errorBehaviorSubject?.next(error);
 	}
 
 	getApiPath()

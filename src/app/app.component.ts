@@ -1,25 +1,47 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule, RouterOutlet } from '@angular/router';
+import { Router, RouterModule, RouterOutlet } from '@angular/router';
 import { RestService } from './modules/shared/services/rest.service';
 import { SharedModule } from './modules/shared/SharedModule';
 import { ConfirmationService } from './modules/shared/services/confirmation.service';
 import { KeyboardShortcutEvent } from './modules/shared/Utils';
 import { ModalComponent } from './components/modal/modal.component';
+import { RestSimple } from './modules/shared/services/Rest';
+import { Store } from './modules/shared/RestModels';
+import { HeaderComponent } from './components/header/header.component';
 
 @Component({
 	selector: 'app-root',
 	standalone: true,
-	imports: [CommonModule, RouterOutlet,RouterModule, SharedModule, ModalComponent ],
+	imports: [CommonModule, RouterOutlet,RouterModule, SharedModule, ModalComponent, HeaderComponent],
 	templateUrl: './app.component.html',
 	styleUrl: './app.component.css'
 })
-export class AppComponent {
+export class AppComponent implements OnInit {
 	title = 'POSProcesos';
+	store_name:string = '';
+	rest_store:RestSimple<Store> = this.rest.initRestSimple('store',['id','name']);
 
-	constructor(protected rest:RestService, public confirmation:ConfirmationService)
+	constructor(protected rest:RestService, public confirmation:ConfirmationService, public router:Router)
 	{
 
+	}
+
+	ngOnInit(): void {
+		
+		this.rest_store.get(this.rest.user?.store_id).subscribe(
+			(response) => {
+				if( response.name)
+				{
+					this.store_name = response.name;
+				}
+				else
+				{
+					this.store_name = 'No definido';
+				}
+			}, (error) => {
+				this.store_name = 'No definido';
+			});
 	}
 
 	keyHandler(kse:KeyboardShortcutEvent)
@@ -40,5 +62,12 @@ export class AppComponent {
 				this.confirmation.onCancel();
 			}
 		}
+	}
+
+	logout()
+	{
+		this.rest.logout();
+		this.rest.show_menu = false;
+		this.router.navigate(['/login']);
 	}
 }
