@@ -206,23 +206,15 @@ export class RestService
 
 	update<T>(method:string,data:any):Observable<T>
 	{
-		let obj:Record<string,string> = { };
+		let obj = Utils.transformDatesToString(data);
 
 		for(let i in data)
 		{
 			if( data[i] === null )
 				continue;
 
-			let d = data[i];
-
-			if( d instanceof Date )
-			{
-				obj[i] = Utils.getUTCMysqlStringFromDate( d );
-			}
-			else
-			{
-				obj[i] = d;
-			}
+			let d = Utils.transformDatesToString( data[i] );
+			obj[i] = d;
 		}
 		obj['method'] = method;
 
