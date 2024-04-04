@@ -34,10 +34,10 @@
 			</div>
 		</div>
 		<div class="my-3 row align-items-center">
-			<div class="col-3">
+			<div class="col-3 d-none d-md-inline">
 				<h4>Artículos de Requisición</h4>
 			</div>
-			<div class="col-3">
+			<div class="col-md-3 col-6">
 				<input type="date" name="requisitions_timestamp" [(ngModel)]="fecha_requisitions" class="form-control" (ngModelChange)="onFechaRequisitionsChange($event)" required>
 			</div>
 			<div class="col-6 text-end">
@@ -68,7 +68,7 @@
 						</ng-template>
 						<ng-container *ngFor="let cri of crequisition_info.citems">
 							<tr >
-								<td class="border">{{cri.item_info.item.id}} - {{cri?.category?.name??''}} {{cri.item_info.item.name }}</td>
+								<td class="border">{{cri?.category?.name??''}} {{cri.item_info.item.name }}  <span class="text-black-50">{{cri.item_info.item.code}}</span></td>
 								<td class="text-end border">{{cri.required}}</td>
 								<td class="text-end border">{{cri.shipped | number}}</td>
 								<td class="text-end border">{{ cri.stock| number}}</td>
