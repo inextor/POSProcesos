@@ -15,7 +15,7 @@ import { FormsModule } from '@angular/forms';
   styleUrl: './search-items.component.css'
 })
 export class SearchItemsComponent extends BaseComponent implements OnInit,OnDestroy,OnChanges{
-  
+
   item_info_list:ItemInfo[] = [];
 	@Input() search_str:string = '';
 	@Output() search_strChange = new EventEmitter<string>();
@@ -25,7 +25,7 @@ export class SearchItemsComponent extends BaseComponent implements OnInit,OnDest
 	@Input() reset:number = 0;
 
 	selected_index = -1;
-  
+
   rest_item_info:Rest<Item, ItemInfo> = this.rest.initRest('item_info');
 
 	shortcuts:ShortcutsService | undefined;
@@ -180,15 +180,15 @@ export class SearchItemsComponent extends BaseComponent implements OnInit,OnDest
 			limit: 50,
 			search_extra:{store_id:this.store_id, category_name: event.target.value}
 		})
-.subscribe((response)=>
-{
-  for( let ii of response.data )
-  {
-    let index = ii.category ? ii.item.name.trim().toLowerCase().indexOf(ii.category.name.trim().toLowerCase()) : -1;
-    ii.display_category = ii.category !== null && ii.item.name.trim().toLowerCase().indexOf(ii.category.name.trim().toLowerCase()) >= 0;
-  }
-  this.item_info_list = response.data;
-  this.selected_index = 0;
-});
+		.subscribe((response)=>
+		{
+			for( let ii of response.data )
+			{
+				let index = ii.category ? ii.item.name.trim().toLowerCase().indexOf(ii.category.name.trim().toLowerCase()) : -1;
+				ii.display_category = ii.category !== null && ii.item.name.trim().toLowerCase().indexOf(ii.category.name.trim().toLowerCase()) >= 0;
+			}
+			this.item_info_list = response.data;
+			this.selected_index = 0;
+		});
 	}
 }
