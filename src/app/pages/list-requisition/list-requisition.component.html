@@ -34,9 +34,10 @@
 			<input type="text" class="form-control" [placeholder]="search_by_code == true ? 'Escribe un Código' : 'Escribe un Nombre'" [(ngModel)]="search_str" (ngModelChange)="filterValidations($event)" > 
 		</div>
 		<div class="col-12 col-md-3 my-1 my-md-0">
-			<button type="button" class="btn btn-primary w-100" (click)="changeSearch()" >
-				{{ search_by_code == true ? 'Buscar por Nombre' : 'Buscar por Código'}}
-			</button>
+			<div class="form-check form-switch">
+				<label class="form-check-label">Busqueda por codígo</label>
+				<input class="form-check-input" type="checkbox" [checked]="search_by_code" (click)="changeSearch()"  >
+			</div>
 		</div>
 		<div class="col-12 col-md-3 my-1 my-md-0">
 			<button type="button" class="btn btn-primary w-100" (click)="show_add_production = true">
@@ -230,16 +231,16 @@
 		<div class="my-3" *ngIf="selected_crequistion_item">
 			<h5>{{selected_crequistion_item.item.name}}</h5>
 			<div class="row">
-				<div class="col-4">
+				<div class="col-12 col-md-4">
 					<label>Cantidad Producida</label>
 					<input class="form-control" type="number" name="production_qty"	[min]="0" [(ngModel)]="selected_crequistion_item.input_production.qty" required>
 				</div>
-				<div class="col-4">
+				<div class="col-12 col-md-4">
 					<label>Merma</label>
 					<input class="form-control" type="number" name="production_merma_qty" [min]="0" [(ngModel)]="selected_crequistion_item.input_production.merma_qty"	required>
 				</div>
 
-				<div class="col-4" *ngIf="selected_crequistion_item.input_production.merma_qty > 0">
+				<div class="col-12 col-md-4" *ngIf="selected_crequistion_item.input_production.merma_qty > 0">
 					<label>Motivo de merma</label>
 					<input type="text" name="production_merma_reason" [(ngModel)]="selected_crequistion_item.input_production.merma_reason" class="form-control" [required]="selected_crequistion_item.input_production.merma_qty > 0" list="mermalist">
 
