@@ -64,6 +64,8 @@ export class ListRequisitionComponent extends BaseComponent implements OnInit
 	fecha_final:string = '';
 	requisition_search:SearchObject<CRequisitionItem> = this.getEmptySearch();
 	requsition_obj_list: CRequisitionItem[] = [];
+
+	total_pending:number = 0;
 	
 	serial_list:SerialItemInfo[] = [];
 	tmp_serial_list: SerialItemInfo[] = [];
@@ -138,9 +140,39 @@ export class ListRequisitionComponent extends BaseComponent implements OnInit
 				return cri;
 			});
 
+			//calculando el total de requeridos que proviene de cri.requisition.sum_qty
+			this.calculateTotalPending(this.requsition_obj_list);
+
 			this.user_list = response.users.data;
 
 		});
+	}
+
+	calculateTotalPending(requsition_obj_list:CRequisitionItem[])
+	{
+		let total_required = 0;
+		requsition_obj_list.map((cri)=>
+		{
+			total_required += cri.requisition?.sum_qty || 0;
+		});
+
+		if( total_required == 0 )
+		{
+			this.total_pending = 0;
+			return;
+		}
+		
+		//solo se tomara en cuenta la produccion de los items que su cantidad requerida sea mayor a 0
+		let total_produced = 0;
+		requsition_obj_list.map((cri)=>
+		{
+			if( cri.requisition && cri.requisition?.sum_qty > 0 )
+			{
+				total_produced += cri.production?.produced || 0;
+			}
+		});
+
+		this.total_pending = Math.round((total_produced / total_required) * 100);
 	}
 
 	onItemSelected(item_info:ItemInfo):void
@@ -362,6 +394,7 @@ export class ListRequisitionComponent extends BaseComponent implements OnInit
 					cri.input_production.merma_qty = 0;
 					cri.input_production.merma_reason = '';
 				}
+				this.calculateTotalPending(this.requsition_obj_list);
 				this.show_add_production = false;
 				this.showSuccess('Produccion agregada');
 			},
