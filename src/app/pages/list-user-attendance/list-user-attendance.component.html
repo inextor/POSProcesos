@@ -1,17 +1,17 @@
 <div class="container-fluid">
-	<h1>Asistencia {{start |date}}</h1>
+	<h1 class="my-3">Asistencia {{ start_date  |date}}</h1>
 	<div class="card p-3 my-3">
 		<div class="row">
-			<div class="form-group col-8">
+			<div class="form-group col-6 col-md-8">
 				<label>Fecha</label>
-				<input type="date"	name="start_date" [(ngModel)]="start_date" class="form-control" >
+				<input type="date" name="start_date" [(ngModel)]="start_date" (ngModelChange)="onFechaChange($event)" class="form-control" >
 			</div>
-				<div class="form-group col-4">
-					<label>&nbsp;</label>
-					<div class="text-end">
-						<button type="button" class="btn btn-primary w-50">Buscar</button>
-					</div>
+			<div class="form-group col-6 col-md-4">
+				<label>&nbsp;</label>
+				<div class="text-end">
+					<button type="button" (click)="search(work_log_search)" class="btn btn-primary w-100">Buscar</button>
 				</div>
+			</div>
 		</div>
 	</div>
 	<div class="card px-3">
@@ -19,7 +19,7 @@
 			<div class="d-none d-md-flex col-md-2 col-lg-3">Nombre</div>
 			<div class="col-12 col-md-10 col-lg-9">
 				<div class="row">
-					<div class="col text-end border-start"	*ngFor="let d of dates">{{d}}</div>
+					<div class="col text-end border-start fs-6 fs-sm-4 px-1 px-sm-3" *ngFor="let d of dates">{{d}}</div>
 					<div class="d-none d-md-block col-3 col-md text-end border-start">
 						<svg xmlns="http://www.w3.org/2000/svg" width="1.6em" height="1.6em" viewBox="0 0 24 24"><path fill="currentColor" d="m23.5 17l-5 5l-3.5-3.5l1.5-1.5l2 2l3.5-3.5zM13 19c0-1.5.5-2.8 1.4-3.9L11 13V7h1.5v5.2l3.1 1.9c1-.7 2.1-1.1 3.4-1.1c1 0 2 .3 2.8.7c.1-.6.2-1.1.2-1.7c0-5.5-4.5-10-10-10S2 6.5 2 12s4.5 10 10 10c.6 0 1.2-.1 1.7-.2c-.4-.8-.7-1.8-.7-2.8"/></svg>
 					</div>
@@ -36,11 +36,20 @@
 			<div class="col-12 col-md-2 col-lg-3 fw-bold overflow-hidden">{{ucil.user.name}}</div>
 			<div class="col-12 d-md-none" style="border-top:2px solid #efefef;border-bottom:1px solid #efefef">
 				<div class="row border-bottom">
-					<div class="col-2 px-0 text-end fw-bold">Horas</div>
+					<div class="col-2 px-0 text-end fw-bold">
+						<svg class="d-inline d-sm-none" xmlns="http://www.w3.org/2000/svg" width="1.6em" height="1.6em" viewBox="0 0 24 24"><path fill="currentColor" d="m23.5 17l-5 5l-3.5-3.5l1.5-1.5l2 2l3.5-3.5zM13 19c0-1.5.5-2.8 1.4-3.9L11 13V7h1.5v5.2l3.1 1.9c1-.7 2.1-1.1 3.4-1.1c1 0 2 .3 2.8.7c.1-.6.2-1.1.2-1.7c0-5.5-4.5-10-10-10S2 6.5 2 12s4.5 10 10 10c.6 0 1.2-.1 1.7-.2c-.4-.8-.7-1.8-.7-2.8"/></svg>
+						<span class="d-none d-sm-inline">Horas</span>
+					</div>
 					<div class="col-2 px-0 text-end">{{ucil.total_hours}}</div>
-					<div class="col-2 px-0 text-end fw-bold">Extras</div>
+					<div class="col-2 px-0 text-end fw-bold">
+						<svg class="d-inline d-sm-none text-success" xmlns="http://www.w3.org/2000/svg" width="1.6em" height="1.6em" viewBox="0 0 24 24"><g fill="none"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.45" d="M19 16v3m0 3v-3m0 0h-3m3 0h3"/><path fill="currentColor" fill-rule="evenodd" d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10c.587 0 1.161-.05 1.72-.147A5.973 5.973 0 0 1 13 19c0-1.746.746-3.318 1.936-4.414l-2.278-1.139A3 3 0 0 1 11 10.764V7a1 1 0 1 1 2 0v3.764a1 1 0 0 0 .553.894l2.894 1.448c.149.074.271.18.362.306A5.986 5.986 0 0 1 19 13c1.033 0 2.004.26 2.853.72A10.15 10.15 0 0 0 22 12c0-5.523-4.477-10-10-10" clip-rule="evenodd"/></g></svg>
+						<span class="d-none d-sm-inline">Extras</span>
+					</div>
 					<div class="col-2 px-0 text-end">{{ucil.extra_hours}}</div>
-					<div class="col-2 px-0 text-end fw-bold">Retardos</div>
+					<div class="col-2 px-0 text-end fw-bold">
+						<svg class="d-inline d-sm-none text-danger" xmlns="http://www.w3.org/2000/svg" width="1.6em" height="1.6em" viewBox="0 0 24 24"><path fill="currentColor" d="M20 12h2v6h-2zm0 8h2v2h-2zM12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c2.3 0 4.3-.8 6-2V10h3.8c-.9-4.6-5-8-9.8-8m4.2 14.2L11 13V7h1.5v5.2l4.5 2.7z"/></svg>
+						<span class="d-none d-sm-inline">Retardos</span>
+					</div>
 					<div class="col-2 px-0 text-end">{{ucil.late_arrives}}</div>
 				</div>
 			</div>
