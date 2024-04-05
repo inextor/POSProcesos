@@ -1,10 +1,7 @@
 <div class="container-fluid">
-	<div class="row align-items-center border-2 border-dark border-bottom">
-		<div class="col">
-			<h1>Asistencia</h1>
-		</div>
-		<div class="col text-center">
-			<h4>{{ current_date | shortDate: 'full'}}</h4>
+	<div class="row align-items-center">
+		<div class="col-6">
+			<h1 class="my-3" >Asistencia - {{ current_date | shortDate: 'full'}}</h1>
 		</div>
 		<div class="col text-end">
 			<a class="btn btn-primary" routerLink="/close-shift">Cerrar Turno</a>
@@ -13,29 +10,14 @@
 
 
 	<div class="card px-3 mt-3">
-		<!-- <div class="row py-1 border-bottom">
-			<div class="col-3 fw-bold">Nombre</div>
-			<div class="col-3 text-end fw-bold">Horas Ordinarias</div>
-			<div class="col-3 text-end fw-bold">Horas Extra</div>
-			<div class="col-3 text-end fw-bold">Horas Permiso</div>
-			</div> -->
-			<div class="row py-1 border-not-last align-items-center mt-2" *ngFor="let ucil of user_checkin_info_list">
-				<div class="col-10">{{ucil.user.name}}</div>
-				<!-- <div class="col-2">
-					<input type="number" class="form-control text-end" [(ngModel)]="ucil.ordinary_hours" step="1" min="0" max="99">
-					</div>
-					<div class="col-2">
-					<input type="number" class="form-control text-end" [(ngModel)]="ucil.extra_hours" step="1" min="0" max="99">
-					</div>
-					<div class="col-2">
-					<input type="number" class="form-control text-end" [(ngModel)]="ucil.permission_hours" step="1" min="0" max="99">
-					</div> -->
-				<div class="col-1 text-end">
-					<button class="btn text-white bg-success" type="button" (click)="checkInOut(ucil)" *ngIf="ucil.current_check_in == null">Check IN</button>
-				</div>
-				<div class="col-1 text-end">
-					<button class="btn text-white bg-danger" type="button"	(click)="checkInOut(ucil)" *ngIf="ucil.current_check_in">Check OUT</button>
-				</div>
+		<div class="row py-1 border-not-last align-items-center mt-2" *ngFor="let ucil of user_checkin_info_list">
+			<div class="col-6 col-lg-10">{{ucil.user.name}}</div>
+			<div class="col-3 col-lg-1 text-end">
+				<button class="btn text-white bg-success" type="button" (click)="checkInOut(ucil)" *ngIf="ucil.current_check_in == null">Check IN</button>
 			</div>
+			<div class="col-3 col-lg-1 text-end">
+				<button class="btn text-white bg-danger" type="button"	(click)="checkInOut(ucil)" *ngIf="ucil.current_check_in">Check OUT</button>
+			</div>
+		</div>
 	</div>
 </div>
