@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { forkJoin, mergeMap, of } from 'rxjs';
-import { Check_In, User } from '../../modules/shared/RestModels';
+import { Check_In, User, Work_Log } from '../../modules/shared/RestModels';
 import { Rest, RestResponse, RestSimple } from '../../modules/shared/services/Rest';
 import { BaseComponent } from '../../modules/shared/base/base.component';
 import { Utils } from '../../modules/shared/Utils';
@@ -10,10 +10,14 @@ import { FormsModule } from '@angular/forms';
 interface CUser
 {
 	user:User;
-	check_ins:Check_In[];
-	total_seconds:number;
-	seconds_by_day:number[];
-	worked_hours:string[];
+	work_log:(Work_Log | null )[];
+	total_hours:number;
+	extra_hours:number;
+	late_arrives:number;
+//	check_ins:Check_In[];
+//	total_seconds:number;
+//	seconds_by_day:number[];
+//	worked_hours:string[];
 }
 
 const ci_fields = ['user_id','start_timestamp','end_timestamp'];
@@ -29,11 +33,15 @@ export class ListUserAttendanceComponent extends BaseComponent
 {
 	rest_user: Rest<User,User> = this.rest.initRestSimple<User>('user');
 	rest_check_in: RestSimple<Check_In> = this.rest.initRestSimple('check_in',ci_fields);
+	rest_work_log: RestSimple<Work_Log> = this.rest.initRestSimple('work_log',['user_id','date']);
+
 	check_in_search = this.rest_check_in.getEmptySearch();
+
 	start:Date = new Date();
 	end:Date | null = new Date();
 	start_date:string = '';
 	dates:string[] = ',,,,,,'.split(',');
+	dates_yymmdd:string[] = new Array();
 
 	//public initRestSimple<T>(path: string, fields:string[]|undefined = undefined, extra_keys:string[]|undefined = undefined)
 	cuser_list:CUser[] = [];
@@ -65,12 +73,12 @@ export class ListUserAttendanceComponent extends BaseComponent
 					return forkJoin
 					({
 						users: of(response),
-						check_ins: of({total:0, data:[]} as RestResponse<Check_In>)
+						work_log: of({total:0, data:[]} as RestResponse<Work_Log>)
 					});
 				}
 
 				let ids = response.data.map((i:User)=>i.id);
-				let search_object = this.rest_check_in.getEmptySearch();
+				let search_object = this.rest_work_log.getEmptySearch();
 
 				let start = new Date();
 				start.setDate(start.getDate() -1 );
@@ -78,26 +86,28 @@ export class ListUserAttendanceComponent extends BaseComponent
 
 				this.start_date = Utils.getLocalMysqlStringFromDate( start ).substring(0,10);
 
-				let date_name = 'Lunes,Martes,Miercoles,Jueves,Viernes,Sabado,Domingo'.split(',');
+				let date_name = 'Lu,Ma,Mi,Ju,Vi,Sa,Do'.split(',');
 
 				this.dates.forEach((x,index)=>
 				{
 					let d = new Date();
 					d.setTime( start.getTime() )
 					d.setDate( d.getDate()+index );
-
+					this.dates_yymmdd[index] = Utils.getLocalMysqlStringFromDate( d ).substring(0,10);
 					this.dates[index] =date_name[ d.getDay() ]+' '+d.getDate();
 				});
 
 				//search_object.eq.current = 1;
 
-				search_object.ge.start_timestamp = this.start;
-				search_object.le.end_timestamp = this.end || undefined;
+				search_object.ge.date = this.start_date;
+				search_object.le.date = this.end
+					? Utils.getLocalMysqlStringFromDate( this.end ).substring(0,10 )
+					: undefined;
 
 				return forkJoin
 				({
 					users: of( response),
-					check_ins: this.rest_check_in.search( search_object )
+					work_log: this.rest_work_log.search( search_object )
 				});
 			}),
 			mergeMap((response)=>
@@ -113,35 +123,54 @@ export class ListUserAttendanceComponent extends BaseComponent
 					worked_hours.fill('');
 
 
+					let work_logs:(Work_Log | null)[] = response.work_log.data.filter(ci=>ci.user_id == user.id );
+
+					let total_hours = 0;
+					let extra_hours = 0;
+					let late_arrives = 0;
+
+					for(let wl of work_logs)
+					{
+            let x  = wl as Work_Log;
+						total_hours += x.hours;
+						extra_hours += x.extra_hours;
+						late_arrives += x.on_time == "NO" ? 1: 0;
+					}
+
+					for(let i=0;i<this.dates_yymmdd.length;i++)
+					{
+						if(work_logs.length <= i  || work_logs[i]?.date != this.dates_yymmdd[i] )
+						{
+							//let n_work_log:Work_Log = {
+							//	date: this.dates_yymmdd[i],
+							//	hours: 0,
+							//	extra_hours: 0,
+							//	on_time: 'YES',
+							//	id: 0,
+							//	break_seconds: 0,
+							//	disciplinary_actions: null,
+							//	docking_pay: 0,
+							//	end_timestamp: null,
+							//	in_out_count: 0,
+							//	seconds_log: 0,
+							//	start_timestamp: null,
+							//	updated: new Date,
+							//	user_id: user.id
+							//};
+
+							work_logs.splice(i,0, null );
+						}
+					}
+
 					result.push
 					({
 						user,
-						check_ins: response.check_ins.data.filter(ci=>ci.user_id == user.id ),
-						total_seconds:0,
-						seconds_by_day,
-						worked_hours
+						work_log: work_logs,
+						total_hours:0,
+						extra_hours,
+						late_arrives
 					});
 					//current_check_in: response.check_ins.data.find(checkin=>i.id == checkin.user_id ) || null
-				}
-
-
-				let now = new Date();
-
-				for(let u of result )
-				{
-					let total_seconds = 0;
-
-					for(let ci of u.check_ins)
-					{
-						let time = ci.end_timestamp || now;
-
-						let seconds = Math.floor( (time.getTime() - ci.start_timestamp.getTime() )/1000 );
-
-						total_seconds += seconds;
-						u.seconds_by_day[ ci.start_timestamp.getDay() ] += seconds;
-					}
-
-					u.seconds_by_day.forEach((v,i)=>{ u.worked_hours[i] = this.getStringHours( v ) });
 				}
 
 				return of(result)

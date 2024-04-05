@@ -1,33 +1,49 @@
 <div class="container-fluid">
 	<h1>Asistencia {{start |date}}</h1>
-  <div class="card p-3 my-3">
-    <div class="row">
-      <div class="form-group col-8">
-        <label>Fecha</label>
-        <input type="date"  name="start_date" [(ngModel)]="start_date" class="form-control" >
-      </div>
-        <div class="form-group col-4">
-          <label>&nbsp;</label>
-          <div class="text-end">
-            <button type="button" class="btn btn-primary w-50">Buscar</button>
-          </div>
-        </div>
-    </div>
-  </div>
+	<div class="card p-3 my-3">
+		<div class="row">
+			<div class="form-group col-8">
+				<label>Fecha</label>
+				<input type="date"	name="start_date" [(ngModel)]="start_date" class="form-control" >
+			</div>
+				<div class="form-group col-4">
+					<label>&nbsp;</label>
+					<div class="text-end">
+						<button type="button" class="btn btn-primary w-50">Buscar</button>
+					</div>
+				</div>
+		</div>
+	</div>
 	<div class="card px-3">
 		<div class="row fw-bold py-3">
-			<div class="col-4">Nombre</div>
-			<div class="col-6">
+			<div class="d-none d-md-flex col-4">Nombre</div>
+			<div class="col-12 col-md-8">
 				<div class="row">
-          <div class="col text-end border-start"  *ngFor="let d of dates">{{d}}</div>
+					<div class="col text-end border-start"	*ngFor="let d of dates">{{d}}</div>
+					<div class="d-none d-md-block col-3 col-md text-end border-start">Hrs</div>
+					<div class="d-none d-md-block col-3 col-md text-end border-start">Extras</div>
+					<div class="d-none d-md-block col-3 col-md text-end border-start">Retardos</div>
 				</div>
 			</div>
 		</div>
-		<div class="row py-1 border-top py-2 align-items-center" *ngFor="let ucil of cuser_list">
-			<div class="col-4 fw-bold">{{ucil.user.name}}</div>
-			<div class="col-6">
+		<div class="row py-1 border-top py-2 align-items-center" style="border-top:3px solid #666666;!important" *ngFor="let ucil of cuser_list">
+			<div class="col-12 col-md-4 fw-bold">{{ucil.user.name}}</div>
+			<div class="col-12" style="border-top:2px solid #efefef;border-bottom:1px solid #efefef">
+				<div class="row d-md-none border-bottom">
+					<div class="col-2 px-0 text-end fw-bold">Horas</div>
+					<div class="col-2 px-0 text-end">{{ucil.total_hours}}</div>
+					<div class="col-2 px-0 text-end fw-bold">Extras</div>
+					<div class="col-2 px-0 text-end">{{ucil.extra_hours}}</div>
+					<div class="col-2 px-0 text-end fw-bold">Retardos</div>
+					<div class="col-2 px-0 text-end">{{ucil.late_arrives}}</div>
+				</div>
+			</div>
+			<div class="col-12 col-md-8">
 				<div class="row">
-					<div class="col text-end border-start" *ngFor="let h of ucil.worked_hours">{{h}}</div>
+					<div class="col text-end border-start" *ngFor="let h of ucil.work_log">{{h ? h.hours: '-'}}</div>
+					<div class="d-none d-md-block col-md text-end border-end">{{ucil.total_hours}}</div>
+					<div class="d-none d-md-block col-md text-end border-end">{{ucil.extra_hours}}</div>
+					<div class="d-none d-md-block col-md text-end border-end">{{ucil.late_arrives}}</div>
 				</div>
 			</div>
 		</div>
