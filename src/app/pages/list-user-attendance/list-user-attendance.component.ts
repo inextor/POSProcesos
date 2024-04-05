@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { forkJoin, mergeMap, of } from 'rxjs';
 import { Check_In, User, Work_Log } from '../../modules/shared/RestModels';
@@ -32,10 +32,8 @@ const ci_fields = ['user_id','start_timestamp','end_timestamp'];
 export class ListUserAttendanceComponent extends BaseComponent
 {
 	rest_user: Rest<User,User> = this.rest.initRestSimple<User>('user');
-	rest_check_in: RestSimple<Check_In> = this.rest.initRestSimple('check_in',ci_fields);
 	rest_work_log: RestSimple<Work_Log> = this.rest.initRestSimple('work_log',['user_id','date']);
 
-	check_in_search = this.rest_check_in.getEmptySearch();
 	work_log_search = this.rest_work_log.getEmptySearch();
 
 	start_date:string = '';
@@ -55,6 +53,7 @@ export class ListUserAttendanceComponent extends BaseComponent
 				this.path = 'users-attendance';
 				let search_obj = this.rest_user.getSearchObject(param_map);
 				search_obj.eq.type = 'USER';
+				search_obj.eq.store_id = this.rest.user?.store_id;
 
 				this.start_date = Utils.getMysqlStringFromDate(new Date).split(' ')[0];
 				if(param_map.has('ge.date'))
