@@ -166,13 +166,13 @@ export class ListRequisitionComponent extends BaseComponent implements OnInit
 		let total_produced = 0;
 		requsition_obj_list.map((cri)=>
 		{
-			if( cri.requisition && cri.requisition?.sum_qty > 0 )
-			{
-				total_produced += cri.production?.produced || 0;
-			}
+			//ademas, solo se tomara en cuenta como maximo la producion que se requiere
+			let required = cri.requisition?.sum_qty || 0;
+			let produced = cri.production?.produced || 0;
+			total_produced += Math.min(produced, required);
 		});
 
-		this.total_pending = Math.round((total_produced / total_required) * 100);
+		this.total_pending = Math.floor((total_produced / total_required) * 100);
 	}
 
 	onItemSelected(item_info:ItemInfo):void
