@@ -36,9 +36,8 @@ export class ListUserAttendanceComponent extends BaseComponent
 	rest_work_log: RestSimple<Work_Log> = this.rest.initRestSimple('work_log',['user_id','date']);
 
 	check_in_search = this.rest_check_in.getEmptySearch();
+	work_log_search = this.rest_work_log.getEmptySearch();
 
-	start:Date = new Date();
-	end:Date | null = new Date();
 	start_date:string = '';
 	dates:string[] = ',,,,,,'.split(',');
 	dates_yymmdd:string[] = new Array();
@@ -48,21 +47,20 @@ export class ListUserAttendanceComponent extends BaseComponent
 
 	ngOnInit()
 	{
-		let d = new Date();
-		let current_date = d.getDay();
-
-		d.setDate( d.getDate() - d.getDay()	);
-		d.setHours( 0,0,0,0);
-
-		this.start.setTime( d.getTime() );
-
 		this.subs.sink = this.route.queryParamMap.pipe
 		(
 			mergeMap((param_map)=>
 			{
 				this.is_loading = true;
+				this.path = 'users-attendance';
 				let search_obj = this.rest_user.getSearchObject(param_map);
 				search_obj.eq.type = 'USER';
+
+				this.start_date = Utils.getMysqlStringFromDate(new Date).split(' ')[0];
+				if(param_map.has('ge.date'))
+				{
+					this.start_date = param_map.get('ge.date') as string;
+				}
 
 				return this.rest_user.search(search_obj);
 			}),
@@ -78,13 +76,15 @@ export class ListUserAttendanceComponent extends BaseComponent
 				}
 
 				let ids = response.data.map((i:User)=>i.id);
-				let search_object = this.rest_work_log.getEmptySearch();
+				this.work_log_search.csv['user_id'] = ids;
 
-				let start = new Date();
-				start.setDate(start.getDate() -1 );
-				search_object.csv['user_id'] = ids;
+				let end = new Date(this.start_date);
+				end.setDate(end.getDate() + 6);
+				this.work_log_search.ge.date = this.start_date;
+				this.work_log_search.le.date = Utils.getMysqlStringFromDate(end).split(' ')[0];
 
-				this.start_date = Utils.getLocalMysqlStringFromDate( start ).substring(0,10);
+				let start = new Date(this.start_date);
+				start.setDate(start.getDate() + 1);
 
 				let date_name = 'Lu,Ma,Mi,Ju,Vi,Sa,Do'.split(',');
 
@@ -94,20 +94,13 @@ export class ListUserAttendanceComponent extends BaseComponent
 					d.setTime( start.getTime() )
 					d.setDate( d.getDate()+index );
 					this.dates_yymmdd[index] = Utils.getLocalMysqlStringFromDate( d ).substring(0,10);
-					this.dates[index] =date_name[ d.getDay() ]+' '+d.getDate();
+					this.dates[index] =date_name[ d.getDay() == 0 ? 6 : d.getDay() -1 ]+' '+d.getDate();
 				});
-
-				//search_object.eq.current = 1;
-
-				search_object.ge.date = this.start_date;
-				search_object.le.date = this.end
-					? Utils.getLocalMysqlStringFromDate( this.end ).substring(0,10 )
-					: undefined;
 
 				return forkJoin
 				({
 					users: of( response),
-					work_log: this.rest_work_log.search( search_object )
+					work_log: this.rest_work_log.search( this.work_log_search )
 				});
 			}),
 			mergeMap((response)=>
@@ -131,7 +124,7 @@ export class ListUserAttendanceComponent extends BaseComponent
 
 					for(let wl of work_logs)
 					{
-            let x  = wl as Work_Log;
+            			let x  = wl as Work_Log;
 						total_hours += x.hours;
 						extra_hours += x.extra_hours;
 						late_arrives += x.on_time == "NO" ? 1: 0;
@@ -180,6 +173,16 @@ export class ListUserAttendanceComponent extends BaseComponent
 		{
 			this.cuser_list = response;
 		})
+	}
+
+	onFechaChange(fecha:string)
+	{
+		this.start_date = fecha;
+		if( fecha )
+		{
+			this.work_log_search.ge.date = fecha;
+			this.work_log_search.le.date = fecha;
+		}
 	}
 
 	getStringHours(seconds:number)
