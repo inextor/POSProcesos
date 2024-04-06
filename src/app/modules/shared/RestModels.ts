@@ -1517,7 +1517,7 @@ export interface Work_Log
 {
 	id:number;
 	break_seconds: number;
-  date:string;
+  	date:string;
 	disciplinary_actions:string | null;
 	docking_pay:number;
 	end_timestamp:Date | null;
@@ -1525,6 +1525,7 @@ export interface Work_Log
 	hours:number;
 	in_out_count: number;
 	on_time:'YES'|'NO';
+	payment_percent:number;
 	seconds_log:number | null;
 	start_timestamp:Date | null;
 	updated:Date;

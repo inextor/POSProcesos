@@ -25,10 +25,6 @@ interface UserCheckInfo
 })
 export class CloseShiftComponent extends BaseComponent implements OnInit
 {
-	toggleAll(evt: MouseEvent)
-	{
-	}
-
 	user_checkin_info_list:UserCheckInfo[] = [];
 	rest_user = this.rest.initRestSimple<User>('user',['id','username','name','email','type']);
 	rest_check_in = this.rest.initRestSimple<Check_In>('check_in',['id','current']);
@@ -126,7 +122,7 @@ export class CloseShiftComponent extends BaseComponent implements OnInit
 					let workshift:Workshift | undefined = response.workshift.data.find( ws_funct );
 					let check_ins	= response.check_ins.data.filter(checkin=>user.id == checkin.user_id );
 
-					if( work_log == undefined )
+					if( !work_log )
 						work_log = this.getWorkLog( user, check_ins, workshift );
 
 					result.push
@@ -220,6 +216,7 @@ export class CloseShiftComponent extends BaseComponent implements OnInit
 			end_timestamp,
 			docking_pay: 0,
 			on_time: 'YES',
+			payment_percent: 100,
 			break_seconds,
 			in_out_count: check_in_list.length,
 			disciplinary_actions: null,
@@ -279,6 +276,17 @@ export class CloseShiftComponent extends BaseComponent implements OnInit
 	{
 		let target = evt.target as HTMLInputElement;
 		uc.selected = target.checked;
+	}
+
+	toggleAll(evt: MouseEvent)
+	{
+		let target = evt.target as HTMLInputElement;
+		this.all_checked = target.checked;
+
+		for(let uc of this.user_checkin_info_list)
+		{
+			uc.selected = this.all_checked;
+		}
 	}
 
 	dayChange(date:string)
