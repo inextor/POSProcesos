@@ -1,0 +1,117 @@
+<div class="container-fluid">
+	<h1 class="my-3">Reporte de producción</h1>
+	<div class="card p-3">
+		<div class="row">
+			<div class="col-4">
+				<div class="form-group">
+					<label for="search_start_date">Fecha Corte</label>
+					<input type="datetime-local" [(ngModel)]="start_date" (ngModelChange)="onDateChange($event, search_prod_obj.ge, 'created')" class="form-control" id="search_start_date">
+				</div>
+			</div>
+			<div class="col-4">
+				<div class="form-group">
+					<label for="search_end_date">Fecha Corte</label>
+					<input type="datetime-local" [(ngModel)]="end_date" (ngModelChange)="onDateChange($event, search_prod_obj.le, 'created')" class="form-control" id="search_end_date">
+				</div>
+			</div>
+			<div class="col-4">
+				<div class="form-group">
+					<label>&nbsp;</label>
+					<button class="btn btn-primary w-100" (click)="search(search_prod_obj)" >Buscar</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="card p-3 my-3">
+		<div class="row">
+			<div class="col-12 col-sm-4 col-lg text-center">
+				<div class="">Art. Prod.</div>
+				<div class="fw-bold fs-2">{{items_total}}</div>
+			</div>
+			<div class="col-12 col-sm-4 col-lg text-center">
+				<div class="">Total Merma</div>
+				<div class="fw-bold fs-2">{{merma_total}}</div>
+			</div>
+			<div class="col-12 col-sm-6 col-lg text-center">
+				<div class="">Total Producido</div>
+				<div class="fw-bold fs-2">{{production_total}}</div>
+			</div>
+			<div class="col-12 col-sm-4 col-lg text-center">
+				<div class="">Total Costo</div>
+				<div class="fw-bold fs-2">${{cost_total}}</div>
+			</div>
+			<div class="col-12 col-sm-6 col-lg text-center">
+				<div class="">Total Monto</div>
+				<div class="fw-bold fs-2">${{payment_total}}</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="card p-3 my-3">
+		<div class="row">
+			<div class="col-12">
+				<div class="fw-bold fs-4">Detalle por artículo</div>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-12">
+				<table class="table table-bordered">
+					<thead>
+						<tr>
+							<th>Nombre</th>
+							<th>Costo</th>
+							<th>Merma</th>
+							<th>Total Prod.</th>
+							<th>Total Monto</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr *ngFor="let ipr of CItem_production_report">
+							<td>{{ipr.item.item.name}}</td>
+							<td>{{ipr.item.item.reference_price}}</td>
+							<td>{{ipr.merma}}</td>
+							<td>{{ipr.production}}</td>
+							<td>{{ipr.total_cost}}</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</div>
+
+	<div class="card p-3 my-3">
+		<div class="row">
+			<div class="col-12">
+				<div class="fw-bold fs-4">Detalle por usuario</div>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-12">
+				<table class="table table-bordered">
+					<thead>
+						<tr>
+							<th>Usuario</th>
+							<th>Horas Totales</th>
+							<th>Horas Extras</th>
+							<th>Producido</th>
+							<th>Costo Total</th>
+							<th>Total Pago</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr *ngFor="let upr of Cuser_production_report">
+							<td>{{upr.user.name}}</td>
+							<td>{{upr.total_hours}}</td>
+							<td>{{upr.total_extra_hours}}</td>
+							<td>{{upr.production_qty}}</td>
+							<td>{{upr.cost}}</td>
+							<td>
+								<input type="number" placeholder="$1000" class="form-control" [(ngModel)]="upr.total_payment">
+							</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</div>
+</div>

@@ -14,6 +14,7 @@ import { ListShippingComponent } from './pages/list-shipping/list-shipping.compo
 import { NgModule } from '@angular/core';
 import { authGuard } from './modules/shared/finger/auth.guard';
 import { CloseShiftComponent } from './pages/close-shift/close-shift.component';
+import { ProductionReportComponent } from './pages/production-report/production-report.component';
 
 export const routes: Routes = [
 	{path: '', component: LoginComponent, canActivate: [authGuard]},
@@ -34,6 +35,7 @@ export const routes: Routes = [
 	{path: 'add-shipping/:store_id/:shipping_id', component: SaveShippingComponent, canActivate: [authGuard]},
 	{path: 'login', component: LoginComponent},
 	{path: 'close-shift', component: CloseShiftComponent},
+	{path: 'production-report', component: ProductionReportComponent, canActivate: [authGuard]}
 ];
 
 
