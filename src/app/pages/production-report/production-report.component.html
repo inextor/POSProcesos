@@ -38,11 +38,11 @@
 			</div>
 			<div class="col-12 col-sm-4 col-lg text-center">
 				<div class="">Total Costo</div>
-				<div class="fw-bold fs-2">${{cost_total}}</div>
+				<div class="fw-bold fs-2">{{cost_total | currency: "$"}}</div>
 			</div>
 			<div class="col-12 col-sm-6 col-lg text-center">
 				<div class="">Total Monto</div>
-				<div class="fw-bold fs-2">${{payment_total}}</div>
+				<div class="fw-bold fs-2">{{payment_total | currency: "$" }}</div>
 			</div>
 		</div>
 	</div>
@@ -66,12 +66,12 @@
 						</tr>
 					</thead>
 					<tbody>
-						<tr *ngFor="let ipr of CItem_production_report">
+						<tr *ngFor="let ipr of CItem_production_report_list">
 							<td>{{ipr.item.item.name}}</td>
-							<td>{{ipr.item.item.reference_price}}</td>
-							<td>{{ipr.merma}}</td>
-							<td>{{ipr.production}}</td>
-							<td>{{ipr.total_cost}}</td>
+							<td class="text-end">{{ipr.merma}}</td>
+							<td class="text-end">{{ipr.production}}</td>
+							<td class="text-end">{{ipr.item.item.reference_price | currency: "$"}}</td>
+							<td class="text-end">{{ipr.total_cost | currency: "$"}}</td>
 						</tr>
 					</tbody>
 				</table>
@@ -87,30 +87,51 @@
 		</div>
 		<div class="row">
 			<div class="col-12">
-				<table class="table table-bordered">
-					<thead>
-						<tr>
-							<th>Usuario</th>
-							<th>Horas Totales</th>
-							<th>Horas Extras</th>
-							<th>Producido</th>
-							<th>Costo Total</th>
-							<th>Total Pago</th>
-						</tr>
-					</thead>
-					<tbody>
-						<tr *ngFor="let upr of Cuser_production_report">
-							<td>{{upr.user.name}}</td>
-							<td>{{upr.total_hours}}</td>
-							<td>{{upr.total_extra_hours}}</td>
-							<td>{{upr.production_qty}}</td>
-							<td>{{upr.cost}}</td>
-							<td>
-								<input type="number" placeholder="$1000" class="form-control" [(ngModel)]="upr.total_payment">
-							</td>
-						</tr>
-					</tbody>
-				</table>
+				<form (submit)="submit($event)" ngNativeValidate>
+					<table class="table table-bordered">
+						<thead>
+							<tr>
+								<th>Usuario</th>
+								<th>Horas Totales</th>
+								<th>Horas Extras</th>
+								<th>Producido</th>
+								<th>Costo Total</th>
+								<ng-template [ngIf]="Cuser_production_report_list.length > 0">
+									<ng-container *ngFor="let jv of Cuser_production_report_list[0].json_values | keyvalue">
+										<th>{{jv.key | customToTitle: 'snake_case'}}</th>
+									</ng-container>
+								</ng-template>
+								<th>Total Pago</th>
+							</tr>
+						</thead>
+						<tbody>
+							<ng-template [ngIf]="Cuser_production_report_list.length < 0">
+								<tr>
+									<td colspan="100" class="text-center">No hay registros</td>
+								</tr>
+							</ng-template>
+							<ng-template [ngIf]="Cuser_production_report_list.length > 0">
+								<tr *ngFor="let upr of Cuser_production_report_list">
+									<td>{{upr.user.name}}</td>
+									<td class="text-end">{{upr.total_hours}}</td>
+									<td class="text-end">{{upr.total_extra_hours}}</td>
+									<td class="text-end">{{upr.production_qty}}</td>
+									<td class="text-end">{{upr.cost | currency: "$"}}</td>
+									<ng-container *ngFor="let jv of upr.json_values | keyvalue">
+										<td class="text-end">{{jv.value | currency: "$"}}</td>
+									</ng-container>
+									<td class="text-end input-group">
+										<span class="input-group-text">$</span>
+										<input type="number" [name]="'total_payment'+upr.user.id" (ngModelChange)="setValue($event, upr)" placeholder="$0.00" class="form-control text-end" [ngModel]="upr.total_payment" step="any" required>
+									</td>
+								</tr>
+							</ng-template>
+						</tbody>
+					</table>
+					<div class="text-end">
+						<button class="btn btn-primary text-end" type="submit">Guardar</button>
+					</div>
+				</form>
 			</div>
 		</div>
 	</div>
