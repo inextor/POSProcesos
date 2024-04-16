@@ -216,6 +216,7 @@ export class CloseShiftComponent extends BaseComponent implements OnInit
 			end_timestamp,
 			docking_pay: 0,
 			on_time: 'YES',
+			total_payment: 0,
 			break_seconds,
 			in_out_count: check_in_list.length,
 			disciplinary_actions: null,

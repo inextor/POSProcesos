@@ -1525,6 +1525,7 @@ export interface Work_Log
 	hours:number;
 	in_out_count: number;
 	on_time:'YES'|'NO';
+	total_payment:number;
 	seconds_log:number | null;
 	start_timestamp:Date | null;
 	updated:Date;
