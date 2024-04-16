@@ -9,16 +9,15 @@
 				</div>
 			</div>
 			<div class="d-none d-md-flex row py-1 align-items-center border-bottom mx-0">
-				<div class="col-2">Nombre</div>
-				<div class="col-md-10">
+				<div class="col-3">Nombre</div>
+				<div class="col-md-9">
 					<div class="row">
-						<div class="col-1 p-1">Inicio</div>
+						<div class="col-2 p-1">Inicio</div>
 						<div class="col-2 p-1">Horas</div>
 						<div class="col-2 p-1">Penalizacion</div>
 						<div class="col-2 p-1">Horas Extras</div>
 						<div class="col-2 p-1">Llegada</div>
-						<div class="col-2 p-1">% Pago</div>
-						<div class="col-1 p-1">
+						<div class="col-2 p-1">
 							Todos
 							<div class="d-inline-block float-end form-check form-switch text-end">
 								<label class="form-check-label">
@@ -30,10 +29,10 @@
 				</div>
 			</div>
 			<div *ngFor="let uc of user_checkin_info_list" class="row py-1 align-items-center border-bottom mx-0">
-				<div class="col-12 col-md-2 fw-bold">{{uc.user.name}}</div>
-				<div class="col-12 col-md-10">
+				<div class="col-12 col-md-3 fw-bold">{{uc.user.name}}</div>
+				<div class="col-12 col-md-9">
 					<div class="row">
-						<div class="col-12 p-1 col-md-1">{{uc.work_log.start_timestamp | shortDate}}</div>
+						<div class="col-12 p-1 col-md-2">{{uc.work_log.start_timestamp | shortDate}}</div>
 						<div class="col-12 p-1 col-md-2">
 							<label class="d-md-none">Horas</label>
 							<input type="number" [name]="'hours_'+uc.user.id" step="any" [(ngModel)]="uc.work_log.hours" class="form-control text-end">
@@ -53,11 +52,11 @@
 								<option value="NO">Con Retardo</option>
 							</select>
 						</div>
-						<div class="col-12 p-1 col-md-2">
+						<!-- <div class="col-12 p-1 col-md-2">
 							<label class="d-md-none">% Pago</label>
 							<input type="number" step="any" [name]="'percent'+uc.user.id" [(ngModel)]="uc.work_log.payment_percent" class="form-control text-end">
-						</div>
-						<div class="col-12 p-1 col-md-1 pt-2">
+						</div> -->
+						<div class="col-12 p-1 col-md-2 pt-2">
 							<div class="form-check form-switch float-end">
 								<input type="checkbox" role="switch" id="register" name="discounts" (click)="toggleValue(uc, $event)" class="form-check-input" [checked]="uc.selected">
 								<label for="register" class="form-check-label d-md-none">

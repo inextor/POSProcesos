@@ -216,12 +216,12 @@ export class CloseShiftComponent extends BaseComponent implements OnInit
 			end_timestamp,
 			docking_pay: 0,
 			on_time: 'YES',
-			payment_percent: 100,
 			break_seconds,
 			in_out_count: check_in_list.length,
 			disciplinary_actions: null,
 			hours,
 			user_id: user.id,
+			json_values: null
 		};
 
 		return work_log;

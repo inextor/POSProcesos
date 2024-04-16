@@ -1525,11 +1525,11 @@ export interface Work_Log
 	hours:number;
 	in_out_count: number;
 	on_time:'YES'|'NO';
-	payment_percent:number;
 	seconds_log:number | null;
 	start_timestamp:Date | null;
 	updated:Date;
 	user_id:number;
+	json_values:Record<string, string> | null;
 }
 export interface Workshift
 {
@@ -1552,4 +1552,16 @@ export interface Workshift
 	fri_hours:number | null;
 	tolerance:number | null;
 	updated:Date;
+}
+export interface Work_log_rules
+{
+	id:number;
+	store_id:number;
+	json_rules:Record<string, string>;
+}
+export interface User_extra_fields
+{
+	id:number;
+	user_id:number;
+	json_fields:Record<string, string>;
 }
