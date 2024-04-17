@@ -51,9 +51,8 @@ export class ProductionReportComponent extends BaseComponent implements OnInit{
 	json_rules_list:Work_log_rules[] = [];
 	user_extra_fields_list:User_extra_fields[] = [];
 
-	search_prod_obj:SearchObject<Production> = this.getEmptySearch();
-	start_date:string = '';
-	end_date:string = '';
+	search_work_log_obj:SearchObject<Work_Log> = this.getEmptySearch();
+	search_date:string = '';
 
 	items_total:number = 0;
 	merma_total:number = 0;
@@ -71,45 +70,32 @@ export class ProductionReportComponent extends BaseComponent implements OnInit{
 				this.path = 'production-report';
 				this.is_loading = true;
 
-				let start = new Date();
-				let end = new Date();
-
-				if ( !params.has('ge.created') )
+				if ( !params.has('eq.date') )
 				{
-					start.setHours(0,0,0,0);
-					this.search_prod_obj.ge.created = start;
+					this.search_work_log_obj.eq.date = Utils.getMysqlStringFromDate(new Date()).split(' ')[0];
 				}
 				else
 				{
-					this.search_prod_obj.ge.created = Utils.getDateFromMysqlString(params.get('ge.created') as string) as Date;
+					this.search_work_log_obj.eq.date = (params.get('eq.date') as string).split(' ')[0];
 				}
-				this.start_date = Utils.getLocalMysqlStringFromDate(this.search_prod_obj.ge.created as Date);
-
-				if ( !params.has('le.created'))
-				{
-					end.setHours(23,59,59);
-					this.search_prod_obj.le.created = end;
-				}
-				else
-				{
-					this.search_prod_obj.le.created = Utils.getDateFromMysqlString(params.get('le.created') as string) as Date;
-				}
-				this.end_date = Utils.getLocalMysqlStringFromDate(this.search_prod_obj.le.created as Date);
+				this.search_date = this.search_work_log_obj.eq.date;
 
 				let user = this.rest.user as User;
+				this.search_work_log_obj.search_extra = { store_id: user.store_id };
 
-				this.search_prod_obj.eq.store_id = user.store_id as number;
-				this.search_prod_obj.eq.status = 'ACTIVE';
-				this.search_prod_obj.nn = ['verified_by_user_id'] ;
+				let start = new Date(this.search_work_log_obj.eq.date + ' 00:00:00');
+				let end = new Date(this.search_work_log_obj.eq.date + ' 23:59:59');
+
+				let search_production_obj:SearchObject<Production> = this.getEmptySearch();
+				search_production_obj.eq.store_id = user.store_id ?? undefined;
+				search_production_obj.eq.status = 'ACTIVE';
+				search_production_obj.ge.created = start;
+				search_production_obj.le.created = end;
+				search_production_obj.nn = ['verified_by_user_id'];
 
 				return forkJoin({
-					production: this.rest_production.search(this.search_prod_obj),
-					work_log: this.rest_work_log.search
-					({
-						ge: { date: Utils.getMysqlStringFromDate(this.search_prod_obj.ge.created).split(' ')[0]},
-						le: { date: Utils.getMysqlStringFromDate(this.search_prod_obj.le.created).split(' ')[0]},
-						search_extra: { store_id: user.store_id }
-					}),
+					production: this.rest_production.search(search_production_obj),
+					work_log: this.rest_work_log.search(this.search_work_log_obj),
 					work_log_rules: this.rest_work_log_rules.search({})
 				}); 
 			}),
