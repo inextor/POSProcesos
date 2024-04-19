@@ -15,6 +15,9 @@ import { NgModule } from '@angular/core';
 import { authGuard } from './modules/shared/finger/auth.guard';
 import { CloseShiftComponent } from './pages/close-shift/close-shift.component';
 import { ProductionReportComponent } from './pages/production-report/production-report.component';
+import { PayrollReportComponent } from './pages/payroll-report/payroll-report.component';
+import { ListPayrollComponent } from './pages/list-payroll/list-payroll.component';
+import { SavePayrollConceptComponent } from './pages/save-payroll-concept/save-payroll-concept.component';
 
 export const routes: Routes = [
 	{path: '', component: LoginComponent, canActivate: [authGuard]},
@@ -35,7 +38,11 @@ export const routes: Routes = [
 	{path: 'add-shipping/:store_id/:shipping_id', component: SaveShippingComponent, canActivate: [authGuard]},
 	{path: 'login', component: LoginComponent},
 	{path: 'close-shift', component: CloseShiftComponent},
-	{path: 'production-report', component: ProductionReportComponent, canActivate: [authGuard]}
+	{path: 'save-production-payment', component: ProductionReportComponent, canActivate: [authGuard]},
+	{path: 'save-payroll-concept', component: SavePayrollConceptComponent, canActivate: [authGuard]},
+	{path: 'create-payroll', component: PayrollReportComponent, canActivate: [authGuard]},
+	{path: 'edit-payroll/:id', component: PayrollReportComponent, canActivate: [authGuard]},
+	{path: 'list-payroll', component: ListPayrollComponent, canActivate: [authGuard]},
 ];
 
 

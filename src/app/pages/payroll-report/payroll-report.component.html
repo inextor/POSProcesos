@@ -1,0 +1,90 @@
+<div class="container-fluid">
+	<h1 class="my-3">Reporte de Nómina</h1>
+
+	<div class="card p-3 d-print-none">
+		<form class="row" (submit)="searchWorkLogs()">
+			<div class="col-12 col-md-3">
+				<div class="form-group">
+					<label for="search_start_date">Fecha Inicial</label>
+					<input type="date" name="start_date" class="form-control" [(ngModel)]="start_date" id="search_start_date" required>
+				</div>
+			</div>
+			<div class="col-12 col-md-3">
+				<div class="form-group">
+					<label for="search_end_date">Fecha Final</label>
+					<input type="date" name="end_date" class="form-control" [(ngModel)]="end_date" id="search_end_date" required>
+				</div>
+			</div>
+			<div class="col-12 col-md-3">
+				<div class="form-group">
+					<label>Usuario</label>
+					<select name="user_id" class="form-control" [(ngModel)]="user_id" required>
+						<option [value]="null">Seleccionar</option>
+						<ng-container *ngFor="let user of users_list">
+							<option [value]="user.id">{{user.name}}</option>
+						</ng-container>
+					</select>
+				</div>
+			</div>
+			<div class="col-12 col-md-3">
+				<div class="form-group">
+					<label>&nbsp;</label>
+					<button class="btn btn-primary w-100" >Buscar</button>
+				</div>
+			</div>
+		</form>
+	</div>
+
+	<div class="card p-3 my-3">
+		<div class="row">
+			<div class="col-12 my-2">
+				<span class="d-print-none">Usuario: </span> <b>{{ payroll_info.payroll.user_id != 0 ? 'Seleccionado': "No seleccionado"}}</b>
+			</div>
+		</div>
+
+		<div class="row d-none d-print-flex">
+			<!-- Fecha y mas info al imprimir -->
+		</div>
+
+		<div class="col-12" *ngIf="payroll_info.work_logs.length == 0">
+			No se encontraron registros de asistencia
+		</div>
+
+		<form class="col-12" (submit)="savePayroll($event)" *ngIf="payroll_info.work_logs.length > 0">
+			<table class="table table-bordered">
+				<thead>
+					<tr>
+						<th>Dia</th>
+						<th>Fecha</th>
+						<th>Monto</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr *ngFor="let wl of payroll_info.work_logs">
+						<td>{{ wl.date }}</td>
+						<td>{{ wl.date.split(' ')[0] }}</td>
+						<td class="text-end">{{ wl.total_payment | currency:"$" }}</td>
+					</tr>
+					<tr>
+						<td colspan="2" class="text-end"><b>Subtotal</b></td>
+						<td class="text-end fw-bold">{{ payroll_info.payroll.subtotal | currency: "$" }}</td>
+					</tr>
+					<!-- ngfor payroll concept values -->
+					<tr *ngFor="let pcv of payroll_info.payroll_concept_values">
+						<td colspan="2" class="text-end">{{ pcv.payroll_concept_id }}</td>
+						<input type="hidden" name="payroll_concept_values[{{ pcv.id }}]" [(ngModel)]="pcv.value">
+					<tr>
+						<td colspan="2" class="text-end fw-bold">Total</td>
+						<td class="text-end">
+							<b>{{ payroll_info.payroll.total | currency: "$" }}</b>	
+						</td>
+					</tr>
+				</tbody>
+			</table>
+			<div class="col-12 text-end d-print-none">
+				<button type="submit" class="btn mx-2 btn-primary">Guardar</button>
+				<button type="button" class="btn btn-secondary">Imprimir</button>
+			</div>
+		</form>
+	</div>
+</div>

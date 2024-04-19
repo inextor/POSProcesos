@@ -754,6 +754,34 @@ export interface Paypal_Order{
 	order_id:number | null;
 	status:string;
 }
+export interface Payroll{
+	id:number;
+	user_id:number;
+	store_id:number | null;
+	created_by_user_id:number | null;
+	updated_by_user_id:number | null;
+	start_date:string;
+	end_date:string;
+	subtotal:number;
+	total:number;
+	paid_status:'PENDING'|'PAID';
+	status:'ACTIVE'|'DELETED';
+	created:Date;
+	updated:Date;
+}
+export interface Payroll_Concept{
+	id:number;
+	type:'DEDUCTION'|'PERCEPTION';
+	name:string;
+	status:'ACTIVE'|'DELETED';
+	formula:string;
+}
+export interface Payroll_Concept_Value{
+	id:number;
+	payroll_id:number;
+	payroll_concept_id:number;
+	value:number;
+}
 export interface Points_Log{
 	client_user_id:number
 	created:Date;

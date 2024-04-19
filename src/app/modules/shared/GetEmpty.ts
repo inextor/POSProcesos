@@ -1,5 +1,5 @@
 import { ShippingInfo } from "./Models";
-import { User_Permission,Preferences,Production_Area,Process, Production, Shipping, Store } from "./RestModels";
+import { User_Permission,Preferences,Production_Area,Process, Production, Shipping, Store, Payroll, Payroll_Concept_Value } from "./RestModels";
 
 export class GetEmpty
 {
@@ -221,6 +221,44 @@ export class GetEmpty
 			status: 'ACTIVE',
 			updated: new Date(),
 			verified_by_user_id: null,
+		}
+	}
+
+	static payroll():Payroll
+	{
+		return{
+			id:0,
+			user_id:0,
+			store_id:0,
+			created_by_user_id:0,
+			updated_by_user_id:0,
+			start_date:'',
+			end_date:'',
+			status:'ACTIVE',
+			created:new Date(),
+			updated:new Date(),
+			subtotal:0,
+			total:0,
+			paid_status:'PENDING',
+		}
+	}
+
+	static payroll_concept_value():Payroll_Concept_Value
+	{
+		return {
+			id:0,
+			payroll_id:0,
+			payroll_concept_id:0,
+			value:0
+		}
+	}
+
+	static payroll_info()
+	{
+		return {
+			payroll: GetEmpty.payroll(),
+			work_logs: [],
+			payroll_concept_values: []
 		}
 	}
 

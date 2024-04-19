@@ -1,0 +1,79 @@
+<div class="container-fluid">
+	<div class="row align-items-center">
+		<div class="col-12 col-md-6">
+			<h1 class="my-3">Conceptos de Nómina</h1>
+		</div>
+		<div class="col-12 col-md-6 text-end">
+			<button class="btn btn-primary mx-2" (click)="showEditPayrollConcept(null)">
+				<span>Agregar</span>
+			</button>
+		</div>
+	</div>
+
+	<div class="card p-3">
+		<div class="row d-none d-md-flex">
+			<div class="col-3 fw-bold">Nombre</div>
+			<div class="col-3 fw-bold">Tipo</div>
+			<div class="col-3 fw-bold">Formula</div>
+			<div class="col-3 fw-bold text-end">Acciones</div>
+		</div>
+		<!-- ng for -->
+		<div class="row" *ngIf="payroll_concept_list.length <= 0">
+			<div class="col-12 text-center mt-3">
+				No hay conceptos de nómina registrados
+			</div>
+		</div>
+		<div class="row my-1" *ngFor="let pcl of payroll_concept_list;index as i">
+			<div class="col-12 col-md-3">
+				<div class="d-block d-md-none fw-bold">Nombre</div>
+				<div>{{pcl.name}}</div>
+			</div>
+			<div class="col-12 col-md-3">
+				<div class="d-block d-md-none fw-bold">Tipo</div>
+				<div>{{pcl.type == "PERCEPTION" ? "Percepción" : "Deducción"}}</div>
+			</div>
+			<div class="col-12 col-md-3">
+				<div class="d-block d-md-none fw-bold">Formula</div>
+				<div>{{pcl.formula}}</div>
+			</div>
+			<div class="col-12 col-md-3 text-end">
+				<button class="btn btn-primary" (click)="showEditPayrollConcept(pcl.id)">
+					<span>Editar</span>
+				</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<app-modal [show]="showPayrollModal" [biggest_posible]="true" [closable]="false">
+<div class="card p-3" *ngIf="selected_payroll_concept">
+	<h2>{{ selected_payroll_concept.id != 0 ? 'Editar Concepto' : 'Agregar Concepto' }}</h2>
+	<form class="row" (submit)="savePayrollConcept($event)">
+		<div class="col-12 col-md-4">
+			<div class="form-group">
+				<label for="name">Nombre</label>
+				<input type="text" name="name" [(ngModel)]="selected_payroll_concept.name" class="form-control" required>
+			</div>
+		</div>
+		<div class="col-12 col-md-4">
+			<div class="form-group">
+				<label for="type">Tipo</label>
+				<select name="type" [(ngModel)]="selected_payroll_concept.type" class="form-control" required>
+					<option [value]="'PERCEPTION'">Percepción</option>
+					<option [value]="'DEDUCTION'">Deducción</option>
+				</select>
+			</div>
+		</div>
+		<div class="col-12 col-md-4">
+			<div class="form-group">
+				<label for="formula">Formula o Valor</label>
+				<input type="text" name="formula" [(ngModel)]="selected_payroll_concept.formula" class="form-control" required>
+			</div>
+		</div>
+		<div class="col-12 text-end mt-3">
+			<button type="submit" class="btn btn-primary mx-2">Guardar</button>
+			<button type="button" (click)="showPayrollModal = false" class="btn btn-secondary">Cancelar</button>
+		</div>
+	</form>
+</div>
+</app-modal>

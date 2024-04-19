@@ -67,7 +67,7 @@ export class ProductionReportComponent extends BaseComponent implements OnInit{
 		(
 			mergeMap((params)=>
 			{	
-				this.path = 'production-report';
+				this.path = 'save-production-payment';
 				this.is_loading = true;
 
 				if ( !params.has('eq.date') )
