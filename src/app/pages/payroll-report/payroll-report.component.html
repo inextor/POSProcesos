@@ -36,11 +36,11 @@
 	</div>
 
 	<div class="card p-3 my-3">
-		<div class="row">
+		<!-- <div class="row">
 			<div class="col-12 my-2">
 				<span class="d-print-none">Usuario: </span> <b>{{ payroll_info.payroll.user_id != 0 ? 'Seleccionado': "No seleccionado"}}</b>
 			</div>
-		</div>
+		</div> -->
 
 		<div class="row d-none d-print-flex">
 			<!-- Fecha y mas info al imprimir -->
@@ -61,8 +61,8 @@
 				</thead>
 				<tbody>
 					<tr *ngFor="let wl of payroll_info.work_logs">
-						<td>{{ wl.date }}</td>
-						<td>{{ wl.date.split(' ')[0] }}</td>
+						<td>{{ wl.day_name }}</td>
+						<td>{{ wl.date | shortDate: "date" }}</td>
 						<td class="text-end">{{ wl.total_payment | currency:"$" }}</td>
 					</tr>
 					<tr>
@@ -71,8 +71,11 @@
 					</tr>
 					<!-- ngfor payroll concept values -->
 					<tr *ngFor="let pcv of payroll_info.payroll_concept_values">
-						<td colspan="2" class="text-end">{{ pcv.payroll_concept_id }}</td>
-						<input type="hidden" name="payroll_concept_values[{{ pcv.id }}]" [(ngModel)]="pcv.value">
+						<td colspan="2" class="text-end">{{pcv.type == "PERCEPTION" ? '(+)' : "(-)"}} {{ pcv.payroll_concept_name }}</td>
+						<div class="input-group p-0">
+							<span class="input-group-text">$</span> 
+							<input type="number" class="form-control text-end" (change)="calculatePayrollTotal()" name="payroll_concept_values[{{ pcv.id }}]" [(ngModel)]="pcv.value">
+						</div>
 					<tr>
 						<td colspan="2" class="text-end fw-bold">Total</td>
 						<td class="text-end">

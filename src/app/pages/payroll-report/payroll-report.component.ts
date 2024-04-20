@@ -6,19 +6,30 @@ import { RestSimple, SearchObject } from '../../modules/shared/services/Rest';
 import { Payroll, Payroll_Concept, Payroll_Concept_Value, User, Work_Log } from '../../modules/shared/RestModels';
 import { forkJoin, mergeMap, of } from 'rxjs';
 import { GetEmpty } from '../../modules/shared/GetEmpty';
+import { ShortDatePipe } from '../../modules/shared/pipes/short-date.pipe';
 
+interface CPayroll_Concept_Value extends Payroll_Concept_Value
+{
+	payroll_concept_name:string;
+	type:string;
+}
+
+interface CWork_Log extends Work_Log
+{
+	day_name:string;
+}
 
 interface CPayrollInfo
 {
 	payroll:Payroll;
-	work_logs:Work_Log[];
-	payroll_concept_values:Payroll_Concept_Value[];
+	work_logs:CWork_Log[];
+	payroll_concept_values:CPayroll_Concept_Value[];
 }
 
 @Component({
   selector: 'app-payroll-report',
   standalone: true,
-  imports: [CommonModule, BaseComponent, FormsModule],
+  imports: [CommonModule, BaseComponent, FormsModule, ShortDatePipe],
   templateUrl: './payroll-report.component.html',
   styleUrl: './payroll-report.component.css'
 })
@@ -39,16 +50,22 @@ export class PayrollReportComponent extends BaseComponent implements OnInit {
 	payroll_info:CPayrollInfo = GetEmpty.payroll_info();
 	users_list:User[] = [];
 
+	days_list:string[] = [
+		'Lunes',
+		'Martes',
+		'Miercoles',
+		'Jueves',
+		'Viernes',
+		'Sabado',
+		'Domingo'
+	];
+
 	ngOnInit(): void {
 		this.route.queryParamMap
 		.pipe
 		(
 			mergeMap((params)=>
 			{
-				///PENDING ADAPT TO EDIT OR CREATE PAYROLL
-				//PENDING LIST PAYROLL_CONCEPTS
-				//CREATE NEW PAYROLL STRUCTURE
-				//EXAMPLE PRODUCCION SAVE-ADDRESS
 				this.is_loading = true;
 				let payroll_id;
 
@@ -56,20 +73,10 @@ export class PayrollReportComponent extends BaseComponent implements OnInit {
 				{
 					payroll_id = parseInt(params.get('id') as string);
 					this.path = 'edit-payroll';
-					//on edit search for the payroll
-					//search for the payroll_concepts
-					//search for the payroll_concept_values
-					//build the payroll_info with the previous search
 				}
 				else
 				{
 					this.path = 'create-payroll';
-
-					//all will be empty
-					//search for the users
-					//search for the payroll_concepts
-					//build the empty payroll_info
-					//and that's it
 				}
 				return forkJoin({
 					users: this.rest_user.search({
@@ -112,8 +119,8 @@ export class PayrollReportComponent extends BaseComponent implements OnInit {
 				this.payroll_info = 
 				{
 					payroll: payroll,
-					work_logs: work_log_list,
-					payroll_concept_values: payroll_concept_values
+					work_logs: this.mapWorkLogs(work_log_list),
+					payroll_concept_values: this.mapPayrollConceptValues(payroll_concept_values)
 				}
 
 				this.calculatePayrollTotal();
@@ -138,7 +145,7 @@ export class PayrollReportComponent extends BaseComponent implements OnInit {
 							id:0,
 							payroll_id: 0,
 							payroll_concept_id: payroll_concept.id,
-							value:0
+							value: parseInt(payroll_concept.formula) ?? 0 //esto se debe cambiar para cuando se empiecen a usar formulas 
 						});
 					}
 				});
@@ -161,7 +168,7 @@ export class PayrollReportComponent extends BaseComponent implements OnInit {
 						updated: new Date()
 					},
 					work_logs: [],
-					payroll_concept_values: tmp_payroll_concept_values
+					payroll_concept_values: this.mapPayrollConceptValues(tmp_payroll_concept_values)
 				}
 			}
 
@@ -173,88 +180,20 @@ export class PayrollReportComponent extends BaseComponent implements OnInit {
 		});
 	}
 
-	buildPayrollInfo( work_log_list:Work_Log[] | null, payroll:Payroll | null, payroll_concept_values:Payroll_Concept_Value[] | null)
+	searchWorkLogs()
 	{
-		let user = this.rest.user as User;
-
-		//si no tiene work_logs no se puede hacer nada
-		if( work_log_list && work_log_list.length > 0)
+		//also, update the payroll_info.payroll with the user data
+		let user = this.users_list.find((user)=>user.id == this.user_id);
+		if (user)
 		{
-			let tmp_payroll:Payroll;
-
-			if( payroll )
-			{
-				tmp_payroll = payroll;
-			}
-			else
-			{
-				tmp_payroll = {
-					id:0,
-					user_id: work_log_list[0].user_id,
-					store_id: user.store_id, //en teoria deben de ser de la misma tienda
-					created_by_user_id: user.id,
-					updated_by_user_id: user.id,
-					start_date: this.start_date,
-					end_date: this.end_date,
-					subtotal:0,
-					total:0,
-					paid_status:"PENDING" as const,
-					status:"ACTIVE" as const,
-					created: new Date(),
-					updated: new Date()
-				}
-			}
-
-			console.log('payroll build',tmp_payroll);
-
-			//build the payroll_concept_values
-			let tmp_payroll_concept_values:Payroll_Concept_Value[] = [];
-			this.payroll_concept_list.forEach((payroll_concept)=>
-			{
-				let payroll_concept_value = payroll_concept_values?.find((pcv)=>pcv.payroll_concept_id == payroll_concept.id);
-				if (payroll_concept_value) 
-				{
-					tmp_payroll_concept_values.push(payroll_concept_value);
-				}
-				else
-				{
-					tmp_payroll_concept_values.push({
-						id:0,
-						payroll_id: tmp_payroll.id,
-						payroll_concept_id: payroll_concept.id,
-						value:0
-					});
-				}
-			});
-			console.log('concept_values_build', tmp_payroll_concept_values);
-			 
-
-			this.payroll_info = 
-			{
-				payroll: tmp_payroll,
-				work_logs: work_log_list,
-				payroll_concept_values: tmp_payroll_concept_values
-			}
-
-			work_log_list.forEach((work_log) => {
-				if ( this.payroll_info )
-				{
-					this.payroll_info.payroll.subtotal += work_log.total_payment;
-				}
-			});
-
-			console.log("fully build",this.payroll_info);
-
-			this.calculatePayrollTotal();
+			this.payroll_info.payroll.user_id = user.id;
+			this.payroll_info.payroll.store_id = user.store_id;
 		}
 		else
 		{
-			this.rest.showError('No se encontraron registros de asistencia');
+			this.showError('No se encontro el usuario seleccionado');
+			return;
 		}
-	}
-
-	searchWorkLogs()
-	{
 		console.log('payroll_info',this.payroll_info)
 		if( this.user_id == null || this.start_date == '' || this.end_date == '')
 		{
@@ -267,21 +206,53 @@ export class PayrollReportComponent extends BaseComponent implements OnInit {
 		})
 		.subscribe((responses)=>
 		{
-			console.log('work_logs',responses.work_logs.data);
 			if( responses.work_logs.data.length == 0 )
 			{
 				this.showError('No se encontraron registros de asistencia');
 				return;
 			}
-			
+			this.payroll_info.work_logs = this.mapWorkLogs(responses.work_logs.data);
+
 			this.calculatePayrollTotal();
-			
+			console.log('payroll_info after search',this.payroll_info);	
+		});
+	}
+
+	mapWorkLogs(work_logs:Work_Log[])
+	{
+		return work_logs.map((work_log)=>
+		{
+			let day = new Date(work_log.date).getDay();
+			return {
+				...work_log,
+				day_name: this.days_list[day]
+			}
+		});
+	}
+
+	mapPayrollConceptValues(payroll_concept_values:Payroll_Concept_Value[])
+	{
+		return payroll_concept_values.map((payroll_concept_value)=>
+		{
+			let payroll_concept = this.payroll_concept_list.find((payroll_concept)=>payroll_concept.id == payroll_concept_value.payroll_concept_id);
+			return {
+				...payroll_concept_value,
+				payroll_concept_name: payroll_concept?.name ?? '',
+				type: payroll_concept?.type ?? ''
+			}
 		});
 	}
 
 
 	calculatePayrollTotal()
 	{	
+		//calculate subtotal
+		this.payroll_info.payroll.subtotal = 0;
+
+		this.payroll_info.work_logs.forEach((work_log) => {
+			this.payroll_info.payroll.subtotal += work_log.total_payment;
+		});
+
 		this.payroll_info.payroll.total = this.payroll_info.payroll.subtotal;
 
 		this.payroll_info.payroll_concept_values.forEach((payroll_concept_value)=>
@@ -308,7 +279,4 @@ export class PayrollReportComponent extends BaseComponent implements OnInit {
 		//PENDING
 		this.showSuccess('Payroll saved');
 	}
-
-
-
 }
