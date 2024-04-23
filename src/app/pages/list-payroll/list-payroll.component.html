@@ -1,7 +1,7 @@
 <div class="container-fluid">
 	<div class="row align-items-center">
 		<div class="col-12 col-md-6">
-			<h1 class="my-3">Registro de Nóminas</h1>
+			<h1 class="my-3">Nóminas</h1>
 		</div>
 		<div class="col-12 col-md-6 text-end">
 			<a class="btn btn-primary mx-2" routerLink="/create-payroll">Agregar</a>
@@ -12,18 +12,68 @@
 		</div>
 	</div>
 	
-
 	<div class="card p-3">
-		<form class="row">
-			<div class="col-12 col-md-3 form-group">
-				<label for="store_id">Sucursal</label>
-				<select name="store_id" class="form-control" required>
-					<option [value]="null">Seleccionar</option>
-					<!-- <ng-container *ngFor="let store of stores_list">
-						<option [value]="store.id">{{store.name}}</option>
-					</ng-container> -->
-				</select>
+		<form class="row" (submit)="search(search_payroll)">
+			<div class="col-12 col-md-3">
+				<div class="form-group">
+					<label for="search_start_date">Fecha creación inicial</label>
+					<input type="date" name="start_date" class="form-control" (ngModelChange)="onDateChange($event,search_payroll.ge,'start_date')" [(ngModel)]="start_date" id="search_start_date" required>
+				</div>
+			</div>
+			<div class="col-12 col-md-3">
+				<div class="form-group">
+					<label for="search_end_date">Fecha creación final</label>
+					<input type="date" name="end_date" class="form-control" (ngModelChange)="onDateChange($event,search_payroll.le,'start_date')"  [(ngModel)]="end_date" id="search_end_date" required>
+				</div>
+			</div>
+			<div class="col-12 col-md-3">
+				<div class="form-group">
+					<label>Usuario</label>
+					<select name="user_id" class="form-control" (ngModelChange)="onUserChange($event)" [(ngModel)]="user_id">
+						<option [value]="null">Todos</option>
+						<ng-container *ngFor="let user of users_list">
+							<option [value]="user.id">{{user.name}}</option>
+						</ng-container>
+					</select>
+				</div>
+			</div>
+			<div class="col-12 col-md-3">
+				<div class="form-group">
+					<label>&nbsp;</label>
+					<button class="btn btn-primary w-100" >Buscar</button>
+				</div>
 			</div>
 		</form>
+	</div>
+
+	<div class="card p-3 my-3">
+		<div class="row d-none d-md-flex fw-bold border-bottom align-items-end">
+			<div class="col-1">#</div>
+			<div class="col-3">Usuario</div>
+			<div class="col-3">Período</div>
+			<div class="col-2">Estatus pago</div>
+			<div class="col-3 text-end">Acciones</div>
+		</div>
+		<div class="" *ngIf="!CPayroll_list || CPayroll_list.length <= 0">
+			No se encontraron registros de nómina
+		</div>
+		<div class="row my-1 border-bottom align-items-center py-1" *ngFor="let payroll of CPayroll_list">
+			<div class="col-12 col-md-1">
+				{{ payroll.id }}
+			</div>
+			<div class="col-12 col-md-3">
+				{{ payroll.user_name }}
+			</div>
+			<div class="col-12 col-md-3">
+				{{ payroll.start_date | shortDate: "date" }} - {{ payroll.end_date | shortDate: "date" }}
+			</div>
+			<div class="col-12 col-md-2">
+				<b [ngClass]="{'text-danger': payroll.paid_status=='PENDING' ,'text-success': payroll.paid_status!='PENDING' }" >{{ payroll.paid_status == "PENDING" ? "PENDIENTE" : "PAGADO"}}</b>
+			</div>
+			<div class="col-12 col-md-3 text-end">
+				<a class="btn btn-primary mx-1" (click)="markAsPaid(payroll)" *ngIf="payroll.paid_status != 'PAID'">Pagar</a>
+				<a class="btn btn-primary mx-2" [routerLink]="['/edit-payroll', payroll.id]">{{ payroll.paid_status!="PAID" ? "Editar" : "Ver" }}</a>
+			</div>	
+		</div>
 	</div>
 </div>
