@@ -7,6 +7,8 @@ import { Payroll, Payroll_Concept, Payroll_Concept_Value, User, Work_Log } from 
 import { forkJoin, mergeMap, of } from 'rxjs';
 import { GetEmpty } from '../../modules/shared/GetEmpty';
 import { ShortDatePipe } from '../../modules/shared/pipes/short-date.pipe';
+import { Utils } from '../../modules/shared/Utils';
+import { RouterModule } from '@angular/router';
 
 interface CPayroll_Concept_Value extends Payroll_Concept_Value
 {
@@ -29,7 +31,7 @@ interface CPayrollInfo
 @Component({
   selector: 'app-payroll-report',
   standalone: true,
-  imports: [CommonModule, BaseComponent, FormsModule, ShortDatePipe],
+  imports: [CommonModule, BaseComponent, RouterModule , FormsModule, ShortDatePipe],
   templateUrl: './payroll-report.component.html',
   styleUrl: './payroll-report.component.css'
 })
@@ -45,6 +47,7 @@ export class PayrollReportComponent extends BaseComponent implements OnInit {
 	start_date:string = '';
 	end_date:string = '';
 	user_id:number | null = null;
+	selected_user:User | null = null;
 
 	payroll_concept_list:Payroll_Concept[] = [];
 	payroll_info:CPayrollInfo = GetEmpty.payroll_info();
@@ -60,30 +63,32 @@ export class PayrollReportComponent extends BaseComponent implements OnInit {
 		'Domingo'
 	];
 
-	ngOnInit(): void {
-		this.route.queryParamMap
-		.pipe
+	ngOnInit()
+	{
+		this.subs.sink = this.route.paramMap.pipe
 		(
-			mergeMap((params)=>
+			mergeMap((param_map)=>
 			{
 				this.is_loading = true;
 				let payroll_id;
 
-				if ( params.has('id') )
+				if ( param_map.has('id') )
 				{
-					payroll_id = parseInt(params.get('id') as string);
+					console.log( 'editing: '+ param_map.get('id'));
+					payroll_id = parseInt(param_map.get('id') as string);
 					this.path = 'edit-payroll';
 				}
 				else
 				{
 					this.path = 'create-payroll';
 				}
+
 				return forkJoin({
 					users: this.rest_user.search({
 						eq: { store_id: this.rest.user?.store_id, status: "ACTIVE" }
 					}),
 					payroll_concepts: this.rest_payroll_concept.search({limit:9999}),
-					payroll: payroll_id ? this.rest_payroll.get({eq:{id: payroll_id}}) : of(null)
+					payroll: payroll_id ? this.rest_payroll.get(payroll_id) : of(null)
 				})
 			}),
 			mergeMap((result)=>
@@ -122,13 +127,14 @@ export class PayrollReportComponent extends BaseComponent implements OnInit {
 					work_logs: this.mapWorkLogs(work_log_list),
 					payroll_concept_values: this.mapPayrollConceptValues(payroll_concept_values)
 				}
+				this.selected_user = this.users_list.find((user)=>user.id == payroll?.user_id) as User;
 
 				this.calculatePayrollTotal();
 			}
 			else
 			{
-				this.start_date = new Date().toISOString().split('T')[0];
-				this.end_date = new Date().toISOString().split('T')[0];
+				this.start_date = Utils.getMysqlStringFromDate(new Date()).split(' ')[0];
+				this.end_date = Utils.getMysqlStringFromDate(new Date()).split(' ')[0];
 
 				//build the payroll_concept_values
 				let tmp_payroll_concept_values:Payroll_Concept_Value[] = [];
@@ -171,30 +177,33 @@ export class PayrollReportComponent extends BaseComponent implements OnInit {
 					payroll_concept_values: this.mapPayrollConceptValues(tmp_payroll_concept_values)
 				}
 			}
-
-			console.log('work_log_list',work_log_list);
-			console.log('payroll',payroll);
-			console.log('payroll_concept_values',payroll_concept_values);
-			console.log('payroll_info',this.payroll_info);
-
 		});
+	}
+
+	onFechaInicialChange(fecha:string)
+	{
+		this.payroll_info.payroll.start_date = fecha;
+	}
+
+	onFechaFinalChange(fecha:string)
+	{
+		this.payroll_info.payroll.end_date = fecha;
 	}
 
 	searchWorkLogs()
 	{
-		//also, update the payroll_info.payroll with the user data
-		let user = this.users_list.find((user)=>user.id == this.user_id);
-		if (user)
+		this.selected_user = this.users_list.find((user)=>user.id == this.user_id) as User;
+		if (this.selected_user)
 		{
-			this.payroll_info.payroll.user_id = user.id;
-			this.payroll_info.payroll.store_id = user.store_id;
+			this.payroll_info.payroll.user_id = this.selected_user.id;
+			this.payroll_info.payroll.store_id = this.selected_user.store_id;
 		}
 		else
 		{
 			this.showError('No se encontro el usuario seleccionado');
 			return;
 		}
-		console.log('payroll_info',this.payroll_info)
+		
 		if( this.user_id == null || this.start_date == '' || this.end_date == '')
 		{
 			this.showError('Es necesario seleccionar un usuario y un rango de fechas');
@@ -214,7 +223,6 @@ export class PayrollReportComponent extends BaseComponent implements OnInit {
 			this.payroll_info.work_logs = this.mapWorkLogs(responses.work_logs.data);
 
 			this.calculatePayrollTotal();
-			console.log('payroll_info after search',this.payroll_info);	
 		});
 	}
 
@@ -275,8 +283,93 @@ export class PayrollReportComponent extends BaseComponent implements OnInit {
 
 	savePayroll(event:Event)
 	{
-		console.log(this.payroll_info);
-		//PENDING
-		this.showSuccess('Payroll saved');
+		this.searchWorkLogs();
+		
+		if (this.payroll_info.payroll.id == 0)
+		{
+			this.subs.sink = this.rest_payroll.create(this.payroll_info.payroll).pipe
+			(
+				mergeMap((response)=>
+				{
+					console.log('payroll created',response);
+					this.payroll_info.payroll = response;
+
+					let payroll_concept_values = this.payroll_info.payroll_concept_values.map((pcv)=>
+					{
+						return {
+							payroll_id: response.id,
+							payroll_concept_id: pcv.payroll_concept_id,
+							value: pcv.value
+						}
+					});
+			
+					return forkJoin({
+						payroll: of(response),
+						payroll_concept_values: this.rest_payroll_concept_value.batchCreate(payroll_concept_values)
+					})
+				})
+			)
+			.subscribe((response)=>
+			{
+				console.log('payroll_concept_values created',response.payroll_concept_values);
+				this.payroll_info.payroll_concept_values = response.payroll_concept_values.map((pcv)=>
+				{
+					let payroll_concept = this.payroll_concept_list.find((payroll_concept)=>payroll_concept.id == pcv.payroll_concept_id);
+					return {
+						...pcv,
+						payroll_concept_name: payroll_concept?.name ?? '',
+						type: payroll_concept?.type ?? ''
+					}
+				});
+				this.showSuccess('Nómina creada correctamente');
+			}, (error)=>
+			{
+				this.showError('Error creando nómina ' + error);
+			});
+		}
+		else
+		{
+			//updating the payroll
+			this.subs.sink = this.rest_payroll.update(this.payroll_info.payroll).pipe
+			(
+				mergeMap((response)=>
+				{
+					let payroll_concept_values = this.payroll_info.payroll_concept_values.map((pcv)=>
+					{
+						return {
+							id: pcv.id,
+							payroll_id: response.id,
+							payroll_concept_id: pcv.payroll_concept_id,
+							value: pcv.value
+						}
+					});
+			
+					return forkJoin({
+						payroll: of(response),
+						payroll_concept_values: this.rest_payroll_concept_value.batchUpdate(payroll_concept_values)
+					})
+				})
+			).subscribe((response)=>
+			{
+				this.payroll_info.payroll_concept_values = response.payroll_concept_values.map((pcv)=>
+				{
+					let payroll_concept = this.payroll_concept_list.find((payroll_concept)=>payroll_concept.id == pcv.payroll_concept_id);
+					return {
+						...pcv,
+						payroll_concept_name: payroll_concept?.name ?? '',
+						type: payroll_concept?.type ?? ''
+					}
+				});
+				this.showSuccess('Nómina actualizada correctamente');
+			}, (error)=>
+			{
+				this.showError('Error actualizando nómina ' + error);
+			});
+		}
+	}
+
+	justPrint()
+	{
+		window.print()
 	}
 }
