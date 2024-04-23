@@ -17,13 +17,12 @@
 			<div class="col-3 fw-bold">Formula</div>
 			<div class="col-3 fw-bold text-end">Acciones</div>
 		</div>
-		<!-- ng for -->
 		<div class="row" *ngIf="payroll_concept_list.length <= 0">
 			<div class="col-12 text-center mt-3">
 				No hay conceptos de nómina registrados
 			</div>
 		</div>
-		<div class="row my-1" *ngFor="let pcl of payroll_concept_list;index as i">
+		<div class="row my-1 border-bottom align-items-center py-1" *ngFor="let pcl of payroll_concept_list;">
 			<div class="col-12 col-md-3">
 				<div class="d-block d-md-none fw-bold">Nombre</div>
 				<div>{{pcl.name}}</div>
@@ -37,8 +36,11 @@
 				<div>{{pcl.formula}}</div>
 			</div>
 			<div class="col-12 col-md-3 text-end">
-				<button class="btn btn-primary" (click)="showEditPayrollConcept(pcl.id)">
+				<button type="button" class="btn btn-primary mx-2" (click)="showEditPayrollConcept(pcl.id)">
 					<span>Editar</span>
+				</button>
+				<button type="button" class="btn btn-primary" (click)="deletePayrollConcept(pcl)">
+					<span>Eliminar</span>
 				</button>
 			</div>
 		</div>

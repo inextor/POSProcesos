@@ -26,13 +26,18 @@ export class SavePayrollConceptComponent extends BaseComponent implements OnInit
 	ngOnInit(): void {
 		this.route.queryParamMap.pipe
 		(
-			mergeMap((params)=>{
+			mergeMap((params)=>
+			{
 
-				return forkJoin({
-					payroll_concept: this.rest_payroll_concept.search({limit:99999})
+				return forkJoin
+				({
+					payroll_concept: this.rest_payroll_concept.search({ eq:{status: "ACTIVE"}, limit:99999})
 				})
+
 			})
-		).subscribe((responses)=>{
+		)
+		.subscribe((responses)=>
+		{
 			this.payroll_concept_list = responses.payroll_concept.data;
 		});
 	}
@@ -70,49 +75,53 @@ export class SavePayrollConceptComponent extends BaseComponent implements OnInit
 		evt.preventDefault();
 		if(!this.selected_payroll_concept)
 		{
-			this.showError('No payroll concept selected');
+			this.showError('No ha seleccionado un concepto de nómina');
 			return;
 		}
 
 		if( this.selected_payroll_concept.id != 0)
 		{
-			this.rest_payroll_concept.update(this.selected_payroll_concept).subscribe((response)=>{
-				this.showSuccess('Payroll concept updated');
-			}, (error)=>{
-				this.showError('Error updating payroll concept');
+			this.rest_payroll_concept.update(this.selected_payroll_concept).subscribe((response)=>
+			{
+				this.showSuccess('Concepto de nómina actualizado');
+			}, (error)=>
+			{
+				this.showError('Error actualizando concepto de nómina');
 			});
 		}
 		else
 		{
-			this.rest_payroll_concept.create(this.selected_payroll_concept).subscribe((response)=>{
-				this.showSuccess('Payroll concept created');
+			this.rest_payroll_concept.create(this.selected_payroll_concept).subscribe((response)=>
+			{
+				this.showSuccess('Concepto de nómina creado');
 				this.payroll_concept_list.push(response);
-			}, (error)=>{
-				this.showError('Error creating payroll concept');
+			}, (error)=>
+			{
+				this.showError('Error creando concepto de nómina');
 			});
 		}
 		this.showPayrollModal = false;
 	}
 
-	deletePayrollConcept(payroll_concept_id:number)
+	deletePayrollConcept(payroll_concept:Payroll_Concept)
 	{
-		//delete normally, with status update
-
-		let payroll_concept = this.payroll_concept_list.find(payroll_concept=>payroll_concept.id == payroll_concept_id);
-		if( payroll_concept)
+		this.subs.sink = this.confirmation.showConfirmAlert(payroll_concept, 'Eliminar concepto de nómina', '¿Está seguro que desea eliminar el concepto de nómina?')
+		.subscribe((response)=>
 		{
-			//payroll_concept.status = 'DELETED';
-		}
-		
-		this.rest_payroll_concept.update(payroll_concept).subscribe((response)=>{
-			this.showSuccess('Payroll concept deleted');
-			console.log('payroll concept deleted');
-		}, (error)=>{
-			this.showError('Error deleting payroll concept');
+			if(response.accepted)
+			{
+				this.rest_payroll_concept.update({...payroll_concept, status: "DELETED"})
+				.subscribe((response)=>
+				{
+					this.showSuccess('Concepto de nómina eliminado');
+					payroll_concept.status = 'DELETED';
+					this.payroll_concept_list = this.payroll_concept_list.filter((pc)=>{ return pc.id != payroll_concept.id});
+				}, (error)=>
+				{
+					this.showError('Error deleting payroll concept');
+				});				
+			}
 		});
-
-		console.log('deleting payroll concept on list');
-
 	}
 
 
