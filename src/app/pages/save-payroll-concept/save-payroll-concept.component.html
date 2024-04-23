@@ -14,7 +14,7 @@
 		<div class="row d-none d-md-flex border-bottom">
 			<div class="col-3 fw-bold">Nombre</div>
 			<div class="col-3 fw-bold">Tipo</div>
-			<div class="col-3 fw-bold">Formula</div>
+			<div class="col-3 fw-bold">Valor</div>
 			<div class="col-3 fw-bold text-end">Acciones</div>
 		</div>
 		<div class="row" *ngIf="payroll_concept_list.length <= 0">
@@ -68,8 +68,8 @@
 		</div>
 		<div class="col-12 col-md-4">
 			<div class="form-group">
-				<label for="formula">Formula o Valor</label>
-				<input type="text" name="formula" [(ngModel)]="selected_payroll_concept.formula" class="form-control" required>
+				<label for="formula">Valor</label>
+				<input type="number" name="formula" [(ngModel)]="selected_payroll_concept.formula" class="form-control" required>
 			</div>
 		</div>
 		<div class="col-12 text-end mt-3">
