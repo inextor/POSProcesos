@@ -105,10 +105,4 @@ export class ListPayrollComponent extends BaseComponent implements OnInit {
 			}
 		})
 	}
-
-	sendToPrint(payroll_id:number)
-	{
-		console.log('Sending to print', payroll_id);
-	}
-
 }
