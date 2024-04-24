@@ -309,6 +309,12 @@ export class SavePayrollComponent extends BaseComponent implements OnInit {
 	savePayroll(event:Event)
 	{
 		this.searchWorkLogs();
+
+		if( this.payroll_info.payroll.total <= 0 )
+		{
+			this.showError('El total de la nómina debe ser mayor a 0');
+			return;
+		}
 		
 		if (this.payroll_info.payroll.id == 0)
 		{
