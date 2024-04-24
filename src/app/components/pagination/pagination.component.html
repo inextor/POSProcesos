@@ -1,0 +1,11 @@
+<div class="pagination bd-hightlightp y-3 my-3" *ngIf="total_pages>1">
+	<div>
+		<button [disabled]="current_page == 0" type="button" class="btn mr-1 p-3"	(click)="gotoPage(0)">&lt;&lt;</button>
+		<button [disabled]="current_page == 0" type="button" class="btn border-top border-bottom-border p-3"	(click)="gotoPage(current_page-1)">&lt;</button>
+	</div>
+  <div class="flex-grow-1 text-center indicador border p-3">Página <b>{{current_page+1}}</b> de {{total_pages}}</div>
+	<div>
+		<button [disabled]="current_page >= total_pages-1 " type="button" class="btn border-top border-bottom p-3" (click)="gotoPage(current_page+1)">&gt;</button>
+		<button [disabled]="current_page >= total_pages-1 " type="button" class="btn	ml-1 border p-3" (click)="gotoPage(total_pages-1)">&gt;&gt;</button>
+	</div>
+</div>

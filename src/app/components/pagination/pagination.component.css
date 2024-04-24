@@ -1,0 +1,16 @@
+.indicador
+{
+	text-align: center;
+}
+
+.pagination
+{
+  display: flex !important;
+  background-color: var(--card-background-color);
+  border-radius: var(--card-border-radius);
+  border-color: var(--card-border-color);
+}
+
+button{
+  font-weight: bold;
+}

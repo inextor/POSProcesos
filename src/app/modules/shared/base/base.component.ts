@@ -20,12 +20,14 @@ import { Utils } from '../Utils';
 })
 export class BaseComponent	implements OnDestroy
 {
-	subs = new SubSink();
-	is_loading = false;
-	current_page:number = 0;
-	path:string = '';
-	total_pages:number = 0;
-	page_size:number = 50;
+	public subs = new SubSink();
+	public is_loading = false;
+	public current_page:number = 0;
+	public path:string = '';
+	public total_pages:number = 0;
+	public total_items: number	= 0;
+	public pages:number[] = [];
+	public page_size:number = 50;
 
 	constructor(public rest:RestService, public route:ActivatedRoute,public router:Router, public location:Location,public title_service:Title,public confirmation:ConfirmationService)
 	{
@@ -35,6 +37,33 @@ export class BaseComponent	implements OnDestroy
 	ngOnDestroy()
 	{
 		this.subs.unsubscribe();
+	}
+
+	setPages(current_page:number,totalItems:number)
+	{
+		this.current_page = current_page;
+		this.pages.splice(0,this.pages.length);
+		this.total_items = totalItems;
+
+		if( ( this.total_items % this.page_size ) > 0 )
+		{
+			this.total_pages = Math.floor(this.total_items/this.page_size)+1;
+		}
+		else
+		{
+			this.total_pages = this.total_items/this.page_size;
+		}
+
+		for(let i=this.current_page-5;i<this.current_page+5;i++)
+		{
+			if( i >= 0 && i<this.total_pages)
+			{
+				this.pages.push( i );
+			}
+		}
+
+		this.is_loading = false;
+		//this.rest.scrollTop();
 	}
 
 	showError(error:any):void
