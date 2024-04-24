@@ -1,5 +1,5 @@
 <div class="d-flex main_background" style="min-height: 100vh; overflow: hidden;">
-	<div class="menu_container sidebar-container" style="min-height: 100dvh; width: 230px;" [ngClass]="{'col-2': rest.show_menu, 'd-inline': rest.show_menu}">
+	<div class="menu_container sidebar-container flex-grow-0 flex-shrink-0 " style="min-height: 100dvh; width: 200px;" [ngClass]="{'d-block': rest.show_menu}">
 		<div class="text-center mt-3">
 			<h2>Menú.</h2>
 		</div>
@@ -83,7 +83,7 @@
 			</li>
 		</ul>
 	</div>
-	<div class="col">
+	<div class="flex-grow-1 flex-shrink-1 w-100">
 		<header *ngIf="rest.user">
 			<app-header></app-header>
 		</header>
