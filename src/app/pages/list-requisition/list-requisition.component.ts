@@ -396,6 +396,7 @@ export class ListRequisitionComponent extends BaseComponent implements OnInit
 				}
 				this.calculateTotalPending(this.requsition_obj_list);
 				this.show_add_production = false;
+				this.selected_crequistion_item = null;
 				this.showSuccess('Produccion agregada');
 			},
 			error: (error:any) =>
