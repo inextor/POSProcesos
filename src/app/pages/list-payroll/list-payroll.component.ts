@@ -37,6 +37,7 @@ export class ListPayrollComponent extends BaseComponent implements OnInit {
 	end_date:string = '';
 
 	user_id:number | null = 0;
+	paid_status:string | null = null;
 
 	ngOnInit()
 	{
@@ -61,6 +62,7 @@ export class ListPayrollComponent extends BaseComponent implements OnInit {
 				this.start_date = (this.search_payroll.ge.start_date as string);
 				this.end_date = (this.search_payroll.le.start_date as string);
 				this.user_id = this.search_payroll.eq.user_id ? this.search_payroll.eq.user_id : null;
+				this.paid_status = this.search_payroll.eq.paid_status ? this.search_payroll.eq.paid_status : null;
 
 				let user = this.rest.user as User;
 				return forkJoin({
@@ -89,6 +91,11 @@ export class ListPayrollComponent extends BaseComponent implements OnInit {
 	onUserChange(user_id:number)
 	{
 		this.search_payroll.eq.user_id = user_id;
+	}
+
+	onPaidStatusChange(paid_status: "PENDING" | "PAID" | undefined)
+	{
+		this.search_payroll.eq.paid_status = paid_status;
 	}
 
 	markAsPaid(payroll:Payroll)

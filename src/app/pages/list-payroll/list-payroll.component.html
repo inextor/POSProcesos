@@ -17,19 +17,19 @@
 	
 	<div class="card p-3">
 		<form class="row" (submit)="search(search_payroll)">
-			<div class="col-12 col-md-3">
+			<div class="col-12 col-lg-3">
 				<div class="form-group">
 					<label for="search_start_date">Fecha creación inicial</label>
 					<input type="date" name="start_date" class="form-control" (ngModelChange)="onDateChange($event,search_payroll.ge,'start_date')" [(ngModel)]="start_date" id="search_start_date" required>
 				</div>
 			</div>
-			<div class="col-12 col-md-3">
+			<div class="col-12 col-lg-3">
 				<div class="form-group">
 					<label for="search_end_date">Fecha creación final</label>
 					<input type="date" name="end_date" class="form-control" (ngModelChange)="onDateChange($event,search_payroll.le,'start_date')"  [(ngModel)]="end_date" id="search_end_date" required>
 				</div>
 			</div>
-			<div class="col-12 col-md-3">
+			<div class="col-12 col-lg-2">
 				<div class="form-group">
 					<label>Usuario</label>
 					<select name="user_id" class="form-control" (ngModelChange)="onUserChange($event)" [(ngModel)]="user_id">
@@ -40,7 +40,17 @@
 					</select>
 				</div>
 			</div>
-			<div class="col-12 col-md-3">
+			<div class="col-12 col-lg-2">
+				<div class="form-group">
+					<label for="search_end_date">Estatus</label>
+					<select name="paid_status" class="form-control" (ngModelChange)="onPaidStatusChange($event)" [(ngModel)]="paid_status" id="paid_status" required>
+						<option [value]="null">Todos</option>
+						<option [value]="'PENDING'">Pendiente</option>
+						<option [value]="'PAID'">Pagado</option>
+					</select>
+				</div>
+			</div>
+			<div class="col-12 col-lg-2">
 				<div class="form-group">
 					<label>&nbsp;</label>
 					<button class="btn btn-primary w-100" >Buscar</button>
