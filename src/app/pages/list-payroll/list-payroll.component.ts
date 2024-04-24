@@ -8,6 +8,7 @@ import { FormsModule } from '@angular/forms';
 import { ShortDatePipe } from '../../modules/shared/pipes/short-date.pipe';
 import { forkJoin, mergeMap } from 'rxjs';
 import { Utils } from '../../modules/shared/Utils';
+import { PaginationComponent } from '../../components/pagination/pagination.component';
 
 interface CPayroll extends Payroll
 {
@@ -17,7 +18,7 @@ interface CPayroll extends Payroll
 @Component({
   selector: 'app-list-payroll',
   standalone: true,
-  imports: [CommonModule, FormsModule ,BaseComponent , RouterOutlet, RouterModule, ShortDatePipe],
+  imports: [CommonModule, FormsModule ,BaseComponent , RouterOutlet, RouterModule, ShortDatePipe, PaginationComponent],
   templateUrl: './list-payroll.component.html',
   styleUrl: './list-payroll.component.css'
 })
@@ -47,12 +48,18 @@ export class ListPayrollComponent extends BaseComponent implements OnInit {
 				this.is_loading = true;
 				let date = new Date();
 				
+				let fields = ['id', 'start_date', 'end_date', 'user_id', 'paid_status'];
+				this.search_payroll = this.getSearch(param_map,fields,[])
+
 				this.search_payroll.ge.start_date = param_map.get('ge.start_date') ? (param_map.get('ge.start_date') as string).split(' ')[0] : Utils.getMysqlStringFromDate(date).split(' ')[0] as string;
 				this.search_payroll.le.start_date = param_map.get('le.start_date') ? (param_map.get('le.start_date') as string).split(' ')[0] : Utils.getMysqlStringFromDate(date).split(' ')[0] as string;
 				this.search_payroll.eq.user_id = param_map.get('eq.user_id') ? parseInt(param_map.get('eq.user_id') as string) : undefined;
+
 				this.search_payroll.sort_order = ['id_DESC']
-				this.start_date = this.search_payroll.ge.start_date as string;
-				this.end_date = this.search_payroll.le.start_date as string;
+				this.search_payroll.limit = this.page_size;
+
+				this.start_date = (this.search_payroll.ge.start_date as string);
+				this.end_date = (this.search_payroll.le.start_date as string);
 				this.user_id = this.search_payroll.eq.user_id ? this.search_payroll.eq.user_id : null;
 
 				let user = this.rest.user as User;
@@ -64,6 +71,7 @@ export class ListPayrollComponent extends BaseComponent implements OnInit {
 		)
 		.subscribe((responses)=> 
 		{
+			this.setPages(this.search_payroll.page, responses.payrolls.total)
 			console.log(responses);
 			this.users_list = responses.users.data;
 			this.CPayroll_list = responses.payrolls.data.map((payroll)=>
