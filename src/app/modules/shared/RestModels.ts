@@ -781,6 +781,7 @@ export interface Payroll_Concept_Value{
 	payroll_id:number;
 	payroll_concept_id:number;
 	value:number;
+	status:'ACTIVE'|'DELETED';
 }
 export interface Points_Log{
 	client_user_id:number

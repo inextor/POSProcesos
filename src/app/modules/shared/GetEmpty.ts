@@ -249,7 +249,8 @@ export class GetEmpty
 			id:0,
 			payroll_id:0,
 			payroll_concept_id:0,
-			value:0
+			value:0,
+			status:'ACTIVE',
 		}
 	}
 

@@ -101,7 +101,7 @@ export class SavePayrollComponent extends BaseComponent implements OnInit {
 					payroll_concepts: of(result.payroll_concepts),
 					payroll: of(result.payroll),
 					work_log: result.payroll ? this.rest_work_log.search({ge:{date: result.payroll.start_date}, le:{date: result.payroll.end_date}, eq:{user_id: result.payroll.user_id}}) : of(null),
-					payroll_concept_values: result.payroll ? this.rest_payroll_concept_value.search({eq:{payroll_id: result.payroll.id}}) : of(null)
+					payroll_concept_values: result.payroll ? this.rest_payroll_concept_value.search({eq:{payroll_id: result.payroll.id, status:'ACTIVE'}}) : of(null)
 					
 				})
 			})
@@ -143,7 +143,8 @@ export class SavePayrollComponent extends BaseComponent implements OnInit {
 								id:0,
 								payroll_id: this.payroll_info.payroll.id,
 								payroll_concept_id: payroll_concept.id,
-								value: parseInt(payroll_concept.formula) ?? 0, //esto se debe cambiar para cuando se empiecen a usar formulas 
+								value: parseInt(payroll_concept.formula) ?? 0, //esto se debe cambiar para cuando se empiecen a usar formulas ,
+								status: 'ACTIVE',
 								payroll_concept_name: payroll_concept.name,
 								type: payroll_concept.type
 							});
@@ -172,7 +173,8 @@ export class SavePayrollComponent extends BaseComponent implements OnInit {
 							id:0,
 							payroll_id: 0,
 							payroll_concept_id: payroll_concept.id,
-							value: parseInt(payroll_concept.formula) ?? 0 //esto se debe cambiar para cuando se empiecen a usar formulas 
+							value: parseInt(payroll_concept.formula) ?? 0, //esto se debe cambiar para cuando se empiecen a usar formulas ,
+							status: 'ACTIVE'
 						});
 					}
 				});
@@ -400,6 +402,12 @@ export class SavePayrollComponent extends BaseComponent implements OnInit {
 				this.showError('Error actualizando nómina ');
 			});
 		}
+	}
+
+	removePayrollConceptValue(payroll_concept_value:CPayroll_Concept_Value)
+	{
+		this.payroll_info.payroll_concept_values = this.payroll_info.payroll_concept_values.filter((pcv)=>pcv.id != payroll_concept_value.id);
+		this.calculatePayrollTotal();
 	}
 
 	justPrint()
