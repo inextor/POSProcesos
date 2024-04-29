@@ -17,11 +17,15 @@
 				</div>
 			</div>
 			<div class="row">
-				<div class="col-6 form-group">
+				<div class="col-6 col-md-6 col-md-4 form-group">
+					<label class="">Nota</label>
+					<input type="note" name="note" [(ngModel)]="shipping_info.shipping.note" class="form-control" placeholder="Motivo del envío">
+				</div>
+				<div class="col-6 col-md-3 form-group">
 					<label class="">Sucursal Origen</label>
 					<input name="shipping_from_store" [value]="from_store?.name" class="form-control" disabled>
 				</div>
-				<div class="col-6 form-group">
+				<div class="col-6 col-md-3 form-group">
 					<label class="">Sucursal Destino</label>
 					<input name="shipping_to_store" [value]="to_store?.name" class="form-control" disabled>
 				</div>
