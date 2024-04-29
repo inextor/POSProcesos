@@ -49,12 +49,14 @@
 					<thead class="thead-light">
 						<tr>
 							<th>Usuario</th>
-							<th>Horas Totales</th>
-							<th>Horas Extras</th>
-							<th>Producido</th>
-							<th>Costo Total</th>
-							<th *ngFor="let jv of Cuser_production_report_list[0].json_values | keyvalue">{{jv.key | customToTitle: 'snake_case'}}</th>
-							<th>Total Pago</th>
+							<th class="text-end">Horas Totales</th>
+							<th class="text-end">Horas Extras</th>
+							<th class="text-end">Producido</th>
+							<th class="text-end">Costo Total</th>
+							<ng-template [ngIf]="Cuser_production_report_list.length > 0">
+								<th class="text-end" *ngFor="let jv of Cuser_production_report_list[0].json_values | keyvalue">{{jv.key | customToTitle: 'snake_case'}}</th>
+							</ng-template>
+							<th class="text-end">Total Pago</th>
 						</tr>
 					</thead>
 					<tbody>
@@ -95,10 +97,10 @@
 				<thead class="thead-light">
 					<tr>
 						<th>Nombre</th>
-						<th>Costo</th>
-						<th>Merma</th>
-						<th>Total Prod.</th>
-						<th>Total Monto</th>
+						<th class="text-end">Costo</th>
+						<th class="text-end">Merma</th>
+						<th class="text-end">Total Prod.</th>
+						<th class="text-end">Total Monto</th>
 					</tr>
 				</thead>
 				<tbody>

@@ -98,7 +98,10 @@
 		<div class="row border-bottom align-items-center" *ngFor="let cri of requsition_obj_list">
 			<div class="col-12 col-md-2 fw-bold">
 				
-				{{cri.requisition?.category_name  }} {{cri.item.name }}
+				{{cri.requisition?.category_name  }} {{cri.item.name }} 
+				<span style="color: gray;">
+					{{cri.item.code}}
+				</span>
 			</div>
 			<div class="d-md-none col-6">Req/Pedientes</div>
 			<div class="col-6 col-md-2 text-start text-md-end fw-bold">
