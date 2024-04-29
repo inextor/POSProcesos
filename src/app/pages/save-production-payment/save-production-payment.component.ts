@@ -77,13 +77,14 @@ export class SaveProductionPaymentComponent extends BaseComponent implements OnI
 				{
 					this.search_work_log_obj.eq.date = (params.get('eq.date') as string).split(' ')[0];
 				}
-				this.search_date = this.search_work_log_obj.eq.date;
 
 				let user = this.rest.user as User;
 				this.search_work_log_obj.search_extra = { store_id: user.store_id };
 
 				let start = new Date(this.search_work_log_obj.eq.date + ' 00:00:00');
 				let end = new Date(this.search_work_log_obj.eq.date + ' 23:59:59');
+
+				this.search_date = Utils.getLocalMysqlStringFromDate(start).split(' ')[0];
 
 				let search_production_obj:SearchObject<Production> = this.getEmptySearch();
 				search_production_obj.eq.store_id = user.store_id ?? undefined;
