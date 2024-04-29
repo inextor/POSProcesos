@@ -241,6 +241,15 @@ export class SaveProductionPaymentComponent extends BaseComponent implements OnI
 				json_values = this.propEvaluator(props, { ...production_json_values}, { ...user_extra_fields});
 			}
 
+			//save the work_log json_values in the work_log_list
+			this.user_work_logs_list.forEach((work_log)=>
+			{
+				if (work_log.user_id == user.id)
+				{
+					work_log.json_values = json_values;
+				}
+			});
+
 			//console.log('json_values', json_values); 
 			if (total_payment == 0)
 			{
