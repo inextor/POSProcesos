@@ -58,7 +58,7 @@ export class ListUserAttendanceComponent extends BaseComponent
 				this.start_date = Utils.getMysqlStringFromDate(new Date).split(' ')[0];
 				if(param_map.has('ge.date'))
 				{
-					this.start_date = param_map.get('ge.date') as string;
+					this.start_date = param_map.get('le.date') as string;
 				}
 
 				return this.rest_user.search(search_obj);
@@ -78,12 +78,16 @@ export class ListUserAttendanceComponent extends BaseComponent
 				this.work_log_search.csv['user_id'] = ids;
 
 				let end = new Date(this.start_date);
-				end.setDate(end.getDate() + 6);
-				this.work_log_search.ge.date = this.start_date;
-				this.work_log_search.le.date = Utils.getMysqlStringFromDate(end).split(' ')[0];
+				end.setDate(end.getDate() + 1);
 
 				let start = new Date(this.start_date);
-				start.setDate(start.getDate() + 1);
+				start.setDate(start.getDate() - 5);
+				
+				let search_start = new Date(this.start_date);
+				search_start.setDate(search_start.getDate() - 6);
+
+				this.work_log_search.le.date = this.start_date.split(' ')[0];
+				this.work_log_search.ge.date = Utils.getMysqlStringFromDate(search_start).split(' ')[0];
 
 				let date_name = 'Lu,Ma,Mi,Ju,Vi,Sa,Do'.split(',');
 
@@ -158,7 +162,7 @@ export class ListUserAttendanceComponent extends BaseComponent
 					({
 						user,
 						work_log: work_logs,
-						total_hours:0,
+						total_hours,
 						extra_hours,
 						late_arrives
 					});
