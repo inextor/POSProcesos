@@ -127,7 +127,7 @@ export class ListShippingComponent extends BaseComponent
 					shippings_info: of( responses.shippings_info ),
 					production: this.rest_production.search(production_search),
 					requsitions: of( responses.requisitions ),
-					stores: this.rest_stores.search({limit:999999})
+					stores: this.rest_stores.search({limit:999999, eq:{status:'ACTIVE', sales_enabled: 1}})
 				})
 			}),
 			mergeMap((response)=>
