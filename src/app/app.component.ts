@@ -9,6 +9,7 @@ import { ModalComponent } from './components/modal/modal.component';
 import { RestSimple } from './modules/shared/services/Rest';
 import { Store } from './modules/shared/RestModels';
 import { HeaderComponent } from './components/header/header.component';
+import { BuildInfo } from './modules/shared/BuildInfo';
 
 @Component({
 	selector: 'app-root',
@@ -21,6 +22,8 @@ export class AppComponent implements OnInit {
 	title = 'POSProcesos';
 	store_name:string = '';
 	rest_store:RestSimple<Store> = this.rest.initRestSimple('store',['id','name']);
+
+	build_info = BuildInfo;
 
 	constructor(protected rest:RestService, public confirmation:ConfirmationService, public router:Router)
 	{
