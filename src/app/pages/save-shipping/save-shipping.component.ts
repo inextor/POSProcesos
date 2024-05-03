@@ -40,7 +40,7 @@ interface CRequisitionInfo extends RequisitionInfo
 })
 export class SaveShippingComponent extends BaseComponent
 {
-
+	//PENDIENTE: REFACTORIZAR
 
 	rest_requisition_info:Rest<Requisition,RequisitionInfo> = this.rest.initRest('requisition_info');
 	rest_shipping_info:Rest<Shipping,ShippingInfo> = this.rest.initRest('shipping_info');
@@ -98,7 +98,7 @@ export class SaveShippingComponent extends BaseComponent
 				to_store : this.rest_store.get(to_store_id),
 				from_store: this.rest_store.get(from_store_id),
 				category: this.rest_category.search({limit:99999,sort_order:['name_ASC']}),
-				requisitions: this.rest_requisition_info.search({eq:{required_by_store_id: to_store_id, requested_to_store_id: from_store_id}, ge:{required_by_timestamp:Utils.getUTCMysqlStringFromDate(start)}, le: {required_by_timestamp: Utils.getUTCMysqlStringFromDate(end)} ,limit:9999})
+				requisitions: this.rest_requisition_info.search({eq:{required_by_store_id: to_store_id, requested_to_store_id: from_store_id, status: 'PENDING'}, ge:{required_by_timestamp:Utils.getUTCMysqlStringFromDate(start)}, le: {required_by_timestamp: Utils.getUTCMysqlStringFromDate(end)} ,limit:9999})
 			})
 			.pipe
 			(
@@ -122,7 +122,7 @@ export class SaveShippingComponent extends BaseComponent
 						to_store: of( response.to_store),
 						from_store: of( response.from_store ),
 						category: of( response.category ),
-						shippings: ids.length > 0 ? this.rest_shipping_info.search({ csv:{ids}, eq:{from_store_id: Number(response.from_store.id), to_store_id: Number(response.to_store.id)},limit:9999}) : of( null ),
+						shippings: ids.length > 0 ? this.rest_shipping_info.search({ csv:{ids}, eq:{from_store_id: Number(response.from_store.id), to_store_id: Number(response.to_store.id), date: this.fecha_requisitions },limit:9999}) : of( null ),
 						requisitions: ids.length > 0 ? of( response.requisitions ) : of( null ),
 						production: ids.length > 0 ? this.rest_production.search({csv:{id:ids}}) : of( null ),
 						item_stock: ids.length > 0 ? this.rest_item_stock.search({search_extra:{store_id: this.rest.user?.store_id as number},csv:{id:ids}}) : of( null ),
@@ -259,7 +259,7 @@ export class SaveShippingComponent extends BaseComponent
 		console.log('crequisition_info', this.crequisition_info);
 	}
 
-	//vuleve a buscar las requisiciones para volver a inicializar el crequisition_info
+	//vuelve a buscar las requisiciones para volver a inicializar el crequisition_info
 	onFechaRequisitionsChange(fecha: string)
 	{
 		let start = new Date(fecha + 'T00:00:00');
@@ -269,7 +269,7 @@ export class SaveShippingComponent extends BaseComponent
 		let to_store_id = this.to_store?.id || 0;
 
 		this.subs.sink = forkJoin({
-			requisitions: this.rest_requisition_info.search({eq:{required_by_store_id: to_store_id, requested_to_store_id: this.from_store?.id}, ge:{required_by_timestamp:Utils.getUTCMysqlStringFromDate(start)}, le: {required_by_timestamp: Utils.getUTCMysqlStringFromDate(end)} ,limit:9999})
+			requisitions: this.rest_requisition_info.search({eq:{required_by_store_id: to_store_id, requested_to_store_id: this.from_store?.id, status: 'PENDING'}, ge:{required_by_timestamp:Utils.getUTCMysqlStringFromDate(start)}, le: {required_by_timestamp: Utils.getUTCMysqlStringFromDate(end)} ,limit:9999})
 		}).pipe
 		(
 			mergeMap((response)=>
@@ -283,7 +283,7 @@ export class SaveShippingComponent extends BaseComponent
 
 				return forkJoin
 				({
-					shippings: ids.length > 0 ? this.rest_shipping_info.search({ csv:{ids}, eq:{from_store_id: Number(this.from_store?.id), to_store_id: Number(this.to_store?.id)},limit:9999}) : of( null ),
+					shippings: ids.length > 0 ? this.rest_shipping_info.search({ csv:{ids}, eq:{from_store_id: Number(this.from_store?.id), to_store_id: Number(this.to_store?.id), date: this.fecha_requisitions },limit:9999}) : of( null ),
 					requisitions: ids.length > 0 ? of( response.requisitions ) : of( null ),
 					production: ids.length > 0 ? this.rest_production.search({csv:{id:ids}}) : of( null ),
 					item_stock: ids.length > 0 ? this.rest_item_stock.search({search_extra:{store_id: this.rest.user?.store_id as number},csv:{id:ids}}) : of( null ),
