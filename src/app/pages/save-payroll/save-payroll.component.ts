@@ -368,34 +368,58 @@ export class SavePayrollComponent extends BaseComponent implements OnInit {
 			(
 				mergeMap((response)=>
 				{
-					let payroll_concept_values = this.payroll_info.payroll_concept_values.map((pcv)=>
+					let payroll_concept_values:Payroll_Concept_Value[] = []
+					this.payroll_info.payroll_concept_values.forEach((pcv)=>
 					{
-						return {
-							id: pcv.id,
-							payroll_id: this.payroll_info.payroll.id,
-							payroll_concept_id: pcv.payroll_concept_id,
-							value: pcv.value
+						//conceptos nuevos
+						if(pcv.status=='ACTIVE' && pcv.id == 0)
+						{
+							console.log('uno nuevo')
+							payroll_concept_values.push({
+								id: pcv.id,
+								payroll_id: this.payroll_info.payroll.id,
+								payroll_concept_id: pcv.payroll_concept_id,
+								value: pcv.value,
+								status: pcv.status
+							})
+						}
+
+						//conceptos a actualizar
+						else if(pcv.id != 0)
+						{
+							console.log('uno actualizar')
+							payroll_concept_values.push({
+								id: pcv.id,
+								payroll_id: this.payroll_info.payroll.id,
+								payroll_concept_id: pcv.payroll_concept_id,
+								value: pcv.value,
+								status: pcv.status
+							})
 						}
 					});
 			
 					return forkJoin
 					({
 						payroll: of(response),
-						payroll_concept_values: this.rest_payroll_concept_value.batchUpdate(payroll_concept_values)
+						payroll_concept_values: payroll_concept_values.length > 0 ? this.rest_payroll_concept_value.batchUpdate(payroll_concept_values) : of(null)
 					})
 				})
 			)
 			.subscribe((response)=>
 			{
-				this.payroll_info.payroll_concept_values = response.payroll_concept_values.map((pcv)=>
+				if (response.payroll_concept_values)
 				{
-					let payroll_concept = this.payroll_concept_list.find((payroll_concept)=>payroll_concept.id == pcv.payroll_concept_id);
-					return {
-						...pcv,
-						payroll_concept_name: payroll_concept?.name ?? '',
-						type: payroll_concept?.type ?? ''
-					}
-				});
+					this.payroll_info.payroll_concept_values = response.payroll_concept_values.map((pcv)=>
+					{
+						let payroll_concept = this.payroll_concept_list.find((payroll_concept)=>payroll_concept.id == pcv.payroll_concept_id);
+						return {
+							...pcv,
+							payroll_concept_name: payroll_concept?.name ?? '',
+							type: payroll_concept?.type ?? ''
+						}
+					});
+
+				}
 				this.showSuccess('Nómina actualizada correctamente');
 			}, (error)=>
 			{
@@ -406,7 +430,8 @@ export class SavePayrollComponent extends BaseComponent implements OnInit {
 
 	removePayrollConceptValue(payroll_concept_value:CPayroll_Concept_Value)
 	{
-		this.payroll_info.payroll_concept_values = this.payroll_info.payroll_concept_values.filter((pcv)=>pcv.id != payroll_concept_value.id);
+		//this.payroll_info.payroll_concept_values = this.payroll_info.payroll_concept_values.filter((pcv)=>pcv.payroll_concept_id != payroll_concept_value.payroll_concept_id);
+		payroll_concept_value.status = 'DELETED'
 		this.calculatePayrollTotal();
 	}
 
