@@ -244,7 +244,7 @@ export class CloseShiftComponent extends BaseComponent implements OnInit
 		({
 			next:(response)=>
 			{
-				this.showSuccess('La informacion se guarde exitosamente');
+				this.showSuccess('La informacion se guardó exitosamente');
 			},
 			error:(error)=>
 			{
