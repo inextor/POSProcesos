@@ -63,7 +63,7 @@ export class HeaderComponent extends BaseComponent {
 	{
 		this.rest.logout();
 		this.rest.show_menu = false;
-		this.router.navigate(['/login']);
+		this.router.navigate(['/produccion/#/login']);
 	}
 
 }
