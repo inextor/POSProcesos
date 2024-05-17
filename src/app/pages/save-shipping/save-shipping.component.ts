@@ -178,6 +178,7 @@ export class SaveShippingComponent extends BaseComponent
 					this.from_store = responses.from_store;
 
 					this.shipping_info = responses?.shipping_info ?? GetEmpty.shipping_info();
+					this.shipping_info.shipping.date = Utils.getLocalMysqlStringFromDate(start).split(' ')[0];
 
 					console.log('shipping_info', this.shipping_info);
 					this.is_loading = false;
