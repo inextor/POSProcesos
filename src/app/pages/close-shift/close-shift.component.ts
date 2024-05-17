@@ -245,6 +245,7 @@ export class CloseShiftComponent extends BaseComponent implements OnInit
 			next:(response)=>
 			{
 				this.showSuccess('La informacion se guardó exitosamente');
+				this.router.navigate(['/users-checking-clock']);
 			},
 			error:(error)=>
 			{
