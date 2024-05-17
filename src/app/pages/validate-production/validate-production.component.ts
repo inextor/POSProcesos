@@ -224,8 +224,12 @@ export class ValidateProductionComponent extends BaseComponent
 		if(pi.merma > 0 && pi.merma_reason == '')
 		{
 			return this.showError('Selecciona una opción de merma');
+		}
+		if(pi.validated == null || pi.merma == null)
+		{
+			return this.showError('no puede ser null');
 		}	
-		this.subs.sink = this.confirmation.showConfirmAlert(pi,'Validar todo?' ,'¿Estás seguro de validar todas las producciones?')
+		this.subs.sink = this.confirmation.showConfirmAlert(pi,'Validar?' ,'¿Estás seguro de validar la producción?')
 		.subscribe((response)=>
 		{
 			if(response.accepted)
@@ -243,7 +247,7 @@ export class ValidateProductionComponent extends BaseComponent
 
 				//por lo pronto, se hara la eliminacion de las producciones y creacion de una nueva con los datos de pl.validated y pl.merma
 				//esto poniendo el status de la produccion a DELETED
-				let production_list = production_info_list.map(p => ({...p.production, qty: p.qty, merma_qty: p.merma_qty, merma_reason: pi.merma_reason, status: 'DELETED'}));
+				let production_list = production_info_list.map(p => ({...p.production, qty: p.qty, merma_qty: p.merma_qty, status: 'DELETED'}));
 				this.rest_production
 				.batchUpdate(production_list as Partial<Production>[])
 				.subscribe({
