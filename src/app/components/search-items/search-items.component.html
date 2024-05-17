@@ -10,6 +10,7 @@
 			</span>
 			<span *ngIf="item_info.category">{{item_info.category.name | titlecase }} - </span>
 			{{item_info.item.name}}
+			<span *ngIf="item_info.item.code" style="color: gray;">{{item_info.item.code}}</span>
 		</div>
 	</div>
 </div>

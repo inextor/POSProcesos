@@ -58,7 +58,7 @@
 					<div class="col-2 text-end">Requeridos</div>
 					<div class="col-2 text-end">Enviados</div>
 					<div class="col-2 text-end">Inventario</div>
-					<div class="col-2 text-end">Cantidad a Enviar</div>
+					<div class="col-2 text-end">Faltantes</div>
 					<div class="col-2 text-end">Acciones</div>
 				</div>
 				<div class="row border-bottom align-items-center">
@@ -75,9 +75,9 @@
 						<div class="col-6 col-sm-2 text-end">{{cri.shipped | number}}</div>
 						<div class="d-sm-none col-6">Inventario</div>
 						<div class="col-6 col-sm-2 text-end">{{ cri.stock| number}}</div>
-						<div class="d-sm-none col-6">Cantidad a Enviar</div>
+						<div class="d-sm-none col-6">Faltantes</div>
 						<div class="col-6 col-sm-2 text-end">
-							{{qty_by_item_id[ cri.item_info.item.id] || 0 | number }}
+							<span class="text-danger">{{ cri.required - cri.shipped || 0 | number }}</span>
 						</div>
 						<div class="col-12 col-sm-2 mb-3 mb-sm-0 text-end">
 							<button type="button" (click)="addShippingItem(cri.item_info)" class="btn btn-primary">
@@ -96,7 +96,7 @@
 							<th class="text-end">Requeridos</th>
 							<th class="text-end">Enviados</th>
 							<th class="text-end">Inventario</th>
-							<th class="text-end">Cantidad a Enviar</th>
+							<th class="text-end">Faltantes</th>
 							<th class="text-end">Acciones</th>
 						</tr>
 					</thead>

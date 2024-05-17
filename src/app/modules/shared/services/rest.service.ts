@@ -383,6 +383,13 @@ export class RestService
 			return this.getUrlSafe(this.domain_configuration.domain+'/'+this.url_base + '/image.php?id=' + image5_id);
 		return this.getUrlSafe('/assets/2px_transparent.png');
 	}
+	getLoginLogo():string
+	{
+		if( window.location.hostname.indexOf('pos.integranet.xyz') !== -1)
+			return this.getUrlSafe('/assets/integranet_logo.jpg');
+
+		return this.getImagePath(this.local_preferences.login_image_id, this.local_preferences.logo_image_id );
+	}
 	getFilePath(file_id: number,download=false): string
 	{
 		let d_string = download ?'&download=1':'';
