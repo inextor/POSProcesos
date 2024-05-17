@@ -1,10 +1,10 @@
 <div class="container-fluid">
-	<h1 class="my-3">Registro de Pago</h1>
+	<h1 class="my-3">Registro Diario de Pago</h1>
 	<div class="card p-3">
 		<div class="row">
 			<div class="col-6">
 				<div class="form-group">
-					<label for="search_date">Fecha Corte</label>
+					<label for="search_date">Fecha</label>
 					<input type="date" [(ngModel)]="search_date" (ngModelChange)="onDateChange($event, search_work_log_obj.eq, 'date')" class="form-control" id="search_date">
 				</div>
 			</div>
@@ -62,7 +62,7 @@
 					<tbody>
 						<ng-template [ngIf]="Cuser_production_report_list.length == 0">
 							<tr>
-								<td colspan="100" class="text-center">No hay registros</td>
+								<td colspan="100" class="text-center">No hay registros de asistencia</td>
 							</tr>
 						</ng-template>
 							<tr *ngFor="let upr of Cuser_production_report_list">
@@ -106,7 +106,7 @@
 				<tbody>
 					<ng-template [ngIf]="CItem_production_report_list.length == 0">
 						<tr>
-							<td colspan="100" class="text-center">No hay registros</td>
+							<td colspan="100" class="text-center">No hay registros de producción validada</td>
 						</tr>
 					</ng-template>
 					<ng-template [ngIf]="CItem_production_report_list.length > 0">

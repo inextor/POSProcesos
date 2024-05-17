@@ -36,7 +36,7 @@
 			<div class="col-12 col-md-4 my-2">
 				<div class="card mx-3 px-4">
 					<b class="fs-6 fs-md-1">Total Envíos Pendientes</b>
-					<div class="fw-bold fs-2" [ngClass]="{'text-danger': total_pending > 0, 'text-success': total_pending <= 0}">{{total_pending}}</div>
+					<div class="fw-bold fs-2" [ngClass]="{'text-danger': total_pending > 0, 'text-success': total_pending <= 0}">{{total_pending < 0 ? 0 : total_pending }}</div>
 				</div>
 			</div>
 		</div>
@@ -86,7 +86,7 @@
 					<div class="d-md-none col-6">Enviados</div>
 					<div class="col-6 col-md-4 col-lg-3 text-end">{{creq.shipped | number}}</div>
 					<div class="d-md-none col-6">Pendientes</div>
-					<div class="col-6 col-md-4 col-lg-3 text-end">{{creq.pending ?? creq.required| number}}</div>
+					<div class="col-6 col-md-4 col-lg-3 text-end">{{creq.pending ?? creq.required < 0 ? 0 : creq.required | number}}</div>
 					<div class="d-none d-lg-block col-md-3 text-end">
 						<a class="btn btn-primary my-1" [routerLink]="['/add-shipping',creq.store.id, 0]">Crear Envio</a>
 					</div>
