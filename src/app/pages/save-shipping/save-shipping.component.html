@@ -57,8 +57,8 @@
 					<div class="col-2">Artículo</div>
 					<div class="col-2 text-end">Requeridos</div>
 					<div class="col-2 text-end">Enviados</div>
-					<div class="col-2 text-end">Inventario</div>
 					<div class="col-2 text-end">Faltantes</div>
+					<div class="col-2 text-end">Inventario</div>
 					<div class="col-2 text-end">Acciones</div>
 				</div>
 				<div class="row border-bottom align-items-center">
@@ -73,12 +73,12 @@
 						<div class="col-6 col-sm-2 text-end">{{cri.required}}</div>
 						<div class="d-sm-none col-6">Enviado</div>
 						<div class="col-6 col-sm-2 text-end">{{cri.shipped | number}}</div>
-						<div class="d-sm-none col-6">Inventario</div>
-						<div class="col-6 col-sm-2 text-end">{{ cri.stock| number}}</div>
 						<div class="d-sm-none col-6">Faltantes</div>
 						<div class="col-6 col-sm-2 text-end">
 							<span class="text-danger">{{ cri.required - cri.shipped || 0 | number }}</span>
 						</div>
+						<div class="d-sm-none col-6">Inventario</div>
+						<div class="col-6 col-sm-2 text-end">{{ cri.stock| number}}</div>
 						<div class="col-12 col-sm-2 mb-3 mb-sm-0 text-end">
 							<button type="button" (click)="addShippingItem(cri.item_info)" class="btn btn-primary">
 								<b class="d-none d-sm-inline" >+</b>
