@@ -1,5 +1,5 @@
 <div class="container-fluid">
-	<div class="row my-3 align-items-end mx-0">
+	<div class="row my-3 align-items-center mx-0">
 		<div class="col p-0">
 			<h1 class="text-capitalize">Requisiciones</h1>
 		</div>
@@ -108,7 +108,7 @@
 				{{ (cri.requisition ? cri.requisition.sum_qty : 0 ) + ' / '}}
 				<ng-template [ngIf]="cri.requisition">
 					<span [ngClass]="{'text-danger': cri.requisition.sum_qty > (cri?.production?.produced||0), 'text-success': cri.requisition.sum_qty <= (cri?.production?.produced || 0)}">
-						{{ (cri.requisition.sum_qty - (cri?.production?.produced||0)) | number}}
+						{{ (cri.requisition.sum_qty - (cri?.production?.produced||0)) >= 0 ? (cri.requisition.sum_qty - (cri?.production?.produced||0)) : 0 | number}}
 					</span>				
 				</ng-template>
 				<ng-template [ngIf]="!cri.requisition && cri.production">
