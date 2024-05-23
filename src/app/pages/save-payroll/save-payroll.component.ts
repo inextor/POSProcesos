@@ -74,7 +74,6 @@ export class SavePayrollComponent extends BaseComponent implements OnInit {
 
 				if ( param_map.has('id') )
 				{
-					console.log( 'editing: '+ param_map.get('id'));
 					payroll_id = parseInt(param_map.get('id') as string);
 					this.path = 'edit-payroll';
 				}
@@ -150,7 +149,6 @@ export class SavePayrollComponent extends BaseComponent implements OnInit {
 							});
 						}
 					});
-					console.log('after', this.payroll_info.payroll_concept_values)
 				}
 
 				this.selected_user = this.users_list.find((user)=>user.id == payroll?.user_id) as User;
@@ -264,7 +262,6 @@ export class SavePayrollComponent extends BaseComponent implements OnInit {
 
 	mapPayrollConceptValues(payroll_concept_values:Payroll_Concept_Value[])
 	{
-		console.log('before mapping', payroll_concept_values)
 		return payroll_concept_values.map((payroll_concept_value)=>
 		{
 			let payroll_concept = this.payroll_concept_list.find((payroll_concept)=>payroll_concept.id == payroll_concept_value.payroll_concept_id);
@@ -293,7 +290,7 @@ export class SavePayrollComponent extends BaseComponent implements OnInit {
 		{	
 			let payroll_concept = this.payroll_concept_list.find((payroll_concept)=>payroll_concept.id == payroll_concept_value.payroll_concept_id);
 
-			if (payroll_concept) 
+			if (payroll_concept && payroll_concept_value.status == "ACTIVE") 
 			{
 				if (payroll_concept.type == "DEDUCTION")
 				{
@@ -305,7 +302,6 @@ export class SavePayrollComponent extends BaseComponent implements OnInit {
 				}
 			}
 		});
-		console.log('new total', this.payroll_info.payroll.total);
 	}
 
 	savePayroll(event:Event)
@@ -324,15 +320,18 @@ export class SavePayrollComponent extends BaseComponent implements OnInit {
 			(
 				mergeMap((response)=>
 				{
-					console.log('payroll created',response);
 					this.payroll_info.payroll = response;
 
-					let payroll_concept_values = this.payroll_info.payroll_concept_values.map((pcv)=>
+					let payroll_concept_values:Partial<Payroll_Concept_Value>[] = [];
+					this.payroll_info.payroll_concept_values.forEach((pcv)=>
 					{
-						return {
-							payroll_id: response.id,
-							payroll_concept_id: pcv.payroll_concept_id,
-							value: pcv.value
+						if(pcv.status == 'ACTIVE')
+						{
+							payroll_concept_values.push({
+								payroll_id: response.id,
+								payroll_concept_id: pcv.payroll_concept_id,
+								value: pcv.value,
+							})
 						}
 					});
 			
@@ -345,7 +344,6 @@ export class SavePayrollComponent extends BaseComponent implements OnInit {
 			)
 			.subscribe((response)=>
 			{
-				console.log('payroll_concept_values created',response.payroll_concept_values);
 				this.payroll_info.payroll_concept_values = response.payroll_concept_values.map((pcv)=>
 				{
 					let payroll_concept = this.payroll_concept_list.find((payroll_concept)=>payroll_concept.id == pcv.payroll_concept_id);
@@ -374,7 +372,6 @@ export class SavePayrollComponent extends BaseComponent implements OnInit {
 						//conceptos nuevos
 						if(pcv.status=='ACTIVE' && pcv.id == 0)
 						{
-							console.log('uno nuevo')
 							payroll_concept_values.push({
 								id: pcv.id,
 								payroll_id: this.payroll_info.payroll.id,
@@ -385,9 +382,8 @@ export class SavePayrollComponent extends BaseComponent implements OnInit {
 						}
 
 						//conceptos a actualizar
-						else if(pcv.id != 0)
+						if(pcv.id != 0)
 						{
-							console.log('uno actualizar')
 							payroll_concept_values.push({
 								id: pcv.id,
 								payroll_id: this.payroll_info.payroll.id,
