@@ -52,6 +52,7 @@ export class SavePayrollComponent extends BaseComponent implements OnInit {
 	payroll_concept_list:Payroll_Concept[] = [];
 	payroll_info:CPayrollInfo = GetEmpty.payroll_info();
 	users_list:User[] = [];
+	selected_payroll_concept_id:number | null = null;
 
 	days_list:string[] = [
 		'Lunes',
@@ -246,6 +247,36 @@ export class SavePayrollComponent extends BaseComponent implements OnInit {
 
 			this.calculatePayrollTotal();
 		});
+	}
+
+	addNewConceptValue(evt: Event)
+	{
+		if( this.selected_payroll_concept_id == null)
+		{
+			this.showError('Es necesario seleccionar un concepto');
+			return;
+		}
+		
+		let payroll_concept = this.payroll_concept_list.find((payroll_concept)=>payroll_concept.id == this.selected_payroll_concept_id);
+		
+		if (!payroll_concept)
+		{
+			this.showError('No se encontro el concepto seleccionado');
+			return;
+		}
+
+		this.payroll_info.payroll_concept_values.push
+		({
+			id:0,
+			payroll_id: this.payroll_info.payroll.id,
+			payroll_concept_id: payroll_concept.id,
+			value: parseInt(payroll_concept.formula) ?? 0, //esto se debe cambiar para cuando se empiecen a usar formulas ,
+			status: 'ACTIVE',
+			payroll_concept_name: payroll_concept.name,
+			type: payroll_concept.type
+		});
+
+		this.calculatePayrollTotal();
 	}
 
 	mapWorkLogs(work_logs:Work_Log[])
