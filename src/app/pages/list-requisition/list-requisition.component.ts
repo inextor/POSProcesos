@@ -139,7 +139,7 @@ export class ListRequisitionComponent extends BaseComponent implements OnInit
 				return cri;
 			});
 
-			console.log(this.requsition_obj_list);
+			//console.log(this.requsition_obj_list);
 
 			//calculando el total de requeridos que proviene de cri.requisition.sum_qty
 			this.calculateTotalPending(this.requsition_obj_list);

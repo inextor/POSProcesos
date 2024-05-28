@@ -71,7 +71,7 @@ export class ValidateProductionComponent extends BaseComponent
 		.subscribe((response)=>
 		{
 			this.production_info_list = this.buildProductionInfoList(response.data);
-			console.log(this.production_info_list);
+			//console.log(this.production_info_list);
 			this.filterValidations('');
 		})
 	}
@@ -268,7 +268,6 @@ export class ValidateProductionComponent extends BaseComponent
 						this.subs.sink = this.rest_production.create(newProduction).subscribe({
 							next: (response)=>
 							{
-								console.log('new',response);
 								this.showSuccess('Nueva produccion validada creada');
 							},
 							error: (error)=>

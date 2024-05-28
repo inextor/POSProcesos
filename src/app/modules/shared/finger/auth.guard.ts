@@ -17,7 +17,6 @@ class AuthGuard {
 		if ( user ) 
 		{
 			// authorised so return true
-      console.log('User is logged in');
 			return true;
 		}
 

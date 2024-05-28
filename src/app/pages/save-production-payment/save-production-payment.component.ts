@@ -129,7 +129,7 @@ export class SaveProductionPaymentComponent extends BaseComponent implements OnI
 			this.user_work_logs_list = result.work_log;
 
 			this.buildUserProductionReport(result.users?.data ?? [], result.work_log, result.production, result.items?.data ?? [], this.payment_total);
-			console.log('Cuser_production_report', this.Cuser_production_report_list);
+			//console.log('Cuser_production_report', this.Cuser_production_report_list);
 
 		});
 	}
@@ -175,8 +175,6 @@ export class SaveProductionPaymentComponent extends BaseComponent implements OnI
 
 			this.CItem_production_report_list.push({item: ii, cost, merma, production: produced, total_cost});
 		});
-		
-		console.log('CItem_production_report', this.CItem_production_report_list);
 	}
 
 	buildUserProductionReport(users:User[], work_logs:Work_Log[], productions:Production[], items:ItemInfo[], payment_total:number)

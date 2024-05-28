@@ -74,7 +74,7 @@ export class ListPayrollComponent extends BaseComponent implements OnInit {
 		.subscribe((responses)=> 
 		{
 			this.setPages(this.search_payroll.page, responses.payrolls.total)
-			console.log(responses);
+			//console.log(responses);
 			this.users_list = responses.users.data;
 			this.CPayroll_list = responses.payrolls.data.map((payroll)=>
 			{
