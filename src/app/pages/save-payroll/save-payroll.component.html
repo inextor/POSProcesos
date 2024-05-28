@@ -35,22 +35,24 @@
 		</form>
 	</div>
 
-	<h3 class="my-3">Agregar Conceptos</h3>
-	<div class="card p-3 my-3">
-		<div class="row">
-			<div class="col-12 col-md-6">	
-				<select name="payroll_concept_id" class="form-control" [(ngModel)]="selected_payroll_concept_id">
-					<option [value]="null">Seleccionar</option>
-					<ng-container *ngFor="let pc of payroll_concept_list">
-						<option *ngIf="pc.status == 'ACTIVE'" [value]="pc.id">{{pc.name}}</option>
-					</ng-container>
-				</select>
-			</div>
-			<div class="col-12 col-md-6">
-				<button type="button" (click)="addNewConceptValue($event)" class="btn btn-primary w-100">Agregar</button>
+	<ng-container *ngIf="payroll_info.payroll.user_id && payroll_info.work_logs.length > 0 && payroll_info.payroll.paid_status != 'PAID'">
+		<h3 class="my-3">Agregar Conceptos</h3>
+		<div class="card p-3 my-3">
+			<div class="row">
+				<div class="col-12 col-md-6">	
+					<select name="payroll_concept_id" class="form-control" [(ngModel)]="selected_payroll_concept_id">
+						<option [value]="null">Seleccionar</option>
+						<ng-container *ngFor="let pc of payroll_concept_list">
+							<option *ngIf="pc.status == 'ACTIVE'" [value]="pc.id">{{pc.name}}</option>
+						</ng-container>
+					</select>
+				</div>
+				<div class="col-12 col-md-6">
+					<button type="button" (click)="addNewConceptValue($event)" class="btn btn-primary w-100">Agregar</button>
+				</div>
 			</div>
 		</div>
-	</div>
+	</ng-container>
 
 	<h3 class="my-3">Detalle de nómina</h3>
 	<div class="card p-3 my-3 ">

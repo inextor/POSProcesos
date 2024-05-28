@@ -214,6 +214,12 @@ export class SavePayrollComponent extends BaseComponent implements OnInit {
 
 	searchWorkLogs()
 	{
+		if( this.user_id == null || this.start_date == '' || this.end_date == '')
+		{
+			this.showError('Es necesario seleccionar un usuario y un rango de fechas');
+			return;
+		}
+		
 		this.selected_user = this.users_list.find((user)=>user.id == this.user_id) as User;
 		if (this.selected_user)
 		{
@@ -222,16 +228,15 @@ export class SavePayrollComponent extends BaseComponent implements OnInit {
 		}
 		else
 		{
+			//si ya tenia uno seleccionado, regresarlo a su estado anterior
+			if(this.payroll_info.payroll.user_id != 0)
+			{
+				this.user_id = this.payroll_info.payroll.user_id;
+			}
 			this.showError('No se encontro el usuario seleccionado');
 			return;
 		}
 		
-		if( this.user_id == null || this.start_date == '' || this.end_date == '')
-		{
-			this.showError('Es necesario seleccionar un usuario y un rango de fechas');
-			return;
-		}
-
 		this.subs.sink = forkJoin
 		({
 			work_logs: this.rest_work_log.search({ge:{date: this.start_date}, le:{date: this.end_date}, eq:{user_id: this.user_id}})
@@ -240,6 +245,19 @@ export class SavePayrollComponent extends BaseComponent implements OnInit {
 		{
 			if( responses.work_logs.data.length == 0 )
 			{
+				//si no se encontraron registros de asistencia, reiniciar el payroll_info
+				this.payroll_info.payroll =
+				{
+					...this.payroll_info.payroll,
+					id:0,
+					user_id: this.user_id as number,
+					start_date: this.start_date,
+					end_date: this.end_date,
+					subtotal:0,
+					total:0,
+				}
+				this.payroll_info.work_logs = [];
+				this.payroll_info.payroll_concept_values = [];
 				this.showError('No se encontraron registros de asistencia');
 				return;
 			}
