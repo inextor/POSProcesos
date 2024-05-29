@@ -95,12 +95,23 @@ export class SavePayrollComponent extends BaseComponent implements OnInit {
 			}),
 			mergeMap((result)=>
 			{
+				let search_work_log_obj = {};
+				if(result.payroll != null)
+				{
+					search_work_log_obj = 
+					{
+						ge:{date: result.payroll.start_date}, 
+						le:{date: result.payroll.end_date}, 
+						eq:{user_id: result.payroll.user_id}, 
+						sort_order:['date_ASC']
+					}
+				}
 				return forkJoin
 				({
 					users: of(result.users),
 					payroll_concepts: of(result.payroll_concepts),
 					payroll: of(result.payroll),
-					work_log: result.payroll ? this.rest_work_log.search({ge:{date: result.payroll.start_date}, le:{date: result.payroll.end_date}, eq:{user_id: result.payroll.user_id}}) : of(null),
+					work_log: result.payroll ? this.rest_work_log.search(search_work_log_obj) : of(null),
 					payroll_concept_values: result.payroll ? this.rest_payroll_concept_value.search({eq:{payroll_id: result.payroll.id, status:'ACTIVE'}}) : of(null)
 					
 				})
@@ -236,10 +247,18 @@ export class SavePayrollComponent extends BaseComponent implements OnInit {
 			this.showError('No se encontro el usuario seleccionado');
 			return;
 		}
+
+		let search_work_log_obj = 
+		{
+			ge:{date: this.start_date},
+			le:{date: this.end_date},
+			eq:{user_id: this.user_id},
+			sort_order:['date_ASC']
+		}
 		
 		this.subs.sink = forkJoin
 		({
-			work_logs: this.rest_work_log.search({ge:{date: this.start_date}, le:{date: this.end_date}, eq:{user_id: this.user_id}})
+			work_logs: this.rest_work_log.search(search_work_log_obj)
 		})
 		.subscribe((responses)=>
 		{
