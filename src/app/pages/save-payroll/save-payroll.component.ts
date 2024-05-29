@@ -374,7 +374,8 @@ export class SavePayrollComponent extends BaseComponent implements OnInit {
 
 	savePayroll(event:Event)
 	{
-		this.searchWorkLogs();
+		event.preventDefault();
+		//this.searchWorkLogs();
 
 		if( this.payroll_info.payroll.total <= 0 )
 		{
@@ -412,16 +413,9 @@ export class SavePayrollComponent extends BaseComponent implements OnInit {
 			)
 			.subscribe((response)=>
 			{
-				this.payroll_info.payroll_concept_values = response.payroll_concept_values.map((pcv)=>
-				{
-					let payroll_concept = this.payroll_concept_list.find((payroll_concept)=>payroll_concept.id == pcv.payroll_concept_id);
-					return {
-						...pcv,
-						payroll_concept_name: payroll_concept?.name ?? '',
-						type: payroll_concept?.type ?? ''
-					}
-				});
 				this.showSuccess('Nómina creada correctamente');
+				this.router.navigate(['/edit-payroll/'+response.payroll.id]);
+				
 			}, (error)=>
 			{
 				this.showError('Error creando nómina ' + error);
