@@ -69,8 +69,8 @@ export class AppComponent implements OnInit {
 
 	logout()
 	{
-		this.rest.logout();
 		this.rest.show_menu = false;
 		this.router.navigate(['/login']);
+		this.rest.logout();
 	}
 }

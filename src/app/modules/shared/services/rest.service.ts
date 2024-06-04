@@ -282,6 +282,8 @@ export class RestService
 			method: 'logout',
 		};
 
+		let path = '/produccion/#/login';
+
 		this.http.post<any>
 		(
 			`${this.domain_configuration.domain}/${this.url_base}/updates.php`,
@@ -294,6 +296,8 @@ export class RestService
 			{
 				this.user = null;
 				localStorage.clear();
+				if (redirect)
+					window.location.href=path;
 
 			},
 			error: (error:any)=>
@@ -301,6 +305,7 @@ export class RestService
 				console.log('ocurrio un error al finalizar la sesion',error);
 				this.user = null;
 				localStorage.clear();
+				window.location.href = path;
 			}
 		});
 	}
