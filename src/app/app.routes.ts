@@ -18,6 +18,8 @@ import { ListPayrollComponent } from './pages/list-payroll/list-payroll.componen
 import { SavePayrollConceptComponent } from './pages/save-payroll-concept/save-payroll-concept.component';
 import { SavePayrollComponent } from './pages/save-payroll/save-payroll.component';
 import { SaveProductionPaymentComponent } from './pages/save-production-payment/save-production-payment.component';
+import { SaveWorklogRulesComponent } from './pages/save-worklog-rules/save-worklog-rules.component';
+import { SaveUserExtraFieldsComponent } from './pages/save-user-extra-fields/save-user-extra-fields.component';
 
 export const routes: Routes = [
 	{path: '', component: LoginComponent, canActivate: [authGuard]},
@@ -31,6 +33,7 @@ export const routes: Routes = [
 //	{path: 'list-process', component: ListProcessComponent},
 	{path: 'list-requisition', component: ListRequisitionComponent, canActivate: [authGuard]},
 	{path: 'users-checking-clock', component: UsersCheckingClockComponent, canActivate: [authGuard]},
+	{path: 'save-user-extra-fields/:user_id', component: SaveUserExtraFieldsComponent, canActivate: [authGuard]},
 	{path: 'users-attendance', component: ListUserAttendanceComponent, canActivate: [authGuard]},
 	{path: 'validate-production', component: ValidateProductionComponent, canActivate: [authGuard]},
 	{path: 'list-task', component: ListTaskComponent, canActivate: [authGuard]},
@@ -43,6 +46,7 @@ export const routes: Routes = [
 	{path: 'create-payroll', component: SavePayrollComponent, canActivate: [authGuard]},
 	{path: 'edit-payroll/:id', component: SavePayrollComponent, canActivate: [authGuard]},
 	{path: 'list-payroll', component: ListPayrollComponent, canActivate: [authGuard]},
+	{path: 'save-worklog-rules', component: SaveWorklogRulesComponent, canActivate: [authGuard]}
 ];
 
 

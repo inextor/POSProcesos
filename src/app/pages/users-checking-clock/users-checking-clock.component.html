@@ -11,7 +11,12 @@
 
 	<div class="card px-3 mt-3">
 		<div class="row py-1 border-not-last align-items-center mt-2" *ngFor="let ucil of user_checkin_info_list">
-			<div class="col-6 col-lg-10">{{ucil.user.name}}</div>
+			<div class="col-6 col-lg-10">
+				<!-- Si el usuario tiene permiso de agregar Usuarios, sino solo texto -->
+				<a class="text-decoration-none" [routerLink]="['/save-user-extra-fields', ucil.user.id]">
+					{{ucil.user.name}}
+				</a>
+			</div>
 			<div class="col-3 col-lg-1 text-end">
 				<button class="btn text-white bg-success" type="button" (click)="checkInOut(ucil)" *ngIf="ucil.current_check_in == null">Check IN</button>
 			</div>

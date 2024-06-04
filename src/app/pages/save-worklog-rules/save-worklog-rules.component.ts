@@ -1,0 +1,97 @@
+import { Component, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { BaseComponent } from '../../modules/shared/base/base.component';
+import { Work_log_rules } from '../../modules/shared/RestModels';
+import { RestSimple } from '../../modules/shared/services/Rest';
+import { mergeMap } from 'rxjs';
+import { FormsModule } from '@angular/forms';
+import { GetEmpty } from '../../modules/shared/GetEmpty';
+
+
+interface Rule {
+	key: string;
+	value: string;
+}
+
+@Component({
+	selector: 'app-save-worklog-rules',
+	standalone: true,
+	imports: [CommonModule, BaseComponent, FormsModule],
+	templateUrl: './save-worklog-rules.component.html',
+	styleUrl: './save-worklog-rules.component.css'
+})
+export class SaveWorklogRulesComponent extends BaseComponent implements OnInit {
+
+	rest_work_log_rules:RestSimple<Work_log_rules> = this.rest.initRestSimple('work_log_rules');
+
+	work_log_rules:Work_log_rules = GetEmpty.work_log_rules();
+	array_rules:Rule[] = [];
+
+	ngOnInit(): void {
+		this.subs.sink = this.route.queryParamMap
+		.pipe
+		(
+			mergeMap(params => {
+				let store_id = this.rest.user?.store_id as number;
+				this.is_loading = true;
+				return this.rest_work_log_rules.search({ eq:{store_id: store_id} ,limit: 1 });
+			})
+		)
+		.subscribe({
+			next: (result) => {
+				this.is_loading = false;
+				this.work_log_rules = result.data[0];
+				this.buildRules();
+			},
+			error: (error) => {
+				this.showError(error);
+			}
+		});
+	}
+
+	buildRules()
+	{		
+		Object.keys(this.work_log_rules.json_rules).forEach((key) => {
+			this.array_rules.push({key: key, value: this.work_log_rules.json_rules[key]});
+		});
+		console.log(this.array_rules);
+	}
+
+	addRule()
+	{
+		this.array_rules.push({key: '', value: ''});
+	}
+
+	removeRule(index: number)
+	{
+		this.array_rules.splice(index, 1);
+	}
+
+	save(evt: Event)
+	{
+		evt.preventDefault();
+		this.is_loading = true;
+		
+		//convert array to object
+		let rules:Record<string, string> = {};
+		this.array_rules.forEach((rule) => {
+			let key = rule.key.split(' ').join('_');
+			rules[key] = rule.value;
+		});
+
+		this.work_log_rules.json_rules = rules;
+
+		// user.master ? production.total_prod * 0.2 : production.total_prod * 0.1
+		
+		this.subs.sink = this.rest_work_log_rules.update(this.work_log_rules)
+		.subscribe({
+			next: (result) => {
+				this.showSuccess('Reglas guardadas');
+			},
+			error: (error) => {
+				this.showError(error);
+			}
+		});
+	}
+
+}

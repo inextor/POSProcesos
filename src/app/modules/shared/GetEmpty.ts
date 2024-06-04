@@ -1,5 +1,5 @@
 import { ShippingInfo } from "./Models";
-import { User_Permission,Preferences,Production_Area,Process, Production, Shipping, Store, Payroll, Payroll_Concept_Value } from "./RestModels";
+import { User_Permission,Preferences,Production_Area,Process, Production, Shipping, Store, Payroll, Payroll_Concept_Value, Work_log_rules, User_extra_fields, User } from "./RestModels";
 
 export class GetEmpty
 {
@@ -45,6 +45,37 @@ export class GetEmpty
 			status:'ACTIVE',
 			updated: new Date(),
 		};
+	}
+
+	static user():User
+	{
+		return {
+			created: new Date(),
+			created_by_user_id: null,
+			credit_days: 0,
+			credit_limit: 0,
+			default_billing_address_id: null,
+			default_shipping_address_id: null,
+			email:'',
+			id:0,
+			image_id: null,
+			lat: null,
+			lng: null,
+			name:'',
+			password:'',
+			phone:'',
+			platform_client_id: null,
+			points: 0,
+			price_type_id: null,
+			status:'ACTIVE',
+			store_id: 0,
+			type: 'CLIENT',
+			updated: new Date(),
+			updated_by_user_id: null,
+			username:'',
+			workshift_id: null,
+		};
+	
 	}
 	static user_permission():User_Permission
 	{
@@ -105,6 +136,15 @@ export class GetEmpty
 			user_id:0,
 			view_commandas:0,
 			view_stock:0,
+		};
+	}
+
+	static user_extra_fields(user_id:number):User_extra_fields
+	{
+		return {
+			id:0,
+			user_id,
+			json_fields:{},
 		};
 	}
 
@@ -313,6 +353,15 @@ export class GetEmpty
 			updated: new Date(),
 			updated_by_user_id : null,
 			zipcode: ''
+		}
+	}
+
+	static work_log_rules():Work_log_rules
+	{
+		return {
+			id:0,
+			store_id:0,
+			json_rules:{}
 		}
 	}
 }
