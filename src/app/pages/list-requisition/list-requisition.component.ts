@@ -284,6 +284,12 @@ export class ListRequisitionComponent extends BaseComponent implements OnInit
 		}
 	}
 
+	selectText(evt: MouseEvent)
+	{
+		let input = evt.target as HTMLInputElement;
+		input.select();
+	}
+
 	changeSearch()
 	{
 		this.search_by_code = !this.search_by_code;
