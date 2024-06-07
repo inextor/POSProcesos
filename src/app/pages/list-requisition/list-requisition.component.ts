@@ -143,6 +143,7 @@ export class ListRequisitionComponent extends BaseComponent implements OnInit
 
 			//calculando el total de requeridos que proviene de cri.requisition.sum_qty
 			this.calculateTotalPending(this.requsition_obj_list);
+			this.filterValidations(this.search_str);
 
 			this.user_list = response.users.data;
 
