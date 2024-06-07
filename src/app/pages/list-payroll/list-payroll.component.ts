@@ -56,6 +56,7 @@ export class ListPayrollComponent extends BaseComponent implements OnInit {
 				this.search_payroll.le.start_date = param_map.get('le.start_date') ? (param_map.get('le.start_date') as string).split(' ')[0] : Utils.getMysqlStringFromDate(date).split(' ')[0] as string;
 				this.search_payroll.eq.user_id = param_map.get('eq.user_id') ? parseInt(param_map.get('eq.user_id') as string) : undefined;
 
+				this.search_payroll.eq.status = 'ACTIVE';
 				this.search_payroll.sort_order = ['id_DESC']
 				this.search_payroll.limit = this.page_size;
 
@@ -96,6 +97,29 @@ export class ListPayrollComponent extends BaseComponent implements OnInit {
 	onPaidStatusChange(paid_status: "PENDING" | "PAID" | undefined)
 	{
 		this.search_payroll.eq.paid_status = paid_status;
+	}
+
+	deletePayroll(payroll:Payroll)
+	{
+		this.subs.sink = this.confirmation.showConfirmAlert(payroll,'Eliminar nómina' ,'Deseas eliminar esta nómina?')
+		.subscribe((response)=>
+		{
+			if(response.accepted)
+			{
+				this.rest_payroll.update({...payroll, status: 'DELETED'})
+				.subscribe({
+					next: (response)=>
+					{
+						this.CPayroll_list = this.CPayroll_list.filter((cpayroll) => cpayroll.id != payroll.id);
+						this.showSuccess('Nómina eliminada');
+					},
+					error: (error)=>
+					{
+						this.showError('Error eliminando nómina ' + error);
+					}
+				});
+			}
+		})
 	}
 
 	markAsPaid(payroll:Payroll)

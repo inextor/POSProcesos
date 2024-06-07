@@ -6,19 +6,19 @@
 			<div class="col-12 col-md-3">
 				<div class="form-group">
 					<label for="search_start_date">Fecha Inicial</label>
-					<input type="date" name="start_date" class="form-control" (ngModelChange)="onFechaInicialChange($event)" [(ngModel)]="start_date" id="search_start_date" required [disabled]="payroll_info.payroll.paid_status == 'PAID'">
+					<input type="date" name="start_date" class="form-control" (ngModelChange)="onFechaInicialChange($event)" [(ngModel)]="start_date" id="search_start_date" required [disabled]="payroll_info.payroll.paid_status == 'PAID' || rest.user_permission.add_payroll !=1">
 				</div>
 			</div>
 			<div class="col-12 col-md-3">
 				<div class="form-group">
 					<label for="search_end_date">Fecha Final</label>
-					<input type="date" name="end_date" class="form-control" (ngModelChange)="onFechaFinalChange($event)" [(ngModel)]="end_date" id="search_end_date" required [disabled]="payroll_info.payroll.paid_status == 'PAID'">
+					<input type="date" name="end_date" class="form-control" (ngModelChange)="onFechaFinalChange($event)" [(ngModel)]="end_date" id="search_end_date" required [disabled]="payroll_info.payroll.paid_status == 'PAID' || rest.user_permission.add_payroll !=1">
 				</div>
 			</div>
 			<div class="col-12 col-md-3">
 				<div class="form-group">
 					<label>Usuario</label>
-					<select name="user_id" class="form-control" [(ngModel)]="user_id" [disabled]="payroll_info.payroll.id != 0" required>
+					<select name="user_id" class="form-control" [(ngModel)]="user_id" [disabled]="payroll_info.payroll.id != 0 || rest.user_permission.add_payroll !=1" required>
 						<option [value]="null">Seleccionar</option>
 						<ng-container *ngFor="let user of users_list">
 							<option [value]="user.id">{{user.name}}</option>
@@ -26,7 +26,7 @@
 					</select>
 				</div>
 			</div>
-			<div class="col-12 col-md-3">
+			<div class="col-12 col-md-3" *ngIf="rest.user_permission.add_payroll">
 				<div class="form-group">
 					<label>&nbsp;</label>
 					<button type="submit" class="btn btn-primary w-100" *ngIf="payroll_info.payroll.paid_status != 'PAID'">Buscar</button>
@@ -35,7 +35,7 @@
 		</form>
 	</div>
 
-	<ng-container *ngIf="payroll_info.payroll.user_id && payroll_info.work_logs.length > 0 && payroll_info.payroll.paid_status != 'PAID'">
+	<ng-container *ngIf="payroll_info.payroll.user_id && payroll_info.work_logs.length > 0 && payroll_info.payroll.paid_status != 'PAID' && rest.user_permission.add_payroll ==1">
 		<h3 class="my-3">Agregar Conceptos</h3>
 		<div class="card p-3 my-3">
 			<div class="row">
@@ -84,7 +84,7 @@
 						<ng-container *ngFor="let pcv of payroll_info.payroll_concept_values; let i=index">
 							<tr *ngIf="pcv.status=='ACTIVE'">
 								<td colspan="2">
-									<span class="float-start text-danger" style="cursor: pointer;" (click)="removePayrollConceptValue(pcv)" *ngIf="payroll_info.payroll.paid_status != 'PAID'">
+									<span class="float-start text-danger" style="cursor: pointer;" (click)="removePayrollConceptValue(pcv)" *ngIf="payroll_info.payroll.paid_status != 'PAID' && rest.user_permission.add_payroll ==1">
 										<svg xmlns="http://www.w3.org/2000/svg" width="0.8em" height="0.8em" viewBox="0 0 14 14"><path fill="currentColor" fill-rule="evenodd" d="M1.707.293A1 1 0 0 0 .293 1.707L5.586 7L.293 12.293a1 1 0 1 0 1.414 1.414L7 8.414l5.293 5.293a1 1 0 0 0 1.414-1.414L8.414 7l5.293-5.293A1 1 0 0 0 12.293.293L7 5.586z" clip-rule="evenodd"/></svg>
 									</span>
 									<span class="float-end">
@@ -95,7 +95,7 @@
 								</td>
 								<div class="input-group p-0">
 									<span class="input-group-text">$</span> 
-									<input type="number" class="form-control text-end" (change)="calculatePayrollTotal()" name="payroll_concept_values[{{ i }}]" [(ngModel)]="pcv.value" [disabled]="payroll_info.payroll.paid_status == 'PAID'">
+									<input type="number" class="form-control text-end" (change)="calculatePayrollTotal()" name="payroll_concept_values[{{ i }}]" [(ngModel)]="pcv.value" [disabled]="payroll_info.payroll.paid_status == 'PAID' || rest.user_permission.add_payroll !=1">
 								</div>
 							</tr>
 						</ng-container>
@@ -109,7 +109,7 @@
 				</table>
 			</div>
 			<div class="col-12 text-end">
-				<button type="submit" class="btn mx-2 btn-primary" *ngIf="payroll_info.payroll.paid_status != 'PAID'">Guardar</button>
+				<button type="submit" class="btn mx-2 btn-primary" *ngIf="payroll_info.payroll.paid_status != 'PAID' && rest.user_permission.add_payroll ==1">Guardar</button>
 				<button type="button" class="btn btn-secondary" (click)="justPrint()" *ngIf="payroll_info.payroll.paid_status == 'PAID'" >Imprimir</button>
 			</div>
 		</form>

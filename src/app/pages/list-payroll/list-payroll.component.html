@@ -3,7 +3,7 @@
 		<div class="col-6 col-sm-6">
 			<h1 class="my-3">Nóminas</h1>
 		</div>
-		<div class="col-6 col-sm-6 text-end">
+		<div *ngIf="rest.user_permission.add_payroll" class="col-6 col-sm-6 text-end">
 			<a class="btn btn-primary mx-2" routerLink="/create-payroll">
 				<span class="d-none d-sm-inline">Agregar</span>
 				<svg class="" xmlns="http://www.w3.org/2000/svg" width="1.2em" height="1.2em" viewBox="0 0 24 24"><path fill="currentColor" d="M20 14h-6v6h-4v-6H4v-4h6V4h4v6h6z"/></svg>
@@ -88,8 +88,9 @@
 				<b [ngClass]="{'text-danger': payroll.paid_status=='PENDING' ,'text-success': payroll.paid_status!='PENDING' }" >{{ payroll.paid_status == "PENDING" ? "PENDIENTE" : "PAGADO"}}</b>
 			</div>
 			<div class="col-12 col-md-3 text-end">
-				<a class="btn btn-primary mx-1" (click)="markAsPaid(payroll)" *ngIf="payroll.paid_status != 'PAID'">Pagar</a>
-				<a class="btn btn-primary mx-2" [routerLink]="['/edit-payroll', payroll.id]">{{ payroll.paid_status!="PAID" ? "Editar" : "Ver" }}</a>
+				<a class="btn btn-primary mx-1" (click)="markAsPaid(payroll)" *ngIf="payroll.paid_status != 'PAID' && rest.user_permission.add_payroll">Pagar</a>
+				<a class="btn btn-primary mx-2" [routerLink]="['/edit-payroll', payroll.id]">{{ payroll.paid_status!="PAID" && rest.user_permission.add_payroll ? "Editar" : "Ver" }}</a>
+				<a class="btn btn-primary mx-1" (click)="deletePayroll(payroll)" *ngIf="payroll.paid_status != 'PAID' && rest.user_permission.add_payroll">Eliminar</a>
 			</div>	
 		</div>
 	</div>
