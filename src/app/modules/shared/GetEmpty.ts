@@ -80,11 +80,15 @@ export class GetEmpty
 	static user_permission():User_Permission
 	{
 		return {
+			add_asistance:0,
 			add_bills:0,
 			add_commandas:0,
+			add_credit_sales:0,
 			add_items:0,
+			add_form:0,
 			add_marbetes:0,
 			add_payments:0,
+			add_payroll:0,
 			add_providers:0,
 			add_purchases:0,
 			add_requisition:0,
@@ -128,14 +132,20 @@ export class GetEmpty
 			quotes:0,
 			receive_shipping:0,
 			reports:0,
+			shipping_receive_type: 'CAPTURE_QTY',
+			show_tables:0,
 			send_shipping:0,
 			stocktake:0,
 			store_prices:0,
 			updated: new Date(),
 			updated_by_user_id: null,
 			user_id:0,
+			view_asistance:0,
 			view_commandas:0,
+			view_payroll:0,
+			view_responses:0,
 			view_stock:0,
+			view_stock_alerts:0
 		};
 	}
 

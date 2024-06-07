@@ -1484,11 +1484,15 @@ export interface User{
 	workshift_id:number | null;
 }
 export interface User_Permission{
+	add_asistance:number;
 	add_bills:number;
 	add_commandas:number;
+	add_credit_sales:number;
 	add_items:number;
+	add_form:number;
 	add_marbetes:number;
 	add_payments:number;
+	add_payroll:number;
 	add_providers:number;
 	add_purchases:number;
 	add_requisition:number;
@@ -1532,14 +1536,20 @@ export interface User_Permission{
 	quotes:number;
 	receive_shipping:number;
 	reports:number;
+	shipping_receive_type: 'VALIDATE' | 'CAPTURE_QTY';
+	show_tables:number;
 	send_shipping:number;
 	stocktake:number;
 	store_prices:number;
 	updated:Date;
 	updated_by_user_id:number | null;
-	user_id:number
+	user_id:number;
+	view_asistance:number;
 	view_commandas:number;
+	view_payroll:number;
+	view_responses:number;
 	view_stock:number;
+	view_stock_alerts:number;
 }
 
 export interface Work_Log
