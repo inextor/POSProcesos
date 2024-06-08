@@ -6,6 +6,7 @@ import { forkJoin,of,mergeMap, Observable, Subscription } from 'rxjs';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { RestSimple } from '../../modules/shared/services/Rest';
 import { RestService } from '../../modules/shared/services/rest.service';
+import { ModalComponent } from '../../components/modal/modal.component';
 
 
 interface CItem
@@ -17,7 +18,7 @@ interface CItem
 @Component({
 	selector: 'app-view-production-area',
 	standalone: true,
-	imports: [CommonModule,RouterModule],
+	imports: [CommonModule,RouterModule, ModalComponent],
 	templateUrl: './view-production-area.component.html',
 	styleUrl: './view-production-area.component.css'
 })
@@ -32,6 +33,7 @@ export class ViewProductionAreaComponent
 	citem_list:CItem[] = [];
 	process_list:Process[] = [];
 	production_area = GetEmpty.production_area();
+	show_production_area_item = false;
 	is_loading = false;
 
 	constructor(private rest:RestService,private route:ActivatedRoute,private router:Router)

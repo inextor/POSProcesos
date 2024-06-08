@@ -1,25 +1,25 @@
 <div class="container-fluid">
 	<div class="row align-items-end mx-0">
 		<div class="col">
-		<h1 class="my-3 text-capitalize">Areas de Producción: {{production_area.name }}</h1>
+		<h1 class="my-3 text-capitalize">Área de Producción: {{production_area.name }}</h1>
 		</div>
 	</div>
-	<div	class="card p-3 mt-3">
+	<!-- <div class="card p-3 mt-3">
 		<div class="table-responsive">
 			<table class="table table-sm table-nowrap mb-0">
 				<thead class="thead-light">
 					<tr>
 						<th>Nombre</th>
-						<th>Creacion</th>
+						<th>Creación</th>
 						<th class="text-end">Actualización</th>
 					</tr>
 				</thead>
 			</table>
 		</div>
-	</div>
-	<div class="row my-3">
+	</div> -->
+	<div class="row my-2">
 		<div class="col-9">
-			<h2>Procesos de producción</h2>
+			<h3>Procesos de producción</h3>
 		</div>
 		<div class="col-3 text-end">
 			<a class="btn btn-primary" [routerLink]="['/add-process',production_area.id]">Agregar Nuevo</a>
@@ -57,12 +57,12 @@
 		</div>
 	</div>
 
-	<div class="row my-3">
+	<div class="row my-2">
 		<div class="col-10">
-			<h2>Articulos de producción</h2>
+			<h3>Articulos de producción</h3>
 		</div>
 		<div class="col-2 text-end">
-			<a class="btn btn-primary">Asignar nuevo</a>
+			<a class="btn btn-primary" (click)="show_production_area_item = true" >Asignar nuevo</a>
 		</div>
 	</div>
 	<div class="card p-3 mt-3">
@@ -96,3 +96,7 @@
 		</div>
 	</div>
 </div>
+
+<app-modal [show]="show_production_area_item" (close)="show_production_area_item = false">
+	<!-- <app-save-production-area-item [production_area_id]="production_area.id" (saved)="show_production_area_item = false"></app-save-production-area-item> -->
+</app-modal>
