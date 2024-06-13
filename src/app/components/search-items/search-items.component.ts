@@ -1,11 +1,17 @@
-import { Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges } from '@angular/core';
+import { Component, ElementRef, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { filter } from 'rxjs/operators';
+import { debounceTime, filter, mergeMap } from 'rxjs/operators';
 import { Item, ItemInfo } from '../../modules/shared/RestModels';
 import { Rest } from '../../modules/shared/services/Rest';
 import { BaseComponent } from '../../modules/shared/base/base.component';
 import { ShortcutsService, KeyboardShortcutEvent } from '../../modules/shared/services/shortcuts.service';
 import { FormsModule } from '@angular/forms';
+import { Subject } from 'rxjs';
+
+interface CItemInfo extends ItemInfo
+{
+	display_category:boolean;
+}
 
 @Component({
   selector: 'app-search-items',
@@ -16,7 +22,9 @@ import { FormsModule } from '@angular/forms';
 })
 export class SearchItemsComponent extends BaseComponent implements OnInit,OnDestroy,OnChanges{
 
-  item_info_list:ItemInfo[] = [];
+	@ViewChild('item_search', { read: ElementRef })
+	item_search!: ElementRef;
+  	item_info_list:ItemInfo[] = [];
 	@Input() search_str:string = '';
 	@Output() search_strChange = new EventEmitter<string>();
 	@Input() store_id:number	= 0;
@@ -26,9 +34,10 @@ export class SearchItemsComponent extends BaseComponent implements OnInit,OnDest
 
 	selected_index = -1;
 
-  rest_item_info:Rest<Item, ItemInfo> = this.rest.initRest('item_info');
-
-	shortcuts:ShortcutsService | undefined;
+  	rest_item_info:Rest<Item, ItemInfo> = this.rest.initRest('item_info');
+	
+	search_subject = new Subject<string>();
+	shortcuts:ShortcutsService = new ShortcutsService();
 
 	ngOnChanges(changes: SimpleChanges): void
 	{
@@ -51,6 +60,48 @@ export class SearchItemsComponent extends BaseComponent implements OnInit,OnDest
 			})
 		).subscribe((evt)=>{
 			this.shortcutHandler(evt);
+		});
+
+		this.subs.sink = this.search_subject
+		.pipe
+		(
+			filter((x)=>
+			{
+				if( !x )
+				{
+					this.item_info_list = [];
+					return false;
+				}
+				return true;
+			}),
+			debounceTime(350),
+			mergeMap((response)=>
+			{
+				return this.rest_item_info.search
+				({
+					eq:{ status: 'ACTIVE'},
+					limit: 50,
+					search_extra:{ store_id:this.store_id, category_name: response }
+				})
+			})
+		)
+		.subscribe
+		({
+			next:(response)=>
+			{
+				this.item_info_list = response.data.map((ii)=>
+				{
+					let index = ii.category ? ii.item.name.trim().toLowerCase().indexOf(ii.category.name.trim().toLowerCase()) : -1;
+					ii.display_category = ii.category != null && ii.item.name.trim().toLowerCase().indexOf(ii.category.name.trim().toLowerCase()) >= 0;
+					return ii as CItemInfo;
+				});
+
+				this.selected_index = 0;
+			},
+			error:(error)=>
+			{
+
+			}
 		});
 	}
 
@@ -171,24 +222,7 @@ export class SearchItemsComponent extends BaseComponent implements OnInit,OnDest
 			return;
 		}
 
+		this.search_subject.next( ''+this.search_str );
 		this.search_strChange.emit( ''+this.search_str );
-
-		//,{store_id:this.rest.current_user.store_id }
-		this.subs.sink = this.rest_item_info.search({
-			eq:{ status: 'ACTIVE'},
-			//lk:{ name : event.target.value },
-			limit: 50,
-			search_extra:{store_id:this.store_id, category_name: event.target.value}
-		})
-		.subscribe((response)=>
-		{
-			for( let ii of response.data )
-			{
-				let index = ii.category ? ii.item.name.trim().toLowerCase().indexOf(ii.category.name.trim().toLowerCase()) : -1;
-				ii.display_category = ii.category !== null && ii.item.name.trim().toLowerCase().indexOf(ii.category.name.trim().toLowerCase()) >= 0;
-			}
-			this.item_info_list = response.data;
-			this.selected_index = 0;
-		});
 	}
 }

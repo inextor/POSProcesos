@@ -1,0 +1,6 @@
+
+.search_item.active
+{
+	background-color: var(--item-selected-background-color );
+	color: var(--item_selected_text_color );
+}
