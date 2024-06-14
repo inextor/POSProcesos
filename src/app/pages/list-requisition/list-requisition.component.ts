@@ -61,7 +61,7 @@ export class ListRequisitionComponent extends BaseComponent implements OnInit
 	new_production:Production = GetEmpty.production();
 	fecha_inicial:string = '';
 	fecha_final:string = '';
-	requisition_search:SearchObject<CRequisitionItem> = this.getEmptySearch();
+	search_requisition:SearchObject<CRequisitionItem> = this.getEmptySearch();
 	requsition_obj_list: CRequisitionItem[] = [];
 
 	total_pending:number = 0;
@@ -75,41 +75,41 @@ export class ListRequisitionComponent extends BaseComponent implements OnInit
 
 	ngOnInit()
 	{
-		this.route.queryParamMap.pipe
+		this.subs.sink = this.route.queryParamMap.pipe
 		(
 			mergeMap((param_map)=>
 			{
 				this.path = 'list-requisition';
 				this.is_loading = true;
 				let fields = ['required_by_store_id', 'end_timestamp', 'start_timestamp']
-				this.requisition_search = this.getSearch(param_map, [], fields)
+				this.search_requisition = this.getSearch(param_map, [], fields)
 				let start = new Date();
 				let end = new Date();
 
 				if( !param_map.has('search_extra.end_timestamp') )
 				{
 					end.setHours(23,59,59);
-					this.requisition_search.search_extra['end_timestamp'] = end;
+					this.search_requisition.search_extra['end_timestamp'] = end;
 				}
-				this.fecha_final = Utils.getLocalMysqlStringFromDate(this.requisition_search.search_extra['end_timestamp'] as Date);
+				this.fecha_final = Utils.getLocalMysqlStringFromDate(this.search_requisition.search_extra['end_timestamp'] as Date);
 
 				if( !param_map.has('search_extra.start_timestamp') )
 				{
 					start.setHours(0,0,0,0);
-					this.requisition_search.search_extra['start_timestamp'] = start;
+					this.search_requisition.search_extra['start_timestamp'] = start;
 			
 				}
-				this.fecha_inicial = Utils.getLocalMysqlStringFromDate(this.requisition_search.search_extra['start_timestamp'] as Date);
+				this.fecha_inicial = Utils.getLocalMysqlStringFromDate(this.search_requisition.search_extra['start_timestamp'] as Date);
 
 				if( !param_map.has('search_extra.required_by_store_id') )
 				{
-					this.requisition_search.search_extra['required_by_store_id'] = null;
+					this.search_requisition.search_extra['required_by_store_id'] = null;
 				}
 
 				return forkJoin
 				({
 					stores: this.rest_store.search({limit:999999, eq:{status:'ACTIVE', sales_enabled: 1}}),
-					requisition: this.rest.getReport('requisition_items',{required_by_store_id: this.requisition_search.search_extra['required_by_store_id'] , requested_to_store_id: this.rest.user?.store_id ,start_timestamp: this.requisition_search.search_extra['start_timestamp'], end_timestamp: this.requisition_search.search_extra['end_timestamp'], _sort: this.requisition_search.sort_order }),
+					requisition: this.rest.getReport('requisition_items',{required_by_store_id: this.search_requisition.search_extra['required_by_store_id'] , requested_to_store_id: this.rest.user?.store_id ,start_timestamp: this.search_requisition.search_extra['start_timestamp'], end_timestamp: this.search_requisition.search_extra['end_timestamp'], _sort: this.search_requisition.sort_order }),
 					users: this.rest_check_in.search({eq:{current:1},limit:999999}).pipe
 					(
 						mergeMap((response)=>
@@ -263,11 +263,11 @@ export class ListRequisitionComponent extends BaseComponent implements OnInit
 	{
 		if( fecha )
 		{
-			this.requisition_search.search_extra['start_timestamp'] = Utils.getUTCMysqlStringFromDate(new Date(fecha));
+			this.search_requisition.search_extra['start_timestamp'] = Utils.getUTCMysqlStringFromDate(new Date(fecha));
 		}
 		else
 		{
-			this.requisition_search.search_extra['start_timestamp'] = null;
+			this.search_requisition.search_extra['start_timestamp'] = null;
 		}
 	}
 
@@ -275,11 +275,11 @@ export class ListRequisitionComponent extends BaseComponent implements OnInit
 	{
 		if( fecha )
 		{
-			this.requisition_search.search_extra['end_timestamp']= Utils.getUTCMysqlStringFromDate(new Date(fecha));
+			this.search_requisition.search_extra['end_timestamp']= Utils.getUTCMysqlStringFromDate(new Date(fecha));
 		}
 		else
 		{
-			this.requisition_search.search_extra['end_timestamp'] = null;
+			this.search_requisition.search_extra['end_timestamp'] = null;
 		}
 	}
 

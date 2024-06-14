@@ -9,21 +9,21 @@
 		</div>
 	</div>
 	<div class="card p-3">
-		<form (submit)="search(requisition_search)" class="row">
+		<form (submit)="search(search_requisition)" class="row">
 			<div class="col-12 col-md-3">
 				<label>Sucursal</label>
-				<select name="store_id" class="form-control" [(ngModel)]="requisition_search.search_extra['required_by_store_id']">
+				<select name="store_id" class="form-control" [(ngModel)]="search_requisition.search_extra['required_by_store_id']">
 					<option [ngValue]="null">Todas</option>
 					<option *ngFor="let s of store_list" [value]="s.id">{{s.name | titlecase}}</option>
 				</select>
 			</div>
 			<div class="col-12 col-md-3">
 				<label>Fecha Inicial</label>
-				<input type="datetime-local" class="form-control" name="fecha_inicial" [(ngModel)]="fecha_inicial" (ngModelChange)="onDateChange($event,requisition_search.search_extra,'start_timestamp')">
+				<input type="datetime-local" class="form-control" name="fecha_inicial" [(ngModel)]="fecha_inicial" (ngModelChange)="onDateChange($event,search_requisition.search_extra,'start_timestamp')">
 			</div>
 			<div class="col-12 col-md-3">
 				<label>Fecha Final</label>
-				<input type="datetime-local" class="form-control" name="fecha_final" [(ngModel)]="fecha_final" (ngModelChange)="onDateChange($event,requisition_search.search_extra,'end_timestamp','',59)">
+				<input type="datetime-local" class="form-control" name="fecha_final" [(ngModel)]="fecha_final" (ngModelChange)="onDateChange($event,search_requisition.search_extra,'end_timestamp','',59)">
 			</div>
 			<div class="col-12 col-md-3">
 				<label>&nbsp;</label>
@@ -89,8 +89,8 @@
 		</div>
 		<hr>
 		<div class="row d-none d-md-flex fw-bold border-bottom align-items-end">
-			<div class="col-2 px-2" style="cursor: pointer;" (click)="sort('item_name', requisition_search)">Artículo</div>
-			<div class="col-2 text-end pointer" style="cursor: pointer;" (click)="sort('sum_qty', requisition_search)">Req/Pendientes</div>
+			<div class="col-2 px-2" style="cursor: pointer;" (click)="sort('item_name', search_requisition)">Artículo</div>
+			<div class="col-2 text-end pointer" style="cursor: pointer;" (click)="sort('sum_qty', search_requisition)">Req/Pendientes</div>
 			<div class="col-2 text-end">Agregar</div>
 			<div class="col-2 text-end">Merma</div>
 			<div class="col-2 text-end">Tipo de merma</div>
