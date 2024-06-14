@@ -21,7 +21,7 @@
 	</div>
 	<div class="row my-3">
 		<div class="col-6">
-			<input type="text" class="form-control" [placeholder]="search_by_code == true ? 'Escribe un Código' : 'Escribe un Nombre'" [(ngModel)]="search_str" (ngModelChange)="filterValidations($event)" > 
+			<input type="text" class="form-control" [placeholder]="search_by_code == true ? 'Escribe un Código' : 'Escribe un Nombre'" [(ngModel)]="search_str" (ngModelChange)="sortValidations($event)" > 
 		</div>
 		<div class="col-6">
 			<div class="form-check form-switch">

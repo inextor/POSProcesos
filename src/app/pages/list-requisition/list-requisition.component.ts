@@ -31,7 +31,6 @@ interface CProduction
 	production_merma_qty:number;
 }
 
-
 interface CRequisitionItem
 {
 	item: Item;
@@ -143,7 +142,7 @@ export class ListRequisitionComponent extends BaseComponent implements OnInit
 
 			//calculando el total de requeridos que proviene de cri.requisition.sum_qty
 			this.calculateTotalPending(this.requsition_obj_list);
-			this.filterValidations(this.search_str);
+			this.sortRequisitions(this.search_str);
 
 			this.user_list = response.users.data;
 
@@ -221,68 +220,31 @@ export class ListRequisitionComponent extends BaseComponent implements OnInit
 		this.show_add_production = false;
 		this.selected_crequistion_item = null;
 	}
-	filterValidations(str:string)
+	sortRequisitions(str:string)
 	{
 		if(str == '')
 		{
 			this.requsition_obj_list = this.requsition_obj_list.sort((a,b)=> a.item.name.localeCompare(b.item.name));
 			return;
 		}
-		if ( this.search_by_code )
+		const sort_by = this.search_by_code ? 'code' : 'name';
+		const sortFunction =  (a:CRequisitionItem,b:CRequisitionItem) => 
 		{
-			this.requsition_obj_list = this.requsition_obj_list.sort((a,b)=>
-			{
-				//si el item no tiene codigo, se va al final
-				if(a.item.code == null)
-				{
-					return 1;
-				}
-				if(b.item.code == null)
-				{
-					return -1;
-				}
-				let a_code = a.item.code.toLowerCase();
-				let b_code = b.item.code.toLowerCase();
-				let a_index = a_code.indexOf(str.toLowerCase());
-				let b_index = b_code.indexOf(str.toLowerCase());
-				if(a_index == -1 && b_index == -1)
-				{
-					return a_code.localeCompare(b_code);
-				}
-				if(a_index == -1)
-				{
-					return 1;
-				}
-				if(b_index == -1)
-				{
-					return -1;
-				}
-				return a_index - b_index;
-			});
-		}
-		else
-		{
-			this.requsition_obj_list = this.requsition_obj_list.sort((a,b)=>
-			{
-				let a_name = a.item.name.toLowerCase();
-				let b_name = b.item.name.toLowerCase();
-				let a_index = a_name.indexOf(str.toLowerCase());
-				let b_index = b_name.indexOf(str.toLowerCase());
-				if(a_index == -1 && b_index == -1)
-				{
-					return a_name.localeCompare(b_name);
-				}
-				if(a_index == -1)
-				{
-					return 1;
-				}
-				if(b_index == -1)
-				{
-					return -1;
-				}
-				return a_index - b_index;
-			})
-		}
+			const a_lower = a.item[sort_by]?.toLowerCase() || '';
+		    const b_lower = b.item[sort_by]?.toLowerCase() || '';
+			const a_category_name = `${a.requisition?.category_name?.toLowerCase() + ' ' || '' }` + a_lower;
+		    const b_category_name = `${b.requisition?.category_name?.toLowerCase() + ' ' || ''}` + b_lower;
+		    const a_index = a_category_name.indexOf(str.toLowerCase());
+		    const b_index = b_category_name.indexOf(str.toLowerCase());
+
+		    if (a_index === -1 && b_index === -1) {
+		      return a_category_name.localeCompare(b_category_name);
+		    }
+
+		    return a_index === -1 ? 1 : b_index === -1 ? -1 : a_index - b_index;
+		};
+
+		this.requsition_obj_list.sort(sortFunction);
 	}
 
 	selectText(evt: MouseEvent)
@@ -294,7 +256,7 @@ export class ListRequisitionComponent extends BaseComponent implements OnInit
 	changeSearch()
 	{
 		this.search_by_code = !this.search_by_code;
-		this.filterValidations(this.search_str);
+		this.sortRequisitions(this.search_str);
 	}
 
 	fechaInicialChange(fecha:string)
