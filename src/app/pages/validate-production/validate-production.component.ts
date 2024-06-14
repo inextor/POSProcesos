@@ -2,8 +2,8 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { BaseComponent } from '../../modules/shared/base/base.component';
 import { forkJoin, mergeMap, of } from 'rxjs';
-import { Category, Item, Production } from '../../modules/shared/RestModels';
-import { Rest, RestSimple } from '../../modules/shared/services/Rest';
+import { Category, Item, Production, Store } from '../../modules/shared/RestModels';
+import { Rest, RestSimple, SearchObject } from '../../modules/shared/services/Rest';
 import { ProductionInfo } from '../../modules/shared/Models';
 import { ShortDatePipe } from '../../modules/shared/pipes/short-date.pipe';
 import { FormsModule } from '@angular/forms';
@@ -42,10 +42,16 @@ export class ValidateProductionComponent extends BaseComponent
 {
 	rest_production_info:Rest<Production,ProductionInfo> = this.rest.initRest('production_info');
 	rest_production:RestSimple<Production> = this.rest.initRest('production');
+	//rest_production_area:RestSimple<ProductionArea> = this.rest.initRest('production_area');
+	rest_production_area:RestSimple<Store> = this.rest.initRest('store');
 	production_info_list:CProduction[] = [];
+	// production_area_list:ProductionArea[] = [];
+	production_area_list:Store[] = [];
 
 	search_start_date:string = '';
 	search_end_date:string = '';
+
+	search_production:SearchObject<Production> = this.getEmptySearch();
 
 	search_str:string = '';
 	search_by_code:boolean = false;
@@ -56,34 +62,58 @@ export class ValidateProductionComponent extends BaseComponent
 
 	ngOnInit()
 	{
-		this.subs.sink = this.route.paramMap.pipe
+		this.subs.sink = this.route.queryParamMap.pipe
 		(
-			mergeMap((param_map)=>
+			mergeMap((query_params)=>
 			{
-				let date = new Date();
-				this.search_end_date = Utils.getLocalMysqlStringFromDate( date );
-				date.setHours(0,0,0,0);
-				this.search_start_date = Utils.getLocalMysqlStringFromDate( date );
-				let production_area_id = parseInt( param_map.get('production_area_id')	as string ) as number;
-				return	this.rest_production_info.search({ eq:{ production_area_id }, ge:{ created: Utils.getDateFromLocalMysqlString(this.search_start_date) }, le:{ created:Utils.getDateFromLocalMysqlString(this.search_end_date) }, limit:9999 });
+				this.setTitle('Validar Producción');
+
+				this.path = 'validate-production';
+				this.is_loading = true;
+
+				let fields = ['store_id', 'created'];
+				this.search_production = this.getSearch(query_params, fields, []);
+				let start = new Date();
+				let end = new Date();
+
+				if (!query_params.has('le.created'))
+				{
+					end.setHours(23,59,59);
+					this.search_production.le.created = end
+				}
+				this.search_end_date = Utils.getLocalMysqlStringFromDate(this.search_production.le.created as Date);
+
+				if (!query_params.has('ge.created'))
+				{
+					start.setHours(0,0,0,0);
+					this.search_production.ge.created = start
+				}
+				this.search_start_date = Utils.getLocalMysqlStringFromDate(this.search_production.ge.created as Date);
+
+				if(!query_params.has('eq.store_id'))
+				{
+					this.search_production.eq.store_id = this.rest.user?.store_id as number;
+				}
+
+				let search_production_area:SearchObject<Store> = this.getEmptySearch();
+
+				search_production_area.limit = 9999;
+				//search_production_area.eq.store_id = this.rest.user?.store_id as number;
+				search_production_area.eq.production_enabled = 1;
+
+				return forkJoin({
+					production_area: this.rest_production_area.search(search_production_area),
+					production_info: this.rest_production_info.search(this.search_production)	
+				})
 			}),
 		)
 		.subscribe((response)=>
 		{
-			this.production_info_list = this.buildProductionInfoList(response.data);
+			this.is_loading = false;
+			this.production_info_list = this.buildProductionInfoList(response.production_info.data);
+			this.production_area_list = response.production_area.data;
 			//console.log(this.production_info_list);
 			this.sortValidations('');
-		})
-	}
-
-	searchValidations()
-	{
-		let start = Utils.getDateFromLocalMysqlString( this.search_start_date );
-		let end = Utils.getDateFromLocalMysqlString( this.search_end_date );
-		this.subs.sink = this.rest_production_info.search({ ge:{ created:start }, le:{ created:end }, limit:9999})
-		.subscribe((response)=>
-		{
-			this.production_info_list = this.buildProductionInfoList(response.data);
 		})
 	}
 
@@ -192,6 +222,7 @@ export class ValidateProductionComponent extends BaseComponent
 		{
 			return this.showError('no puede ser null');
 		}	
+		//this is not ok, should be just one call, need to find a better way to manage producion validation
 		this.subs.sink = this.confirmation.showConfirmAlert(pi,'Validar?' ,'¿Estás seguro de validar la producción?')
 		.subscribe((response)=>
 		{
