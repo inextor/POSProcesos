@@ -5,18 +5,18 @@
 		</div>
 		<hr>
 		<ul class="side-nav flex-column mb-auto">
-			<!--li class="nav-item">
-				<a class="nav-link text-white" aria-current="page" routerLink="list-production-area" routerLinkActive="active">
-					<svg class="bi me-2" width="16" height="16"><use xlink:href="#home"/></svg>
+			<!-- <li *ngIf="rest.user_permission.add_items" >
+				<a class="nav-link" routerLink="list-production-area" routerLinkActive="active">
+					<svg xmlns="http://www.w3.org/2000/svg" width="1.3em" height="1.3em" viewBox="0 0 24 24"><path fill="currentColor" d="M9 2v6h2v3H5c-1.11 0-2 .89-2 2v3H1v6h6v-6H5v-3h6v3H9v6h6v-6h-2v-3h6v3h-2v6h6v-6h-2v-3c0-1.11-.89-2-2-2h-6V8h2V2z"/></svg>
 					Areas de producción
 				</a>
-			</li>
-			<li>
-				<a class="nav-link text-white" [routerLink]="['list-proccess']">
+			</li> -->
+			<!-- <li>
+				<a class="nav-link" [routerLink]="['list-proccess']">
 					<svg class="bi me-2" width="16" height="16"><use xlink:href="#speedometer2"/></svg>
 					Procedimientos
 				</a>
-			</li -->
+			</li> -->
 			<li *ngIf="rest.user_permission.add_requisition || rest.user_permission.global_requisition">
 				<a class="nav-link" routerLink="list-requisition" routerLinkActive="active">
 					<i class="svg-icon">
@@ -80,14 +80,6 @@
 					</i>
 					<span>Variables de pago</span>
 				</a>
-			</li>
-			<hr>
-			<li *ngIf="rest.user">
-				<span class="mx-4">Area de producción</span>
-				<div class="nav-link">
-					<svg class="bi me-1" xmlns="http://www.w3.org/2000/svg" width="1.6em" height="1.6em" viewBox="0 0 24 24"><path fill="currentColor" d="M20 4H4v2h16zm1 10v-2l-1-5H4l-1 5v2h1v6h10v-6h4v6h2v-6zm-9 4H6v-4h6z"/></svg>
-					<span>{{store_name}}</span>
-				</div>
 			</li>
 		</ul>
 		<div class="w-100 d-flex text-center justify-content-center" style="font-size:12px;">

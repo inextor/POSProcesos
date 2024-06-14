@@ -21,7 +21,6 @@ import { BuildInfo } from './modules/shared/BuildInfo';
 export class AppComponent implements OnInit {
 	title = 'POSProcesos';
 	store_name:string = '';
-	rest_store:RestSimple<Store> = this.rest.initRestSimple('store',['id','name']);
 
 	build_info = BuildInfo;
 
@@ -32,19 +31,6 @@ export class AppComponent implements OnInit {
 
 	ngOnInit(): void {
 		
-		this.rest_store.get(this.rest.user?.store_id).subscribe(
-			(response) => {
-				if( response.name)
-				{
-					this.store_name = response.name;
-				}
-				else
-				{
-					this.store_name = 'No definido';
-				}
-			}, (error) => {
-				this.store_name = 'No definido';
-			});
 	}
 
 	keyHandler(kse:KeyboardShortcutEvent)
@@ -65,12 +51,5 @@ export class AppComponent implements OnInit {
 				this.confirmation.onCancel();
 			}
 		}
-	}
-
-	logout()
-	{
-		this.rest.show_menu = false;
-		this.router.navigate(['/login']);
-		this.rest.logout();
 	}
 }
