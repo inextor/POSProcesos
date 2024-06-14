@@ -4,7 +4,7 @@ import { BaseComponent } from '../../modules/shared/base/base.component';
 import { Category, Item, ItemInfo, ItemStockInfo, Production, Requisition, Requisition_Item, Serial, SerialInfo, SerialItemInfo, Shipping, Stock_Record, Store } from '../../modules/shared/RestModels';
 import { RequisitionInfo, RequisitionItemInfo, ShippingInfo, ShippingItemInfo } from '../../modules/shared/Models';
 import { Rest, RestSimple, SearchObject } from '../../modules/shared/services/Rest';
-import { forkJoin, from, mergeMap, of } from 'rxjs';
+import { filter, forkJoin, from, mergeMap, of } from 'rxjs';
 import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { GetEmpty } from '../../modules/shared/GetEmpty';
@@ -400,8 +400,11 @@ export class SaveShippingComponent extends BaseComponent
 		}
 	}
 
-	saveShipping(_evt:any)
+	saveShipping(_evt:Event)
 	{
+		_evt.preventDefault();
+		this.is_loading = true;
+
 		let insufficient_stock:boolean = false;
 
 		this.shipping_info?.items.forEach((citem)=>
@@ -419,52 +422,55 @@ export class SaveShippingComponent extends BaseComponent
 			return;
 		}
 
-		this.is_loading = true;
+		this.confirmation.showConfirmAlert(this.shipping_info,'Confirmar envío', '¿Desea confirmar el envío?')
+		.pipe(filter((response)=>response.accepted))
+		.subscribe((response)=>
+		{
+			if( this.shipping_info.shipping?.id	)
+			{
+				this.shipping_info.shipping.received_by_user_id = this.rest.user?.id;
+				this.subs.sink	= this.rest_shipping_info.update( this.shipping_info )
+				.subscribe({
+					next: (response) =>
+					{
+						this.router.navigate(['/list-shipping']);
+						this.showSuccess('El envío se actualizo exitosamente');
+					},
+					error: (error)=>
+					{
+						this.showError(error)
+					}
+				});
+			}
+			else
+			{
+				this.shipping_info.shipping.created_by_user_id = this.rest.user?.id;
+				this.shipping_info.shipping.updated = new Date();
+				this.shipping_info.shipping.updated_by_user_id = this.rest.user?.id;
+				this.shipping_info.shipping.received_by_user_id = this.rest.user?.id;
+				this.subs.sink	= this.rest_shipping_info.create( this.shipping_info )
+				.pipe
+				(
+					mergeMap((response)=>
+					{
+						return this.rest.update('markShippingAsSent',{shipping_id:response.shipping.id});
+					})
+				)
+				.subscribe({
+					next: (response)=>
+					{
+						this.showSuccess('El envío se guardo exitosamente');
+						this.router.navigate(['/list-shipping']);
+					},
+					error: (error)=>
+					{
+						this.showError(error)
+					}
+				});
+			}
+		});
 
-		if( this.shipping_info.shipping?.id	)
-		{
-			this.shipping_info.shipping.received_by_user_id = this.rest.user?.id;
-			this.subs.sink	= this.rest_shipping_info.update( this.shipping_info )
-			.subscribe({
-				next: (response) =>
-				{
-					this.is_loading = false;
-					this.router.navigate(['/list-shipping']);
-					this.showSuccess('El envío se actualizo exitosamente');
-				},
-				error: (error)=>
-				{
-					this.showError(error)
-				}
-			});
-		}
-		else
-		{
-			this.shipping_info.shipping.created_by_user_id = this.rest.user?.id;
-			this.shipping_info.shipping.updated = new Date();
-			this.shipping_info.shipping.updated_by_user_id = this.rest.user?.id;
-			this.shipping_info.shipping.received_by_user_id = this.rest.user?.id;
-			this.subs.sink	= this.rest_shipping_info.create( this.shipping_info )
-			.pipe
-			(
-				mergeMap((response)=>
-				{
-					return this.rest.update('markShippingAsSent',{shipping_id:response.shipping.id});
-				})
-			)
-			.subscribe({
-				next: (response)=>
-				{
-					this.is_loading = false;
-					this.showSuccess('El traspaso se guardo exitosamente');
-					this.router.navigate(['/list-shipping']);
-				},
-				error: (error)=>
-				{
-					this.showError(error)
-				}
-			});
-		}
+		this.is_loading = false;
 	}
 
 	onItemSelected(item_info:ItemInfo):void
