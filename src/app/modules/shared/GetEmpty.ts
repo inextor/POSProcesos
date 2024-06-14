@@ -1,5 +1,5 @@
 import { ShippingInfo } from "./Models";
-import { User_Permission,Preferences,Production_Area,Process, Production, Shipping, Store, Payroll, Payroll_Concept_Value, Work_log_rules, User_extra_fields, User } from "./RestModels";
+import { User_Permission,Preferences,Production_Area,Process, Production, Shipping, Store, Payroll, Payroll_Concept_Value, Work_log_rules, User_extra_fields, User, Production_Area_Item } from "./RestModels";
 
 export class GetEmpty
 {
@@ -248,8 +248,9 @@ export class GetEmpty
 		return {
 			created: new Date(),
 			id:0,
-		store_id: 0,
+			store_id: 0,
 			name:'',
+			status:'ACTIVE',
 			updated: new Date(),
 		}
 	}
@@ -271,6 +272,18 @@ export class GetEmpty
 			status: 'ACTIVE',
 			updated: new Date(),
 			verified_by_user_id: null,
+		}
+	}
+
+	static production_area_item():Production_Area_Item
+	{
+		return {
+			created: new Date(),
+			id:0,
+			item_id: 0,
+			production_area_id: 0,
+			status: 'ACTIVE',
+			updated: new Date(),
 		}
 	}
 

@@ -979,6 +979,7 @@ export interface Production_Area{
 	id:number;
 	name:string;
 	store_id:number;
+	status:'ACTIVE'|'DELETED';
 	updated:Date;
 }
 export interface Production_Area_Item{
@@ -986,6 +987,7 @@ export interface Production_Area_Item{
 	id:number;
 	item_id:number
 	production_area_id:number
+	status:'ACTIVE'|'DELETED';
 	updated:Date;
 }
 export interface Purchase{
