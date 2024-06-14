@@ -29,7 +29,7 @@ export class BaseComponent	implements OnDestroy
 	public pages:number[] = [];
 	public page_size:number = 50;
 
-	constructor(public rest:RestService, public route:ActivatedRoute,public router:Router, public location:Location,public title_service:Title,public confirmation:ConfirmationService)
+	constructor(public rest:RestService, public route:ActivatedRoute,public router:Router, public location:Location,public title_service:Title,public confirmation:ConfirmationService, public titleService: Title)
 	{
 
 	}
@@ -80,6 +80,11 @@ export class BaseComponent	implements OnDestroy
 	showWarning(msg:string)
 	{
 		this.rest.showWarning( msg );
+	}
+
+	public setTitle(newTitle: string)
+	{
+		this.titleService.setTitle(newTitle);
 	}
 
 	getQueryParamObservable():Observable<ParamMap[]>
