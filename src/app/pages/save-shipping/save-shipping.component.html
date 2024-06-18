@@ -23,11 +23,17 @@
 				</div>
 				<div class="col-6 col-md-3 form-group">
 					<label class="">Sucursal Origen</label>
-					<input name="shipping_from_store" [value]="from_store?.name" class="form-control" disabled>
+					<select name="shipping_from_store" [(ngModel)]="from_store_id" class="form-control" (ngModelChange)="onFromStoreChange($event)" [disabled]="shipping_info.items.length > 0" required>
+						<option value="">Selecciona una sucursal</option>
+						<option *ngFor="let store of store_list" [value]="store.id">{{store.name}}</option>
+					</select>
 				</div>
 				<div class="col-6 col-md-3 form-group">
 					<label class="">Sucursal Destino</label>
-					<input name="shipping_to_store" [value]="to_store?.name" class="form-control" disabled>
+					<select name="shipping_to_store" [(ngModel)]="to_store_id" class="form-control" (ngModelChange)="onToStoreChange($event)" required>
+						<option value="">Selecciona una sucursal</option>
+						<option *ngFor="let store of store_list" [value]="store.id">{{store.name}}</option>
+					</select>
 				</div>
 			</div>
 			<div class="py-3 text-end">
@@ -42,7 +48,7 @@
 				<h4>Artículos de Requisición</h4>
 			</div>
 			<div class="col-md-3 col-6">
-				<input type="date" name="requisitions_timestamp" [(ngModel)]="fecha_requisitions" class="form-control" (ngModelChange)="onFechaRequisitionsChange($event)" required>
+				<input type="date" name="requisitions_timestamp" [(ngModel)]="fecha_requisitions" class="form-control" (ngModelChange)="requisitionSearch($event, $event, to_store_id)" required>
 			</div>
 			<div class="col-6 text-end">
 				<button type="button" (click)="addRequired($event)" class="btn btn-primary">Agregar Disponibles</button>
