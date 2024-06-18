@@ -40,7 +40,7 @@ interface CRequisitionInfo extends RequisitionInfo
 })
 export class SaveShippingComponent extends BaseComponent
 {
-	//PENDIENTE: REFACTORIZAR
+	//PENDIENTE: REFACTORIZAR, DONE?
 
 	rest_requisition_info:Rest<Requisition,RequisitionInfo> = this.rest.initRest('requisition_info');
 	rest_shipping_info:Rest<Shipping,ShippingInfo> = this.rest.initRest('shipping_info');
@@ -48,167 +48,96 @@ export class SaveShippingComponent extends BaseComponent
 	rest_store:Rest<Store,Store> = this.rest.initRest('store');
 	rest_item_stock:Rest<Item, ItemStockInfo> = this.rest.initRest('stock_by_item');
 	rest_serial_info:Rest<Serial,SerialInfo> = this.rest.initRest('serial_info');
-	rest_category:Rest<Category,Category> = this.rest.initRest('category');
-	crequisition_info: CRequisitionInfo | null = null;
-	to_store:Store | null = null;
-	from_store:Store | null = null;
 
+	crequisition_info: CRequisitionInfo | null = null;
 	requisition_info:RequisitionInfo | null = null;
 	item_list:ItemStockInfo[] = [];
+	store_list:Store[] = [];
+
+	to_store_id:number | null = 0;
+	from_store_id:number = 0;
+	fecha_requisitions:string = '';
+	shipping_info:ShippingInfo = GetEmpty.shipping_info();
+
 	serial_search:string = '';
 	qty_by_item_id:Record<number,number> = {};
-	fecha_requisitions:string = '';
-
 	serial_list:SerialItemInfo[] = [];
 	tmp_serial_list: SerialItemInfo[] = [];
 	show_serial_numbers: boolean = false;
-	shipping_info:ShippingInfo = GetEmpty.shipping_info();
 	
 	ngOnInit()
 	{
-		this.subs.sink = this.route.paramMap.subscribe( params =>
-		{
-			this.is_loading = true;
-			let to_store_id = parseInt(params.get('store_id') || '');
-			let from_store_id = Number(this.rest.user?.store_id || '');
-			//se usara un segundo parametro para obtener informacion del envio (en caso de que ya haya sido creado)
-			let shipping_id = params.has('shipping_id') ? parseInt(params.get('shipping_id') ?? '') : null;
-			
-			let start = new Date();
-			let end = new Date();
-			start.setHours(0,0,0,0);
-			end.setHours(23,59,59);
+		this.subs.sink = this.route.paramMap.pipe
+		(
+			mergeMap((params)=>
+			{
 
-			this.fecha_requisitions = Utils.getLocalMysqlStringFromDate(start).split(' ')[0];
+				this.is_loading = true;
+				this.to_store_id = parseInt(params.get('store_id') as string) || null;
+				this.from_store_id = parseInt(this.rest.user?.store_id?.toString() || '');
+				let shipping_id = params.has('id') ? parseInt(params.get('id') ?? '') : null;
+				console.log('shipping_id', shipping_id);
+				console.log('to_store_id', this.to_store_id);
+				console.log('from_store_id', this.from_store_id);
+				
+				let start = new Date();
+				let end = new Date();
+				start.setHours(0,0,0,0);
+				end.setHours(23,59,59);
+	
+				this.fecha_requisitions = Utils.getLocalMysqlStringFromDate(start).split(' ')[0];
+	
+				let empty:ShippingInfo = {
+					shipping: {
+						from_store_id: this.from_store_id,
+						to_store_id: this.to_store_id,
+						date: Utils.getLocalMysqlStringFromDate(start).split(' ')[0],
+					},
+					items: [],
+				};
 
-			let empty:ShippingInfo = {
-				shipping: {
-					from_store_id: from_store_id,
-					to_store_id: to_store_id,
-				},
-				items: [],
-			};
+				let shipping_info_obs = shipping_id 
+					? this.rest_shipping_info.get(shipping_id) 
+					: of(empty);
 
-			//obteniendo informacion de tienda, categorias (para construir los CItems), y las requisiciones_info
-			//las requisiciones seran las que sean requeridas a la tienda del usuario y requeridas por la tienda de los parametros
-			//traer tambien las producciones, solo que tendremos que traer los de los items de las requisiciones
-			this.subs.sink = forkJoin
-			({
-				shipping_info: shipping_id != 0 ? this.rest_shipping_info.get(shipping_id) : of( empty ),
-				to_store : this.rest_store.get(to_store_id),
-				from_store: this.rest_store.get(from_store_id),
-				category: this.rest_category.search({limit:99999,sort_order:['name_ASC']}),
-				requisitions: this.rest_requisition_info.search({eq:{required_by_store_id: to_store_id, requested_to_store_id: from_store_id, status: 'PENDING'}, ge:{required_by_timestamp:Utils.getUTCMysqlStringFromDate(start)}, le: {required_by_timestamp: Utils.getUTCMysqlStringFromDate(end)} ,limit:9999})
-			})
-			.pipe
-			(
-				//las requisitions ya tienen todas las requisition_items de todas las requisiciones
-				//ahora hay que traer las producciones, asi que haremos un un arreglo de ids de los items de las requisiciones
-				mergeMap((response)=>
+				if (!this.to_store_id)
 				{
-					let ids:number[] = []
-					//comprobar que existan requisiciones, recordando que podemos hacer envios sin requisiciones
-					if( response.requisitions.total != 0 )
-					{
-						ids = response.requisitions.data.map((r)=>r.items.map((ri)=>ri.item.id)).flat();
-					}
-					//tambien necesitamos el stock de los items en la sucursal de produccion
-					//podemos sacarlo con los mismos ids
-					//por lo pronto no se adjuntara la cantidad de enviados, o se podria, pero habria mucha inconsistencia de datos si hay mas personas trabajando en el
-					//tendran que ser todos los enviados previamente, despues de todo esto es solo para tener una nocion, no tendra nada que ver en el shipping_item
 					return forkJoin
 					({
-						shipping_info: of( response.shipping_info ),
-						to_store: of( response.to_store),
-						from_store: of( response.from_store ),
-						category: of( response.category ),
-						shippings: ids.length > 0 ? this.rest_shipping_info.search({ csv:{ids}, eq:{from_store_id: Number(response.from_store.id), to_store_id: Number(response.to_store.id), date: this.fecha_requisitions },limit:9999}) : of( null ),
-						requisitions: ids.length > 0 ? of( response.requisitions ) : of( null ),
-						production: ids.length > 0 ? this.rest_production.search({csv:{id:ids}}) : of( null ),
-						item_stock: ids.length > 0 ? this.rest_item_stock.search({search_extra:{store_id: this.rest.user?.store_id as number},csv:{id:ids}}) : of( null ),
+						shipping_info: of( empty ),
+						stores: this.rest_store.search({limit:99999}),
 					})
-				}),
-				mergeMap((response)=>
-				{
-					//se empieza a construir el crquisition info si es que se encontraron requisiciones
-					if( response.requisitions )
-					{
-						let requisitions_info_list = response.requisitions.data;
-
-						//obtener en un solo arreglo todos los requisition_items
-						let tmp_ri = requisitions_info_list?.map((r)=>r.items).flat();
-						//let ri = requisitions_info_list?.map((r)=>r.items).flat();
-
-						let ri_by_item_id = new Map();
-						let ri = tmp_ri.filter((ri:RequisitionItemInfo)=>{
-							if(ri_by_item_id.has( ri.item.id ) )
-							{
-								let ri2 = ri_by_item_id.get( ri.requisition_item.item_id );
-								ri2.requisition_item.qty += ri.requisition_item.qty;
-								return false;
-							}
-							ri_by_item_id.set(ri.requisition_item.item_id, ri );
-							return true;
-						});
-
-
-						let shippings = response.shippings?.data;
-						let item_stock_list = response.item_stock?.data;
-						let productions_list = response.production?.data;
-
-						//se construye el crquisition_info
-						this.initializeCRequisitionInfo(ri, shippings, item_stock_list, productions_list, response.to_store);
-						console.log('requisitions found')
-					}
-
-					return forkJoin
-					({
-						category: of( response.category ),
-						to_store: of( response.to_store ),
-						from_store: of( response.from_store ),
-						shipping_info: of( response.shipping_info ),
-					});
-				})
-			)
-			.subscribe
-			({
-				next: (responses)=>
-				{
-					this.to_store = responses.to_store;
-					this.from_store = responses.from_store;
-
-					this.shipping_info = responses?.shipping_info ?? GetEmpty.shipping_info();
-					this.shipping_info.shipping.date = Utils.getLocalMysqlStringFromDate(start).split(' ')[0];
-
-					console.log('shipping_info', this.shipping_info);
-					this.is_loading = false;
-				},
-				error: (error)=>
-				{
-					this.showError(error);
-					this.is_loading = false;
 				}
-			});
+
+				return forkJoin
+				({
+					stores: this.rest_store.search({limit:99999}),
+					shipping_info: shipping_info_obs,
+				})
+			})
+		)
+		.subscribe
+		({
+			next: (responses)=>
+			{
+				this.shipping_info = responses.shipping_info;
+				this.store_list = responses.stores.data;
+				if ( this.to_store_id)
+				{
+					this.requisitionSearch(new Event(''), this.fecha_requisitions, this.to_store_id);
+				}
+				this.is_loading = false;
+			},
+			error: (error)=>
+			{
+				this.showError(error);
+				this.is_loading = false;
+			}
 		});
 	}
 
 	initializeCRequisitionInfo(requisition_items_info:RequisitionInfo['items'], shipping_info_list:ShippingInfo[] = [], item_stock_info_list:ItemStockInfo[] = [], production_list:Production[] = [], required_by_store:Store)
 	{
-
-		// let filtered_items = requisition_items_info?.reduce((p, c)=>
-		// {
-		//	let index = p.findIndex((x)=>x.item.id == c.item.id);
-		//	if( index == -1 )
-		//	{
-		//		p.push(c);
-		//	}
-		//	else
-		//	{
-		//		p[index].requisition_item.qty += c.requisition_item.qty;
-		//	}
-		//	return p;
-		// }, [] as RequisitionItemInfo[]);
-
 		let citems:CItem[] = requisition_items_info?.map((rii)=>
 		{
 			let item_stock_info = item_stock_info_list?.find((x)=>x.item.id == rii.item.id);
@@ -260,17 +189,55 @@ export class SaveShippingComponent extends BaseComponent
 		console.log('crequisition_info', this.crequisition_info);
 	}
 
-	//vuelve a buscar las requisiciones para volver a inicializar el crequisition_info
-	onFechaRequisitionsChange(fecha: string)
+	//NO SIRVEEEEE
+	onFromStoreChange(evt:Event)
 	{
+		let target = evt.target as HTMLSelectElement;
+		this.shipping_info.shipping.from_store_id = parseInt(target.value);
+		this.requisitionSearch(evt, this.fecha_requisitions, this.to_store_id);
+	}
+
+	onToStoreChange(evt:Event)
+	{
+		let target = evt.target as HTMLSelectElement;
+		this.shipping_info.shipping.to_store_id = parseInt(target.value);
+		this.requisitionSearch(evt, this.fecha_requisitions, this.to_store_id);
+	}
+
+	//vuelve a buscar las requisiciones para volver a inicializar el crequisition_info
+	requisitionSearch(evt:Event,fecha: string,to_store_id: number | null)
+	{
+		
+		if( !to_store_id  || !this.from_store_id)
+		{
+			this.crequisition_info = null;
+			return;
+		}
+
+		let store = this.store_list.find((s)=>s.id == to_store_id);
+		if( !store )
+		{
+			this.crequisition_info = null;
+			this.showError('No se encontro la tienda');
+			return;
+		}
+		
+		this.is_loading = true;
+		this.showWarning('Buscando requisiciones...');
+
 		let start = new Date(fecha + 'T00:00:00');
 		let end = new Date(fecha + 'T23:59:59');
-		
-		//solving null for to_store
-		let to_store_id = this.to_store?.id || 0;
 
+		let search_requisition:SearchObject<Requisition> = this.getEmptySearch();
+		search_requisition.eq.required_by_store_id = to_store_id;
+		search_requisition.eq.requested_to_store_id = this.from_store_id;
+		search_requisition.eq.status = 'PENDING';
+		search_requisition.ge.required_by_timestamp = Utils.getUTCMysqlStringFromDate(start);
+		search_requisition.le.required_by_timestamp = Utils.getUTCMysqlStringFromDate(end);
+		search_requisition.limit = 9999;
+		
 		this.subs.sink = forkJoin({
-			requisitions: this.rest_requisition_info.search({eq:{required_by_store_id: to_store_id, requested_to_store_id: this.from_store?.id, status: 'PENDING'}, ge:{required_by_timestamp:Utils.getUTCMysqlStringFromDate(start)}, le: {required_by_timestamp: Utils.getUTCMysqlStringFromDate(end)} ,limit:9999})
+			requisitions: this.rest_requisition_info.search(search_requisition)
 		}).pipe
 		(
 			mergeMap((response)=>
@@ -284,19 +251,18 @@ export class SaveShippingComponent extends BaseComponent
 
 				return forkJoin
 				({
-					shippings: ids.length > 0 ? this.rest_shipping_info.search({ csv:{ids}, eq:{from_store_id: Number(this.from_store?.id), to_store_id: Number(this.to_store?.id), date: this.fecha_requisitions },limit:9999}) : of( null ),
+					shippings: ids.length > 0 ? this.rest_shipping_info.search({ csv:{ids}, eq:{from_store_id: Number(this.from_store_id), to_store_id: Number(this.to_store_id), date: this.fecha_requisitions },limit:9999}) : of( null ),
 					requisitions: ids.length > 0 ? of( response.requisitions ) : of( null ),
 					production: ids.length > 0 ? this.rest_production.search({csv:{id:ids}}) : of( null ),
 					item_stock: ids.length > 0 ? this.rest_item_stock.search({search_extra:{store_id: this.rest.user?.store_id as number},csv:{id:ids}}) : of( null ),
 				})
 			})
 
-		).subscribe({
+		)
+		.subscribe({
 			next: (response)=>
-			{
-				this.is_loading = false;
-				
-				if( response.requisitions && this.to_store )
+			{	
+				if( response.requisitions && this.to_store_id )
 				{
 					let requisitions_info_list = response.requisitions.data;
 
@@ -318,13 +284,21 @@ export class SaveShippingComponent extends BaseComponent
 					let item_stock_list = response.item_stock?.data;
 					let productions_list = response.production?.data;
 
-					this.initializeCRequisitionInfo(ri, shippings, item_stock_list, productions_list, this.to_store);
+					//double check??
+					if( !store )
+					{
+						this.showError('No se encontro la tienda');
+						return;
+					}
+
+					this.initializeCRequisitionInfo(ri, shippings, item_stock_list, productions_list, store);
 					console.log('requisitions found')
 				}
 				else
 				{
 					this.crequisition_info = null;
 				}
+				this.is_loading = false;
 			},
 			error: (error)=>
 			{
@@ -374,7 +348,7 @@ export class SaveShippingComponent extends BaseComponent
 
 			let available:number = item_info.records.reduce((p,stock_record:Stock_Record)=>
 			{
-				if( stock_record.store_id == this.shipping_info.shipping.from_store_id )
+				if( stock_record.store_id == this.from_store_id )
 					return stock_record.qty;
 				return p;
 			},0);
@@ -448,6 +422,9 @@ export class SaveShippingComponent extends BaseComponent
 				this.shipping_info.shipping.updated = new Date();
 				this.shipping_info.shipping.updated_by_user_id = this.rest.user?.id;
 				this.shipping_info.shipping.received_by_user_id = this.rest.user?.id;
+				this.shipping_info.shipping.from_store_id = this.from_store_id;
+				this.shipping_info.shipping.to_store_id = this.to_store_id;
+				console.log('shipping_info', this.shipping_info);
 				this.subs.sink	= this.rest_shipping_info.create( this.shipping_info )
 				.pipe
 				(
@@ -481,9 +458,9 @@ export class SaveShippingComponent extends BaseComponent
 			return;
 		}
 
-		if( !this.shipping_info.shipping.from_store_id )
+		if( !this.from_store_id && !this.to_store_id )
 		{
-			this.showError('Por favor selecciona la sucursal origen para poder enviar Articulos con numeros de serie');
+			this.showError('Selecciona ambas sucursales antes de agregar productos');
 			return
 		}
 
@@ -491,7 +468,7 @@ export class SaveShippingComponent extends BaseComponent
 
 
 		search_obj.eq.item_id = item_info.item.id;
-		search_obj.eq.store_id = this.shipping_info.shipping.from_store_id;
+		search_obj.eq.store_id = this.from_store_id;
 		search_obj.eq.status = 'ACTIVE';
 		search_obj.limit = 99999999;
 
