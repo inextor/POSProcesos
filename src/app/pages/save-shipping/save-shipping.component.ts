@@ -189,19 +189,22 @@ export class SaveShippingComponent extends BaseComponent
 		console.log('crequisition_info', this.crequisition_info);
 	}
 
-	//NO SIRVEEEEE
-	onFromStoreChange(evt:Event)
+	onFromStoreChange(store_id:number)
 	{
-		let target = evt.target as HTMLSelectElement;
-		this.shipping_info.shipping.from_store_id = parseInt(target.value);
-		this.requisitionSearch(evt, this.fecha_requisitions, this.to_store_id);
+		if ( store_id )
+		{
+			this.shipping_info.shipping.from_store_id = store_id;
+			this.requisitionSearch(new Event(''), this.fecha_requisitions, this.to_store_id);
+		}
 	}
 
-	onToStoreChange(evt:Event)
+	onToStoreChange(store_id:number)
 	{
-		let target = evt.target as HTMLSelectElement;
-		this.shipping_info.shipping.to_store_id = parseInt(target.value);
-		this.requisitionSearch(evt, this.fecha_requisitions, this.to_store_id);
+		if ( store_id )
+		{
+			this.shipping_info.shipping.to_store_id = store_id;
+			this.requisitionSearch(new Event(''), this.fecha_requisitions, store_id);
+		}
 	}
 
 	//vuelve a buscar las requisiciones para volver a inicializar el crequisition_info
