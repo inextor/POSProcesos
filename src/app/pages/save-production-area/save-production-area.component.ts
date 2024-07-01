@@ -47,11 +47,21 @@ export class SaveProductionAreaComponent extends BaseComponent implements OnInit
 
 	save(evt:Event)
 	{
+		this.is_loading = true;
 		evt.preventDefault();
 		evt.stopPropagation();
 
-		this.is_loading = true;
-
+		if( this.production_area.id )
+		{
+			this.production_area_rest.update( this.production_area )
+			.subscribe((production_area)=>
+			{
+				this.is_loading = false;
+				this.location.back();
+			});
+			return;
+		}
+		
 		this.production_area_rest
 		.create( this.production_area )
 		.subscribe((production_area)=>
@@ -59,5 +69,6 @@ export class SaveProductionAreaComponent extends BaseComponent implements OnInit
 			this.is_loading = false;
 			this.location.back();
 		})
+		
 	}
 }
