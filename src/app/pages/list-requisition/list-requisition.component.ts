@@ -105,11 +105,13 @@ export class ListRequisitionComponent extends BaseComponent implements OnInit
 				{
 					this.search_requisition.search_extra['required_by_store_id'] = null;
 				}
+		
+				let store_id: number = this.rest.user?.store_id as number;
 
 				return forkJoin
 				({
 					stores: this.rest_store.search({limit:999999, eq:{status:'ACTIVE', sales_enabled: 1}}),
-					requisition: this.rest.getReport('requisition_items',{required_by_store_id: this.search_requisition.search_extra['required_by_store_id'] , requested_to_store_id: this.rest.user?.store_id ,start_timestamp: this.search_requisition.search_extra['start_timestamp'], end_timestamp: this.search_requisition.search_extra['end_timestamp'], _sort: this.search_requisition.sort_order }),
+					requisition: this.rest.getReport('requisition_items',{required_by_store_id: this.search_requisition.search_extra['required_by_store_id'] , store_id ,start_timestamp: this.search_requisition.search_extra['start_timestamp'], end_timestamp: this.search_requisition.search_extra['end_timestamp'], _sort: this.search_requisition.sort_order }),
 					users: this.rest_check_in.search({eq:{current:1},limit:999999}).pipe
 					(
 						mergeMap((response)=>
@@ -142,7 +144,7 @@ export class ListRequisitionComponent extends BaseComponent implements OnInit
 
 			//calculando el total de requeridos que proviene de cri.requisition.sum_qty
 			this.calculateTotalPending(this.requsition_obj_list);
-			this.sortRequisitions(this.search_str);
+			//this.sortRequisitions(this.search_str);
 
 			this.user_list = response.users.data;
 
