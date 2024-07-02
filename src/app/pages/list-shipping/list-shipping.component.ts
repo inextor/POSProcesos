@@ -6,7 +6,7 @@ import { Production, Requisition, Requisition_Item, Shipping, Shipping_Item, Sto
 import { RequisitionInfo, ShippingInfo } from '../../modules/shared/Models';
 import { forkJoin, mergeMap, of } from 'rxjs';
 import { RouterModule } from '@angular/router';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, RequiredValidator } from '@angular/forms';
 import { Utils } from '../../modules/shared/Utils';
 
 
@@ -15,6 +15,7 @@ interface CRequisitionByStore
 	store:Store;
 	required:number;
 	shipped:number;
+	required_shipped:number;
 	pending:number;
 }
 
@@ -37,11 +38,11 @@ export class ListShippingComponent extends BaseComponent
 	fecha_inicial: string | Date = '';
 	fecha_final: string | Date = '';
 
-	shipping_search:SearchObject<Shipping> = this.rest_shipping_info.getEmptySearch();
 	requisition_search:SearchObject<Requisition> = this.rest_requsition_info.getEmptySearch();
 
 	total_required:number = 0;
 	total_shipped:number = 0;
+	total_required_shipped:number = 0;
 	total_pending:number = 0;
 
 	ngOnInit()
@@ -53,16 +54,10 @@ export class ListShippingComponent extends BaseComponent
 				this.path = 'list-shipping';
 				this.is_loading = true;
 
-				this.shipping_search.limit = 999999;
-				this.shipping_search.eq.from_store_id = this.rest.user?.store_id;
-
-				this.requisition_search.limit = 999999;
-				this.requisition_search.eq.status = 'PENDING';
 				this.requisition_search.eq.requested_to_store_id = this.rest.user?.store_id;
 
 				if(paramMap.has('ge.date'))
 				{
-					this.shipping_search.ge.date = paramMap.get('ge.date') as string;
 					let start = new Date(paramMap.get('ge.date') as string + 'T00:00:00');
 					this.requisition_search.ge.required_by_timestamp = Utils.getUTCMysqlStringFromDate(start);
 					this.fecha_inicial = paramMap.get('ge.date') as string;
@@ -72,13 +67,11 @@ export class ListShippingComponent extends BaseComponent
 					let start = new Date();
 					start.setHours(0, 0, 0, 0);
 					this.fecha_inicial = start.toISOString().split('T')[0];
-					this.shipping_search.ge.date = this.fecha_inicial;
 					this.requisition_search.ge.required_by_timestamp = Utils.getUTCMysqlStringFromDate(start);
 				}
 
 				if(paramMap.has('le.date'))
 				{
-					this.shipping_search.le.date = paramMap.get('le.date') as string;
 					let end = new Date(paramMap.get('le.date') as string + 'T23:59:59');
 					this.requisition_search.le.required_by_timestamp = Utils.getUTCMysqlStringFromDate(end);
 					this.fecha_final = paramMap.get('le.date') as string;
@@ -88,82 +81,75 @@ export class ListShippingComponent extends BaseComponent
 					let end = new Date();
 					this.fecha_final = end.toISOString().split('T')[0];
 					end.setHours(23, 59, 59);
-					this.shipping_search.le.date = this.fecha_final;
 					this.requisition_search.le.required_by_timestamp = Utils.getUTCMysqlStringFromDate(end);
 				}
 
-				return forkJoin({
-					requisitions: this.rest_requsition_info.search(this.requisition_search),
-					shippings_info: this.rest_shipping_info.search( this.shipping_search )
-				});
-			}),
-			mergeMap((responses)=>
-			{
-				let production_search = this.rest_production.getEmptySearch();
-				let start = new Date();
-				start.setHours( 0, 0, 0, 0 );
-				production_search.ge.created = start;
+				let search_obj = 
+				{
+					store_id: this.requisition_search.eq.requested_to_store_id ,
+					start_timestamp: this.requisition_search.ge.required_by_timestamp, 
+					end_timestamp: this.requisition_search.le.required_by_timestamp
+				}
 
-				return forkJoin
-				({
-					shippings_info: of( responses.shippings_info ),
-					production: this.rest_production.search(production_search),
-					requsitions: of( responses.requisitions ),
-					stores: this.rest_stores.search({limit:999999, eq:{status:'ACTIVE', sales_enabled: 1}})
-				})
+				return forkJoin({
+					report: this.rest.getReport('requisition_shipping',search_obj),
+				});
 			})
 		)
 		.subscribe((response)=>
 		{
-			this.crequisition_by_store_list = response.stores.data.map((store)=>
-			{
-				//filter the requisitions that are required by the store
-				let requisitions_to_store:RequisitionInfo[] = response.requsitions.data.filter((creq)=>
-				{
-					return creq.required_by_store.id == store.id;
-				});
+			// this.crequisition_by_store_list = response.stores.data.map((store)=>
+			// {
+			// 	//filter the requisitions that are required by the store
+			// 	let requisitions_to_store:RequisitionInfo[] = response.requsitions.data.filter((creq)=>
+			// 	{
+			// 		return creq.required_by_store.id == store.id;
+			// 	});
 
-				//get the total required by the store
-				let required = requisitions_to_store.reduce((p,creq)=>
-				{
-					return p + creq.items.reduce((p,citem)=>
-					{
-						return p + citem.requisition_item.qty;
-					},0);
-				},0)
+			// 	//get the total required by the store
+			// 	let required = requisitions_to_store.reduce((p,creq)=>
+			// 	{
+			// 		return p + creq.items.reduce((p,citem)=>
+			// 		{
+			// 			return p + citem.requisition_item.qty;
+			// 		},0);
+			// 	},0)
 				
-				//get the shippings that are going to the store
-				let shippings_to_store = response.shippings_info.data.filter((si)=>
-				{
-					return si.shipping.to_store_id == store.id;
-				});
+			// 	//get the shippings that are going to the store
+			// 	let shippings_to_store = response.shippings_info.data.filter((si)=>
+			// 	{
+			// 		return si.shipping.to_store_id == store.id;
+			// 	});
 
-				//if there are no shippings, then return the required amount
-				if (shippings_to_store.length == 0)
-				{
-					return { store, required, shipped: 0, pending: required };
-				}
+			// 	//if there are no shippings, then return the required amount
+			// 	if (shippings_to_store.length == 0)
+			// 	{
+			// 		return { store, required, shipped: 0, pending: required };
+			// 	}
 
-				//get the total shipped to the store
-				let shipped = shippings_to_store.reduce((p,si)=>
-				{
-					return p + si.items.reduce((p,si)=>
-					{
-						return p + (si.shipping_item?.qty ?? 0);
-					},0);
-				},0);
+			// 	//get the total shipped to the store
+			// 	let shipped = shippings_to_store.reduce((p,si)=>
+			// 	{
+			// 		return p + si.items.reduce((p,si)=>
+			// 		{
+			// 			return p + (si.shipping_item?.qty ?? 0);
+			// 		},0);
+			// 	},0);
 
-				let required_shipped = this.getRequiredShipped(requisitions_to_store,shippings_to_store)
+			// 	let required_shipped = this.getRequiredShipped(requisitions_to_store,shippings_to_store)
 
-				let pending = required - required_shipped;
+			// 	let pending = required - required_shipped;
 
-				return { store, required, shipped, pending };
-			});
+			// 	return { store, required, shipped, pending };
+			// });
 
+			this.crequisition_by_store_list = response.report as CRequisitionByStore[];
+			
 			console.log(this.crequisition_by_store_list);
 			this.total_required = this.crequisition_by_store_list.reduce((p,c)=>p+c.required,0);
 			this.total_shipped = this.crequisition_by_store_list.reduce((p,c)=>p+c.shipped,0);
 			this.total_pending = this.crequisition_by_store_list.reduce((p,c)=>p+c.pending,0);
+			this.total_required_shipped = this.crequisition_by_store_list.reduce((p,c)=>p+c.required_shipped,0);
 
 		});
 	}
@@ -173,11 +159,11 @@ export class ListShippingComponent extends BaseComponent
 		this.fecha_inicial = fecha;
 		if( fecha )
 		{
-			this.shipping_search.ge.date = fecha;
+			this.requisition_search.ge.date = fecha;
 		}
 		else
 		{
-			this.shipping_search.ge.date = null;
+			this.requisition_search.ge.date = null;
 		}
 	}
 
@@ -186,11 +172,11 @@ export class ListShippingComponent extends BaseComponent
 		this.fecha_final = fecha;
 		if( fecha )
 		{
-			this.shipping_search.le.date= fecha;
+			this.requisition_search.le.date= fecha;
 		}
 		else
 		{
-			this.shipping_search.le.date = null;
+			this.requisition_search.le.date = null;
 		}
 	}
 
