@@ -308,7 +308,7 @@ export class SaveProductionPaymentComponent extends BaseComponent implements OnI
 		.subscribe({
 			next: (response)=>
 			{
-				this.showSuccess('Reporte guardado con éxito');
+				this.showSuccess('Registro guardado con éxito');
 			},
 			error: (error)=>
 			{
