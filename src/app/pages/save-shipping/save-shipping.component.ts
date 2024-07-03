@@ -217,7 +217,7 @@ export class SaveShippingComponent extends BaseComponent
 
 		this.subs.sink = forkJoin
 		({
-			item: this.rest_item_stock.search({search_extra:{store_id: this.from_store_id, only_on_stock: 1},limit:9999}),
+			item: this.rest_item_stock.search({search_extra:{store_id: this.from_store_id},limit:9999}),
 		})
 		.pipe
 		(
