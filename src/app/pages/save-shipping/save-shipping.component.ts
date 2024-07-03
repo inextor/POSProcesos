@@ -40,7 +40,7 @@ interface CRequisitionInfo extends RequisitionInfo
 })
 export class SaveShippingComponent extends BaseComponent
 {
-	//PENDIENTE: REFACTORIZAR, DONE?
+	//PENDING TO TEST
 
 	rest_requisition_info:Rest<Requisition,RequisitionInfo> = this.rest.initRest('requisition_info');
 	rest_shipping_info:Rest<Shipping,ShippingInfo> = this.rest.initRest('shipping_info');
@@ -186,25 +186,10 @@ export class SaveShippingComponent extends BaseComponent
 			required: required,
 			shipped: shipped
 		};
+
+		//removin those items that have no stock
+		this.crequisition_info.citems = this.crequisition_info.citems.filter((citem)=>citem.stock > 0);
 		console.log('crequisition_info', this.crequisition_info);
-	}
-
-	onFromStoreChange(store_id:number)
-	{
-		if ( store_id )
-		{
-			this.shipping_info.shipping.from_store_id = store_id;
-			this.requisitionSearch(new Event(''), this.fecha_requisitions, this.to_store_id);
-		}
-	}
-
-	onToStoreChange(store_id:number)
-	{
-		if ( store_id )
-		{
-			this.shipping_info.shipping.to_store_id = store_id;
-			this.requisitionSearch(new Event(''), this.fecha_requisitions, store_id);
-		}
 	}
 
 	//vuelve a buscar las requisiciones para volver a inicializar el crequisition_info
@@ -224,43 +209,37 @@ export class SaveShippingComponent extends BaseComponent
 			this.showError('No se encontro la tienda');
 			return;
 		}
-		
+
 		this.is_loading = true;
-		this.showWarning('Buscando requisiciones...');
 
 		let start = new Date(fecha + 'T00:00:00');
 		let end = new Date(fecha + 'T23:59:59');
 
-		let search_requisition:SearchObject<Requisition> = this.getEmptySearch();
-		search_requisition.eq.required_by_store_id = to_store_id;
-		search_requisition.eq.requested_to_store_id = this.from_store_id;
-		search_requisition.eq.status = 'PENDING';
-		search_requisition.ge.required_by_timestamp = Utils.getUTCMysqlStringFromDate(start);
-		search_requisition.le.required_by_timestamp = Utils.getUTCMysqlStringFromDate(end);
-		search_requisition.limit = 9999;
-		
-		this.subs.sink = forkJoin({
-			requisitions: this.rest_requisition_info.search(search_requisition)
-		}).pipe
+		this.subs.sink = forkJoin
+		({
+			item: this.rest_item_stock.search({search_extra:{store_id: this.from_store_id, only_on_stock: 1},limit:9999}),
+		})
+		.pipe
 		(
 			mergeMap((response)=>
 			{
-				let ids:number[] = []
-			
-				if( response.requisitions.total != 0 )
-				{
-					ids = response.requisitions.data.map((r)=>r.items.map((ri)=>ri.item.id)).flat();
-				}
+				let ids:number[] = response.item.data.map((i)=>i.item.id);
+
+				let search_requisition:SearchObject<Requisition> = this.getEmptySearch();
+				search_requisition.eq.required_by_store_id = to_store_id;
+				search_requisition.eq.status = 'PENDING';
+				search_requisition.ge.required_by_timestamp = Utils.getUTCMysqlStringFromDate(start);
+				search_requisition.le.required_by_timestamp = Utils.getUTCMysqlStringFromDate(end);
+				search_requisition.limit = 9999;
 
 				return forkJoin
 				({
+					requisitions: ids.length > 0 ? this.rest_requisition_info.search(search_requisition) : of( null ),
 					shippings: ids.length > 0 ? this.rest_shipping_info.search({ csv:{ids}, eq:{from_store_id: Number(this.from_store_id), to_store_id: Number(this.to_store_id), date: this.fecha_requisitions },limit:9999}) : of( null ),
-					requisitions: ids.length > 0 ? of( response.requisitions ) : of( null ),
-					production: ids.length > 0 ? this.rest_production.search({csv:{id:ids}}) : of( null ),
-					item_stock: ids.length > 0 ? this.rest_item_stock.search({search_extra:{store_id: this.rest.user?.store_id as number},csv:{id:ids}}) : of( null ),
+					production: ids.length > 0 ? this.rest_production.search({csv:{ids}, limit: 999999}) : of( null ),
+					item_stock: ids.length > 0 ? of(response.item) : of( null ),
 				})
-			})
-
+			}),
 		)
 		.subscribe({
 			next: (response)=>
@@ -309,6 +288,26 @@ export class SaveShippingComponent extends BaseComponent
 				this.is_loading = false;
 			}
 		});
+	}
+
+	onFromStoreChange(store_id:number)
+	{
+		if ( store_id )
+		{
+			//solo se actualiza la tienda de origen de envio
+			this.shipping_info.shipping.from_store_id = store_id;
+			//las requisiciones se buscan por la tienda de destino
+			this.requisitionSearch(new Event(''), this.fecha_requisitions, this.to_store_id);
+		}
+	}
+
+	onToStoreChange(store_id:number)
+	{
+		if ( store_id )
+		{
+			this.shipping_info.shipping.to_store_id = store_id;
+			this.requisitionSearch(new Event(''), this.fecha_requisitions, store_id);
+		}
 	}
 
 	updateValues()

@@ -30,7 +30,7 @@
 				</div>
 				<div class="col-6 col-md-3 form-group">
 					<label class="">Sucursal Destino</label>
-					<select name="shipping_to_store" [(ngModel)]="to_store_id" class="form-control" (ngModelChange)="onToStoreChange($event)" required>
+					<select name="shipping_to_store" [(ngModel)]="to_store_id" class="form-control" (ngModelChange)="onToStoreChange($event)" [disabled]="shipping_info.items.length > 0" required>
 						<option value="">Selecciona una sucursal</option>
 						<option *ngFor="let store of store_list" [value]="store.id">{{store.name}}</option>
 					</select>
@@ -70,7 +70,7 @@
 				<div class="row border-bottom align-items-center">
 					<ng-template [ngIf]="crequisition_info.citems.length == 0">
 						<div class="col-12">
-							<span class="text-center">Todas las requisiciones fueron enviadas </span>
+							<span class="text-center">No se encontraron requisiciones que se puedan surtir</span>
 						</div>
 					</ng-template>
 					<ng-container *ngFor="let cri of crequisition_info.citems">
