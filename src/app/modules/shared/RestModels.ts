@@ -351,10 +351,12 @@ export interface Item{
 	currency_id:string | null;
 	description:string | null;
 	extra_name:string | null;
+	form_id:number | null;
 	has_serial_number:'NO'|'YES';
 	id:number;
 	image_id:number | null;
 	image_style:'COVER'|'CONTAIN';
+	json_tags:string[] | null;
 	measurement_unit:string | null;
 	name:string;
 	note_required:'NO'|'YES';
@@ -362,6 +364,7 @@ export interface Item{
 	partial_sale:'NO'|'YES';
 	product_id:number | null;
 	provider_user_id:number | null;
+	reference_currency_id:string;
 	reference_price:number;
 	return_action:'RETURN_TO_STOCK'|'ADD_TO_MERMA'|'TRANSFORM_INTO_ITEM';
 	shadow_color:string | null;

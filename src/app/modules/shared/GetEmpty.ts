@@ -1,8 +1,75 @@
 import { ShippingInfo } from "./Models";
-import { User_Permission,Preferences,Production_Area,Process, Production, Shipping, Store, Payroll, Payroll_Concept_Value, Work_log_rules, User_extra_fields, User, Production_Area_Item } from "./RestModels";
+import { User_Permission,Preferences,Production_Area,Process, Production, Shipping, Store, Payroll, Payroll_Concept_Value, Work_log_rules, User_extra_fields, User, Production_Area_Item, Item, Category } from "./RestModels";
 
 export class GetEmpty
 {
+	static category(): Category {
+		return {
+			background: 'transparent',
+			code: '',
+			created: new Date(),
+			created_by_user_id: null,
+			default_clave_prod_serv: '',
+			display_status: 'NORMAL',
+			id:0,
+			image_id: null,
+			image_style: 'CONTAIN',
+			name: '',
+			shadow_color: '#000000',
+			sort_weight: 10,
+			text_color: '#FFFFFF',
+			text_style:'CENTER',
+			type: '',
+			updated: new Date(),
+			updated_by_user_id: null,
+		};
+	}
+	static item():Item
+	{
+		let date = new Date();
+		return {
+			id:0,
+			applicable_tax: 'DEFAULT',
+			availability_type: 'ALWAYS',
+			background: 'transparent',
+			brand_id: null,
+			category_id: null,
+			clave_sat: null,
+			code: null,
+			commanda_type_id: null,
+			commission: 0,
+			commission_currency_id: 'MXN',
+			commission_type: 'NONE',
+			created: date,
+			created_by_user_id: null,
+			currency_id: null,
+			description: '',
+			extra_name: '',
+			form_id: null,
+			has_serial_number: 'NO',
+			image_id: null,
+			image_style:'COVER',
+			json_tags:[],
+			measurement_unit: null,
+			name: '',
+			note_required: 'NO',
+			on_sale:'YES',
+			partial_sale: 'NO',
+			product_id: null,
+			provider_user_id: null,
+			reference_currency_id: 'MXN',
+			reference_price: 0,
+			return_action: 'RETURN_TO_STOCK',
+			shadow_color: '#000000',
+			sort_weight: 1,
+			status:'ACTIVE',
+			text_color: '#FFFFFF',
+			text_style: 'CENTER',
+			unidad_medida_sat_id: 'H87',
+			updated: date,
+			updated_by_user_id:null,
+		};
+	}
 	static shipping_info(): ShippingInfo
 	{
 		return {
