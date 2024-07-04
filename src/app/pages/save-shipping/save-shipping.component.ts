@@ -227,7 +227,7 @@ export class SaveShippingComponent extends BaseComponent
 
 				let search_requisition:SearchObject<Requisition> = this.getEmptySearch();
 				search_requisition.eq.required_by_store_id = to_store_id;
-				search_requisition.eq.status = 'PENDING';
+				search_requisition.eq.approved_status = 'APPROVED';
 				search_requisition.ge.required_by_timestamp = Utils.getUTCMysqlStringFromDate(start);
 				search_requisition.le.required_by_timestamp = Utils.getUTCMysqlStringFromDate(end);
 				search_requisition.limit = 9999;

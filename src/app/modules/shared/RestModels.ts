@@ -1073,6 +1073,7 @@ export interface Quote_Item{
 	updated:Date;
 }
 export interface Requisition{
+	approved_status: 'PENDING'|'NOT_APPROVED'|'APPROVED';
 	created:Date;
 	created_by_user_id:number | null;
 	date:string | null;
