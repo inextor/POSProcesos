@@ -85,6 +85,7 @@
 				</div>
 			</div>
 		</div>
+		<app-loading [is_loading]="is_loading"></app-loading>
 		<div class="row border-bottom align-items-center" *ngFor="let creq of crequisition_by_store_list">
 			<div class="col-8 col-md-3 fw-bold">{{creq.store.name}}</div>
 			<div class="col-4 col-md-12 fw-bold d-lg-none order-md-3 text-end text-md">

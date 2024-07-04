@@ -67,6 +67,7 @@
 			<div class="col-2">Estatus pago</div>
 			<div class="col-3 text-end">Acciones</div>
 		</div>
+		<app-loading [is_loading]="is_loading"></app-loading>
 		<div class="" *ngIf="!CPayroll_list || CPayroll_list.length <= 0">
 			No se encontraron registros de nómina
 		</div>

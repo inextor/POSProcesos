@@ -9,6 +9,7 @@ import { ShortDatePipe } from '../../modules/shared/pipes/short-date.pipe';
 import { forkJoin, mergeMap } from 'rxjs';
 import { Utils } from '../../modules/shared/Utils';
 import { PaginationComponent } from '../../components/pagination/pagination.component';
+import { LoadingComponent } from '../../components/loading/loading.component';
 
 interface CPayroll extends Payroll
 {
@@ -18,7 +19,7 @@ interface CPayroll extends Payroll
 @Component({
   selector: 'app-list-payroll',
   standalone: true,
-  imports: [CommonModule, FormsModule ,BaseComponent , RouterOutlet, RouterModule, ShortDatePipe, PaginationComponent],
+  imports: [CommonModule, FormsModule ,BaseComponent , RouterOutlet, RouterModule, ShortDatePipe, PaginationComponent, LoadingComponent],
   templateUrl: './list-payroll.component.html',
   styleUrl: './list-payroll.component.css'
 })
@@ -82,7 +83,7 @@ export class ListPayrollComponent extends BaseComponent implements OnInit {
 				let user = this.users_list.find((user)=> user.id == payroll.user_id);
 				return {...payroll, user_name: user ? user.name : 'Loading...'};
 			});
-			
+			this.is_loading = false;
 		}, (error)=> 
 		{
 			this.showError(error);

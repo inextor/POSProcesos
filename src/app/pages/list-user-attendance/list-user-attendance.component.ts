@@ -6,6 +6,7 @@ import { Rest, RestResponse, RestSimple } from '../../modules/shared/services/Re
 import { BaseComponent } from '../../modules/shared/base/base.component';
 import { Utils } from '../../modules/shared/Utils';
 import { FormsModule } from '@angular/forms';
+import { LoadingComponent } from '../../components/loading/loading.component';
 
 interface CUser
 {
@@ -25,7 +26,7 @@ const ci_fields = ['user_id','start_timestamp','end_timestamp'];
 @Component({
 	selector: 'app-list-user-attendance',
 	standalone: true,
-	imports: [CommonModule,FormsModule],
+	imports: [CommonModule,FormsModule, LoadingComponent],
 	templateUrl: './list-user-attendance.component.html',
 	styleUrl: './list-user-attendance.component.css'
 })
@@ -174,6 +175,7 @@ export class ListUserAttendanceComponent extends BaseComponent
 		)
 		.subscribe((response)=>
 		{
+			this.is_loading = false;
 			this.cuser_list = response;
 		})
 	}

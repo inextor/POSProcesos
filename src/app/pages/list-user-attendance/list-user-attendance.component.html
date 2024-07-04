@@ -32,6 +32,7 @@
 				</div>
 			</div>
 		</div>
+		<app-loading [is_loading]="is_loading"></app-loading>
 		<div class="row py-1 border-top py-2 align-items-center" style="border-top:3px solid #666666;!important" *ngFor="let ucil of cuser_list">
 			<div class="col-12 col-md-2 col-lg-3 fw-bold overflow-hidden">{{ucil.user.name}}</div>
 			<div class="col-12 d-md-none" style="border-top:2px solid #efefef;border-bottom:1px solid #efefef">

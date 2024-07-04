@@ -55,6 +55,7 @@
 			</div>
 		</div>
 		<div class="card p-1 p-lg-3 mt-3">
+			<app-loading [is_loading]="is_loading"></app-loading>
 			<ng-template [ngIf]="!crequisition_info">
 				No hay requisiciones para esta fecha
 			</ng-template>

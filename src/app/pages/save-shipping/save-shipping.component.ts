@@ -10,6 +10,7 @@ import { FormsModule } from '@angular/forms';
 import { GetEmpty } from '../../modules/shared/GetEmpty';
 import { SearchItemsComponent } from "../../components/search-items/search-items.component";
 import { Utils } from '../../modules/shared/Utils';
+import { LoadingComponent } from '../../components/loading/loading.component';
 
 interface CItem
 {
@@ -36,7 +37,7 @@ interface CRequisitionInfo extends RequisitionInfo
 		standalone: true,
 		templateUrl: './save-shipping.component.html',
 		styleUrl: './save-shipping.component.css',
-		imports: [CommonModule, RouterModule, FormsModule, SearchItemsComponent]
+		imports: [CommonModule, RouterModule, FormsModule, SearchItemsComponent, LoadingComponent]
 })
 export class SaveShippingComponent extends BaseComponent
 {
@@ -195,7 +196,8 @@ export class SaveShippingComponent extends BaseComponent
 	//vuelve a buscar las requisiciones para volver a inicializar el crequisition_info
 	requisitionSearch(evt:Event,fecha: string,to_store_id: number | null)
 	{
-		
+		this.is_loading = true;
+
 		if( !to_store_id  || !this.from_store_id)
 		{
 			this.crequisition_info = null;

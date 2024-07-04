@@ -10,6 +10,7 @@ import { SaveProductionAreaItemComponent } from '../save-production-area-item/sa
 import { BaseComponent } from '../../modules/shared/base/base.component';
 import { SearchItemsComponent } from '../../components/search-items/search-items.component';
 import { ShortDatePipe } from '../../modules/shared/pipes/short-date.pipe';
+import { LoadingComponent } from '../../components/loading/loading.component';
 
 
 interface CProduction_Area_Item extends Production_Area_Item
@@ -20,7 +21,7 @@ interface CProduction_Area_Item extends Production_Area_Item
 @Component({
 	selector: 'app-view-production-area',
 	standalone: true,
-	imports: [CommonModule,RouterModule, ModalComponent, SaveProductionAreaItemComponent, SearchItemsComponent, ShortDatePipe],
+	imports: [CommonModule,RouterModule, ModalComponent, SaveProductionAreaItemComponent, SearchItemsComponent, ShortDatePipe, LoadingComponent],
 	templateUrl: './view-production-area.component.html',
 	styleUrl: './view-production-area.component.css'
 })

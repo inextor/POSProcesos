@@ -2,12 +2,13 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { BaseComponent } from '../../modules/shared/base/base.component';
-import { forkJoin, mergeMap, of } from 'rxjs';
+import { debounceTime, forkJoin, mergeMap, of } from 'rxjs';
 import { Category, Item, ItemInfo, Production_Area, Production_Area_Item } from '../../modules/shared/RestModels';
 import { Rest, RestSimple, SearchObject } from '../../modules/shared/services/Rest';
 import { FormsModule } from '@angular/forms';
 import { SearchItemsComponent } from '../../components/search-items/search-items.component';
 import { GetEmpty } from '../../modules/shared/GetEmpty';
+import { LoadingComponent } from '../../components/loading/loading.component';
 
 interface CProduction_Area_Item extends Production_Area_Item
 {
@@ -19,7 +20,7 @@ interface CProduction_Area_Item extends Production_Area_Item
 @Component({
   selector: 'app-list-production-area-item',
   standalone: true,
-  imports: [CommonModule, RouterModule, FormsModule, SearchItemsComponent],
+  imports: [CommonModule, RouterModule, FormsModule, SearchItemsComponent, LoadingComponent],
   templateUrl: './list-production-area-item.component.html',
   styleUrl: './list-production-area-item.component.css'
 })
@@ -39,6 +40,7 @@ export class ListProductionAreaItemComponent extends BaseComponent implements On
 
 		this.subs.sink = this.route.queryParamMap.pipe
 		(
+			debounceTime(1500),
 			mergeMap((param_map)=>
 			{
 				let fields = ['production_area_id'];

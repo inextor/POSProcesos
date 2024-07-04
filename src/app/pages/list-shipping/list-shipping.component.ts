@@ -8,6 +8,7 @@ import { forkJoin, mergeMap, of } from 'rxjs';
 import { RouterModule } from '@angular/router';
 import { FormsModule, RequiredValidator } from '@angular/forms';
 import { Utils } from '../../modules/shared/Utils';
+import { LoadingComponent } from '../../components/loading/loading.component';
 
 
 interface CRequisitionByStore
@@ -22,7 +23,7 @@ interface CRequisitionByStore
 @Component({
 	selector: 'app-list-shipping',
 	standalone: true,
-	imports: [CommonModule,RouterModule,FormsModule, BaseComponent],
+	imports: [CommonModule,RouterModule,FormsModule, BaseComponent, LoadingComponent],
 	templateUrl: './list-shipping.component.html',
 	styleUrl: './list-shipping.component.css'
 })
@@ -150,7 +151,7 @@ export class ListShippingComponent extends BaseComponent
 			this.total_shipped = this.crequisition_by_store_list.reduce((p,c)=>p+c.shipped,0);
 			this.total_pending = this.crequisition_by_store_list.reduce((p,c)=>p+c.pending,0);
 			this.total_required_shipped = this.crequisition_by_store_list.reduce((p,c)=>p+c.required_shipped,0);
-
+			this.is_loading = false;
 		});
 	}
 

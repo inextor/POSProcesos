@@ -7,6 +7,7 @@ import { FormsModule } from '@angular/forms';
 import { forkJoin, mergeMap, of } from 'rxjs';
 import { Rest, RestSimple, SearchObject } from '../../modules/shared/services/Rest';
 import { CustomToTitlePipe } from '../../modules/shared/pipes/custom-to-title.pipe';
+import { LoadingComponent } from '../../components/loading/loading.component';
 
 interface CUser_production_report
 {
@@ -31,7 +32,7 @@ interface CItem_production_report
 @Component({
   selector: 'app-save-production-payment',
   standalone: true,
-  imports: [CommonModule, BaseComponent, FormsModule, CustomToTitlePipe],
+  imports: [CommonModule, BaseComponent, FormsModule, CustomToTitlePipe, LoadingComponent],
   templateUrl: './save-production-payment.component.html',
   styleUrl: './save-production-payment.component.css'
 })
@@ -121,7 +122,7 @@ export class SaveProductionPaymentComponent extends BaseComponent implements OnI
 			this.calculateTotals(result.production, result.items?.data ?? []);
 
 			this.buildItemProductionReport( result.items?.data ?? [], result.production);
-			
+
 			this.json_rules_list = result.work_log_rules;
 
 			this.user_extra_fields_list = result.extra_fields?.data ?? [];
@@ -130,7 +131,7 @@ export class SaveProductionPaymentComponent extends BaseComponent implements OnI
 
 			this.buildUserProductionReport(result.users?.data ?? [], result.work_log, result.production, result.items?.data ?? [], this.payment_total);
 			//console.log('Cuser_production_report', this.Cuser_production_report_list);
-
+			//this.is_loading = false;
 		});
 	}
 
@@ -292,7 +293,7 @@ export class SaveProductionPaymentComponent extends BaseComponent implements OnI
 	}
 
 	submit($event:Event)
-	{
+	{	
 		//update the worklog of the users with the new values for the total_payment
 		let work_log_list = this.user_work_logs_list.map((work_log)=>
 		{
@@ -303,6 +304,7 @@ export class SaveProductionPaymentComponent extends BaseComponent implements OnI
 			}
 			return work_log;
 		});
+		this.is_loading = true;
 		
 		this.subs.sink = this.rest_work_log.batchUpdate(work_log_list)
 		.subscribe({
