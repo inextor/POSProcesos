@@ -20,6 +20,7 @@ import { SavePayrollComponent } from './pages/save-payroll/save-payroll.componen
 import { SaveProductionPaymentComponent } from './pages/save-production-payment/save-production-payment.component';
 import { SaveWorklogRulesComponent } from './pages/save-worklog-rules/save-worklog-rules.component';
 import { SaveUserExtraFieldsComponent } from './pages/save-user-extra-fields/save-user-extra-fields.component';
+import { ListProductionAreaItemComponent } from './pages/list-production-area-item/list-production-area-item.component';
 
 export const routes: Routes = [
 	{path: '', component: LoginComponent, canActivate: [authGuard]},
@@ -28,6 +29,7 @@ export const routes: Routes = [
 	{path: 'edit-production-area/:id', component: SaveProductionAreaComponent, canActivate: [authGuard]},
 	{path: 'list-production-area', component: ListProductionAreaComponent, canActivate: [authGuard]},
 	{path: 'view-production-area/:id', component: ViewProductionAreaComponent, canActivate: [authGuard]},
+	{path: 'list-production-area-item', component: ListProductionAreaItemComponent, canActivate: [authGuard]},
 	{path: 'add-process/:production_area_id', component: SaveProcessComponent, canActivate: [authGuard]},
 	{path: 'edit-process/:id', component: SaveProcessComponent, canActivate: [authGuard]},
 //	{path: 'list-process', component: ListProcessComponent},
