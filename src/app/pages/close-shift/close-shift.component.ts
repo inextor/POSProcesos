@@ -65,6 +65,7 @@ export class CloseShiftComponent extends BaseComponent implements OnInit
 				let search_obj = this.rest_user.getSearchObject(param_map);
 				search_obj.eq.type = 'USER';
 				search_obj.eq.store_id = user.store_id;
+				search_obj.eq.production_area_id = user.production_area_id;
 
 				return forkJoin
 				({

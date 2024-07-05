@@ -55,6 +55,7 @@ export class ListUserAttendanceComponent extends BaseComponent
 				let search_obj = this.rest_user.getSearchObject(param_map);
 				search_obj.eq.type = 'USER';
 				search_obj.eq.store_id = this.rest.user?.store_id;
+				search_obj.eq.production_area_id = this.rest.user?.production_area_id;
 
 				this.start_date = Utils.getMysqlStringFromDate(new Date).split(' ')[0];
 				if(param_map.has('ge.date'))
