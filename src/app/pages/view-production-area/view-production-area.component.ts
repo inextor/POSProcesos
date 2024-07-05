@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { GetEmpty } from '../../modules/shared/GetEmpty';
-import { Production_Area,Item,Production_Area_Item, Process, ItemInfo } from '../../modules/shared/RestModels';
+import { Production_Area,Item,Production_Area_Item, Process, ItemInfo, User } from '../../modules/shared/RestModels';
 import { forkJoin,of,mergeMap, filter } from 'rxjs';
 import { RouterModule } from '@angular/router';
 import { RestSimple } from '../../modules/shared/services/Rest';
@@ -11,6 +11,7 @@ import { BaseComponent } from '../../modules/shared/base/base.component';
 import { SearchItemsComponent } from '../../components/search-items/search-items.component';
 import { ShortDatePipe } from '../../modules/shared/pipes/short-date.pipe';
 import { LoadingComponent } from '../../components/loading/loading.component';
+import { SearchUsersComponent } from '../../components/search-users/search-users.component';
 
 
 interface CProduction_Area_Item extends Production_Area_Item
@@ -21,7 +22,7 @@ interface CProduction_Area_Item extends Production_Area_Item
 @Component({
 	selector: 'app-view-production-area',
 	standalone: true,
-	imports: [CommonModule,RouterModule, ModalComponent, SaveProductionAreaItemComponent, SearchItemsComponent, ShortDatePipe, LoadingComponent],
+	imports: [CommonModule,RouterModule, ModalComponent, SaveProductionAreaItemComponent, SearchItemsComponent, ShortDatePipe, LoadingComponent, SearchUsersComponent],
 	templateUrl: './view-production-area.component.html',
 	styleUrl: './view-production-area.component.css'
 })
@@ -29,11 +30,13 @@ export class ViewProductionAreaComponent extends BaseComponent implements OnInit
 {
 	rest_production_area: RestSimple<Production_Area> = this.rest.initRestSimple<Production_Area>('production_area');
 	rest_production_area_item: RestSimple<Production_Area_Item> = this.rest.initRestSimple<Production_Area_Item>('production_area_item');
+	rest_user:RestSimple<User> = this.rest.initRestSimple<User>('user');
 	rest_process:RestSimple<Process> = this.rest.initRestSimple<Process>('process');
 	rest_item:RestSimple<Item> = this.rest.initRestSimple<Item>('item');
 
-	cproduction_area_item_list:CProduction_Area_Item[] = [];
 	process_list:Process[] = [];
+	user_list:User[] = [];
+	cproduction_area_item_list:CProduction_Area_Item[] = [];
 	production_area = GetEmpty.production_area();
 	selected_production_area_item:Production_Area_Item = GetEmpty.production_area_item();
 
@@ -51,6 +54,7 @@ export class ViewProductionAreaComponent extends BaseComponent implements OnInit
 							? this.rest_production_area.get( paramMap.get('id' ) )
 							: of( GetEmpty.production_area() ),
 						process	: this.rest_process.search({eq:{production_area_id }, limit: 20 }),
+						users: this.rest_user.search({eq:{production_area_id, status: 'ACTIVE' }, limit: 99999, }),
 						items	: this.rest_production_area_item.search({eq:{production_area_id, status: 'ACTIVE' }, limit: 99999, }).pipe
 						(
 							mergeMap((response)=>
@@ -69,6 +73,7 @@ export class ViewProductionAreaComponent extends BaseComponent implements OnInit
 		{
 			this.production_area = response.production_area;
 			this.process_list = response.process.data;
+			this.user_list = response.users.data;
 			
 			this.cproduction_area_item_list = response.items.production_area_items.data.map((pai:Production_Area_Item)=>
 			{
@@ -124,6 +129,64 @@ export class ViewProductionAreaComponent extends BaseComponent implements OnInit
 			});
 		});
 	
+	}
+
+	addProductionAreaUser(user:User | null):void
+	{
+		if (user == null)
+			return this.showError('Usuario no encontrado');
+
+		if (user.production_area_id != null)
+			return this.showError('El usuario ya pertenece a un area de producción (#' + user.production_area_id + ')');
+
+		if ( this.rest.user && user.store_id != this.rest.user.store_id)
+			return this.showError('El usuario no pertenece a la misma tienda');
+
+		if ( this.user_list.findIndex((u:User)=>u.id == user.id) != -1 )
+			return this.showError('El usuario ya ha sido agregado');
+
+		this.confirmation.showConfirmAlert(user,'Confirmar','¿Desea agregar ' + user.name + ' al area de producción?')
+		.pipe(filter((response)=> response.accepted))
+		.subscribe((response)=>
+		{
+			this.is_loading = true;
+			user.production_area_id = this.production_area.id;
+			this.subs.sink = this.rest_user.update(user)
+			.subscribe({
+
+				next: (response)=>
+				{
+					this.is_loading = false;
+					this.user_list.push(user);
+				},
+
+				error: (error)=> this.rest.showError(error)
+
+			});
+		});
+	}
+
+	deleteProductionAreaUser(user:User):void
+	{
+		this.confirmation.showConfirmAlert(user,'Confirmar','¿Desea eliminar ' + user.name + ' del area de producción?')
+		.pipe(filter((response)=> response.accepted))
+		.subscribe((response)=>
+		{	
+			this.is_loading = true;
+			user.production_area_id = null;
+			this.subs.sink = this.rest_user.update(user)
+			.subscribe({
+
+				next: (response)=>
+				{
+					this.is_loading = false;
+					this.user_list = this.user_list.filter((u:User)=>u.id != user.id);
+				},
+
+				error: (error)=> this.rest.showError(error)
+
+			});
+		});
 	}
 
 	onItemSelected(item_info:ItemInfo):void
