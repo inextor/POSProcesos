@@ -969,7 +969,7 @@ export interface Production{
 	merma_qty:number;
 	merma_reason:string | null;
 	produced_by_user_id: number | null;
-	production_area_id: number;
+	production_area_id: number | null;
 	qty:number
 	qty_reported:number;
 	store_id:number;

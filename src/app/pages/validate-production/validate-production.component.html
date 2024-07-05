@@ -3,8 +3,8 @@
 	<div class="card p-3 mb-2">
 		<div class="row">
 			<div class="col-12 col-md-3">
-				<label>Area de Producción</label>
-				<select class="form-control" [(ngModel)]="search_production.eq.store_id">
+				<label>Sucursal de Producción</label>
+				<select class="form-control" [(ngModel)]="search_production.eq.production_area_id">
 					<option *ngFor="let pa of production_area_list" [value]="pa.id">{{pa.name}}</option>
 				</select>
 			</div>

@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { BaseComponent } from '../../modules/shared/base/base.component';
 import { forkJoin, mergeMap, of } from 'rxjs';
-import { Category, Item, Production, Store } from '../../modules/shared/RestModels';
+import { Category, Item, Production, Production_Area, Store } from '../../modules/shared/RestModels';
 import { Rest, RestSimple, SearchObject } from '../../modules/shared/services/Rest';
 import { ProductionInfo } from '../../modules/shared/Models';
 import { ShortDatePipe } from '../../modules/shared/pipes/short-date.pipe';
@@ -42,11 +42,11 @@ export class ValidateProductionComponent extends BaseComponent
 {
 	rest_production_info:Rest<Production,ProductionInfo> = this.rest.initRest('production_info');
 	rest_production:RestSimple<Production> = this.rest.initRest('production');
-	//rest_production_area:RestSimple<ProductionArea> = this.rest.initRest('production_area');
-	rest_production_area:RestSimple<Store> = this.rest.initRest('store');
+	rest_production_area:RestSimple<Production_Area> = this.rest.initRest('production_area');
+	//rest_production_area:RestSimple<Store> = this.rest.initRest('store');
 	production_info_list:CProduction[] = [];
-	// production_area_list:ProductionArea[] = [];
-	production_area_list:Store[] = [];
+	production_area_list:Production_Area[] = [];
+	//production_area_list:Store[] = [];
 
 	search_start_date:string = '';
 	search_end_date:string = '';
@@ -71,7 +71,7 @@ export class ValidateProductionComponent extends BaseComponent
 				this.path = 'validate-production';
 				this.is_loading = true;
 
-				let fields = ['store_id', 'created'];
+				let fields = ['production_area_id', 'created'];
 				this.search_production = this.getSearch(query_params, fields, []);
 				let start = new Date();
 				let end = new Date();
@@ -90,16 +90,18 @@ export class ValidateProductionComponent extends BaseComponent
 				}
 				this.search_start_date = Utils.getLocalMysqlStringFromDate(this.search_production.ge.created as Date);
 
-				if(!query_params.has('eq.store_id'))
+				if(!query_params.has('eq.production_area_id'))
 				{
-					this.search_production.eq.store_id = this.rest.user?.store_id as number;
+					this.search_production.eq.production_area_id = this.rest.user?.production_area_id as number;
 				}
 
-				let search_production_area:SearchObject<Store> = this.getEmptySearch();
+				this.search_production.eq.status = 'ACTIVE';
+
+				let search_production_area:SearchObject<Production_Area> = this.getEmptySearch();
 
 				search_production_area.limit = 9999;
 				//search_production_area.eq.store_id = this.rest.user?.store_id as number;
-				search_production_area.eq.production_enabled = 1;
+				//search_production_area.eq.production_enabled = 1;
 
 				return forkJoin({
 					production_area: this.rest_production_area.search(search_production_area),
@@ -257,6 +259,7 @@ export class ValidateProductionComponent extends BaseComponent
 						newProduction.qty_reported = pi.validated + pi.merma;
 						newProduction.store_id = pi.production_list[0].production.store_id; //se toma la tienda de la primera produccion
 						newProduction.verified_by_user_id = this.rest.user?.id as number;
+						newProduction.production_area_id = pi.production_list[0].production.production_area_id; //se toma el area de produccion de la primera produccion
 
 						//llamada de rest para crear la nueva produccion
 						this.subs.sink = this.rest_production.create(newProduction).subscribe({
