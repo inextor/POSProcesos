@@ -118,6 +118,7 @@ export class SaveProductionPaymentComponent extends BaseComponent implements OnI
 		)
 		.subscribe((result)=>
 		{
+			this.is_loading = false;
 
 			this.calculateTotals(result.production, result.items?.data ?? []);
 
@@ -131,7 +132,6 @@ export class SaveProductionPaymentComponent extends BaseComponent implements OnI
 
 			this.buildUserProductionReport(result.users?.data ?? [], result.work_log, result.production, result.items?.data ?? [], this.payment_total);
 			//console.log('Cuser_production_report', this.Cuser_production_report_list);
-			//this.is_loading = false;
 		});
 	}
 

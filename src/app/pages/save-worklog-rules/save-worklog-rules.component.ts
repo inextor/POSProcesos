@@ -41,7 +41,8 @@ export class SaveWorklogRulesComponent extends BaseComponent implements OnInit {
 			next: (result) => {
 				this.is_loading = false;
 				this.work_log_rules = result.data[0];
-				this.buildRules();
+				if( this.work_log_rules )
+					this.buildRules();
 			},
 			error: (error) => {
 				this.showError(error);
@@ -51,9 +52,16 @@ export class SaveWorklogRulesComponent extends BaseComponent implements OnInit {
 
 	buildRules()
 	{		
-		Object.keys(this.work_log_rules.json_rules).forEach((key) => {
-			this.array_rules.push({key: key, value: this.work_log_rules.json_rules[key]});
-		});
+		if (!this.work_log_rules.json_rules)
+		{
+			this.work_log_rules.json_rules = {};
+		}
+		else
+		{
+			Object.keys(this.work_log_rules.json_rules).forEach((key) => {
+				this.array_rules.push({key: key, value: this.work_log_rules.json_rules[key]});
+			});
+		}
 		console.log(this.array_rules);
 	}
 
@@ -79,6 +87,13 @@ export class SaveWorklogRulesComponent extends BaseComponent implements OnInit {
 			rules[key] = rule.value;
 		});
 
+		console.log(rules);
+		console.log(this.work_log_rules);
+		if(!this.work_log_rules)
+		{
+			this.work_log_rules = GetEmpty.work_log_rules();
+			this.work_log_rules.store_id = this.rest.user?.store_id as number;
+		}
 		this.work_log_rules.json_rules = rules;
 
 		// user.master ? production.total_prod * 0.2 : production.total_prod * 0.1
