@@ -134,6 +134,7 @@ export class GetEmpty
 			platform_client_id: null,
 			points: 0,
 			price_type_id: null,
+			production_area_id: null,
 			status:'ACTIVE',
 			store_id: 0,
 			type: 'CLIENT',

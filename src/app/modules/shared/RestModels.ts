@@ -1481,6 +1481,7 @@ export interface User{
 	platform_client_id:number | null;
 	points:number;
 	price_type_id:number | null;
+	production_area_id:number | null;
 	status:'ACTIVE'|'DELETED';
 	store_id:number | null;
 	type:'CLIENT'|'USER';
