@@ -106,12 +106,13 @@ export class ListRequisitionComponent extends BaseComponent implements OnInit
 					this.search_requisition.search_extra['required_by_store_id'] = null;
 				}
 		
-				let store_id: number = this.rest.user?.store_id as number;
+				//let store_id: number = this.rest.user?.store_id as number;
+				let production_area_id: number = this.rest.user?.production_area_id as number;
 
 				return forkJoin
 				({
 					stores: this.rest_store.search({limit:999999, eq:{status:'ACTIVE', sales_enabled: 1}}),
-					requisition: this.rest.getReport('requisition_items',{required_by_store_id: this.search_requisition.search_extra['required_by_store_id'] , store_id ,start_timestamp: this.search_requisition.search_extra['start_timestamp'], end_timestamp: this.search_requisition.search_extra['end_timestamp'], _sort: this.search_requisition.sort_order }),
+					requisition: this.rest.getReport('requisition_items',{required_by_store_id: this.search_requisition.search_extra['required_by_store_id'] , production_area_id ,start_timestamp: this.search_requisition.search_extra['start_timestamp'], end_timestamp: this.search_requisition.search_extra['end_timestamp'], _sort: this.search_requisition.sort_order }),
 					users: this.rest_check_in.search({eq:{current:1},limit:999999}).pipe
 					(
 						mergeMap((response)=>
@@ -301,6 +302,7 @@ export class ListRequisitionComponent extends BaseComponent implements OnInit
 		this.new_production.qty = cri.input_production.qty;
 		this.new_production.merma_qty = cri.input_production.merma_qty;
 		this.new_production.merma_reason = cri.input_production.merma_reason;
+		this.new_production.production_area_id = user.production_area_id as number;
 
 		if( this.new_production.qty <= 0 && this.new_production.merma_qty <= 0 )
 		{
