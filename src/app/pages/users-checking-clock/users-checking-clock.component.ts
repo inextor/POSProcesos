@@ -42,6 +42,7 @@ export class UsersCheckingClockComponent extends BaseComponent implements OnInit
 				let search_obj = this.rest_user.getSearchObject(param_map);
 				search_obj.eq.type = 'USER';
 				search_obj.eq.store_id = this.rest.user?.store_id;
+				search_obj.eq.production_area_id = this.rest.user?.production_area_id;
 
 				return this.rest_user.search(search_obj);
 			}),
@@ -112,20 +113,5 @@ export class UsersCheckingClockComponent extends BaseComponent implements OnInit
 				this.showError( error )
 			}
 		})
-	}
-
-	endTurn()
-	{
-		//mostar un modal para confirmar que se cerrara el turno
-		this.confirmation.showConfirmAlert(this.user_checkin_info_list,'Cerrar turno','¿Está seguro que desea cerrar el turno?')
-		.subscribe((response)=>
-		{
-			if(response.accepted)
-			{
-				//registra las horas de cada usuario para el dia actual
-				this.showSuccess('Se han registrado las horas de los usuarios (proximamente)')
-			}
-		});
-
 	}
 }
