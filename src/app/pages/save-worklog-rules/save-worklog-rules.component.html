@@ -13,26 +13,28 @@
 
 	<div class="card p-3">
 		<div class="row">
-			<div class="col-4 fw-bold">
+			<div class="d-none d-sm-block col-4 fw-bold">
 				Clave
 			</div>
-			<div class="col-7 fw-bold">
+			<div class="d-none d-sm-block col-6 fw-bold">
 				Valor
 			</div>
-			<div class="col-1 fw-bold text-end">
+			<div class="d-none d-sm-block col-2 fw-bold text-end">
 				Acciones
 			</div>
 		</div>
-		<form class="row" (submit)="save($event)">
+		<form class="row p-0" (submit)="save($event)">
 			<ng-container *ngFor="let wlr of array_rules;let i=index">
-				<div class="col-4 my-1">
+				<div class="col-12 col-md-4 my-1 px-1">
+					<label class="d-md-none fw-bold">Clave</label>
 					<input type="text" class="form-control" [(ngModel)]="wlr.key" name="{{'key'+i}}">
 				</div>
-				<div class="col-7 my-1">
+				<div class="col-12 col-md-6 my-1 px-1">
+					<label class="d-md-none fw-bold">Valor</label>
 					<input type="text" class="form-control" [(ngModel)]="wlr.value" name="{{'value'+i}}">
 				</div>
-				<div class="col-1 my-1 text-end">
-					<button type="button" class="btn btn-primary" (click)="removeRule(i)">
+				<div class="col-12 col-md-2 my-1 text-end">
+					<button type="button" class="btn btn-primary w-100" (click)="removeRule(i)">
 						<svg xmlns="http://www.w3.org/2000/svg" width="1.4em" height="1.4em" viewBox="0 0 256 256"><path fill="currentColor" d="M216 48h-40v-8a24 24 0 0 0-24-24h-48a24 24 0 0 0-24 24v8H40a8 8 0 0 0 0 16h8v144a16 16 0 0 0 16 16h128a16 16 0 0 0 16-16V64h8a8 8 0 0 0 0-16M112 168a8 8 0 0 1-16 0v-64a8 8 0 0 1 16 0Zm48 0a8 8 0 0 1-16 0v-64a8 8 0 0 1 16 0Zm0-120H96v-8a8 8 0 0 1 8-8h48a8 8 0 0 1 8 8Z"/></svg>
 					</button>
 				</div>

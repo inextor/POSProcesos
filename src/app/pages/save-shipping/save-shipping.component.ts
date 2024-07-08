@@ -77,9 +77,6 @@ export class SaveShippingComponent extends BaseComponent
 				this.to_store_id = parseInt(params.get('store_id') as string) || null;
 				this.from_store_id = parseInt(this.rest.user?.store_id?.toString() || '');
 				let shipping_id = params.has('id') ? parseInt(params.get('id') ?? '') : null;
-				console.log('shipping_id', shipping_id);
-				console.log('to_store_id', this.to_store_id);
-				console.log('from_store_id', this.from_store_id);
 				
 				let start = new Date();
 				let end = new Date();
@@ -190,14 +187,11 @@ export class SaveShippingComponent extends BaseComponent
 
 		//removin those items that have no stock
 		this.crequisition_info.citems = this.crequisition_info.citems.filter((citem)=>citem.stock > 0);
-		console.log('crequisition_info', this.crequisition_info);
 	}
 
 	//vuelve a buscar las requisiciones para volver a inicializar el crequisition_info
 	requisitionSearch(evt:Event,fecha: string,to_store_id: number | null)
 	{
-		this.is_loading = true;
-
 		if( !to_store_id  || !this.from_store_id)
 		{
 			this.crequisition_info = null;
@@ -276,7 +270,6 @@ export class SaveShippingComponent extends BaseComponent
 					}
 
 					this.initializeCRequisitionInfo(ri, shippings, item_stock_list, productions_list, store);
-					console.log('requisitions found')
 				}
 				else
 				{
@@ -428,7 +421,6 @@ export class SaveShippingComponent extends BaseComponent
 				this.shipping_info.shipping.received_by_user_id = this.rest.user?.id;
 				this.shipping_info.shipping.from_store_id = this.from_store_id;
 				this.shipping_info.shipping.to_store_id = this.to_store_id;
-				console.log('shipping_info', this.shipping_info);
 				this.subs.sink	= this.rest_shipping_info.create( this.shipping_info )
 				.pipe
 				(
