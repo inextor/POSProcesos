@@ -62,7 +62,6 @@ export class SaveWorklogRulesComponent extends BaseComponent implements OnInit {
 				this.array_rules.push({key: key, value: this.work_log_rules.json_rules[key]});
 			});
 		}
-		console.log(this.array_rules);
 	}
 
 	addRule()

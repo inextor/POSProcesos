@@ -110,7 +110,6 @@ export class ListShippingComponent extends BaseComponent
 			next: (response)=> {
 				this.crequisition_by_store_list = response.report as CRequisitionByStore[];
 				
-				console.log(this.crequisition_by_store_list);
 				this.total_required = this.crequisition_by_store_list.reduce((p,c)=>p+c.required,0);
 				this.total_shipped = this.crequisition_by_store_list.reduce((p,c)=>p+c.shipped,0);
 				this.total_pending = this.crequisition_by_store_list.reduce((p,c)=>p+c.pending,0);

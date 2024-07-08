@@ -123,7 +123,6 @@ export class ViewProductionAreaComponent extends BaseComponent implements OnInit
 				return { ...user, extra_fields } as CUser;
 			});
 
-			console.log(this.user_list);
 			this.cproduction_area_item_list = response.items.production_area_items.data.map((pai:Production_Area_Item)=>
 			{
 				let item = response.items.items.data.find((item:Item)=>item.id == pai.item_id);

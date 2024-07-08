@@ -49,8 +49,6 @@ export class ListProductionAreaItemComponent extends BaseComponent implements On
 				this.production_area_item_search.eq.status = 'ACTIVE';
 				this.production_area_item_search.limit = 99999;
 
-				console.log(this.production_area_item_search);
-
 				return forkJoin
 				({
 					production_area_item: this.rest_production_area_item.search(this.production_area_item_search),
