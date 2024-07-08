@@ -158,7 +158,6 @@ export class ViewProductionAreaComponent extends BaseComponent implements OnInit
 
 	saveUserExtraFields(cuser:CUser)
 	{
-		console.log(cuser);
 		let user_extra_fields:User_extra_fields = GetEmpty.user_extra_fields(cuser.id);
 		user_extra_fields.user_id = cuser.id;
 		user_extra_fields.json_fields = {};
@@ -166,8 +165,6 @@ export class ViewProductionAreaComponent extends BaseComponent implements OnInit
 		{
 			user_extra_fields.json_fields[extra_field.key] = extra_field.value;
 		});
-
-		console.log(user_extra_fields);
 
 		this.subs.sink = this.rest_user_extra_fields.update(user_extra_fields)
 		.subscribe({
@@ -239,7 +236,7 @@ export class ViewProductionAreaComponent extends BaseComponent implements OnInit
 		if ( this.user_list.findIndex((u:User)=>u.id == user.id) != -1 )
 			return this.showError('El usuario ya ha sido agregado');
 
-		this.confirmation.showConfirmAlert(user,'Confirmar','¿Desea agregar ' + user.name + ' al area de producción?')
+		this.confirmation.showConfirmAlert(user,'Confirmar','¿Desea agregar a ' + user.name + ' al area de producción?')
 		.pipe(filter((response)=> response.accepted))
 		.subscribe((response)=>
 		{
