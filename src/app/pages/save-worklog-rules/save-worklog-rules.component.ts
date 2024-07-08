@@ -96,7 +96,8 @@ export class SaveWorklogRulesComponent extends BaseComponent implements OnInit {
 		}
 		this.work_log_rules.json_rules = rules;
 
-		// user.master ? production.total_prod * 0.2 : production.total_prod * 0.1
+		//RULE PARA TECATE
+		// user.master ? production.total_prod * 0.2 : (production.total_prod * 0.1) / production.total_users
 		
 		this.subs.sink = this.rest_work_log_rules.update(this.work_log_rules)
 		.subscribe({

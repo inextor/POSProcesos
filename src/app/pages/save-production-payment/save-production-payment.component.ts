@@ -180,6 +180,8 @@ export class SaveProductionPaymentComponent extends BaseComponent implements OnI
 
 	buildUserProductionReport(users:User[], work_logs:Work_Log[], productions:Production[], items:ItemInfo[], payment_total:number)
 	{
+		let total_users = users.length;
+
 		users.forEach((user)=>
 		{
 			//primero encontrar todos los work_logs de este usuario (ya que pueden ser varios en el mismo dia)
@@ -229,6 +231,7 @@ export class SaveProductionPaymentComponent extends BaseComponent implements OnI
 			{
 				total_hours,
 				total_extra_hours,
+				total_users,
 				total_prod: payment_total,
 				individual_prod: production_qty,
 				individual_cost: cost
