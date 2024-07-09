@@ -230,8 +230,8 @@ export class ViewProductionAreaComponent extends BaseComponent implements OnInit
 		if (user.production_area_id != null)
 			return this.showError('El usuario ya pertenece a un area de producción (#' + user.production_area_id + ')');
 
-		if ( this.rest.user && user.store_id != this.rest.user.store_id)
-			return this.showError('El usuario no pertenece a la misma tienda');
+		// if ( this.rest.user && user.store_id != this.rest.user.store_id)
+		// 	return this.showError('El usuario no pertenece a la misma tienda');
 
 		if ( this.user_list.findIndex((u:User)=>u.id == user.id) != -1 )
 			return this.showError('El usuario ya ha sido agregado');
