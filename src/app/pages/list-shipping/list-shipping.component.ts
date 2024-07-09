@@ -99,7 +99,7 @@ export class ListShippingComponent extends BaseComponent
 				}
 
 				return forkJoin({
-					report: this.rest.getReport('requisition_shipping',search_obj),
+					report: this.rest.getReport('requisitionShipping',search_obj),
 					production_area: this.rest_production_area.search({limit:99999})
 				});
 			})

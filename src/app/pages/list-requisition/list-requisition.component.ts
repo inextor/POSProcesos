@@ -112,7 +112,7 @@ export class ListRequisitionComponent extends BaseComponent implements OnInit
 				return forkJoin
 				({
 					stores: this.rest_store.search({limit:999999, eq:{status:'ACTIVE', sales_enabled: 1}}),
-					requisition: this.rest.getReport('requisition_items',{required_by_store_id: this.search_requisition.search_extra['required_by_store_id'] , production_area_id ,start_timestamp: this.search_requisition.search_extra['start_timestamp'], end_timestamp: this.search_requisition.search_extra['end_timestamp'], _sort: this.search_requisition.sort_order }),
+					requisition: this.rest.getReport('requisitionItems',{required_by_store_id: this.search_requisition.search_extra['required_by_store_id'] , production_area_id ,start_timestamp: this.search_requisition.search_extra['start_timestamp'], end_timestamp: this.search_requisition.search_extra['end_timestamp'], _sort: this.search_requisition.sort_order }),
 					users: this.rest_check_in.search({eq:{current:1},limit:999999}).pipe
 					(
 						mergeMap((response)=>
