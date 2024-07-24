@@ -63,11 +63,11 @@ export class ListShippingComponent extends BaseComponent
 					this.production_search.eq.production_area_id = 1;
 				}
 
-				if(paramMap.has('ge.date'))
+				if(paramMap.has('ge.created'))
 				{
-					let start = new Date(paramMap.get('ge.date') as string + 'T00:00:00');
+					let start = new Date(paramMap.get('ge.created') as string);
 					this.production_search.ge.created = start;
-					this.fecha_inicial = paramMap.get('ge.date') as string;
+					this.fecha_inicial = (paramMap.get('ge.created') as string).split(/T|\s/)[0];
 				}
 				else
 				{
@@ -77,17 +77,17 @@ export class ListShippingComponent extends BaseComponent
 					this.production_search.ge.created = start;
 				}
 
-				if(paramMap.has('le.date'))
+				if(paramMap.has('le.created'))
 				{
-					let end = new Date(paramMap.get('le.date') as string + 'T23:59:59');
+					let end = new Date(paramMap.get('le.created') as string);
 					this.production_search.le.created = end;
-					this.fecha_final = paramMap.get('le.date') as string;
+					this.fecha_final = (paramMap.get('le.created') as string).split(/T|\s/)[0];
 				}
 				else
 				{
 					let end = new Date();
-					this.fecha_final = end.toISOString().split('T')[0];
 					end.setHours(23, 59, 59);
+					this.fecha_final = end.toISOString().split('T')[0];
 					this.production_search.le.created = end;
 				}
 
