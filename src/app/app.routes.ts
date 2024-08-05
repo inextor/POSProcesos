@@ -29,7 +29,6 @@ export const routes: Routes = [
 	{path: 'edit-production-area/:id', component: SaveProductionAreaComponent, canActivate: [authGuard]},
 	{path: 'list-production-area', component: ListProductionAreaComponent, canActivate: [authGuard]},
 	{path: 'view-production-area/:id', component: ViewProductionAreaComponent, canActivate: [authGuard]},
-	{path: 'list-production-area-item', component: ListProductionAreaItemComponent, canActivate: [authGuard]},
 	{path: 'add-process/:production_area_id', component: SaveProcessComponent, canActivate: [authGuard]},
 	{path: 'edit-process/:id', component: SaveProcessComponent, canActivate: [authGuard]},
 //	{path: 'list-process', component: ListProcessComponent},
