@@ -352,6 +352,7 @@ export interface Item{
 	description:string | null;
 	extra_name:string | null;
 	form_id:number | null;
+	for_reservation:'NO'|'YES';
 	has_serial_number:'NO'|'YES';
 	id:number;
 	image_id:number | null;
@@ -362,6 +363,7 @@ export interface Item{
 	note_required:'NO'|'YES';
 	on_sale:'NO'|'YES';
 	partial_sale:'NO'|'YES';
+	period_type:'BY_HOUR'|'DAILY'|'WEEKLY'|'MONTHLY';
 	product_id:number | null;
 	provider_user_id:number | null;
 	reference_currency_id:string;
@@ -571,6 +573,7 @@ export interface Order{
 	note:string | null;
 	paid_status:'PENDING'|'PAID'|'PARTIALLY_PAID';
 	paid_timetamp:Date;
+	period_id:number | null;
 	price_type_id:number
 	quote_id:number | null;
 	sat_codigo_postal:string | null;
@@ -785,6 +788,19 @@ export interface Payroll_Concept_Value{
 	payroll_concept_id:number;
 	value:number;
 	status:'ACTIVE'|'DELETED';
+}
+export interface period{
+	id:number;
+	created:Date;
+	created_by_user_id:number;
+	end_timestamp:Date;
+	minutes_offset:number;
+	note:string | null;
+	reservation_id:number;
+	start_timestamp:Date;
+	status:'ACTIVE'|'DELETED';
+	updated:Date;
+	updated_by_user_id:number;
 }
 export interface Points_Log{
 	client_user_id:number
@@ -1098,6 +1114,58 @@ export interface Requisition_Item{
 	status:'ACTIVE'|'DELETED';
 	updated:Date;
 }
+export interface Reservation {
+	id:number;
+	address_id:number | null;
+	created:Date;
+	created_by_user_id:number;
+	currency_id:string;
+	note:string | null;
+	start:Date | null;
+	status: 'ACTIVE' | 'DELETED';
+	updated:Date;
+	updated_by_user_id:number;
+	user_id:number | null;
+}
+export interface Reservation_Item{
+	id: number;
+	created: Date;
+	end: Date | null;
+	item_id: number;
+	last_period_id: number | null;
+	note: string | null;
+	period_type: 'BY_HOUR' | 'DAILY' | 'WEEKLY' | 'MONTHLY';
+	price: number;
+	tax_included: 'YES' | 'NO';
+	qty: number;
+	reservation_id: number;
+	scheduled_delivery: Date | null;
+	scheduled_return: Date | null;
+	serial_item_id: number;
+	start: Date;
+	status: 'ACTIVE' | 'DELETED';
+	updated: Date;
+}
+export interface Reservation_item_serial{
+	id: number;
+	created: Date;
+	created_by_user_id: number;
+	delivered_timestamp: Date | null;
+	delivery_by_user_id: number | null;
+	end: Date | null;
+	minutes_offset: number;
+	note: string | null;
+	reservation_item_id: number;
+	returned_timestamp: Date | null;
+	returned_by_user_id: number | null;
+	schedule_delivery: Date | null;
+	schedule_return: Date | null;
+	serial_id: number;
+	start: Date | null;
+	status: 'ACTIVE' | 'DELETED';
+	updated: Date;
+	updated_by_user_id: number;
+}
 export interface Returned_Item{
 	created:Date;
 	id:number;
@@ -1143,6 +1211,7 @@ export interface Sat_Response{
 }
 export interface Serial{
 	additional_data:string | null;
+	available_status:'AVAILABLE'|'RESERVED'|'MAINTENANCE';
 	created:Date;
 	created_by_user_id:number | null;
 	description:string | null;
