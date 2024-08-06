@@ -1146,7 +1146,7 @@ export interface Reservation_Item{
 	status: 'ACTIVE' | 'DELETED';
 	updated: Date;
 }
-export interface Reservation_item_serial{
+export interface Reservation_Item_Serial{
 	id: number;
 	created: Date;
 	created_by_user_id: number;
