@@ -1,4 +1,4 @@
-import { Category, Item, Order, Order_Item, Process, Production, Requisition, Requisition_Item, Shipping, Shipping_Item, Store, Task, User } from "./RestModels";
+import { Category, Item, Order, Order_Item, Process, Production, Requisition, Requisition_Item, Reservation, Reservation_Item, Reservation_Item_Serial, Serial, Shipping, Shipping_Item, Store, Task, User } from "./RestModels";
 
 export interface RequisitionItemInfo
 {
@@ -62,3 +62,22 @@ export interface SocketMessage
 	id?:string | number;
 }
 
+export interface ReservationItemSerialInfo
+{
+	reservation_item_serial:Reservation_Item_Serial;
+	serial:Serial;
+}
+
+export interface ReservationItemInfo
+{
+	reservation_item:Reservation_Item;
+	category:Category | null;
+	item:Item;
+	serials:ReservationItemSerialInfo[];
+}
+
+export interface ReservationInfo
+{
+	reservation:Reservation;
+	items:ReservationItemInfo[]
+}
