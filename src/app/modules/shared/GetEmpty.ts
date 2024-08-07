@@ -1,5 +1,5 @@
-import { ShippingInfo } from "./Models";
-import { User_Permission,Preferences,Production_Area,Process, Production, Shipping, Store, Payroll, Payroll_Concept_Value, Work_log_rules, User_extra_fields, User, Production_Area_Item, Item, Category } from "./RestModels";
+import { ReservationInfo, ReservationItemInfo, ShippingInfo } from "./Models";
+import { User_Permission,Preferences,Production_Area,Process, Production, Shipping, Store, Payroll, Payroll_Concept_Value, Work_log_rules, User_extra_fields, User, Production_Area_Item, Item, Category, Reservation, Reservation_Item } from "./RestModels";
 
 export class GetEmpty
 {
@@ -113,6 +113,66 @@ export class GetEmpty
 			item_id: null,
 			status:'ACTIVE',
 			updated: new Date(),
+		};
+	}
+
+	static reservation():Reservation
+	{
+		return {
+			id:0,
+			address_id: null,
+			client_name: '',
+			created: new Date(),
+			created_by_user_id: 0,
+			condition:'ACTIVE',
+			currency_id: 'MXN',
+			note: '',
+			start: new Date(),
+			status:'ACTIVE',
+			updated: new Date(),
+			updated_by_user_id: 0,
+			user_id: 0,
+		};
+	}
+
+	static reservation_item():Reservation_Item
+	{
+		return {
+			id:0,
+			created: new Date(),
+			end: null,
+			item_id: 0,
+			last_period_id: null,
+			note: '',
+			period_type: 'MONTHLY',
+			price: 0,
+			tax_included: 'NO',
+			qty: 0,
+			reservation_id: 0,
+			scheduled_delivery: null,
+			scheduled_return: null,
+			serial_item_id: 0,
+			start: new Date(),
+			status:'ACTIVE',
+			updated: new Date(),
+		};
+	}
+
+	static reservation_item_info():ReservationItemInfo
+	{
+		return {
+			reservation_item: GetEmpty.reservation_item(),
+			item: GetEmpty.item(),
+			category: null,
+			serials: []
+		};
+	}
+
+	static reservation_info():ReservationInfo
+	{
+		return {
+			reservation: GetEmpty.reservation(),
+			items: []
 		};
 	}
 

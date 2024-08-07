@@ -1117,8 +1117,10 @@ export interface Requisition_Item{
 export interface Reservation {
 	id:number;
 	address_id:number | null;
+	client_name:string;
 	created:Date;
 	created_by_user_id:number;
+	condition:'DRAFT'|'ACTIVE'|'CLOSED';
 	currency_id:string;
 	note:string | null;
 	start:Date | null;
@@ -1222,6 +1224,13 @@ export interface Serial{
 	store_id:number
 	updated:Date;
 	updated_by_user_id:number | null;
+}
+interface Serial_Log{
+	id:number;
+	serial_id:number;
+	note:string;
+	reservation_item_id:number;
+	timestamp:Date;
 }
 interface CSerial extends Serial
 {

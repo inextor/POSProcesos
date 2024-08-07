@@ -1,1 +1,39 @@
-<p>list-reservation works!</p>
+<div class="container-fluid">
+	<div class="row align-items-center">
+		<div class="col-6">
+			<h1 class="my-3">Reservaciones</h1>
+		</div>
+		<div class="col-6 text-end">
+			<a class="btn btn-primary text-end" [routerLink]="['/rentals/add-reservation']">Crear Reservación</a>
+		</div>
+	</div>
+
+	<div class="card p-3">
+		<div class="row">
+			<div class="col-12 col-md-3">
+				<div class="form-group mb-3">
+					<label for="client_id">Cliente</label>
+					<app-search-users [type]="'CLIENT'" [reset_on_search]="false" (user_selected)="onSelectUser($event)"></app-search-users>
+				</div>
+			</div>
+			<div class="col-12 col-md-3">
+				<div class="form-group mb-3">
+					<label>Fecha Creacion Inicial</label>
+					<input type="datetime-local" class="form-control" name="initial_date" [(ngModel)]="initial_date" (ngModelChange)="onDateChange($event, reservation_search.ge, 'created')">
+				</div>
+			</div>
+			<div class="col-12 col-md-3">
+				<div class="form-group mb-3">
+					<label for="end_date">Fecha Creacion Final</label>
+					<input type="datetime-local" class="form-control" id="end_date" [(ngModel)]="end_date" (ngModelChange)="onDateChange($event, reservation_search.le, 'created', '', 59)">
+				</div>
+			</div>
+			<div class="col-12 col-md-3">
+				<div class="form-group mb-3">
+					<label>&nbsp;</label>
+					<button class="btn btn-primary w-100" (click)="search(reservation_search)">Buscar</button>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
