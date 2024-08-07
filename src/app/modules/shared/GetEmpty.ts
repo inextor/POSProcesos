@@ -163,8 +163,9 @@ export class GetEmpty
 		return {
 			reservation_item: GetEmpty.reservation_item(),
 			item: GetEmpty.item(),
+			serial_item: GetEmpty.item(),
 			category: null,
-			serials: []
+			serials: [],
 		};
 	}
 
@@ -172,6 +173,7 @@ export class GetEmpty
 	{
 		return {
 			reservation: GetEmpty.reservation(),
+			user: null,
 			items: []
 		};
 	}
@@ -205,7 +207,6 @@ export class GetEmpty
 			username:'',
 			workshift_id: null,
 		};
-	
 	}
 	static user_permission():User_Permission
 	{
