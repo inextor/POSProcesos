@@ -73,7 +73,6 @@ export interface ReservationItemInfo
 	reservation_item:Reservation_Item;
 	category:Category | null;
 	item:Item;
-	client_user:User | null;
 	serial_item:Item;
 	serials:ReservationItemSerialInfo[];
 }
@@ -82,4 +81,5 @@ export interface ReservationInfo
 {
 	reservation:Reservation;
 	items:ReservationItemInfo[]
+	user:User | null;
 }

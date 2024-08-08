@@ -129,6 +129,7 @@ export class GetEmpty
 			note: '',
 			start: new Date(),
 			status:'ACTIVE',
+			store_id: 0,
 			updated: new Date(),
 			updated_by_user_id: 0,
 			user_id: 0,

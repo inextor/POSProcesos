@@ -946,7 +946,7 @@ export interface Price_Type{
 	model:'AMOUNT'|'PERCENT'|'ALL';
 	name:string;
 	show_bill_code:'YES'|'NO';
-	sort_priority:number | null;
+	sort_priority:number;
 	tax_model:'TAX_INCLUDED'|'PLUS_TAX'|'ALL';
 	type:'RETAIL'|'WHOLESALE';
 	updated:Date;
@@ -1125,6 +1125,7 @@ export interface Reservation {
 	note:string | null;
 	start:Date | null;
 	status: 'ACTIVE' | 'DELETED';
+	store_id:number;
 	updated:Date;
 	updated_by_user_id:number;
 	user_id:number | null;

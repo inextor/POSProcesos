@@ -4,9 +4,9 @@ import { Rest,RestResponse, RestSimple, SearchObject } from './Rest';
 import { GetEmpty } from '../GetEmpty';
 import { OFFLINE_DB_SCHEMA } from '../OfflineDBSchema';
 import { ErrorMessage, Utils } from '../Utils';
-import { Preferences, User, User_Permission } from '../RestModels';
+import { Preferences, Price_Type, User, User_Permission } from '../RestModels';
 import { HttpHeaders, HttpClient, HttpParams } from '@angular/common/http'
-import { BehaviorSubject, Observable, Subject } from 'rxjs';
+import { BehaviorSubject, mergeMap, Observable, of, Subject } from 'rxjs';
 import { environment } from '../../../../environments/environment';
 import { io, Socket } from 'socket.io-client';
 import { SocketMessage } from '../Models';
@@ -664,6 +664,21 @@ export class RestService
 			}
 			return Promise.resolve( this.local_preferences );
 		})
+	}
+
+	getPriceTypes(force_offline:boolean = false):Observable<RestResponse<Price_Type>>
+	{
+		let rest_price_type:RestSimple<Price_Type> = this.initRest('price_type');
+		return rest_price_type.search({limit:999999}).pipe
+		(
+			mergeMap((response)=>
+			{
+				response.data.sort((a:Price_Type,b:Price_Type)=>{
+					return b.sort_priority > a.sort_priority ? 1 : -1;
+				});
+				return of( response );
+			})
+		);
 	}
 
 	showWarning(msg:string)

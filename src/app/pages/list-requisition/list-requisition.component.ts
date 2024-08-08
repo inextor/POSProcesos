@@ -127,28 +127,34 @@ export class ListRequisitionComponent extends BaseComponent implements OnInit
 				})
 			})
 		)
-		.subscribe((response)=>
+		.subscribe(
 		{
-			this.is_loading = false;
-
-			this.store_list = response.stores.data;
-
-			this.requsition_obj_list = response.requisition.map((cri:CRequisitionItem)=>
+			next: (response)=>
 			{
-				if( cri.requisition != null)
-					cri.requisition.required_by_store = this.store_list.find(s=>cri.requisition?.required_by_store_id) || null;
-				cri.input_production = GetEmpty.production();
-				return cri;
-			});
+				this.is_loading = false;
 
-			//console.log(this.requsition_obj_list);
+				this.store_list = response.stores.data;
 
-			//calculando el total de requeridos que proviene de cri.requisition.sum_qty
-			this.calculateTotalPending(this.requsition_obj_list);
-			//this.sortRequisitions(this.search_str);
+				this.requsition_obj_list = response.requisition.map((cri:CRequisitionItem)=>
+				{
+					if( cri.requisition != null)
+						cri.requisition.required_by_store = this.store_list.find(s=>cri.requisition?.required_by_store_id) || null;
+					cri.input_production = GetEmpty.production();
+					return cri;
+				});
 
-			this.user_list = response.users.data;
+				//console.log(this.requsition_obj_list);
 
+				//calculando el total de requeridos que proviene de cri.requisition.sum_qty
+				this.calculateTotalPending(this.requsition_obj_list);
+				//this.sortRequisitions(this.search_str);
+
+				this.user_list = response.users.data;
+			},
+			error: (error) =>
+			{
+				this.showError(error);
+			}
 		});
 	}
 
