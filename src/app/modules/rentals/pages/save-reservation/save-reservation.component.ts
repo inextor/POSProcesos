@@ -37,7 +37,7 @@ export class SaveReservationComponent extends BaseComponent implements OnInit
 	
 	ngOnInit(): void
 	{
-		this.subs.sink = this.route.queryParamMap.pipe
+		this.subs.sink = this.route.paramMap.pipe
 		(
 			mergeMap((param_map: ParamMap) =>
 			{
@@ -133,6 +133,7 @@ export class SaveReservationComponent extends BaseComponent implements OnInit
 				next: (response) => 
 				{
 					this.showSuccess('Reservación guardada');
+					this.router.navigate(['/rentals/list-reservation']);
 				},
 				error: (error) => 
 				{
@@ -148,6 +149,7 @@ export class SaveReservationComponent extends BaseComponent implements OnInit
 				next: (response) => 
 				{
 					this.showSuccess('Reservación actualizada');
+					this.router.navigate(['/rentals/list-reservation']);
 				},
 				error: (error) => 
 				{
@@ -167,7 +169,7 @@ export class SaveReservationComponent extends BaseComponent implements OnInit
 	{
 		if (user == null)
 		{
-			this.reservation_info.reservation.user_id = 0;
+			this.reservation_info.reservation.user_id = null;
 		}
 
 		if (user)
