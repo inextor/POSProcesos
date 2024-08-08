@@ -66,8 +66,6 @@ export class ListReservationComponent extends BaseComponent implements OnInit
 				this.reservation_search.sort_order = ['id_DESC']
 				this.reservation_search.limit = this.page_size;
 
-				console.log(this.reservation_search);
-
 				return this.rest_reservation_info.search(this.reservation_search);
 			}),
 		)

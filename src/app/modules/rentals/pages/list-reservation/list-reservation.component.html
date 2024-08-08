@@ -36,4 +36,27 @@
 			</div>
 		</div>
 	</div>
+
+	<ng-container *ngIf="reservation_info_list.length == 0">
+		<div class="alert alert-info mt-3">No se encontraron reservaciones</div>
+	</ng-container>
+
+	<ng-container *ngIf="reservation_info_list.length > 0">
+		<div class="card p-3 mt-3" *ngFor="let ri of reservation_info_list">
+			<div class="row align-items-center">
+				<div class="col-12 col-md-3">
+					<b>Cliente:</b> {{ ri.reservation.client_name }}
+				</div>
+				<div class="col-12 col-md-3">
+					<b>Fecha de Creación:</b> {{ ri.reservation.created | date:'dd/MM/yyyy HH:mm' }}
+				</div>
+				<div class="col-12 col-md-3">
+					<b>Fecha de Inicio:</b> {{ ri.reservation.start | date:'dd/MM/yyyy HH:mm' }}
+				</div>
+				<div class="col-12 col-md-3 text-end">
+					<a class="btn btn-primary" [routerLink]="['/rentals/edit-reservation', ri.reservation.id]">Editar</a>
+				</div>
+			</div>
+		</div>
+	</ng-container>
 </div>
