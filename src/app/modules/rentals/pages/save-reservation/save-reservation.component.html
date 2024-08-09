@@ -5,7 +5,7 @@
 	<form ngNativeValidate (submit)="saveReservation($event)">
 		<div class="card p-3 mb-3">
 			<div class="row">
-				<div class="col-12 col-md">
+				<div class="col-12 col-md-4">
 					<div class="form-group">
 						<label>Cliente</label>
 						<app-search-users [type]="'CLIENT'" [search_str]="client_search_str" (search_strChange)="onClientStrChange($event)" [reset_on_search]="false" (user_selected)="onSelectUser($event)"></app-search-users>
@@ -17,27 +17,27 @@
 						<option *ngFor="let currency of currency_rate_list" [value]="currency.currency_id">{{ currency.currency_id }}</option>
 					</select>
 				</div> -->
-				<div class="col-12 col-md">
+				<div class="col-12 col-md-3">
 					<label>Fecha inicio de reservación</label>
 					<input type="datetime-local" class="form-control" name="start_date" [(ngModel)]="reservation_info.reservation.start" required>
 				</div>
-				<div class="col-12 col-md" *ngIf="reservation_info.reservation.user_id">
+				<div class="col-12 col-md-4" *ngIf="reservation_info.reservation.user_id">
 					<label>Dirección</label>
 					<select class="form-control" name="address_id" [(ngModel)]="reservation_info.reservation.address_id" [required]="reservation_info.reservation.user_id != 0">
 						<option value="">Seleccionar</option>
 						<option *ngFor="let address of address_user_list" [value]="address.id">{{ address.address }}</option>
 					</select>
 				</div>
-				<div class="col-12 col-md-4">
-					<label>Nota</label>
-					<textarea class="form-control" name="note" rows="1" [(ngModel)]="reservation_info.reservation.note"></textarea>
-				</div>
-				<div class="col-12 col-md-4">
+				<div class="col-12 col-md-2">
 					<label>Sucursal</label>
 					<select class="form-control" name="store" [(ngModel)]="reservation_info.reservation.store_id" required>
 						<option value="">Seleccionar</option>
 						<option *ngFor="let store of store_list" [value]="store.id">{{ store.name }}</option>
 					</select>
+				</div>
+				<div class="col-12 col-md">
+					<label>Nota</label>
+					<textarea class="form-control" name="note" rows="1" [(ngModel)]="reservation_info.reservation.note"></textarea>
 				</div>
 			</div>
 		</div>
