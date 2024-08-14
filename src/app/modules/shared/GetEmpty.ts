@@ -1,4 +1,4 @@
-import { ReservationInfo, ReservationItemInfo, ShippingInfo } from "./Models";
+import { ExtendedReservation, ReservationInfo, ReservationItemInfo, ShippingInfo } from "./Models";
 import { User_Permission,Preferences,Production_Area,Process, Production, Shipping, Store, Payroll, Payroll_Concept_Value, Work_log_rules, User_extra_fields, User, Production_Area_Item, Item, Category, Reservation, Reservation_Item } from "./RestModels";
 
 export class GetEmpty
@@ -116,7 +116,7 @@ export class GetEmpty
 		};
 	}
 
-	static reservation():Reservation
+	static reservation():ExtendedReservation
 	{
 		return {
 			id:0,
@@ -133,6 +133,19 @@ export class GetEmpty
 			updated: new Date(),
 			updated_by_user_id: 0,
 			user_id: null,
+			_timestamp_next_delivery: null,
+			_timestamp_next_return: null,
+			_timestamp_next_dispatch_after: null,
+			_to_schedule:0,
+			_to_schedule_delivery :0,
+			_to_schedule_return:0,
+			_to_be_returned:0,
+			_to_be_delivered:0,
+			_to_assign:0,
+			_return_assignments:0,
+			_delivery_assignments:0,
+			_count_items:0,
+			_total_qty:0
 		};
 	}
 
