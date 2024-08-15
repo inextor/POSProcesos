@@ -64,11 +64,13 @@
 			<tr *ngFor="let ri of reservation_info_list">
 			<tr *ngFor="let ri of reservation_info_list">
 				<td class="border">
-					<b>#{{ri.reservation.id}}</b>
-					{{ ri.reservation.client_name }}
+					<a [routerLink]="['/rentals/view-reservation', ri.reservation.id]">
+						<b>#{{ri.reservation.id}}</b>
+						{{ ri.reservation.client_name }}
+					</a>
 				</td>
-				<td class="border text-end">{{ri.reservation.start | shortDate}}</td>
-				<td class="border text-end">{{ri.reservation.created | shortDate}}</td>
+				<td class="border text-end">{{ri.reservation.start }}</td>
+				<td class="border text-end">{{ri.reservation.created }}</td>
 				<td class="border text-end">
 					<a class="btn btn-primary" [routerLink]="['/rentals/edit-reservation', ri.reservation.id]">Editar</a>
 					<button class="btn btn-primary" (click)="showAssignDelivery(ri)">Asignar Entrega</button>

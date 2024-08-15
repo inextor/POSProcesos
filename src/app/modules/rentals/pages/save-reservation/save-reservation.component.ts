@@ -10,6 +10,7 @@ import { Rest, RestSimple } from '../../../shared/services/Rest';
 import { FormsModule } from '@angular/forms';
 import { SearchUsersComponent } from '../../../../components/search-users/search-users.component';
 import { SearchItemsComponent } from '../../../../components/search-items/search-items.component';
+import { ModalComponent } from '../../../../components/modal/modal.component';
 
 @Component({
   selector: 'app-save-reservation',
@@ -34,7 +35,7 @@ export class SaveReservationComponent extends BaseComponent implements OnInit
 	address_user_list:Address[] = [];
 	price_type_list:Price_Type[] = [];
 	store_list:Store[] = [];
-	
+
 	ngOnInit(): void
 	{
 		this.subs.sink = this.route.paramMap.pipe
@@ -55,12 +56,12 @@ export class SaveReservationComponent extends BaseComponent implements OnInit
 
 				return forkJoin({
 					reservation_info: reservation_obs,
-					currency_rates: this.rest_currency_rate.search({limit:99999}), 
+					currency_rates: this.rest_currency_rate.search({limit:99999}),
 					price_types: this.rest.getPriceTypes(),
 					stores: this.rest_store.search({eq:{sales_enabled: 1} , limit:99999}),
 				});
 			}),
-			mergeMap((responses) => 
+			mergeMap((responses) =>
 			{
 				let reservation_client_id = 0;
 
@@ -71,7 +72,8 @@ export class SaveReservationComponent extends BaseComponent implements OnInit
 
 				let address_obs = reservation_client_id != 0 ? this.rest_address.search({ eq:{user_id: reservation_client_id} }) : of({total:0,data:[]});
 
-				return forkJoin({
+				return forkJoin
+				({
 					reservation_info: of(responses.reservation_info),
 					currency_rates: of(responses.currency_rates),
 					price_types: of(responses.price_types),
@@ -89,10 +91,10 @@ export class SaveReservationComponent extends BaseComponent implements OnInit
 				this.store_list = responses.stores.data;
 
 				let user = this.rest.user as User;
-				
+
 				if(this.reservation_info.reservation.id == 0)
 				{
-					this.reservation_info.reservation = 
+					this.reservation_info.reservation =
 					{
 						...this.reservation_info.reservation,
 						start: new Date(),
@@ -104,7 +106,7 @@ export class SaveReservationComponent extends BaseComponent implements OnInit
 				if (responses.currency_rates.total > 0)
 				{
 					this.currency_rate_list = responses.currency_rates.data;
-				}				
+				}
 			},
 			error: (error) => {
 				this.showError(error);
@@ -115,9 +117,9 @@ export class SaveReservationComponent extends BaseComponent implements OnInit
 	saveReservation(evt: Event)
 	{
 		evt.preventDefault();
-		
+
 		let user = this.rest.user as User;
-		this.reservation_info.reservation = 
+		this.reservation_info.reservation =
 		{
 			...this.reservation_info.reservation,
 			created_by_user_id: user.id,
@@ -130,12 +132,12 @@ export class SaveReservationComponent extends BaseComponent implements OnInit
 			this.rest_reservation_info.create(this.reservation_info)
 			.subscribe
 			({
-				next: (response) => 
+				next: (response) =>
 				{
 					this.showSuccess('Reservación guardada');
 					this.router.navigate(['/rentals/list-reservation']);
 				},
-				error: (error) => 
+				error: (error) =>
 				{
 					this.showError(error);
 				}
@@ -146,12 +148,12 @@ export class SaveReservationComponent extends BaseComponent implements OnInit
 			this.rest_reservation_info.update(this.reservation_info)
 			.subscribe
 			({
-				next: (response) => 
+				next: (response) =>
 				{
 					this.showSuccess('Reservación actualizada');
 					this.router.navigate(['/rentals/list-reservation']);
 				},
-				error: (error) => 
+				error: (error) =>
 				{
 					this.showError(error);
 				}
@@ -174,14 +176,14 @@ export class SaveReservationComponent extends BaseComponent implements OnInit
 
 		if (user)
 		{
-			this.reservation_info.reservation = 
+			this.reservation_info.reservation =
 			{
 				...this.reservation_info.reservation,
 				user_id: user.id,
 				client_name: user.name,
 				address_id: null
 			}
-			
+
 			this.searchClientAddress(user.id);
 		}
 	}
@@ -241,7 +243,7 @@ export class SaveReservationComponent extends BaseComponent implements OnInit
 
 		let reservation_item:Reservation_Item = GetEmpty.reservation_item();
 
-		reservation_item = 
+		reservation_item =
 		{
 			...reservation_item,
 			item_id: item_info.item.id,

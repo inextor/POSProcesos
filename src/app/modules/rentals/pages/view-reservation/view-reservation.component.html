@@ -1,0 +1,59 @@
+<div class="container-fluid">
+	<h1 class="my-3">Reservaciones</h1>
+	<div class="card">
+		<div>
+			<span>Nombre</span>
+			<strong>{{reservation_info.reservation.client_name}}</strong>
+		</div>
+		<div>
+			<span>Creation</span>
+			<strong>{{reservation_info.reservation.client_name}}</strong>
+		</div>
+		<div>
+			<span>Ultimo Corte</span>
+			<strong>{{reservation_info.reservation.client_name}}</strong>
+		</div>
+
+	</div>
+	<div class="card">
+		<table class="w-100">
+			<tr>
+				<td>Articulo</td>
+				<td></td>
+				<td>Cantidad</td>
+				<td>Entregados</td>
+				<td>Fecha de<br>Entrega</td>
+				<td>Asignado<br>Entrega</td>
+				<td>Fecha de<br>Recoleccion</td>
+				<td>Asignado<br>Recoleccion</td>
+				<td>Acciones</td>
+			</tr>
+			<tr *ngFor="let ri of reservation_info.items">
+				<td>{{ri.item.name}}</td>
+				<td class="text-end">{{ri.reservation_item.qty}}</td>
+				<td class="text-end">{{ri.reservation_item.delivered_qty}}</td>
+				<td class="text-end">{{ri.reservation_item.scheduled_delivery | shortDate}}</td>
+				<td class="text-end"> {{ri.reservation_item.scheduled_return | shortDate}}</td>
+				<td class="text-end">{{ri.reservation_item.returned_qty}}</td>
+				<td class="text-end">
+					<div *ngFor="let dd of ri.delivery_assignments">{{dd.user.name}}</div>
+				</td>
+				<td class="text-end">
+					<div *ngFor="let dd of ri.return_assignments">{{dd.user.name}}</div>
+				</td>
+				<td>
+					<a class="btn btn-primary btn-sm">
+						Asignar Inventario
+					</a>
+					<button class="btn btn-primary btn-sm">Marcar Como Entregado</button>
+					<button class="btn btn-primary btn-sm">Marcar Como Regresado</button>
+				</td>
+			</tr>
+		</table>
+	</div>
+</div>
+ <!--app-modal [(show)]="show_assign_delivery">
+	<div style="min-height:400px">
+		<app-search-users [type]="'USER'" [null_user_string]="'cancelar'" [reset_on_search]="false" (user_selected)="onSelectDeliveryUser($event)"></app-search-users>
+	</div>
+</app-modal-->

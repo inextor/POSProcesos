@@ -47,7 +47,7 @@
 			<div class="row">
 				<div class="col-12 col-md-6">
 					<label>Agregar artículo</label>
-					<app-search-items (item_selected)="onItemSelected($event)" [reset_on_search]="true"></app-search-items>
+					<app-search-items (item_selected)="onItemSelected($event)" [reset_on_search]="true" [for_reservation]="true"></app-search-items>
 				</div>
 			</div>
 		</div>
@@ -78,7 +78,7 @@
 						<label>Fecha de devolución</label>
 						<input type="datetime-local" class="form-control" name="${{i}}-end" [(ngModel)]="rii.reservation_item.end" required>
 					</div>
-					<div class="col-12 col-md-3">
+					<!--div class="col-12 col-md-3">
 						<label>Periodo de cobro</label>
 						<select class="form-control" name="${{i}}-period_type" [(ngModel)]="rii.reservation_item.period_type" required>
 							<option value="BY_HOUR">HORA</option>
@@ -86,18 +86,18 @@
 							<option value="WEEKLY">SEMANA</option>
 							<option value="MONTHLY">MES</option>
 						</select>
-					</div>
+					</div------------------>
 					<div class="col-12 col-md-3">
 						<label>Precio</label>
 						<input type="number" class="form-control" name="${{i}}-price" [(ngModel)]="rii.reservation_item.price" required>
 					</div>
-					<div class="col-12 col-md-3">
+					<!--div class="col-12 col-md-3">
 						<label>Iva Incluido</label>
 						<select class="form-control" name="${{i}}-tax_included" [(ngModel)]="rii.reservation_item.tax_included" required>
 							<option value="NO">No</option>
 							<option value="YES">Si</option>
 						</select>
-					</div>
+					</div-->
 					<div class="col-12 col-md-3">
 						<label>Notas</label>
 						<textarea class="form-control" name="${{i}}-note" rows="1" [(ngModel)]="rii.reservation_item.note"></textarea>
