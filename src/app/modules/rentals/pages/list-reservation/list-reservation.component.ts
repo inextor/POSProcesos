@@ -3,13 +3,14 @@ import { CommonModule } from '@angular/common';
 import { BaseComponent } from '../../../shared/base/base.component';
 import { FormsModule } from '@angular/forms';
 import { SearchUsersComponent } from '../../../../components/search-users/search-users.component';
-import { Delivery_Assignment, Reservation, User } from '../../../shared/RestModels';
+import { Delivery_Assignment, Reservation, Reservation_Item, User } from '../../../shared/RestModels';
 import { Rest, SearchObject } from '../../../shared/services/Rest';
 import { ExtendedReservation, ReservationInfo } from '../../../shared/Models';
 import { mergeMap } from 'rxjs';
 import { RouterModule } from '@angular/router';
 import { Utils } from '../../../shared/Utils';
 import { ModalComponent} from '../../../../components/modal/modal.component';
+import { ShortDatePipe } from "../../../shared/pipes/short-date.pipe";
 
 type ReservationFilter = 'ALL' | 'NOT_SCHEDULED' | 'NOT_ASSIGNED' | 'NOT_RETURNED' | 'NEXT_DELIVERIES' | 'NEXT_RETURNS';
 
@@ -21,13 +22,12 @@ interface CReservation extends ExtendedReservation
 @Component({
 	selector: 'app-list-reservation',
 	standalone: true,
-	imports: [CommonModule, FormsModule, SearchUsersComponent, RouterModule, ModalComponent],
 	templateUrl: './list-reservation.component.html',
-	styleUrl: './list-reservation.component.css'
+	styleUrl: './list-reservation.component.css',
+	imports: [CommonModule, FormsModule, SearchUsersComponent, RouterModule, ModalComponent, ShortDatePipe]
 })
 export class ListReservationComponent extends BaseComponent implements OnInit
 {
-
 	rest_reservation_info:Rest<CReservation, ReservationInfo> = this.rest.initRest('reservation_info');
 	reservation_search = this.rest_reservation_info.getEmptySearch();
 
@@ -39,6 +39,7 @@ export class ListReservationComponent extends BaseComponent implements OnInit
 	show_assign_delivery: boolean = false;
 	show_assign_return: boolean = false;
 	rest_delivery_assignment = this.rest.initRestSimple<Delivery_Assignment>('delivery_assignment');
+	selected_reservation_info: ReservationInfo | null = null;
 
 	ngOnInit(): void
 	{
@@ -130,20 +131,87 @@ export class ListReservationComponent extends BaseComponent implements OnInit
 	{
 		this.reservation_search.eq.default_filter = filter;
 		console.log(this.reservation_search);
+
+		if( filter == 'NOT_ASSIGNED' )
+		{
+			this.reservation_search.sort_order = ['start_ASC'];
+		}
+		if( filter == 'NEXT_DELIVERIES' )
+		{
+			this.reservation_search.sort_order = ['_timestamp_next_delivery_ASC'];
+		}
+		else if( filter == 'NEXT_RETURNS' )
+		{
+			this.reservation_search.sort_order = ['_timestamp_next_delivery_ASC'];
+		}
+
 		this.search( this.reservation_search );
 	}
 
-	showAssignDelivery():void
+	showAssignDelivery(reservation_info:ReservationInfo):void
 	{
+		this.selected_reservation_info = reservation_info;
 		this.show_assign_delivery = true;
 	}
 
-	showAssignReturn():void
+	showAssignReturn(reservation_info:ReservationInfo):void
 	{
+		this.selected_reservation_info = reservation_info;
 		this.show_assign_return = true;
 	}
+
 	onSelectDeliveryUser(user:User|null)
 	{
+		console.log('El usuario ', user, this.selected_reservation_info);
+		if( user == null || this.selected_reservation_info == null )
+		{
+			console.log('El usuario o son nulos');
+			this.show_assign_delivery = false;
+			return;
+		}
+
+		if( user )
+		{
+			let ri_array = this.selected_reservation_info.items.map
+			(
+				(rii)=>
+				{
+					return {
+						reservation_item_id: rii.reservation_item.id,
+						user_id: user.id
+					}
+				}
+			);
+
+			console.log("Que pedo");
+
+			this.subs.sink = this.rest_delivery_assignment
+			.batchCreate( ri_array )
+			.subscribe
+			({
+				next:(response)=>
+				{
+					console.log("Que pedo");
+					this.showSuccess('Asignación de entrega creada');
+					this.router.navigate(['/rentals/list-reservation']);
+					this.show_assign_delivery = false;
+				},
+				error:(error)=>
+				{
+					this.showError(error);
+				}
+			});
+		}
+	}
+
+	onSelectReturnUser(user:User|null)
+	{
+		if( user == null )
+		{
+			this.show_assign_delivery = false;
+			return;
+		}
+
 		if( user )
 		{
 			this.subs.sink = this.rest_delivery_assignment.create
@@ -154,14 +222,13 @@ export class ListReservationComponent extends BaseComponent implements OnInit
 				{
 					this.showSuccess('Asignación de entrega creada');
 					this.router.navigate(['/rentals/list-reservation']);
+					this.show_assign_delivery = false;
 				},
 				error:(error)=>
 				{
 					this.showError(error);
 				}
 			});
-
-
 		}
 	}
 }
