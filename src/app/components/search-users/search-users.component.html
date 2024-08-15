@@ -2,9 +2,7 @@
 <div style="overflow:visible;max-height:10px;position:relative;z-index:3">
 	<div class="pointer border" style="background-color:white" *ngIf="user_list.length">
 		<div (click)="onUserSelected(null)" class="search_item border-bottom" [ngClass]="{'active':selected_index==0}">
-			<span>
-				No registrar
-			</span>
+			<span>{{null_user_string}}</span>
 		</div>
 		<div *ngFor="let user of user_list;let i=index" (click)="onUserSelected(user)" class="search_item border-bottom" [ngClass]="{'active':selected_index==i+1}">
 			<div *ngIf="user.image_id" class="d-inline-block ratio ratio-1x1" [style]="{'background-image':'url('+rest.getImagePath(user.image_id)+')','background-size':'contain',width:'40px','vertical-align':'middle','background-repeat':'no-repeat','background-position':'center center'}">

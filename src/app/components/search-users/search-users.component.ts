@@ -8,11 +8,11 @@ import { KeyboardShortcutEvent, ShortcutsService } from '../../modules/shared/se
 import { FormsModule } from '@angular/forms';
 
 @Component({
-  selector: 'app-search-users',
-  standalone: true,
-  imports: [CommonModule, FormsModule],
-  templateUrl: './search-users.component.html',
-  styleUrl: './search-users.component.css'
+	selector: 'app-search-users',
+	standalone: true,
+	imports: [CommonModule, FormsModule],
+	templateUrl: './search-users.component.html',
+	styleUrl: './search-users.component.css'
 })
 export class SearchUsersComponent implements OnInit, OnDestroy, OnChanges
 {
@@ -21,9 +21,10 @@ export class SearchUsersComponent implements OnInit, OnDestroy, OnChanges
 	@Input() reset_on_search:boolean = true;
 	@Output() search_strChange = new EventEmitter<string>();
 	@Output() user_selected = new EventEmitter<User | null>();
+	@Input() null_user_string:string = 'No registrar';
 
 	rest_user = this.rest.initRestSimple<User>('user');
-	
+
 	search_subject = new Subject<string>();
 	user_list:User[] = [];
 
@@ -71,7 +72,8 @@ export class SearchUsersComponent implements OnInit, OnDestroy, OnChanges
 			{
 				return this.rest_user.search
 				({
-					eq:{ status: 'ACTIVE', type: this.type },
+					eq:{ status: 'ACTIVE', type: this.type, },
+					start:{ name: response},
 					limit: 50,
 				})
 			})
@@ -103,7 +105,7 @@ export class SearchUsersComponent implements OnInit, OnDestroy, OnChanges
 			}
 		});
 	}
-	
+
 	ngOnDestroy()
 	{
 		this.subs.unsubscribe();

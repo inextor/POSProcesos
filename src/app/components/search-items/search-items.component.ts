@@ -24,18 +24,19 @@ export class SearchItemsComponent extends BaseComponent implements OnInit,OnDest
 
 	@ViewChild('item_search', { read: ElementRef })
 	item_search!: ElementRef;
-  	item_info_list:ItemInfo[] = [];
+	item_info_list:ItemInfo[] = [];
 	@Input() search_str:string = '';
 	@Output() search_strChange = new EventEmitter<string>();
 	@Input() store_id:number	= 0;
 	@Input() reset_on_search:boolean = true;
 	@Output() item_selected = new EventEmitter<ItemInfo>();
 	@Input() reset:number = 0;
+	@Input() for_reservation:boolean = false;
 
 	selected_index = -1;
 
-  	rest_item_info:Rest<Item, ItemInfo> = this.rest.initRest('item_info');
-	
+	rest_item_info:Rest<Item, ItemInfo> = this.rest.initRest('item_info');
+
 	search_subject = new Subject<string>();
 	shortcuts:ShortcutsService = new ShortcutsService();
 
@@ -77,12 +78,18 @@ export class SearchItemsComponent extends BaseComponent implements OnInit,OnDest
 			debounceTime(350),
 			mergeMap((response)=>
 			{
-				return this.rest_item_info.search
-				({
+				let search_obj:any = {
 					eq:{ status: 'ACTIVE'},
 					limit: 50,
 					search_extra:{ store_id:this.store_id, category_name: response }
-				})
+				};
+
+				if( this.for_reservation )
+				{
+					search_obj.eq.for_reservation = 'YES';
+				}
+
+				return this.rest_item_info.search( search_obj );
 			})
 		)
 		.subscribe
