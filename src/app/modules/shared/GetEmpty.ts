@@ -3,6 +3,15 @@ import { User_Permission,Preferences,Production_Area,Process, Production, Shippi
 
 export class GetEmpty
 {
+    static getEmptyReservationInfo(): ReservationInfo
+	{
+		return {
+			reservation: GetEmpty.reservation(),
+			user: GetEmpty.user(),
+			items: []
+		};
+    }
+
 	static category(): Category {
 		return {
 			background: 'transparent',
@@ -154,20 +163,22 @@ export class GetEmpty
 		return {
 			id:0,
 			created: new Date(),
+			delivered_qty: 0,
 			end: null,
 			item_id: 0,
 			last_period_id: null,
 			note: '',
 			period_type: 'MONTHLY',
 			price: 0,
-			tax_included: 'NO',
 			qty: 0,
 			reservation_id: 0,
+			returned_qty: 0,
 			scheduled_delivery: null,
 			scheduled_return: null,
 			serial_item_id: 0,
 			start: new Date(),
 			status:'ACTIVE',
+			tax_included: 'NO',
 			updated: new Date(),
 		};
 	}
@@ -179,6 +190,8 @@ export class GetEmpty
 			item: GetEmpty.item(),
 			serial_item: GetEmpty.item(),
 			category: null,
+			return_assignments: [],
+			delivery_assignments: [],
 			serials: [],
 		};
 	}
