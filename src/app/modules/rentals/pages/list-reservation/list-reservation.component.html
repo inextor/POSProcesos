@@ -1,10 +1,20 @@
 <div class="container-fluid">
 	<div class="row align-items-center">
-		<div class="col-6">
-			<h1 class="my-3">Reservaciones</h1>
+		<div class="col-6"> <h1 class="my-3">Reservaciones</h1>
 		</div>
 		<div class="col-6 text-end">
-			<a class="btn btn-primary text-end" [routerLink]="['/rentals/add-reservation']">Crear Reservación</a>
+			<div class="row">
+				<div class="col-12 col-md-auto">
+				<div class="btn-group" role="group" aria-label="Basic example">
+					<button type="button" class="btn btn-primary" [ngClass]="{active:default_filter=='NOT_ASSIGNED'}" (click)="setFilter('NOT_ASSIGNED')">Rentas Sin Programacion</button>
+					<button type="button" class="btn btn-primary" [ngClass]="{active:default_filter=='NOT_RETURNED'}" (click)="setFilter('NOT_RETURNED')">Rentas Sin Recoleccion</button>
+					<button type="button" class="btn btn-primary" [ngClass]="{active:default_filter=='NEXT_DELIVERIES'}" (click)="setFilter('NEXT_DELIVERIES')">Entregas Próximas</button>
+					<button type="button" class="btn btn-primary" [ngClass]="{active:default_filter=='NEXT_RETURNS'}" (click)="setFilter('NEXT_RETURNS')">Recolecciones Próximas</button>
+				</div>
+				<div>
+					<a class="btn btn-primary text-end" [routerLink]="['/rentals/add-reservation']">Agregar</a>
+				</div>
+			</div>
 		</div>
 	</div>
 
@@ -41,22 +51,35 @@
 		<div class="alert alert-info mt-3">No se encontraron reservaciones</div>
 	</ng-container>
 
-	<ng-container *ngIf="reservation_info_list.length > 0">
-		<div class="card p-3 mt-3" *ngFor="let ri of reservation_info_list">
-			<div class="row align-items-center">
-				<div class="col-12 col-md-3">
-					<b>Cliente:</b> {{ ri.reservation.client_name }}
-				</div>
-				<div class="col-12 col-md-3">
-					<b>Fecha de Creación:</b> {{ ri.reservation.created | date:'dd/MM/yyyy HH:mm' }}
-				</div>
-				<div class="col-12 col-md-3">
-					<b>Fecha de Inicio:</b> {{ ri.reservation.start | date:'dd/MM/yyyy HH:mm' }}
-				</div>
-				<div class="col-12 col-md-3 text-end">
+	<div class="card p-3 mt-3 " *ngIf="reservation_info_list.length > 0">
+		<table class="table table-striped w-100">
+			<thead>
+				<tr>
+					<th>Cliente</th>
+					<th class="text-end">Fecha de Inicio</th>
+					<th class="text-end">Fecha de Creación</th>
+					<th class="text-end">Acciones</th>
+				</tr>
+			</thead>
+			<tr *ngFor="let ri of reservation_info_list">
+			<tr *ngFor="let ri of reservation_info_list">
+				<td class="border">
+					<b>#{{ri.reservation.id}}</b>
+					{{ ri.reservation.client_name }}
+				</td>
+				<td class="border text-end">{{ri.reservation.start | shortDate}}</td>
+				<td class="border text-end">{{ri.reservation.created | shortDate}}</td>
+				<td class="border text-end">
 					<a class="btn btn-primary" [routerLink]="['/rentals/edit-reservation', ri.reservation.id]">Editar</a>
-				</div>
-			</div>
-		</div>
-	</ng-container>
+					<button class="btn btn-primary" (click)="showAssignDelivery(ri)">Asignar Entrega</button>
+					<button class="btn btn-primary" (click)="showAssignReturn(ri)">Asignar Recoleccion</button>
+				</td>
+			</tr>
+		</table>
+	</div>
 </div>
+ <app-modal [(show)]="show_assign_delivery">
+	<div style="min-height:400px">
+		<app-search-users [type]="'USER'" [null_user_string]="'cancelar'" [reset_on_search]="false" (user_selected)="onSelectDeliveryUser($event)"></app-search-users>
+	</div>
+</app-modal>
