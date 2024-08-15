@@ -121,7 +121,8 @@ export class BaseComponent	implements OnDestroy
 						if (v) {
 							let components = v.split(/T|-|:|\s/g);
 
-							let utcTime = Date.UTC(
+							let utcTime = Date.UTC
+							(
 								parseInt(components[0]),
 								parseInt(components[1]) - 1,
 								parseInt(components[2]),

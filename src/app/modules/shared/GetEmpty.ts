@@ -3,14 +3,14 @@ import { User_Permission,Preferences,Production_Area,Process, Production, Shippi
 
 export class GetEmpty
 {
-    static getEmptyReservationInfo(): ReservationInfo
+	static getEmptyReservationInfo(): ReservationInfo
 	{
 		return {
 			reservation: GetEmpty.reservation(),
 			user: GetEmpty.user(),
 			items: []
 		};
-    }
+	}
 
 	static category(): Category {
 		return {
@@ -88,7 +88,7 @@ export class GetEmpty
 			items: []
 		};
 	}
-    static shipping(): Shipping
+	static shipping(): Shipping
 	{
 		return {
 			created: new Date(),
@@ -108,7 +108,7 @@ export class GetEmpty
 			updated: new Date(),
 			updated_by_user_id: 0,
 		}
-    }
+	}
 
 	static process():Process
 	{

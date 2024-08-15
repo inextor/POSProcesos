@@ -290,6 +290,14 @@ export interface Currency_Rate{
 	rate:number;
 	store_id:number
 }
+export interface Delivery_Assignment
+{
+	id:number;
+	created:Date;
+	user_id:number;
+	reservation_item_id:number;
+	updated:Date;
+}
 export interface File_Type{
 	content_type:string;
 	created:Date;
@@ -1133,6 +1141,7 @@ export interface Reservation {
 export interface Reservation_Item{
 	id: number;
 	created: Date;
+	delivered_qty: number;
 	end: Date | null;
 	item_id: number;
 	last_period_id: number | null;
@@ -1142,6 +1151,7 @@ export interface Reservation_Item{
 	tax_included: 'YES' | 'NO';
 	qty: number;
 	reservation_id: number;
+	returned_qty: number;
 	scheduled_delivery: Date | null;
 	scheduled_return: Date | null;
 	serial_item_id: number;
@@ -1168,6 +1178,14 @@ export interface Reservation_Item_Serial{
 	status: 'ACTIVE' | 'DELETED';
 	updated: Date;
 	updated_by_user_id: number;
+}
+export interface Return_Assignment
+{
+	id:number;
+	created:Date;
+	user_id:number;
+	reservation_item_id:number;
+	updated:Date;
 }
 export interface Returned_Item{
 	created:Date;
@@ -1642,7 +1660,7 @@ export interface Work_Log
 {
 	id:number;
 	break_seconds: number;
-  	date:string;
+	date:string;
 	disciplinary_actions:string | null;
 	docking_pay:number;
 	end_timestamp:Date | null;

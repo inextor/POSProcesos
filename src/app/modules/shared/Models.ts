@@ -1,4 +1,4 @@
-import { Category, Item, Order, Order_Item, Process, Production, Requisition, Requisition_Item, Reservation, Reservation_Item, Reservation_Item_Serial, Serial, Shipping, Shipping_Item, Store, Task, User } from "./RestModels";
+import { Category, Delivery_Assignment, Item, Order, Order_Item, Process, Production, Requisition, Requisition_Item, Reservation, Reservation_Item, Reservation_Item_Serial, Return_Assignment, Serial, Shipping, Shipping_Item, Store, Task, User } from "./RestModels";
 
 export interface RequisitionItemInfo
 {
@@ -68,6 +68,18 @@ export interface ReservationItemSerialInfo
 	serial:Serial;
 }
 
+export interface DeliveryAssignmentInfo
+{
+	delivery_assignment:Delivery_Assignment;
+	user:User;
+}
+
+export interface ReturnAssignmentInfo
+{
+	return_assignment:Return_Assignment;
+	user:User;
+}
+
 export interface ReservationItemInfo
 {
 	reservation_item:Reservation_Item;
@@ -75,11 +87,36 @@ export interface ReservationItemInfo
 	item:Item;
 	serial_item:Item;
 	serials:ReservationItemSerialInfo[];
+	return_assignments:ReturnAssignmentInfo[];
+	delivery_assignments:DeliveryAssignmentInfo[];
+}
+
+//
+export interface ExtendedReservation extends Reservation
+{
+	_to_schedule:number;
+	_to_schedule_delivery :number;
+	_to_schedule_return:number;
+
+	_to_be_returned:number | null;
+	_to_be_delivered:number|null;
+
+	_to_assign:number|null
+	_return_assignments:number|null
+	_delivery_assignments:number|null;
+
+	_count_items:number; //Numbero de articulos en reserva actualmente, En caso de que modificaron los articulos este valor se actualizara
+	_total_qty:number; //De esos articualos, cuantos de reservaron, En caso de que modificaron los articulos este valor se actualizara
+	//Ej, si rentaron Solo 10 baños, _count_ items = 1 y _total_qty_ = 10
+	//Si rentaron 10 baños y 10 cajas de papel, _count_ items = 2 y _total_qty_ = 20
+	_timestamp_next_dispatch_after: Date | null;
+	_timestamp_next_delivery:Date | null;
+	_timestamp_next_return:Date | null;
 }
 
 export interface ReservationInfo
 {
-	reservation:Reservation;
+	reservation:ExtendedReservation;
 	items:ReservationItemInfo[]
 	user:User | null;
 }

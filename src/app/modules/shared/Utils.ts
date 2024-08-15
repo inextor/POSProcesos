@@ -349,6 +349,8 @@ export class Utils
 		return `${formattedMonth} ${formattedDay}, ${formattedYear} - ${formattedHour}`;
 	}
 
+
+
 	static dateCountDownDate(value:any, today:Date = new Date()):string
 	{
 		let date = value instanceof Date ? value : Utils.getDateFromValue( value ) as Date;
