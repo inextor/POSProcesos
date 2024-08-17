@@ -57,7 +57,7 @@ export class RestService
 	public _offline_search_enabled = false;
 	public show_menu:boolean = false;
 
-	
+
 
 	//private offline_db: DatabaseStore	= DatabaseStore.builder
 	//(
@@ -274,6 +274,25 @@ export class RestService
 		let url = `${this.domain_configuration.domain}/${this.url_base}/updates.php`;
 		return this.http.post<T>(`${url}`,obj , { withCredentials: true, headers: this.getSessionHeaders() });
 	}
+
+	reservationUpdates<T>(method:string,data:any):Observable<T>
+	{
+		let obj = Utils.transformDatesToString(data);
+
+		for(let i in data)
+		{
+			if( data[i] === null )
+				continue;
+
+			let d = Utils.transformDatesToString( data[i] );
+			obj[i] = d;
+		}
+		obj['method'] = method;
+
+		let url = `${this.domain_configuration.domain}/${this.url_base}/reservationUpdates.php`;
+		return this.http.post<T>(`${url}`,obj , { withCredentials: true, headers: this.getSessionHeaders() });
+	}
+
 
 
 	logout(redirect:boolean = true)
