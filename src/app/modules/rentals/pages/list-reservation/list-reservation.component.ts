@@ -170,38 +170,35 @@ export class ListReservationComponent extends BaseComponent implements OnInit
 			return;
 		}
 
-		if( user )
-		{
-			let ri_array = this.selected_reservation_info.items.map
-			(
-				(rii)=>
-				{
-					return {
-						reservation_item_id: rii.reservation_item.id,
-						user_id: user.id
-					}
+		let ri_array = this.selected_reservation_info.items.map
+		(
+			(rii)=>
+			{
+				return {
+					reservation_item_id: rii.reservation_item.id,
+					user_id: user.id
 				}
-			);
+			}
+		);
 
-			console.log("Que pedo");
+		console.log("Que pedo");
 
-			this.subs.sink = this.rest_delivery_assignment
-			.batchCreate( ri_array )
-			.subscribe
-			({
-				next:(response)=>
-				{
-					console.log("Que pedo");
-					this.showSuccess('Asignación de entrega creada');
-					this.router.navigate(['/rentals/list-reservation']);
-					this.show_assign_delivery = false;
-				},
-				error:(error)=>
-				{
-					this.showError(error);
-				}
-			});
-		}
+		this.subs.sink = this.rest_delivery_assignment
+		.batchCreate( ri_array )
+		.subscribe
+		({
+			next:(response)=>
+			{
+				console.log("Que pedo");
+				this.showSuccess('Asignación de entrega creada');
+				this.router.navigate(['/rentals/list-reservation']);
+				this.show_assign_delivery = false;
+			},
+			error:(error)=>
+			{
+				this.showError(error);
+			}
+		});
 	}
 
 	onSelectReturnUser(user:User|null)
@@ -212,23 +209,37 @@ export class ListReservationComponent extends BaseComponent implements OnInit
 			return;
 		}
 
-		if( user )
+		if( this.selected_reservation_info == null )
 		{
-			this.subs.sink = this.rest_delivery_assignment.create
-			({
-
-			}).subscribe({
-				next:(response)=>
-				{
-					this.showSuccess('Asignación de entrega creada');
-					this.router.navigate(['/rentals/list-reservation']);
-					this.show_assign_delivery = false;
-				},
-				error:(error)=>
-				{
-					this.showError(error);
-				}
-			});
+			this.showError('No se ha seleccionado una renta');
+			return;
 		}
+
+		let ri_array = this.selected_reservation_info.items.map
+		(
+			(rii)=>
+			{
+				return {
+					reservation_item_id: rii.reservation_item.id,
+					user_id: user.id
+				}
+			}
+		);
+
+		this.subs.sink = this.rest_delivery_assignment
+		.batchCreate( ri_array )
+		.subscribe
+		({
+			next:(response)=>
+			{
+				this.showSuccess('Asignación de entrega creada');
+				this.router.navigate(['/rentals/list-reservation']);
+				this.show_assign_delivery = false;
+			},
+			error:(error)=>
+			{
+				this.showError(error);
+			}
+		});
 	}
 }

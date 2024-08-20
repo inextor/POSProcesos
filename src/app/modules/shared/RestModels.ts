@@ -1174,6 +1174,7 @@ export interface Reservation_Item_Serial{
 	schedule_delivery: Date | null;
 	schedule_return: Date | null;
 	serial_id: number;
+	serial: string;
 	start: Date | null;
 	status: 'ACTIVE' | 'DELETED';
 	updated: Date;

@@ -68,8 +68,8 @@
 						{{ ri.reservation.client_name }}
 					</a>
 				</td>
-				<td class="border text-end">{{ri.reservation.start }}</td>
-				<td class="border text-end">{{ri.reservation.created }}</td>
+				<td class="border text-end">{{ri.reservation.start | shortDate: 'local' }}</td>
+				<td class="border text-end">{{ri.reservation.created | shortDate}}</td>
 				<td class="border text-end">
 					<a class="btn btn-primary mx-1" [routerLink]="['/rentals/edit-reservation', ri.reservation.id]">Editar</a>
 					<button class="btn btn-primary mx-1" (click)="showAssignDelivery(ri)">Asignar Entrega</button>
@@ -81,6 +81,6 @@
 </div>
  <app-modal [(show)]="show_assign_delivery">
 	<div style="min-height:400px">
-		<app-search-users [type]="'USER'" [null_user_string]="'cancelar'" [reset_on_search]="false" (user_selected)="onSelectDeliveryUser($event)"></app-search-users>
+		<app-search-users [type]="'USER'" [null_user_string]="'cancelar'" [reset_on_search]="true" (user_selected)="onSelectDeliveryUser($event)"></app-search-users>
 	</div>
 </app-modal>
