@@ -11,6 +11,7 @@ import { RouterModule } from '@angular/router';
 import { Utils } from '../../../shared/Utils';
 import { ModalComponent} from '../../../../components/modal/modal.component';
 import { ShortDatePipe } from "../../../shared/pipes/short-date.pipe";
+import { LoadingComponent } from '../../../../components/loading/loading.component';
 
 type ReservationFilter = 'ALL' | 'NOT_SCHEDULED' | 'NOT_ASSIGNED' | 'NOT_RETURNED' | 'NEXT_DELIVERIES' | 'NEXT_RETURNS';
 
@@ -24,7 +25,7 @@ interface CReservation extends ExtendedReservation
 	standalone: true,
 	templateUrl: './list-reservation.component.html',
 	styleUrl: './list-reservation.component.css',
-	imports: [CommonModule, FormsModule, SearchUsersComponent, RouterModule, ModalComponent, ShortDatePipe]
+	imports: [CommonModule, FormsModule, SearchUsersComponent, RouterModule, ModalComponent, ShortDatePipe, LoadingComponent]
 })
 export class ListReservationComponent extends BaseComponent implements OnInit
 {
@@ -51,12 +52,10 @@ export class ListReservationComponent extends BaseComponent implements OnInit
 		(
 			mergeMap((param_map) =>
 			{
+				this.is_loading = true;
 				let fields = ['created', 'user_id','default_filter','_to_be_returned','_to_be_delivered'];
 
 				this.reservation_search = this.getSearch(param_map, fields, [])
-
-				let start = new Date();
-				let end = new Date();
 
 				this.default_filter = (param_map.get('eq.default_filter') ?? 'ALL') as ReservationFilter;
 
@@ -65,38 +64,42 @@ export class ListReservationComponent extends BaseComponent implements OnInit
 				this.reservation_search.sort_order = ['start_ASC']
 				this.reservation_search.limit = this.page_size;
 
+				this.reservation_search.ge._to_schedule_delivery = undefined; //bueno
+				this.reservation_search.ge._to_be_returned = null; //bueno
+				this.reservation_search.le._timestamp_next_delivery = null;
+				this.reservation_search.le._timestamp_next_return = null;
+				this.reservation_search.eq.condition = undefined; //bueno
+
+
 				if(this.default_filter == 'ALL')
 				{
-					this.reservation_search.eq._to_assign = null;
-				}
-				else if(this.default_filter == 'NOT_ASSIGNED')
-				{
-					this.reservation_search.eq._to_assign = 1;
-					this.reservation_search.eq._timestamp_next_delivery = null;
-					this.reservation_search.eq._to_be_returned = null;
-					this.reservation_search.eq._to_be_delivered = null;
 
+				}
+				else if(this.default_filter == 'NOT_SCHEDULED')
+				{
+					this.reservation_search.ge._to_schedule_delivery = 1; //Bueno
+					this.reservation_search.eq.condition = 'ACTIVE'; //Bueno
 				}
 				else if(this.default_filter == 'NOT_RETURNED')
 				{
-					this.reservation_search.eq._to_assign = null;
-					this.reservation_search.eq._timestamp_next_delivery = new Date();
-					this.reservation_search.eq._to_be_returned = 1;
-					this.reservation_search.eq._to_be_delivered = null;
+					this.reservation_search.ge._to_be_returned = 1; //Bueno
+					this.reservation_search.eq.condition = 'ACTIVE'; //Bueno
 				}
 				else if(this.default_filter == 'NEXT_DELIVERIES')
 				{
-					this.reservation_search.eq._to_assign = null;
-					this.reservation_search.eq._timestamp_next_delivery = new Date();
-					this.reservation_search.eq._to_be_returned = null;
-					this.reservation_search.eq._to_be_delivered = 1;
+					let next_week = new Date();
+					next_week.setDate(next_week.getDate() + 7);
+					this.reservation_search.le._timestamp_next_delivery = next_week; //Bueno
+					this.reservation_search.eq.condition = 'ACTIVE'; //Bueno
 				}
 				else if(this.default_filter == 'NEXT_RETURNS')
 				{
-					this.reservation_search.eq._timestamp_next_return = new Date();
-					this.reservation_search.eq._timestamp_next_delivery = null;
-					this.reservation_search.eq._to_be_returned = 1;
-					this.reservation_search.eq._to_assign = null;
+					let next_week = new Date();
+					next_week.setDate(next_week.getDate() + 7);
+
+					this.reservation_search.ge._to_be_returned = 1; //Bueno
+					this.reservation_search.le._timestamp_next_return = next_week; //Bueno
+					this.reservation_search.eq.condition = 'ACTIVE'; //Bueno
 				}
 
 				console.log(JSON.stringify(this.reservation_search));
