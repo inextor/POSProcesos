@@ -20,10 +20,11 @@ import { SavePayrollComponent } from './pages/save-payroll/save-payroll.componen
 import { SaveProductionPaymentComponent } from './pages/save-production-payment/save-production-payment.component';
 import { SaveWorklogRulesComponent } from './pages/save-worklog-rules/save-worklog-rules.component';
 import { SaveUserExtraFieldsComponent } from './pages/save-user-extra-fields/save-user-extra-fields.component';
+import { DashboardComponent } from './pages/dashboard/dashboard.component';
 
 export const routes: Routes = [
 	{path: '', component: LoginComponent, canActivate: [authGuard]},
-	{path: '', component: ListProductionAreaComponent, canActivate: [authGuard]},
+	{path: 'dashboard', component: DashboardComponent, canActivate: [authGuard]},
 	{path: 'add-production-area', component: SaveProductionAreaComponent, canActivate: [authGuard]},
 	{path: 'edit-production-area/:id', component: SaveProductionAreaComponent, canActivate: [authGuard]},
 	{path: 'list-production-area', component: ListProductionAreaComponent, canActivate: [authGuard]},

@@ -17,11 +17,13 @@ const USER_KEY = 'user';
 type SuperEmpty<Type> = Type | null | undefined;
 
 
-@Injectable({
+@Injectable
+({
 	providedIn: 'root'
 })
 export class RestService
 {
+
 	hades_counter:number = 0;
 	has_hades:boolean = false;
 	private socket: Socket | null = null;
@@ -129,6 +131,15 @@ export class RestService
 	{
 		this.show_menu = !this.show_menu;
 	}
+
+	getSyncId():string
+	{
+		if( this.user == null )
+			return 'FOO-'+Date.now();
+
+		return this.user.id + '-' + Date.now();
+	}
+
 
 	getSessionStart():Date
 	{

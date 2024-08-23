@@ -2,14 +2,15 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { BaseComponent } from '../../../shared/base/base.component';
 import { Rest, RestSimple } from '../../../shared/services/Rest';
-import { ExtendedReservation, ReservationInfo } from '../../../shared/Models';
+import { ExtendedReservation, ReservationInfo, ReservationItemInfo } from '../../../shared/Models';
 import { ParamMap } from '@angular/router';
 import { mergeMap } from 'rxjs';
 import { GetEmpty } from '../../../shared/GetEmpty';
 import { ShortDatePipe } from "../../../shared/pipes/short-date.pipe";
 import { FormsModule } from '@angular/forms';
-import { Reservation_Item_Serial } from '../../../shared/RestModels';
+import { Reservation_Item, Reservation_Item_Serial } from '../../../shared/RestModels';
 import { ModalComponent } from '../../../../components/modal/modal.component';
+import { LoadingComponent } from '../../../../components/loading/loading.component';
 
 
 
@@ -19,11 +20,10 @@ import { ModalComponent } from '../../../../components/modal/modal.component';
 	standalone: true,
 	templateUrl: './view-reservation.component.html',
 	styleUrl: './view-reservation.component.css',
-	imports: [CommonModule, ShortDatePipe,FormsModule, ModalComponent]
+	imports: [CommonModule, ShortDatePipe,FormsModule, ModalComponent, LoadingComponent]
 })
 export class ViewReservationComponent extends BaseComponent
 {
-
 	rest_reservation_info:Rest<ExtendedReservation, ReservationInfo> = this.rest.initRest('reservation_info');
 	reservation_info: ReservationInfo = GetEmpty.getEmptyReservationInfo();
 	show_assign_delivery: boolean = false;
@@ -33,6 +33,7 @@ export class ViewReservationComponent extends BaseComponent
 	show_assign_serials: boolean = false;
 	search_serials: string = '';
 	rest_reservation_item_serial: RestSimple<Reservation_Item_Serial> = this.rest.initRest('reservation_item_serial');
+	selected_reservation_item: Reservation_Item | null = null;
 
 	ngOnInit(): void
 	{
@@ -44,6 +45,7 @@ export class ViewReservationComponent extends BaseComponent
 		(
 			mergeMap((param_map:ParamMap) =>
 			{
+				this.is_loading = true;
 				if( !param_map.has('id') )
 				{
 					throw new Error('No se encontró la reservación');
@@ -73,28 +75,42 @@ export class ViewReservationComponent extends BaseComponent
 
 	addSerial(serial:string)
 	{
+		if( this.selected_reservation_item == null )
+		{
+			console.error('No se ha seleccionado un Elemento de la reservación');
+			return;
+		}
+
+		let x = this.reservation_item_serials.find(ris=>ris.serial == ris.serial);
+
+		if( x )
+		{
+			this.showError('Ya existe un Serial asignado a este Elemento');
+			return;
+		}
+
 		let ris:Reservation_Item_Serial =
 		{
-            reservation_item_id: 0,
-            serial_id: 0,
-            id: 0,
-            created: new Date(),
-            created_by_user_id: 0,
-            delivered_timestamp: null,
-            delivery_by_user_id: null,
-            end: null,
-            minutes_offset: 0,
-            note: null,
+			reservation_item_id: this.selected_reservation_item.id,
+			serial_id: 0,
+			id: 0,
+			created: new Date(),
+			created_by_user_id: 0,
+			delivered_timestamp: null,
+			delivery_by_user_id: null,
+			end: null,
+			minutes_offset: 0,
+			note: null,
 			serial,
-            returned_timestamp: null,
-            returned_by_user_id: null,
-            schedule_delivery: null,
-            schedule_return: null,
-            start: null,
-            status: 'ACTIVE',
-            updated: new Date(),
-            updated_by_user_id: 0
-        };
+			returned_timestamp: null,
+			returned_by_user_id: null,
+			schedule_delivery: null,
+			schedule_return: null,
+			start: null,
+			status: 'ACTIVE',
+			updated: new Date(),
+			updated_by_user_id: 0
+		};
 
 		this.subs.sink = this.rest_reservation_item_serial.create( ris ).subscribe
 		({
@@ -174,6 +190,11 @@ export class ViewReservationComponent extends BaseComponent
 
 	markAllAsDelivered()
 	{
-		throw new Error('Method not implemented.');
+
+	}
+	showAssignSerials(rii: ReservationItemInfo)
+	{
+		this.selected_reservation_item = rii.reservation_item;
+		this.show_assign_serials = true;
 	}
 }

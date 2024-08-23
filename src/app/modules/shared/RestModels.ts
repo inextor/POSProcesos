@@ -577,10 +577,11 @@ export interface Order{
 	id:number;
 	lat:number | null;
 	lng:number | null;
+	initial_payment:number;
 	marked_for_billing:'YES'|'NO';
 	note:string | null;
 	paid_status:'PENDING'|'PAID'|'PARTIALLY_PAID';
-	paid_timetamp:Date;
+	paid_timetamp:Date | null;
 	period_id:number | null;
 	price_type_id:number
 	quote_id:number | null;
@@ -589,6 +590,7 @@ export interface Order{
 	sat_forma_pago:string | null;
 	sat_ieps:number;
 	sat_isr:number;
+	sat_exchange_rate:number;
 	sat_pdf_attachment_id:number | null;
 	sat_razon_social:string | null;
 	sat_receptor_email:string | null;
@@ -609,7 +611,7 @@ export interface Order{
 	subtotal:number;
 	suburb:string | null;
 	sync_id:string | null;
-	system_activated:Date;
+	system_activated:Date | null;
 	table_id:number | null;
 	tag:string | null;
 	tax:number;
@@ -651,8 +653,8 @@ export interface Order_Item{
 	status:'ACTIVE'|'DELETED';
 	stock_status:'IN_STOCK'|'STOCK_REMOVED';
 	subtotal:number;
-	system_preparation_ended:Date;
-	system_preparation_started:Date;
+	system_preparation_ended:Date | null;
+	system_preparation_started:Date | null;
 	tax:number;
 	tax_included:'NO'|'YES';
 	total:number;
@@ -797,7 +799,7 @@ export interface Payroll_Concept_Value{
 	value:number;
 	status:'ACTIVE'|'DELETED';
 }
-export interface period{
+export interface Period{
 	id:number;
 	created:Date;
 	created_by_user_id:number;
@@ -1122,7 +1124,9 @@ export interface Requisition_Item{
 	status:'ACTIVE'|'DELETED';
 	updated:Date;
 }
-export interface Reservation {
+export interface Reservation
+{
+    price_type_id: number;
 	id:number;
 	address_id:number | null;
 	client_name:string;

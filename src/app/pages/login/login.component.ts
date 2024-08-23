@@ -34,7 +34,7 @@ export class LoginComponent extends BaseComponent implements OnInit {
 	return_url:string | null = '';
 	error_message: any;
 
-	ngOnInit() 
+	ngOnInit()
 	{
 		this.preferences = this.rest.getPreferencesFromSession();
 
@@ -48,24 +48,27 @@ export class LoginComponent extends BaseComponent implements OnInit {
 				console.log('Preferences not loaded');
 			}
 		);
-		
-		this.getQueryParamObservable().subscribe((response)=>
-		{
-			let query_param_map = response[0];
-			this.return_url = query_param_map.has('return_url') ? query_param_map.get('return_url') : '';
 
-			if ( this.rest.getUserFromSession() != null)
+		this.subs.sink = this.getQueryParamObservable().subscribe
+		({
+			next:(response)=>
 			{
-				if( this.return_url )
+				let query_param_map = response[0];
+				this.return_url = query_param_map.has('return_url') ? query_param_map.get('return_url') : '';
+
+				if ( this.rest.getUserFromSession() != null)
 				{
-					this.router.navigate([this.return_url]);
-				}
-				else
-				{
-					this.router.navigate(['/list-requisition']);
+					if( this.return_url )
+					{
+						this.router.navigate([this.return_url]);
+					}
+					else
+					{
+						this.router.navigate(['/dashboard']);
+					}
 				}
 			}
-		}) 
+		})
 	}
 
 	username: string = '';
@@ -95,25 +98,25 @@ export class LoginComponent extends BaseComponent implements OnInit {
 			}));
 	}
 
-	doLogin() 
+	doLogin()
 	{
 		this.is_loading = true;
 		this.subs.sink = this.doLogin_starter(this.username, this.password).subscribe({
-			next: (response) => 
+			next: (response) =>
 			{
 				this.is_loading = false;
-				if (this.return_url) 
+				if (this.return_url)
 				{
 					this.router.navigate([this.return_url]);
-				} else 
+				} else
 				{
 					this.router.navigate(['/list-requisition']);
 				}
 				this.showSuccess('Sesion iniciada con exito');
 			},
-			error: (error) => 
+			error: (error) =>
 			{
-				this.showError(error); 
+				this.showError(error);
 				this.is_loading = false;
 			}
 		});

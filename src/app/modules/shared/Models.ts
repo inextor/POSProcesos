@@ -1,4 +1,53 @@
-import { Category, Delivery_Assignment, Item, Order, Order_Item, Process, Production, Requisition, Requisition_Item, Reservation, Reservation_Item, Reservation_Item_Serial, Return_Assignment, Serial, Shipping, Shipping_Item, Store, Task, User } from "./RestModels";
+import { Category, Delivery_Assignment, Item, ItemOptionInfo, Item_Exception, Offer, Order, Order_Item, Order_Item_Exception, Price, Price_Type, Process, Production, Purchase, Requisition, Requisition_Item, Reservation, Reservation_Item, Reservation_Item_Serial, Return_Assignment, Serial, SerialInfo, Shipping, Shipping_Item, Stock_Record, Store, Task, User } from "./RestModels";
+
+
+export interface ItemInfo
+{
+	item:Item;
+	category:Category | null;
+	category_zero: number;
+	//product?:Product; //Category
+	//item_options?:ItemOptionInfo[];
+	//attributes?:Item_Attribute[];
+
+	price:Price | null;
+	prices:Price[];
+	//records:Stock_Record[];
+	//stock_record:Stock_Record;
+	options:ItemOptionInfo[];
+	exceptions:Item_Exception[];
+	display_category?:boolean;
+	//serials:SerialInfo[];
+}
+
+export interface OrderItemInfo extends ItemInfo
+{
+	order_item:Order_Item; //Obligatorio
+	created:Date;
+	//serials:SerialInfo[];
+	order_item_exceptions: Order_Item_Exception[];
+	serials_string:string;
+	commanda_type_id:number | null;
+	draw_separator?:boolean;//Not in backend
+}
+
+
+export interface OrderInfo
+{
+	id?:number; //en offline
+	order: Order; //Obligatorio
+	items: OrderItemInfo[]; //Obligatorio
+//	structured_items: OrderItemStructureInfo[]; //Obligatorio
+//	resume_of_items?: OrderItemStructureInfo[];
+	client: User | null;
+	cashier: User | null;
+	delivery_user: User | null;
+	price_type: Price_Type;
+	store: Store;
+	purchase: Purchase | null;
+	offers:Offer[];
+}
+
 
 export interface RequisitionItemInfo
 {
@@ -94,6 +143,7 @@ export interface ReservationItemInfo
 //
 export interface ExtendedReservation extends Reservation
 {
+	_end:string;
 	_to_schedule:number;
 	_to_schedule_delivery :number;
 	_to_schedule_return:number;
