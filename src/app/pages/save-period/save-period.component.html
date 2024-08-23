@@ -1,0 +1,23 @@
+<div class="container-fluid">
+	<h2>Agregar Corte de Reservación</h2>
+	<app-loading [is_loading]="is_loading"></app-loading>
+	<div class="card">
+		<div>
+		</div>
+		<form (submit)="save()" ngNativeValidate>
+			<div class="row" *ngfor="let ri of reservation_info.items">
+				<div class="col-12 col-md-3">
+					{{ri.reservation_item.item.name}}
+				</div>
+				<div class="col-12 col-md-3">
+					{{ri.reservation_item.qty}}
+				</div>
+				<div class="col-12 col-md-3">
+					{{ri.reservation_item.qty}}
+				</div>
+				<div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
