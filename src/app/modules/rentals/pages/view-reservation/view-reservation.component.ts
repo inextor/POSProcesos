@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { BaseComponent } from '../../../shared/base/base.component';
 import { Rest, RestSimple } from '../../../shared/services/Rest';
 import { ExtendedReservation, ReservationInfo, ReservationItemInfo } from '../../../shared/Models';
-import { ParamMap } from '@angular/router';
+import { ParamMap, RouterModule } from '@angular/router';
 import { mergeMap } from 'rxjs';
 import { GetEmpty } from '../../../shared/GetEmpty';
 import { ShortDatePipe } from "../../../shared/pipes/short-date.pipe";
@@ -20,7 +20,7 @@ import { LoadingComponent } from '../../../../components/loading/loading.compone
 	standalone: true,
 	templateUrl: './view-reservation.component.html',
 	styleUrl: './view-reservation.component.css',
-	imports: [CommonModule, ShortDatePipe,FormsModule, ModalComponent, LoadingComponent]
+	imports: [CommonModule, ShortDatePipe,FormsModule, ModalComponent, LoadingComponent,RouterModule]
 })
 export class ViewReservationComponent extends BaseComponent
 {

@@ -1126,7 +1126,7 @@ export interface Requisition_Item{
 }
 export interface Reservation
 {
-    price_type_id: number;
+	price_type_id: number;
 	id:number;
 	address_id:number | null;
 	client_name:string;
@@ -1135,7 +1135,7 @@ export interface Reservation
 	condition:'DRAFT'|'ACTIVE'|'CLOSED';
 	currency_id:string;
 	note:string | null;
-	start:Date | null;
+	start:string;
 	status: 'ACTIVE' | 'DELETED';
 	store_id:number;
 	updated:Date;
@@ -1146,11 +1146,11 @@ export interface Reservation_Item{
 	id: number;
 	created: Date;
 	delivered_qty: number;
-	end: Date | null;
+	end: string| null;
 	item_id: number;
 	last_period_id: number | null;
 	note: string | null;
-	period_type: 'BY_HOUR' | 'DAILY' | 'WEEKLY' | 'MONTHLY';
+	period_type: 'BY_HOUR' | 'DAILY' | 'WEEKLY' | 'MONTHLY'|'ONLY_ONCE';
 	price: number;
 	tax_included: 'YES' | 'NO';
 	qty: number;
@@ -1159,7 +1159,7 @@ export interface Reservation_Item{
 	scheduled_delivery: Date | null;
 	scheduled_return: Date | null;
 	serial_item_id: number;
-	start: Date;
+	start: string;
 	status: 'ACTIVE' | 'DELETED';
 	updated: Date;
 }

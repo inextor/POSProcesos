@@ -11,6 +11,7 @@ import { FormsModule } from '@angular/forms';
 import { SearchUsersComponent } from '../../../../components/search-users/search-users.component';
 import { SearchItemsComponent } from '../../../../components/search-items/search-items.component';
 import { ModalComponent } from '../../../../components/modal/modal.component';
+import { Utils } from '../../../shared/Utils';
 
 @Component({
   selector: 'app-save-reservation',
@@ -97,7 +98,7 @@ export class SaveReservationComponent extends BaseComponent implements OnInit
 					this.reservation_info.reservation =
 					{
 						...this.reservation_info.reservation,
-						start: new Date(),
+						start: '',
 						store_id: user.store_id as number,
 						status: 'ACTIVE',
 					}
@@ -242,6 +243,7 @@ export class SaveReservationComponent extends BaseComponent implements OnInit
 		}
 
 		let reservation_item:Reservation_Item = GetEmpty.reservation_item();
+		let start = this.reservation_info.reservation.start || Utils.getLocalMysqlStringFromDate(new Date());
 
 		reservation_item =
 		{
@@ -251,7 +253,7 @@ export class SaveReservationComponent extends BaseComponent implements OnInit
 			tax_included,
 			period_type: item_info.item.period_type ?? "MONTHLY",
 			reservation_id: this.reservation_info.reservation.id,
-			start: this.reservation_info.reservation.start ?? new Date(),
+			start,
 		}
 
 		let reservation_item_info:ReservationItemInfo = GetEmpty.reservation_item_info();
