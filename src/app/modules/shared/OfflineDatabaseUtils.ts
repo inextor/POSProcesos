@@ -1,7 +1,7 @@
-import {ItemInfo, SearchTerm} from "../models/models";
 import {DatabaseStore} from "./Finger/DatabaseStore";
 import {Options} from "./Finger/OptionsUtils";
 import {StoreDictionary} from "./Finger/SchemeBuilder";
+import { ItemInfo } from "./Models";
 
 const sync_data_db ={
 	name: 'offline-sync-data',

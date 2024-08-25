@@ -5,7 +5,7 @@ import { forkJoin, mergeMap, of } from 'rxjs';
 import { GetEmpty } from '../../modules/shared/GetEmpty';
 import { ReservationInfo,OrderInfo, ReservationItemInfo, OrderItemInfo } from '../../modules/shared/Models';
 import { Rest, RestSimple } from '../../modules/shared/services/Rest';
-import { ItemInfo, Order, Order_Item, Period, Price_Type, Reservation, Store } from '../../modules/shared/RestModels';
+import { Order, Order_Item, Period, Price_Type, Reservation, Store } from '../../modules/shared/RestModels';
 import { FormsModule } from '@angular/forms';
 import { LoadingComponent } from '../../components/loading/loading.component';
 import { Utils } from '../../modules/shared/Utils';
@@ -104,19 +104,22 @@ export class SavePeriodComponent extends BaseComponent implements OnInit
 
 		let order_item_info:OrderItemInfo =
 		{
-			order_item,
-			created: new Date(),
-			order_item_exceptions: [],
-			serials_string: '',
-			commanda_type_id: 0,
-			item: reservation_item_info.item,
-			category: reservation_item_info.category,
-			category_zero: 0,
-			price: null,
-			prices: [],
-			options: [],
-			exceptions: []
-		};
+            order_item,
+            created: new Date(),
+            order_item_exceptions: [],
+            serials_string: '',
+            commanda_type_id: 0,
+            item: reservation_item_info.item,
+            category: reservation_item_info.category,
+            category_zero: 0,
+            price: undefined,
+            prices: [],
+            options: [],
+            exceptions: [],
+            item_options: [],
+            records: [],
+            serials: []
+        };
 
 		let period_type ={
 			'MONTHLY':'Meses',

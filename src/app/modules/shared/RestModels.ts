@@ -453,38 +453,7 @@ export interface Item_Store{
 	updated:Date;
 	updated_by_user_id:number
 }
-export interface ItemOptionValueInfo
-{
-	item_option_value: Item_Option_Value;
-	item:Item;
-	category?:Category;
-}
-export interface ItemOptionInfo
-{
-	item_option:Item_Option;
-	values:ItemOptionValueInfo[];
-}
-export interface ItemInfo
-{
-	item:Item;
-	category:Category | null;
-	//product?:Product; //Category
-	//item_options?:ItemOptionInfo[];
-	//attributes?:Item_Attribute[];
 
-	price?:Price;
-	prices:Price[];
-	records:Stock_Record[];
-	stock_record?:Stock_Record;
-	options:ItemOptionInfo[];
-	exceptions:Item_Exception[];
-	display_category?:boolean;
-	serials:SerialInfo[];
-}
-export interface ItemStockInfo extends ItemInfo
-{
-	total:number;
-}
 export interface Keyboard_Shortcut{
 	created:Date;
 	created_by_user_id:number | null;
@@ -1281,11 +1250,7 @@ export interface Serie_Counter{
 	id:string;
 	updated:Date;
 }
-export interface SerialItemInfo
-{
-	serial_info:SerialInfo;
-	item_info:ItemInfo;
-}
+
 export interface Session{
 	created:Date;
 	id:string;
@@ -1443,18 +1408,18 @@ export interface Store{
 	autofacturacion_enabled?:'YES'|'NO';
 	autofacturacion_settings:'ONLY_SAME_MONTH'|'ONLY_DAY_LIMIT'|'BOTH'|'DISABLED';
 	business_name?:string | null;
-	city?:string | null;
-	client_user_id?:number | null;
+	city:string | null;
+	client_user_id:number | null;
 	created?:Date;
 	created_by_user_id?:number | null;
-	default_billing_data_id?:number | null;
+	default_billing_data_id:number | null;
 	default_claveprodserv:string;
 	default_currency_id:string;
 	default_sat_item_name:string;
 	default_sat_serie:string;
 	electronic_transfer_percent_fee?:number | null;
 	//exchange_rate:number | null;
-	id?:number | null;
+	id:number;
 	image_id?:number | null;
 	lat:number | null;
 	lng:number | null;
@@ -1472,13 +1437,13 @@ export interface Store{
 	printer_ticket_config:string | null;
 	production_enabled:number | null;
 	qr_size:'PERCENT_25'|'PERCENT_50'|'PERCENT_75'|'PERCENT_100';
-	rfc?:string | null;
+	rfc:string | null;
 	sales_enabled:number | null;
 	show_facturacion_qr:'NO'|'YES',
 	state?:string | null;
 	status:'ACTIVE'|'DISABLED';
 	suggested_tip:number;
-	tax_percent?:number | null;
+	tax_percent:number;
 	ticket_footer_text?:string | null;
 	ticket_image_id?:number | null;
 	updated?:Date;

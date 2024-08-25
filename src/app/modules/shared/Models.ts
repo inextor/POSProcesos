@@ -1,24 +1,5 @@
-import { Category, Delivery_Assignment, Item, ItemOptionInfo, Item_Exception, Offer, Order, Order_Item, Order_Item_Exception, Price, Price_Type, Process, Production, Purchase, Requisition, Requisition_Item, Reservation, Reservation_Item, Reservation_Item_Serial, Return_Assignment, Serial, SerialInfo, Shipping, Shipping_Item, Stock_Record, Store, Task, User } from "./RestModels";
+import { Category, Delivery_Assignment, Item,  Item_Exception, Item_Option, Item_Option_Value, Offer, Order, Order_Item, Order_Item_Exception, Price, Price_Type, Process, Production, Purchase, Requisition, Requisition_Item, Reservation, Reservation_Item, Reservation_Item_Serial, Return_Assignment, Serial, SerialInfo, Shipping, Shipping_Item, Stock_Record, Store, Task, User } from "./RestModels";
 
-
-export interface ItemInfo
-{
-	item:Item;
-	category:Category | null;
-	category_zero: number;
-	//product?:Product; //Category
-	//item_options?:ItemOptionInfo[];
-	//attributes?:Item_Attribute[];
-
-	price:Price | null;
-	prices:Price[];
-	//records:Stock_Record[];
-	//stock_record:Stock_Record;
-	options:ItemOptionInfo[];
-	exceptions:Item_Exception[];
-	display_category?:boolean;
-	//serials:SerialInfo[];
-}
 
 export interface OrderItemInfo extends ItemInfo
 {
@@ -29,6 +10,7 @@ export interface OrderItemInfo extends ItemInfo
 	serials_string:string;
 	commanda_type_id:number | null;
 	draw_separator?:boolean;//Not in backend
+	category_zero: number | null;
 }
 
 
@@ -48,6 +30,13 @@ export interface OrderInfo
 	offers:Offer[];
 }
 
+export interface ProductionInfo
+{
+	user: User;
+	production:Production;
+	item:Item;
+	category:Category | null;
+}
 
 export interface RequisitionItemInfo
 {
@@ -67,12 +56,10 @@ export interface RequisitionInfo
 }
 
 
-export interface ProductionInfo
+export interface SerialItemInfo
 {
-	user: User;
-	production:Production;
-	item:Item;
-	category:Category | null;
+	serial_info:SerialInfo;
+	item_info:ItemInfo;
 }
 
 export interface TaskInfo
@@ -127,6 +114,59 @@ export interface ReturnAssignmentInfo
 {
 	return_assignment:Return_Assignment;
 	user:User;
+}
+
+export interface ItemOptionValueInfo
+{
+	item_option_value: Item_Option_Value;
+	item:Item;
+	category?:Category;
+}
+export interface ItemOptionInfo
+{
+	item_option:Item_Option;
+	values:ItemOptionValueInfo[];
+}
+
+export interface ItemInfo
+{
+	item:Item;
+	category:Category | null;
+	//product?:Product; //Category
+	item_options:ItemOptionInfo[];
+	//attributes?:Item_Attribute[];
+	price?:Price;
+	prices:Price[];
+	records:Stock_Record[];
+	stock_record?:Stock_Record;
+	options:ItemOptionInfo[];
+	exceptions:Item_Exception[];
+	display_category?:boolean;
+	serials:SerialInfo[];
+}
+
+//export interface ItemInfo
+//{
+//	item:Item;
+//	category:Category | null;
+//	category_zero: number;
+//	//product?:Product; //Category
+//	//item_options?:ItemOptionInfo[];
+//	//attributes?:Item_Attribute[];
+//
+//	price:Price | undefined;
+//	prices:Price[];
+//	//records:Stock_Record[];
+//	//stock_record:Stock_Record;
+//	options:ItemOptionInfo[];
+//	exceptions:Item_Exception[];
+//	display_category?:boolean;
+//	//serials:SerialInfo[];
+//}
+
+export interface ItemStockInfo extends ItemInfo
+{
+	total:number;
 }
 
 export interface ReservationItemInfo

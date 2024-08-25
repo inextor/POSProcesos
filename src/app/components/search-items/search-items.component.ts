@@ -1,12 +1,13 @@
 import { Component, ElementRef, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { debounceTime, filter, mergeMap } from 'rxjs/operators';
-import { Item, ItemInfo } from '../../modules/shared/RestModels';
+import { Item } from '../../modules/shared/RestModels';
 import { Rest } from '../../modules/shared/services/Rest';
 import { BaseComponent } from '../../modules/shared/base/base.component';
 import { ShortcutsService, KeyboardShortcutEvent } from '../../modules/shared/services/shortcuts.service';
 import { FormsModule } from '@angular/forms';
 import { Subject } from 'rxjs';
+import { ItemInfo } from '../../modules/shared/Models';
 
 interface CItemInfo extends ItemInfo
 {

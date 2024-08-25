@@ -60,19 +60,24 @@ export class GetEmpty
 
 		let order_item_info:OrderItemInfo =
 		{
-			order_item,
-			created: new Date(),
-			order_item_exceptions: [],
-			serials_string: "",
-			commanda_type_id: item.commanda_type_id,
-			item: item,
-			category: null,
-			category_zero: 0,
-			price: null,
-			prices,
-			options: [],
-			exceptions: []
-		};
+            order_item,
+            created: new Date(),
+            order_item_exceptions: [],
+            serials_string: "",
+            commanda_type_id: item.commanda_type_id,
+            item: item,
+            category: null,
+            //category_zero: 0,
+            price: undefined,
+            prices,
+            options: [],
+            exceptions: [],
+            records: [],
+            stock_record: undefined,
+            serials: [],
+            category_zero: null,
+            item_options: []
+        };
 
 		return order_item_info;
 	}

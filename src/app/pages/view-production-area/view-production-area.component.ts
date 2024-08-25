@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { GetEmpty } from '../../modules/shared/GetEmpty';
-import { Production_Area,Item,Production_Area_Item, Process, ItemInfo, User, User_extra_fields } from '../../modules/shared/RestModels';
+import { Production_Area,Item,Production_Area_Item, Process, User, User_extra_fields } from '../../modules/shared/RestModels';
 import { forkJoin,of,mergeMap, filter } from 'rxjs';
 import { RouterModule } from '@angular/router';
 import { RestSimple } from '../../modules/shared/services/Rest';
@@ -13,6 +13,7 @@ import { ShortDatePipe } from '../../modules/shared/pipes/short-date.pipe';
 import { LoadingComponent } from '../../components/loading/loading.component';
 import { SearchUsersComponent } from '../../components/search-users/search-users.component';
 import { FormsModule } from '@angular/forms';
+import { ItemInfo } from '../../modules/shared/Models';
 
 
 interface CProduction_Area_Item extends Production_Area_Item
@@ -56,7 +57,7 @@ export class ViewProductionAreaComponent extends BaseComponent implements OnInit
 	show_user_extra_fields:boolean = false;
 
 	ngOnInit()
-	{	
+	{
 		this.is_loading = true;
 		this.subs.sink = this.route.paramMap.pipe
 		(
@@ -85,10 +86,10 @@ export class ViewProductionAreaComponent extends BaseComponent implements OnInit
 			}),
 
 			mergeMap((response)=>
-			{	
+			{
 				let users_ids = response.users.data.map((u:User)=>u.id);
-				let user_extra_values_obs = users_ids.length > 0 
-					? this.rest_user_extra_fields.search({csv: { user_id: users_ids },limit: 999999}) 
+				let user_extra_values_obs = users_ids.length > 0
+					? this.rest_user_extra_fields.search({csv: { user_id: users_ids },limit: 999999})
 					: of(null);
 
 				return forkJoin({
@@ -107,7 +108,7 @@ export class ViewProductionAreaComponent extends BaseComponent implements OnInit
 			this.user_list = response.users.data.map((user:User)=>
 			{
 				let user_extra_fields = response.user_extra_values?.data.filter((uef:User_extra_fields)=>uef.user_id == user.id)[0];
-				
+
 				let extra_fields:Extra_Field[] = [];
 
 				if ( user_extra_fields )
@@ -187,7 +188,7 @@ export class ViewProductionAreaComponent extends BaseComponent implements OnInit
 		this.subs.sink = this.rest_production_area_item.create(production_area_item)
 		.subscribe({
 
-			next: (response)=> 	this.cproduction_area_item_list.push({ ...response, name: item_info.item.name }),
+			next: (response)=>	this.cproduction_area_item_list.push({ ...response, name: item_info.item.name }),
 
 			error: (error)=> this.rest.showError(error)
 
@@ -219,7 +220,7 @@ export class ViewProductionAreaComponent extends BaseComponent implements OnInit
 
 			});
 		});
-	
+
 	}
 
 	addProductionAreaUser(user:User | null):void
@@ -231,7 +232,7 @@ export class ViewProductionAreaComponent extends BaseComponent implements OnInit
 			return this.showError('El usuario ya pertenece a un area de producción (#' + user.production_area_id + ')');
 
 		// if ( this.rest.user && user.store_id != this.rest.user.store_id)
-		// 	return this.showError('El usuario no pertenece a la misma tienda');
+		//	return this.showError('El usuario no pertenece a la misma tienda');
 
 		if ( this.user_list.findIndex((u:User)=>u.id == user.id) != -1 )
 			return this.showError('El usuario ya ha sido agregado');
@@ -258,7 +259,7 @@ export class ViewProductionAreaComponent extends BaseComponent implements OnInit
 					this.is_loading = false;
 
 					let user_extra_fields = response.extra_fields?.data.filter((uef:User_extra_fields)=>uef.user_id == user.id)[0];
-				
+
 					let extra_fields:Extra_Field[] = [];
 
 					if ( user_extra_fields )
@@ -284,7 +285,7 @@ export class ViewProductionAreaComponent extends BaseComponent implements OnInit
 		this.confirmation.showConfirmAlert(user,'Confirmar','¿Desea eliminar ' + user.name + ' del area de producción?')
 		.pipe(filter((response)=> response.accepted))
 		.subscribe((response)=>
-		{	
+		{
 			this.is_loading = true;
 			user.production_area_id = null;
 			this.subs.sink = this.rest_user.update(user)
@@ -306,7 +307,7 @@ export class ViewProductionAreaComponent extends BaseComponent implements OnInit
 	{
 		let added = this.cproduction_area_item_list.findIndex((pai:CProduction_Area_Item)=>pai.item_id == item_info.item.id) != -1;
 
-		if (item_info.item.has_serial_number == 'NO') 
+		if (item_info.item.has_serial_number == 'NO')
 		{
 			if (added)
 				return this.showError('El item ya ha sido agregado');
@@ -317,7 +318,7 @@ export class ViewProductionAreaComponent extends BaseComponent implements OnInit
 					this.addProductionAreaItem(item_info);
 			});
 		}
-		else 
+		else
 		{
 			this.showError('Numeros de serie no soportados');
 		}

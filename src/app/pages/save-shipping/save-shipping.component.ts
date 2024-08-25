@@ -1,8 +1,8 @@
 import { Component, Pipe } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { BaseComponent } from '../../modules/shared/base/base.component';
-import { Category, Item, ItemInfo, ItemStockInfo, Production, Requisition, Requisition_Item, Serial, SerialInfo, SerialItemInfo, Shipping, Stock_Record, Store } from '../../modules/shared/RestModels';
-import { RequisitionInfo, RequisitionItemInfo, ShippingInfo, ShippingItemInfo } from '../../modules/shared/Models';
+import { Category, Item,  Production, Requisition, Requisition_Item, Serial, SerialInfo,Shipping, Stock_Record, Store } from '../../modules/shared/RestModels';
+import { ItemInfo, ItemStockInfo, RequisitionInfo, RequisitionItemInfo, ShippingInfo, ShippingItemInfo, SerialItemInfo } from '../../modules/shared/Models';
 import { Rest, RestSimple, SearchObject } from '../../modules/shared/services/Rest';
 import { filter, forkJoin, from, mergeMap, of } from 'rxjs';
 import { RouterModule } from '@angular/router';
@@ -144,17 +144,18 @@ export class SaveShippingComponent extends BaseComponent
 			let item_stock_info = item_stock_info_list?.find((x)=>x.item.id == rii.item.id);
 
 			let item_info:ItemInfo = {
-				item: rii.item,
-				category: rii.category,
-				price: item_stock_info?.price || undefined,
-				prices: item_stock_info?.prices || [],
-				records: item_stock_info?.records || [],
-				stock_record: item_stock_info?.stock_record || undefined,
-				options: item_stock_info?.options || [],
-				exceptions: item_stock_info?.exceptions || [],
-				display_category: item_stock_info?.display_category || false,
-				serials: item_stock_info?.serials || [],
-			};
+                item: rii.item,
+                category: rii.category,
+                price: item_stock_info?.price || undefined,
+                prices: item_stock_info?.prices || [],
+                records: item_stock_info?.records || [],
+                stock_record: item_stock_info?.stock_record || undefined,
+                options: item_stock_info?.options || [],
+                exceptions: item_stock_info?.exceptions || [],
+                display_category: item_stock_info?.display_category || false,
+                serials: item_stock_info?.serials || [],
+                item_options: []
+            };
 
 			let required = rii.requisition_item.qty;
 			let shipped = shipping_info_list?.reduce((p, si) => {

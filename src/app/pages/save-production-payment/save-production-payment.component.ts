@@ -1,13 +1,14 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { BaseComponent } from '../../modules/shared/base/base.component';
-import { ItemInfo, Price, Production, User, User_extra_fields, Work_Log, Work_log_rules } from '../../modules/shared/RestModels';
+import { Price, Production, User, User_extra_fields, Work_Log, Work_log_rules } from '../../modules/shared/RestModels';
 import { Utils } from '../../modules/shared/Utils';
 import { FormsModule } from '@angular/forms';
 import { forkJoin, mergeMap, of } from 'rxjs';
 import { Rest, RestSimple, SearchObject } from '../../modules/shared/services/Rest';
 import { CustomToTitlePipe } from '../../modules/shared/pipes/custom-to-title.pipe';
 import { LoadingComponent } from '../../components/loading/loading.component';
+import { ItemInfo } from '../../modules/shared/Models';
 
 interface CUser_production_report
 {
@@ -66,7 +67,7 @@ export class SaveProductionPaymentComponent extends BaseComponent implements OnI
 		.pipe
 		(
 			mergeMap((params)=>
-			{	
+			{
 				this.path = 'save-production-payment';
 				this.is_loading = true;
 
@@ -98,7 +99,7 @@ export class SaveProductionPaymentComponent extends BaseComponent implements OnI
 					production: this.rest_production.search(search_production_obj),
 					work_log: this.rest_work_log.search(this.search_work_log_obj),
 					work_log_rules: this.rest_work_log_rules.search({})
-				}); 
+				});
 			}),
 			mergeMap((result)=>
 			{
@@ -153,7 +154,7 @@ export class SaveProductionPaymentComponent extends BaseComponent implements OnI
 		});
 
 		this.cost_total = this.payment_total;
-		
+
 	}
 
 	buildItemProductionReport(items:ItemInfo[], productions:Production[])
@@ -227,7 +228,7 @@ export class SaveProductionPaymentComponent extends BaseComponent implements OnI
 
 			let user_extra_fields = this.user_extra_fields_list.find((uef)=>uef.user_id == user.id)?.json_fields;
 			//console.log('user_extra_fields', user_extra_fields);
-			let production_json_values = 
+			let production_json_values =
 			{
 				total_hours,
 				total_extra_hours,
@@ -252,7 +253,7 @@ export class SaveProductionPaymentComponent extends BaseComponent implements OnI
 				}
 			});
 
-			//console.log('json_values', json_values); 
+			//console.log('json_values', json_values);
 			if (total_payment == 0)
 			{
 				for (let key in json_values)
@@ -260,7 +261,7 @@ export class SaveProductionPaymentComponent extends BaseComponent implements OnI
 					total_payment += json_values[key];
 				}
 			}
-			
+
 			this.Cuser_production_report_list.push({ user, total_hours, total_extra_hours, production_qty, cost, json_values, total_payment });
 		});
 
@@ -281,7 +282,7 @@ export class SaveProductionPaymentComponent extends BaseComponent implements OnI
 			let js2 = 'let production= '+JSON.stringify(production_values)+';let user= '+JSON.stringify(user_values)+';'+prop[key];
 			//console.log('Eval is ', window.eval(js2 ));
 			production_values[key] = window.eval( js2 );
-			let value: Record<string, any> = {}; 
+			let value: Record<string, any> = {};
 			value[key] = production_values[key];
 			results = {...results, ...value};
 			//console.log('key is',key, production_values[key] );
@@ -296,7 +297,7 @@ export class SaveProductionPaymentComponent extends BaseComponent implements OnI
 	}
 
 	submit($event:Event)
-	{	
+	{
 		//update the worklog of the users with the new values for the total_payment
 		let work_log_list = this.user_work_logs_list.map((work_log)=>
 		{
@@ -308,7 +309,7 @@ export class SaveProductionPaymentComponent extends BaseComponent implements OnI
 			return work_log;
 		});
 		this.is_loading = true;
-		
+
 		this.subs.sink = this.rest_work_log.batchUpdate(work_log_list)
 		.subscribe({
 			next: (response)=>
