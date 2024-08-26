@@ -4,6 +4,25 @@ import { RestService } from "./services/rest.service";
 
 export class GetEmpty
 {
+    static price(): Price
+	{
+		let p:Price = {
+            id: 0,
+            price: 1,
+            price_type_id: 1,
+            currency_id: 'MXN',
+            tax_included: 'YES',
+            created_by_user_id: 1,
+            updated_by_user_id: 1,
+            created: new Date(),
+            updated: new Date(),
+            item_id: 0,
+            percent: 0,
+            price_list_id: 0
+        }
+		return p;
+    }
+
 	static order_item(item:Item): Order_Item
 	{
 		let order_item:Order_Item =
@@ -35,6 +54,7 @@ export class GetEmpty
 			preparation_status: "PENDING",
 			price_id: null,
 			qty: 0,
+			reservation_item_id: null,
 			return_required: "NO",
 			status: "ACTIVE",
 			stock_status: "IN_STOCK",
@@ -42,7 +62,7 @@ export class GetEmpty
 			system_preparation_ended: null,
 			system_preparation_started: null,
 			tax: 0,
-			tax_included: "NO",
+			tax_included: "YES",
 			total: 0,
 			type: "NORMAL",
 			unitary_price: 0,
@@ -376,7 +396,7 @@ export class GetEmpty
 			serial_item_id: 0,
 			start: '',
 			status:'ACTIVE',
-			tax_included: 'NO',
+			tax_included: 'YES',
 			updated: new Date(),
 		};
 	}

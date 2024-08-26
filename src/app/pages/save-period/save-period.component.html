@@ -27,6 +27,7 @@
 					<input type="number" name="'ri_price'+ri.reservation_item.id" [(ngModel)]="ri.price" (ngModelChange)="updatePrice(ri)" class="form-control" required>
 				</div>
 				<div class="col-12 col-md-2">
+					{{ri.total | currency}}
 					<input type="number" name="'ri_total'+ri.reservation_item.id" [(ngModel)]="ri.total" (ngModelChange)="updatePrice(ri)" class="form-control" required>
 				</div>
 			</div>

@@ -591,6 +591,7 @@ export interface Order{
 	version_updated:string | null;
 }
 export interface Order_Item{
+    reservation_item_id: number | null;
 	commanda_id:number | null;
 	commanda_status:'NOT_DISPLAYED'|'PENDING'|'DISMISSED';
 	created:Date;
@@ -1431,7 +1432,7 @@ export interface Store{
 	paypal_email?:string | null;
 	phone?:string | null;
 	pos_category_preferences?:'DEFAULT_BY_PRODUCT'|'HIDE_BY_DEFAULT'|'SHOW_BY_DEFAULT';
-	price_list_id?:number | null;
+	price_list_id:number;
 	print_receipt?:number | null;
 	print_receipt_copies:number;
 	printer_ticket_config:string | null;
