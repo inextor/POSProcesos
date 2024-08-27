@@ -23,6 +23,8 @@ interface CItem
 	period:string; //
 	total:number; //Total to be paid
 	item_info:ItemInfo;
+	start:Date;
+	end:Date;
 	//order_item_info:OrderItemInfo;
 }
 
@@ -137,6 +139,21 @@ export class SavePeriodComponent extends BaseComponent implements OnInit
 	}
 
 
+	/*
+	getStartPeriod(store_id:number):Date
+	{
+		let start = this.getLastPeriodEnd(store_id);
+
+		if( start )
+		{
+			start.setSeconds(start.getSeconds()+1);
+		}
+
+		return start;
+	}
+	*/
+
+
 	getCItem(reservation_item_info:ReservationItemInfo,start:Date|null, item_info_list:ItemInfo[]):CItem
 	{
 
@@ -192,7 +209,19 @@ export class SavePeriodComponent extends BaseComponent implements OnInit
 		let price = reservation_item_info.reservation_item.price
 		let total = qty*qty_period * price;
 		//order_item_info
-		let citem:CItem = { reservation_item_info, item_info, qty, period, qty_period, total , price };
+		let citem:CItem =
+		{
+			reservation_item_info,
+			item_info,
+			qty,
+			period,
+			qty_period,
+			total ,
+			price,
+			start: start_period,
+			end
+		};
+
 		return citem;
 	}
 
@@ -271,6 +300,9 @@ export class SavePeriodComponent extends BaseComponent implements OnInit
 		let order_builder = new OrderBuilder(this.rest, price_type, store, this.rest.user as User);
 		order_builder.user_client = this.reservation_info.user;
 
+		let user = this.rest.user as User;
+		let starts:Date[] = [];
+
 		for(let citem of this.custom_items)
 		{
 			let ri = citem.reservation_item_info;
@@ -289,10 +321,30 @@ export class SavePeriodComponent extends BaseComponent implements OnInit
 			);
 
 			order_item_info.order_item.reservation_item_id = ri.reservation_item.id
+			starts.push(citem.start );
 		}
+
+		starts.push( new Date() );
+		let start = starts.sort().shift() as Date; //WTF start always has something Because of the previous push
+
+		let period:Period = {
+            id: 0,
+            created: new Date(),
+            created_by_user_id: 0,
+            end_timestamp: new Date(),
+            minutes_offset: 0,
+            note: null,
+            reservation_id: 0,
+            start_timestamp: start,
+            status: 'ACTIVE',
+            updated: new Date(),
+            updated_by_user_id: user.id,
+        };
+
 
 
 		order_builder.updateOrderTotal();
+		order_builder.period = period;
 
 		let order_info = order_builder.order_info;
 

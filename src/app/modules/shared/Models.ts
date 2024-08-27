@@ -1,4 +1,4 @@
-import { Category, Delivery_Assignment, Item,  Item_Exception, Item_Option, Item_Option_Value, Offer, Order, Order_Item, Order_Item_Exception, Price, Price_Type, Process, Production, Purchase, Requisition, Requisition_Item, Reservation, Reservation_Item, Reservation_Item_Serial, Return_Assignment, Serial, SerialInfo, Shipping, Shipping_Item, Stock_Record, Store, Task, User } from "./RestModels";
+import { Category, Delivery_Assignment, Item,  Item_Exception, Item_Option, Item_Option_Value, Offer, Order, Order_Item, Order_Item_Exception, Period, Price, Price_Type, Process, Production, Purchase, Requisition, Requisition_Item, Reservation, Reservation_Item, Reservation_Item_Serial, Return_Assignment, Serial, SerialInfo, Shipping, Shipping_Item, Stock_Record, Store, Task, User } from "./RestModels";
 
 
 export interface OrderItemInfo extends ItemInfo
@@ -16,6 +16,7 @@ export interface OrderItemInfo extends ItemInfo
 
 export interface OrderInfo
 {
+    period?: Period;
 	id?:number; //en offline
 	order: Order; //Obligatorio
 	items: OrderItemInfo[]; //Obligatorio

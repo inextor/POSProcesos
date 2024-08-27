@@ -1,6 +1,6 @@
 import { GetEmpty } from './GetEmpty';
 import { ItemInfo, OrderInfo, OrderItemInfo } from './Models';
-import { Category, Currency_Rate, Order, Order_Item, Price, Price_Type, Quote_Item, Stock_Record, Store, User } from './RestModels';
+import { Category, Currency_Rate, Order, Order_Item, Period, Price, Price_Type, Quote_Item, Stock_Record, Store, User } from './RestModels';
 import { Utils } from './Utils';
 import { RestService } from './services/rest.service';
 
@@ -464,6 +464,16 @@ export class OrderBuilder
 		}
 
 		return true;
+	}
+
+	public set period(period:Period | undefined | null)
+	{
+		this.order_info.period = period? period :undefined;
+	}
+
+	public get period():Period | undefined
+	{
+		return this.order_info.period;
 	}
 
 	roundTo4(number:number):number
