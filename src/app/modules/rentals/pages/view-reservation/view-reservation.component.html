@@ -26,7 +26,6 @@
 					<a [routerLink]="['/rentals/add-period', reservation_info.reservation.id]" class="btn btn-primary">Generar Corte</a>
 				</div>
 			</div>
-
 		</div>
 		<div class="row">
 			<div class="col-12 col-md-6 form-group">
@@ -39,65 +38,106 @@
 			</div>
 		</div>
 	</div>
-	<!--div class="row">
-		<div class="col-12 col-md-6"-->
-			<h2>Artículos reservados</h2>
-			<app-loading [is_loading]="is_loading"></app-loading>
-			<div class="card p-3 mt-3">
-				<table class="w-100">
-					<tr>
-						<td>Articulo</td>
-						<td class="text-end">Cantidada</td>
-						<td class="text-end">Entregados</td>
-						<td class="text-end">Fecha de<br>Entrega</td>
-						<td class="text-end">Asignado<br>Entrega</td>
-						<td class="text-end">Fecha de<br>Recoleccion</td>
-						<td class="text-end">Cantidad Retornada</td>
-						<td class="text-end">Asignado<br>Recoleccion</td>
-						<td class="text-end">Acciones</td>
-					</tr>
-					<tr *ngFor="let ri of reservation_info.items">
-						<td>{{ri.item.name}}</td>
-						<td class="text-end">{{ri.reservation_item.qty}}</td>
-						<td class="text-end">{{ri.reservation_item.delivered_qty}}</td>
-						<td class="text-end">{{ri.reservation_item.scheduled_delivery | shortDate: 'local'}}</td>
-						<td class="text-end">
-							<div *ngFor="let dd of ri.delivery_assignments">{{dd.user.name}}</div>
-						</td>
-						<td class="text-end">{{ri.reservation_item.scheduled_return | shortDate:'local'}}</td>
-						<td class="text-end">{{ri.reservation_item.returned_qty}}</td>
-						<td class="text-end">
-							<div *ngFor="let dd of ri.return_assignments">{{dd.user.name}}</div>
-						</td>
-						<td class="text-end">
-							<a class="btn btn-primary btn-sm mx-1" (click)="showAssignSerials(ri)">Asignar Inventario</a>
-							<button class="btn btn-primary btn-sm mx-1">Marcar Como Entregado</button>
-						</td>
-					</tr>
-				</table>
+	<h2 class="my-3">Artículos/Servicios</h2>
+	<app-loading [is_loading]="is_loading"></app-loading>
+	<div class="card p-3 mt-3">
+		<table class="w-100">
+			<tr>
+				<td>Articulo</td>
+				<td class="text-end">Cantidada</td>
+				<td class="text-end">Entregados</td>
+				<td class="text-end">Fecha de<br>Entrega</td>
+				<td class="text-end">Asignado<br>Entrega</td>
+				<td class="text-end">Fecha de<br>Recoleccion</td>
+				<td class="text-end">Cantidad Retornada</td>
+				<td class="text-end">Asignado<br>Recoleccion</td>
+				<td class="text-end">Acciones</td>
+			</tr>
+			<ng-container *ngFor="let ri of reservation_info.items">
+				<tr *ngIf="ri.reservation_item.period_type!='ONCE_ONLY'">
+					<td>{{ri.item.name}}</td>
+					<td class="text-end">{{ri.reservation_item.qty}}</td>
+					<td class="text-end">{{ri.reservation_item.delivered_qty}}</td>
+					<td class="text-end">{{ri.reservation_item.scheduled_delivery | shortDate: 'local'}}</td>
+					<td class="text-end">
+						<div *ngFor="let dd of ri.delivery_assignments">{{dd.user.name}}</div>
+					</td>
+					<td class="text-end">{{ri.reservation_item.scheduled_return | shortDate:'local'}}</td>
+					<td class="text-end">{{ri.reservation_item.returned_qty}}</td>
+					<td class="text-end">
+						<div *ngFor="let dd of ri.return_assignments">{{dd.user.name}}</div>
+					</td>
+					<td class="text-end">
+						<a class="btn btn-primary btn-sm mx-1" (click)="showAssignSerials(ri)">Asignar Inventario</a>
+						<button class="btn btn-primary btn-sm mx-1" (click)="markAsDelivered(ri)">Marcar Como Entregado</button>
+					</td>
+				</tr>
+			</ng-container>
+		</table>
+	</div>
+	<h2 class="my-3">Agregar Extras</h2>
+	<div class="card p-3">
+		<div class="row">
+			<div class="col-12">
+				<label>Agregar artículo</label>
+				<app-search-items (item_selected)="onItemSelected($event)" [reset_on_search]="true" [for_reservation]="false"></app-search-items>
 			</div>
-		<!--/div>
-		<div class="col-12 col-md-6"-->
-			<h2>Inventario Asignado</h2>
-			<div class="card p-3 mt-3">
-				<div class="text-end">
-					<button class="btn btn-primary" (click)="markAllAsDelivered()">Asignar Inventario</button>
+		</div>
+		<form (submit)="addNewItem($event)"  ngNativeValidate>
+			<div class="col-6 col-md-6" *ngIf="new_item_info">
+				<div class="col-6 col-md-6" *ngIf="new_item_info">
+					{{new_item_info | itemName}}
 				</div>
-				<table class="w-100">
-					<thead>
-					<tr>
-						<th>Serie</th>
-						<th>Articulo</th>
-					</tr>
-					</thead>
-					<tr *ngFor="let ris of reservation_item_serials">
-						<td>{{ris.serial}}</td>
-						<td>ESTACIONARIOS 24HRS</td>
-					</tr>
-				</table>
+				<div class="col-6 col-md-3">
+					<label>Cantidad</label>
+					<input type="number" class="form-control" name="new_item_qty" [(ngModel)]="new_item_qty" required>
+				</div>
+				<div>
+					<div class="col-6 col-md-3">
+						<button type="submit" class="btn btn-primary">Agregar</button>
+					</div>
+				</div>
 			</div>
-		<!--/div>
-	</div-->
+		</form>
+	</div>
+	<h2 class="my-3">Extras</h2>
+	<div class="card py-3 px-1 px-md-3">
+		<table class="w-100">
+			<ng-container *ngFor="let ri of reservation_info.items">
+				<tr *ngIf="ri.reservation_item.period_type=='ONCE_ONLY' && ri.reservation_item.last_period_id == null">
+					<td>{{ri?.item?.name}}</td>
+					<td class="text-end">{{ri.reservation_item.qty}}</td>
+					<td class="text-end">{{ri.reservation_item.scheduled_delivery | shortDate: 'local'}}</td>
+					<td class="text-end"></td>
+				</tr>
+			</ng-container>
+		</table>
+	</div>
+	<div class="col-12 col-md-6">
+		<h2 class="my-3">Inventario Asignado</h2>
+		<div class="card p-3 mt-3">
+			<table class="w-100">
+				<thead>
+					<tr>
+						<th>Articulo</th>
+						<th>Serie</th>
+						<th>Entrega</th>
+						<th>Recolección</th>
+					</tr>
+				</thead>
+				<tbody>
+					<ng-container *ngFor="let rii of reservation_info.items">
+						<tr *ngFor="let ris of rii.serials">
+							<td>{{rii?.category?.name}} {{rii.item.name}}</td>
+							<td>{{ris.reservation_item_serial.serial}}</td>
+							<td>{{ris.reservation_item_serial.delivered_timestamp | shortDate}}</td>
+							<td>{{ris.reservation_item_serial.returned_timestamp | shortDate}}</td>
+						</tr>
+					</ng-container>
+				</tbody>
+			</table>
+		</div>
+	</div>
 </div>
 <app-modal [(show)]="show_assign_serials">
 	<h2>Asignar Inventario</h2>
@@ -112,3 +152,4 @@
 		</div>
 	</div>
 </app-modal>
+

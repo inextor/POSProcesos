@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { BaseComponent } from '../../../shared/base/base.component';
 import { FormsModule } from '@angular/forms';
 import { SearchUsersComponent } from '../../../../components/search-users/search-users.component';
-import { Delivery_Assignment, Reservation, Reservation_Item, User } from '../../../shared/RestModels';
+import { Delivery_Assignment, Reservation, Reservation_Item, Return_Assignment, User } from '../../../shared/RestModels';
 import { Rest, SearchObject } from '../../../shared/services/Rest';
 import { ExtendedReservation, ReservationInfo } from '../../../shared/Models';
 import { mergeMap } from 'rxjs';
@@ -41,6 +41,7 @@ export class ListReservationComponent extends BaseComponent implements OnInit
 	show_assign_return: boolean = false;
 	rest_delivery_assignment = this.rest.initRestSimple<Delivery_Assignment>('delivery_assignment');
 	selected_reservation_info: ReservationInfo | null = null;
+    rest_return_assignment = this.rest.initRestSimple<Return_Assignment>('return_assignment');
 
 	ngOnInit(): void
 	{
@@ -229,7 +230,7 @@ export class ListReservationComponent extends BaseComponent implements OnInit
 			}
 		);
 
-		this.subs.sink = this.rest_delivery_assignment
+		this.subs.sink = this.rest_return_assignment
 		.batchCreate( ri_array )
 		.subscribe
 		({

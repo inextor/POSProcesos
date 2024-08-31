@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { BaseComponent } from '../../../shared/base/base.component';
 import { forkJoin, mergeMap, Observable, of } from 'rxjs';
 import { ParamMap, RouterModule } from '@angular/router';
-import { Address, Currency_Rate,  Price_Type, Reservation, Reservation_Item, Store, User } from '../../../shared/RestModels';
+import { Address, Currency_Rate, Price_Type, Reservation, Reservation_Item, Store, User } from '../../../shared/RestModels';
 import { GetEmpty } from '../../../shared/GetEmpty';
 import { ItemInfo, ReservationInfo, ReservationItemInfo } from '../../../shared/Models';
 import { Rest, RestSimple } from '../../../shared/services/Rest';
@@ -14,11 +14,11 @@ import { ModalComponent } from '../../../../components/modal/modal.component';
 import { Utils } from '../../../shared/Utils';
 
 @Component({
-  selector: 'app-save-reservation',
-  standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule, SearchUsersComponent, SearchItemsComponent],
-  templateUrl: './save-reservation.component.html',
-  styleUrl: './save-reservation.component.css'
+	selector: 'app-save-reservation',
+	standalone: true,
+	imports: [CommonModule, FormsModule, RouterModule, SearchUsersComponent, SearchItemsComponent],
+	templateUrl: './save-reservation.component.html',
+	styleUrl: './save-reservation.component.css'
 })
 export class SaveReservationComponent extends BaseComponent implements OnInit
 {
@@ -93,11 +93,17 @@ export class SaveReservationComponent extends BaseComponent implements OnInit
 
 				let user = this.rest.user as User;
 
+
+				let price_type = this.price_type_list[0];
+
+
+
 				if(this.reservation_info.reservation.id == 0)
 				{
 					this.reservation_info.reservation =
 					{
 						...this.reservation_info.reservation,
+						price_type_id:price_type.id,
 						start: '',
 						store_id: user.store_id as number,
 						status: 'ACTIVE',
@@ -177,10 +183,12 @@ export class SaveReservationComponent extends BaseComponent implements OnInit
 
 		if (user)
 		{
+			let price_type_id = user?.price_type_id || this.price_type_list[0].id;
 			this.reservation_info.reservation =
 			{
 				...this.reservation_info.reservation,
 				user_id: user.id,
+				price_type_id: price_type_id,
 				client_name: user.name,
 				address_id: null
 			}

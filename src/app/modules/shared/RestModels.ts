@@ -1120,7 +1120,7 @@ export interface Reservation_Item{
 	item_id: number;
 	last_period_id: number | null;
 	note: string | null;
-	period_type: 'BY_HOUR' | 'DAILY' | 'WEEKLY' | 'MONTHLY'|'ONLY_ONCE';
+	period_type: 'BY_HOUR' | 'DAILY' | 'WEEKLY' | 'MONTHLY'|'ONCE_ONLY';
 	price: number;
 	tax_included: 'YES' | 'NO';
 	qty: number;

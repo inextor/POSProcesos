@@ -68,7 +68,7 @@
 					</div>
 					<div class="col-12 col-md-3">
 						<label>Cantidad</label>
-						<input type="number" class="form-control" name="${{i}}-qty" [(ngModel)]="rii.reservation_item.qty" required>
+						<input type="number" class="form-control" name="${{i}}-qty" min="1" [(ngModel)]="rii.reservation_item.qty" required>
 					</div>
 					<div class="col-12 col-md-3">
 						<label>Fecha de entrega</label>
@@ -111,8 +111,6 @@
 				</div>
 			</div>
 		</ng-container>
-
 		<button type="submit" class="btn btn-primary mt-3">Guardar</button>
 	</form>
-
 </div>

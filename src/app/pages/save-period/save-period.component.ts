@@ -12,7 +12,7 @@ import { Utils } from '../../modules/shared/Utils';
 import { OrderBuilder } from '../../modules/shared/OrderBuilder';
 
 
-type PeriodType = 'MONTHLY' | 'WEEKLY' | 'DAILY' | 'BY_HOUR' | 'ONLY_ONCE';
+type PeriodType = 'MONTHLY' | 'WEEKLY' | 'DAILY' | 'BY_HOUR' | 'ONCE_ONLY';
 
 interface CItem
 {
@@ -190,7 +190,7 @@ export class SavePeriodComponent extends BaseComponent implements OnInit
 			'WEEKLY':'Semanas',
 			'DAILY':'Dias',
 			'BY_HOUR':'Horas',
-			'ONLY_ONCE':'1'
+			'ONCE_ONLY':'Unico'
 		};
 
 		let period	= period_type[ reservation_item_info.reservation_item.period_type ]
@@ -237,7 +237,7 @@ export class SavePeriodComponent extends BaseComponent implements OnInit
 				return this.getDaysBetweenDates(start, end);
 			case 'BY_HOUR':
 				return this.getHoursDifference(start, end);
-			case 'ONLY_ONCE':
+			case 'ONCE_ONLY':
 		}
 		return 1;
 	}
