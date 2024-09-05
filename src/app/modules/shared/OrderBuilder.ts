@@ -65,8 +65,8 @@ export class OrderBuilder
 
 		if( user )
 		{
-			this.order_info.order.client_name = user.name
-			this.order_info.order.client_user_id = user.id
+			this._order_info.order.client_name = user.name
+			this._order_info.order.client_user_id = user.id
 		}
 		else
 		{

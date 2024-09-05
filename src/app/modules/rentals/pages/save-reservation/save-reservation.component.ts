@@ -239,7 +239,8 @@ export class SaveReservationComponent extends BaseComponent implements OnInit
 
 		if(item_info.prices)
 		{
-			item_info.prices.forEach((p) => {
+			item_info.prices.forEach((p) =>
+			{
 				//really bad way to get the price
 				//price must be, from the price list of the store, and also, the first price type, already sorted by priority
 				if(this.selected_store && p.price_list_id == this.selected_store.price_list_id && p.price_type_id == this.price_type_list[0].id)
@@ -251,7 +252,10 @@ export class SaveReservationComponent extends BaseComponent implements OnInit
 		}
 
 		let reservation_item:Reservation_Item = GetEmpty.reservation_item();
-		let start = this.reservation_info.reservation.start || Utils.getLocalMysqlStringFromDate(new Date());
+
+		let start_date = new Date();
+		start_date.setSeconds(0);
+		let start = this.reservation_info.reservation.start || Utils.getLocalMysqlStringFromDate(start_date);
 
 		reservation_item =
 		{
@@ -276,6 +280,14 @@ export class SaveReservationComponent extends BaseComponent implements OnInit
 
 		this.reservation_info.items.push(reservation_item_info);
 		console.log(this.reservation_info.items);
+	}
+
+	onStartDateChange(start:string):void
+	{
+		for(let rii of this.reservation_info.items)
+		{
+			rii.reservation_item.start = start;
+		}
 	}
 
 	removeItem(index:number):void

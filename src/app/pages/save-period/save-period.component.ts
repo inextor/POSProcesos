@@ -64,10 +64,7 @@ export class SavePeriodComponent extends BaseComponent implements OnInit
 
 				return forkJoin
 				({
-					reservation_info:this.rest_reservation_info.get(reservation_id).pipe
-					(
-
-					),
+					reservation_info:this.rest_reservation_info.get(reservation_id),
 					price_type: this.rest_price_type.search({limit:999999}),
 					store: this.rest_store.search({limit:999999}),
 					periods: this.rest_period.search
@@ -78,8 +75,12 @@ export class SavePeriodComponent extends BaseComponent implements OnInit
 			}),
 			mergeMap((response)=>
 			{
+				let items_map_func = (x:ReservationItemInfo)=>
+				{
+					return x.item.id;
+				};
 
-				let items_id = response.reservation_info.items.map(x=>x.item.id);
+				let items_id = response.reservation_info.items.map(items_map_func);
 
 				return forkJoin
 				({
@@ -347,6 +348,7 @@ export class SavePeriodComponent extends BaseComponent implements OnInit
 		order_builder.period = period;
 
 		let order_info = order_builder.order_info;
+		order_info.order.client_user_id = this.reservation_info.reservation.user_id;
 
 		console.log('Items has', order_info.items);
 
@@ -370,7 +372,7 @@ export class SavePeriodComponent extends BaseComponent implements OnInit
 				{
 					this.showWarning('Corte de Reservación agregado');
 
-					window.location.href = window.location.protocol+window.location.hostname+'/#/easy-pos/'+order_info.order.id;
+					window.location.href = window.location.protocol+window.location.hostname+'/#/view-order/'+order_info.order.id;
 				}
 				,error:(error:any)=>
 				{

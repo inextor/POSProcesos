@@ -207,6 +207,7 @@ export interface ExtendedReservation extends Reservation
 
 export interface ReservationInfo
 {
+	client_user: User | null;
 	reservation:ExtendedReservation;
 	items:ReservationItemInfo[]
 	user:User | null;

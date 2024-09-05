@@ -124,6 +124,7 @@ export class GetEmpty
 		return {
 			reservation: GetEmpty.reservation(),
 			user: GetEmpty.user(),
+			client_user: null,
 			items: []
 		};
 	}
@@ -418,6 +419,7 @@ export class GetEmpty
 	{
 		return {
 			reservation: GetEmpty.reservation(),
+			client_user: null,
 			user: null,
 			items: []
 		};

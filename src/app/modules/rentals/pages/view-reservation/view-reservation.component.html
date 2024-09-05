@@ -1,6 +1,26 @@
 <div class="container-fluid">
 	<h1 class="my-3">Reservaciones</h1>
-	<div class="card p-3">
+	<!--div class="card my-3" *ngIf="reservation_info.client_user">
+		<table>
+			<tr>
+				<td rowspan="3" style="width:80px">
+					<img [src]="rest.getImagePath(reservation_info.client_user.image_id)" width="60px">
+				</td>
+				<td style="width:200px">Nombre</td>
+				<th>{{reservation_info.client_user.id}}-{{reservation_info.client_user.name | titlecase}}</th>
+			</tr>
+			<tr>
+				<td style="width:200px">Saldo Pendiente:</td>
+				<span class="fw-bold">{{reservation.client_user?.balance | currency:'$'}}</span>
+			</tr>
+			<tr *ngIf="reservation_info.client_user.points>=1">
+				<td style="width:200px">Puntos</td>
+				<th>{{reservation_info.client_user.points | number:'1.2-2'}}</th>
+			</tr>
+		</table>
+	</div -->
+
+	<div class="card p-3 my-3">
 		<div class="row">
 			<div class="col-12 col-md-3">
 				<span>Nombre: </span>
@@ -11,7 +31,7 @@
 			<div class="col-12 col-md-3">
 				<span>Creation: </span>
 				<div>
-					<strong>{{reservation_info.reservation.client_name}}</strong>
+					<strong>{{reservation_info.reservation.created | shortDate}}</strong>
 				</div>
 			</div>
 			<div class="col-12 col-md-3">
@@ -37,6 +57,14 @@
 				<input type="datetime-local" name="scheduled_return" [ngModel]="scheduled_return" (ngModelChange)="updateScheduleReturn($event)" class="form-control">
 			</div>
 		</div>
+		<div>
+			<div class="col-6 col-md-3">
+				<button class="btn btn-primary mx-1" (click)="showAssignDelivery(reservation_info)">Asignar Entrega</button>
+			</div>
+			<div class="col-6 col-md-3">
+				<button class="btn btn-primary mx-1" (click)="showAssignReturn(reservation_info)">Asignar Recoleccion</button>
+			</div>
+		</div>
 	</div>
 	<h2 class="my-3">Artículos/Servicios</h2>
 	<app-loading [is_loading]="is_loading"></app-loading>
@@ -44,7 +72,7 @@
 		<table class="w-100">
 			<tr>
 				<td>Articulo</td>
-				<td class="text-end">Cantidada</td>
+				<td class="text-end">Cantidad</td>
 				<td class="text-end">Entregados</td>
 				<td class="text-end">Fecha de<br>Entrega</td>
 				<td class="text-end">Asignado<br>Entrega</td>
@@ -69,7 +97,8 @@
 					</td>
 					<td class="text-end">
 						<a class="btn btn-primary btn-sm mx-1" (click)="showAssignSerials(ri)">Asignar Inventario</a>
-						<button class="btn btn-primary btn-sm mx-1" (click)="markAsDelivered(ri)">Marcar Como Entregado</button>
+						<button class="btn btn-primary btn-sm mx-1" (click)="markReservationItemAsDelivered(ri)">Marcar Entregado</button>
+						<button class="btn btn-primary btn-sm mx-1" (click)="markReservationItemAsReturned(ri)">Marcar Regresado</button>
 					</td>
 				</tr>
 			</ng-container>
@@ -113,9 +142,23 @@
 			</ng-container>
 		</table>
 	</div>
-	<div class="col-12 col-md-6">
-		<h2 class="my-3">Inventario Asignado</h2>
-		<div class="card p-3 mt-3">
+	<div class="col-6 col-md-8">
+		<div class="row align-items-center">
+			<div class="col-6 col-md-8">
+				<h2 class="my-3">Inventario Asignado</h2>
+			</div>
+			<div class="col-3 col-md-2 text-end">
+				<button type="button" class="btn btn-primary btn-sm mx-1" (click)="markAllAsDelivered()">
+					Entregar todo
+				</button>
+			</div>
+			<div class="col-3 col-md-2 text-end">
+				<button type="button" class="btn btn-primary btn-sm" (click)="markAllAsReturned()">
+					Regresar Todo
+				</button>
+			</div>
+		</div>
+		<div class="card p-3">
 			<table class="w-100">
 				<thead>
 					<tr>
@@ -132,6 +175,15 @@
 							<td>{{ris.reservation_item_serial.serial}}</td>
 							<td>{{ris.reservation_item_serial.delivered_timestamp | shortDate}}</td>
 							<td>{{ris.reservation_item_serial.returned_timestamp | shortDate}}</td>
+							<td class="text-end">
+								<button type="button" class="btn btn-primary btn-sm" *ngIf="ris.reservation_item_serial.delivered_timestamp == null" (click)="markReservationItemSerialAsDelivered(ris)">
+									Recolectado
+								</button>
+
+								<button type="button" class="btn btn-primary btn-sm" *ngIf="ris.reservation_item_serial.returned_timestamp == null" (click)="markReservationItemSerialAsReturned(ris)">
+									Recolectado
+								</button>
+							</td>
 						</tr>
 					</ng-container>
 				</tbody>
@@ -150,6 +202,11 @@
 				<button class="btn btn-primary" (click)="addSerial(search_serials)">Añadir</button>
 			</div>
 		</div>
+	</div>
+</app-modal>
+<app-modal [(show)]="show_assign_delivery">
+	<div style="min-height:400px">
+		<app-search-users [type]="'USER'" [null_user_string]="'cancelar'" [reset_on_search]="true" (user_selected)="onSelectDeliveryUser($event)"></app-search-users>
 	</div>
 </app-modal>
 

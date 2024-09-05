@@ -14,6 +14,7 @@ import { LoadingComponent } from '../../../../components/loading/loading.compone
 import { SearchItemsComponent } from "../../../../components/search-items/search-items.component";
 import { ItemNamePipe } from "../../../shared/pipes/item-name.pipe";
 import { Utils } from '../../../shared/Utils';
+import { SearchUsersComponent } from "../../../../components/search-users/search-users.component";
 
 interface CReservation_Item_Serial extends Reservation_Item_Serial
 {
@@ -22,14 +23,15 @@ interface CReservation_Item_Serial extends Reservation_Item_Serial
 
 @Component
 ({
-	selector: 'app-view-reservation',
-	standalone: true,
-	templateUrl: './view-reservation.component.html',
-	styleUrl: './view-reservation.component.css',
-	imports: [CommonModule, ShortDatePipe, FormsModule, ModalComponent, LoadingComponent, RouterModule, SearchItemsComponent, ItemNamePipe]
+    selector: 'app-view-reservation',
+    standalone: true,
+    templateUrl: './view-reservation.component.html',
+    styleUrl: './view-reservation.component.css',
+    imports: [CommonModule, ShortDatePipe, FormsModule, ModalComponent, LoadingComponent, RouterModule, SearchItemsComponent, ItemNamePipe, SearchUsersComponent]
 })
 export class ViewReservationComponent extends BaseComponent
 {
+
 	rest_reservation_info:Rest<ExtendedReservation, ReservationInfo> = this.rest.initRest('reservation_info');
 	reservation_info: ReservationInfo = GetEmpty.getEmptyReservationInfo();
 	show_assign_delivery: boolean = false;
@@ -43,8 +45,10 @@ export class ViewReservationComponent extends BaseComponent
 	show_add_item: boolean = false;
 	new_item_info: ItemInfo | null = null;
 	new_item_qty: number = 1;
+	client_user: User | null = null;
 	rest_reservation_item: RestSimple<Reservation_Item> = this.rest.initRest('reservation_item');
 	rest_delivery_assignment = this.rest.initRestSimple<Delivery_Assignment>('delivery_assignment');
+    show_assign_return: boolean = false;
 
 	ngOnInit(): void
 	{
@@ -102,11 +106,17 @@ export class ViewReservationComponent extends BaseComponent
 			return;
 		}
 
-		let x = this.reservation_item_serial_array.find(ris=>ris.serial == ris.serial);
+		let serial_found_fun = (ris:Reservation_Item_Serial)=>
+		{
+			return ris.serial == serial;
+		}
+
+		let x = this.reservation_item_serial_array.find(serial_found_fun);
 
 		if( x )
 		{
 			this.showError('Ya existe un Serial asignado a este Elemento');
+			console.log( x );
 			return;
 		}
 
@@ -231,33 +241,7 @@ export class ViewReservationComponent extends BaseComponent
 		this.new_item_qty = 1;
 		this.new_item_info = item_info;
 	}
-	markAsDelivered(reservatio_item_info: ReservationItemInfo)
-	{
-		this.is_loading = true;
 
-		let obj = { reservation_item_id: reservatio_item_info.reservation_item.id };
-
-		this.subs.sink = this.rest.reservationUpdates('setReservationItemsAsDelivered', obj )
-		.pipe
-		(
-			mergeMap((response:any)=>
-			{
-				this.showSuccess('Se marcaron todos los artículos como entregados');
-				return this.rest_reservation_info.get( this.reservation_info.reservation.id );
-			})
-		)
-		.subscribe
-		({
-			next:(_response)=>
-			{
-				this.reservation_info = _response
-			},
-			error:(error:any)=>
-			{
-				this.showError(error);
-			}
-		});
-	}
 
 	addNewItem(submit_event:Event)
 	{
@@ -393,4 +377,137 @@ export class ViewReservationComponent extends BaseComponent
 			}
 		});
 	}
+
+	markReservationItemAsDelivered(reservatio_item_info: ReservationItemInfo)
+	{
+		this.is_loading = true;
+
+		let obj = { reservation_item_id: reservatio_item_info.reservation_item.id };
+
+		this.subs.sink = this.rest.reservationUpdates('setReservationItemAsDelivered', obj )
+		.pipe
+		(
+			mergeMap((response:any)=>
+			{
+				this.showSuccess('Se marcaron todos los artículos como entregados');
+				return this.rest_reservation_info.get( this.reservation_info.reservation.id );
+			})
+		)
+		.subscribe
+		({
+			next:(_response)=>
+			{
+				this.reservation_info = _response
+			},
+			error:(error:any)=>
+			{
+				this.showError(error);
+			}
+		});
+	}
+
+	markReservationItemAsReturned(reservatio_item_info: ReservationItemInfo)
+	{
+		let reservation_item_id = reservatio_item_info.reservation_item.id;
+
+		this.subs.sink = this.rest
+		.reservationUpdates('setReservationItemAsReturned',{ reservation_item_id, user_id: this.rest?.user?.id })
+		.subscribe
+		({
+			next:(response)=>
+			{
+				this.showSuccess('Se marcaron todos los artículos como devueltos');
+				this.reloadReservationInfo();
+
+			},
+			error:(error)=>
+			{
+				this.showError(error);
+			}
+		});
+	}
+
+
+	markReservationItemSerialAsDelivered(ris:ReservationItemSerialInfo)
+	{
+		let id = ris.reservation_item_serial.id;
+
+		this.subs.sink = this.rest
+		.reservationUpdates('setReservationItemSerialAsDelivered',{ id })
+		.subscribe
+		({
+			next:(response)=>
+			{
+				this.reloadReservationInfo();
+			},
+			error:(error)=>
+			{
+				this.showError(error);
+			}
+		});
+	}
+
+	reloadReservationInfo()
+	{
+		this.subs.sink = this.rest_reservation_info.get( this.reservation_info.reservation.id ).subscribe
+		({
+			next:(response)=>
+			{
+				this.reservation_info = response;
+			},
+			error:(error)=>
+			{
+				this.showError("Ocurrio un error al recargar la informacion de la reservación");
+			}
+		});
+	}
+
+	markReservationItemSerialAsReturned(ris:ReservationItemSerialInfo)
+	{
+		let id = ris.reservation_item_serial.id;
+
+		this.subs.sink = this.rest
+		.reservationUpdates('setReservationItemSerialAsReturned',{ id })
+		.subscribe
+		({
+			next:(response)=>
+			{
+				this.showSuccess('Se marco il artículo como entregado');
+				this.reloadReservationInfo();
+			},
+			error:(error)=>
+			{
+				this.showError(error);
+			}
+		});
+	}
+
+	markAllAsReturned()
+	{
+		this.subs.sink = this.rest
+		.reservationUpdates('setAllReservationItemsSerialsAsReturned', { reservation_id: this.reservation_info.reservation.id } )
+		.subscribe
+		({
+			next:(response)=>
+			{
+				this.showSuccess('Se marcaron todos los artículos como devueltos');
+				this.reloadReservationInfo();
+			},
+			error:(error)=>
+			{
+				this.showError(error);
+			}
+		});
+	}
+
+	showAssignDelivery(reservation_info:ReservationInfo):void
+	{
+		this.show_assign_delivery = true;
+	}
+
+	showAssignReturn(reservation_info:ReservationInfo):void
+	{
+		this.show_assign_return = true;
+	}
+
 }

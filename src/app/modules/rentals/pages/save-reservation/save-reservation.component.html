@@ -5,7 +5,12 @@
 	<form ngNativeValidate (submit)="saveReservation($event)">
 		<div class="card p-3 mb-3">
 			<div class="row">
-				<div class="col-12 col-md-4">
+				<div class="col-12 col-md-4" *ngIf="reservation_info.reservation.id > 0">
+					<div class="form-group">
+						{{reservation_info.reservation.client_name}}
+					</div>
+				</div>
+				<div class="col-12 col-md-4" *ngIf="!reservation_info.reservation.id">
 					<div class="form-group">
 						<label>Cliente</label>
 						<app-search-users [type]="'CLIENT'" [search_str]="client_search_str" (search_strChange)="onClientStrChange($event)" [reset_on_search]="false" (user_selected)="onSelectUser($event)"></app-search-users>
@@ -19,7 +24,7 @@
 				</div> -->
 				<div class="col-12 col-md-3">
 					<label>Fecha inicio de reservación</label>
-					<input type="datetime-local" class="form-control" name="start_date" [(ngModel)]="reservation_info.reservation.start" required>
+					<input type="datetime-local" class="form-control" name="start_date" [(ngModel)]="reservation_info.reservation.start" (ngModelChange)="onStartDateChange($event)" required>
 				</div>
 				<div class="col-12 col-md-4" *ngIf="reservation_info.reservation.user_id">
 					<label>Dirección</label>
@@ -55,7 +60,7 @@
 		<ng-container *ngIf="reservation_info.items.length > 0">
 			<div class="card p-3 mt-3" *ngFor="let rii of reservation_info.items;let i=index">
 				<div class="row">
-					<div class="col-12 col-md-4">
+					<div class="col-12 col-md-3">
 						<div *ngIf="rii.item.image_id || rii?.category?.image_id" class="d-inline-block ratio ratio-1x1" [style]="{'background-image':'url('+rest.getImagePath(rii.item.image_id,rii?.category?.image_id)+')','background-size':'contain',width:'40px','vertical-align':'middle','background-repeat':'no-repeat','background-position':'center center'}">
 							<img src="/assets/2px_transparent.png" width=40 height="40">
 						</div>
@@ -70,14 +75,14 @@
 						<label>Cantidad</label>
 						<input type="number" class="form-control" name="${{i}}-qty" min="1" [(ngModel)]="rii.reservation_item.qty" required>
 					</div>
-					<div class="col-12 col-md-3">
-						<label>Fecha de entrega</label>
+					<!--div class="col-12 col-md-3">
+						<label>Fecha Inicio Renta</label>
 						<input type="datetime-local" class="form-control" name="${{i}}-start" [(ngModel)]="rii.reservation_item.start" required>
 					</div>
 					<div class="col-12 col-md-3">
-						<label>Fecha de devolución</label>
+						<label>Fecha Fin Renta</label>
 						<input type="datetime-local" class="form-control" name="${{i}}-end" [(ngModel)]="rii.reservation_item.end" required>
-					</div>
+					</div-->
 					<!--div class="col-12 col-md-3">
 						<label>Periodo de cobro</label>
 						<select class="form-control" name="${{i}}-period_type" [(ngModel)]="rii.reservation_item.period_type" required>
@@ -98,11 +103,11 @@
 							<option value="YES">Si</option>
 						</select>
 					</div-->
-					<div class="col-12 col-md-3">
+					<div class="col-12 col-md-2">
 						<label>Notas</label>
 						<textarea class="form-control" name="${{i}}-note" rows="1" [(ngModel)]="rii.reservation_item.note"></textarea>
 					</div>
-					<div class="col-12 col-md-3">
+					<div class="col-12 col-md-1">
 						<label>&nbsp;</label>
 						<button type="button" class="btn btn-danger mt-3 justify-content-center" (click)="removeItem(i)">
 							<svg xmlns="http://www.w3.org/2000/svg" width="1.2em" height="1.2em" viewBox="0 0 14 14"><path fill="currentColor" fill-rule="evenodd" d="M1.707.293A1 1 0 0 0 .293 1.707L5.586 7L.293 12.293a1 1 0 1 0 1.414 1.414L7 8.414l5.293 5.293a1 1 0 0 0 1.414-1.414L8.414 7l5.293-5.293A1 1 0 0 0 12.293.293L7 5.586z" clip-rule="evenodd"/></svg>
