@@ -5,6 +5,7 @@ import { ListReservationComponent } from './pages/list-reservation/list-reservat
 import { SaveReservationComponent } from './pages/save-reservation/save-reservation.component';
 import { ViewReservationComponent } from './pages/view-reservation/view-reservation.component';
 import { SavePeriodComponent } from '../../pages/save-period/save-period.component';
+import { CalendarStockComponent } from './pages/calendar-stock/calendar-stock.component';
 
 const routes: Routes =
 [
@@ -14,10 +15,11 @@ const routes: Routes =
 	{path: 'edit-reservation/:id', component: SaveReservationComponent},
 	{path: 'view-reservation/:id', component: ViewReservationComponent},
 	{path: 'add-period/:reservation_id', component: SavePeriodComponent},
+	{path: 'calendar-stock/:item_id', component: CalendarStockComponent},
 ];
 
 @NgModule({
-  imports: [RouterModule.forChild(routes)],
-  exports: [RouterModule]
+	imports: [RouterModule.forChild(routes)],
+	exports: [RouterModule]
 })
 export class RentalsRoutingModule { }
