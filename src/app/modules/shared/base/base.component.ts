@@ -6,10 +6,17 @@ import { SubSink } from 'subsink';
 import { Location} from '@angular/common';
 import { ShortDatePipe } from '../pipes/short-date.pipe';
 import { Title } from '@angular/platform-browser';
-import { Observable, combineLatest, startWith } from 'rxjs';
+import { Observable, combineLatest, forkJoin, mergeMap, of, startWith } from 'rxjs';
 import { SearchObject } from '../services/Rest';
 import { ConfirmationService } from '../services/confirmation.service';
 import { Utils } from '../Utils';
+
+export interface ParamsAndQueriesMap
+{
+	param:ParamMap;
+	query:ParamMap;
+}
+
 
 @Component({
 	selector: 'app-base',
@@ -87,6 +94,7 @@ export class BaseComponent	implements OnDestroy
 		this.titleService.setTitle(newTitle);
 	}
 
+
 	getQueryParamObservable():Observable<ParamMap[]>
 	{
 		let p:ParamMap = {
@@ -101,6 +109,18 @@ export class BaseComponent	implements OnDestroy
 			this.route.queryParamMap.pipe(startWith(p)),
 			this.route.paramMap
 		])
+	}
+
+
+	getParamsAndQueriesObservable():Observable<ParamsAndQueriesMap>
+	{
+		return this.getQueryParamObservable().pipe
+		(
+			mergeMap
+			(
+				(response)=>of({query: response[0], param: response[1]})
+			)
+		);
 	}
 
 	getSearch<T>(param_map:ParamMap, fields:string[],extra_keys:string[]=[]):SearchObject<T>

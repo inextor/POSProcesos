@@ -1,0 +1,27 @@
+<div class="container-fluid">
+	<h1 class="my-3">Calendario de inventario</h1>
+	<div class="card px-1 px-md-3 my-3 py-3" style="max-width: 1200px;">
+		<h2 class="text-center">{{months[today.getMonth()]}} {{today.getFullYear()}}</h2>
+		<div class="calendar_header text-center">
+			<div>Domingo</div>
+			<div>Lunes</div>
+			<div>Martes</div>
+			<div>Miércoles</div>
+			<div>Jueves</div>
+			<div>Viernes</div>
+			<div>Sábado</div>
+		</div>
+		<div class="calendar_columns">
+			@for (row of dates; let row_index = $index; track row)
+			{
+				<div *ngFor="let cell of row;let col_index = index">
+					<div class="ratio ratio-1x1 border-bottom border-end" [ngClass]="{'border-start':col_index==0,'border-top':row_index==0}"  [ngStyle]="{'--percentage':cell? cell.bg_percent: 0}">
+						<div *ngIf="cell" class="bg-percent w-100 text-center" [ngClass]="{'today': cell.is_today}">
+							{{cell?.day}}
+						</div>
+					</div>
+				</div>
+			}
+		</div>
+	</div>
+</div>
