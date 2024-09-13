@@ -1,7 +1,28 @@
 <div class="container-fluid">
 	<h1 class="my-3">Calendario de inventario</h1>
+	<div class="my-3 card py-3 px-1 px-md-3">
+		<div class="row">
+			<div class="col-md-6">
+				<div class="form-group">
+					<label for="start">Desde</label>
+					<input type="month" class="form-control" id="start" name="start" [(ngModel)]="start_string" (ngModelChange)="onMonthChange($event)">
+				</div>
+			</div>
+			<div class="col-md-6">
+				<div class="form-group">
+					<select class="form-select" id="stock_item_id" [ngModel]="stock_item_id" (ngModelChange)="onStockItemChange($event)">
+						<option value="">Todos</option>
+						<option *ngFor="let item_info of stock_items" [value]="item_info.item.id">
+						{{item_info | itemName}}
+						</option>
+					</select>
+				</div>
+			</div>
+		</div>
+	</div>
+	<app-loading [is_loading]="is_loading"></app-loading>
 	<div class="card px-1 px-md-3 my-3 py-3" style="max-width: 1200px;">
-		<h2 class="text-center">{{months[today.getMonth()]}} {{today.getFullYear()}}</h2>
+		<h2 class="text-center">{{months[start_date.getMonth()]}} {{today.getFullYear()}}</h2>
 		<div class="calendar_header text-center">
 			<div>Domingo</div>
 			<div>Lunes</div>
@@ -12,11 +33,11 @@
 			<div>Sábado</div>
 		</div>
 		<div class="calendar_columns">
-			@for (row of dates; let row_index = $index; track row)
+			@for (row of dates;let row_index = $index; track row_index)
 			{
 				<div *ngFor="let cell of row;let col_index = index">
-					<div class="ratio ratio-1x1 border-bottom border-end" [ngClass]="{'border-start':col_index==0,'border-top':row_index==0}"  [ngStyle]="{'--percentage':cell? cell.bg_percent: 0}">
-						<div *ngIf="cell" class="bg-percent w-100 text-center" [ngClass]="{'today': cell.is_today}">
+					<div class="ratio ratio-1x1 border-bottom border-end" [ngClass]="{'border-start':col_index==0,'border-top':row_index==0}"  [ngStyle]="{'--percentage':cell.bg_percent}">
+						<div *ngIf="cell" class="bg-percent w-100 text-center" [ngClass]="{'today': cell.is_today}" (click)="showStockForDay(cell)">
 							{{cell?.day}}
 						</div>
 					</div>
@@ -25,3 +46,24 @@
 		</div>
 	</div>
 </div>
+
+<app-modal [(show)]="show_stock_modal">
+	<div class="card px-1 px-md-3 py-3">
+		<h2>Inventario</h2>
+		<table class="table table-sm table-hover">
+			<thead>
+				<tr>
+					<th scope="col">Articulo</th>
+					<th scope="col">Stock</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr *ngFor="let item of all_dates">
+					<td>{{item.date | date:'dd/MM/yyyy'}}</td>
+					<td>{{item.reserved}}</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+</app-modal>
+

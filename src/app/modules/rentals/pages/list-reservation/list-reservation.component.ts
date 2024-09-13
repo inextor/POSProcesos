@@ -246,4 +246,21 @@ export class ListReservationComponent extends BaseComponent implements OnInit
 			}
 		});
 	}
+
+	closeReservation(reservation_info:ReservationInfo):void
+	{
+		this.subs.sink = this.rest.reservationUpdates('closeReservation',{reservation_id:reservation_info.reservation.id})
+		.subscribe
+		({
+			next:(response)=>
+			{
+				this.showSuccess('Reservación cerrada');
+				reservation_info.reservation.condition = 'CLOSED';
+			},
+			error:(error)=>
+			{
+				this.showError(error);
+			}
+		});
+	}
 }

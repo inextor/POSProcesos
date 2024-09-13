@@ -15,7 +15,7 @@ const routes: Routes =
 	{path: 'edit-reservation/:id', component: SaveReservationComponent},
 	{path: 'view-reservation/:id', component: ViewReservationComponent},
 	{path: 'add-period/:reservation_id', component: SavePeriodComponent},
-	{path: 'calendar-stock/:item_id', component: CalendarStockComponent},
+	{path: 'calendar-stock', component: CalendarStockComponent},
 ];
 
 @NgModule({

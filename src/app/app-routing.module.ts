@@ -21,6 +21,7 @@ import { SaveProductionPaymentComponent } from './pages/save-production-payment/
 import { SaveWorklogRulesComponent } from './pages/save-worklog-rules/save-worklog-rules.component';
 import { SaveUserExtraFieldsComponent } from './pages/save-user-extra-fields/save-user-extra-fields.component';
 import { DashboardComponent } from './pages/dashboard/dashboard.component';
+import { SearchSerialComponent } from './pages/search-serial/search-serial.component';
 
 export const routes: Routes = [
 	{path: '', component: LoginComponent, canActivate: [authGuard]},
@@ -31,7 +32,6 @@ export const routes: Routes = [
 	{path: 'view-production-area/:id', component: ViewProductionAreaComponent, canActivate: [authGuard]},
 	{path: 'add-process/:production_area_id', component: SaveProcessComponent, canActivate: [authGuard]},
 	{path: 'edit-process/:id', component: SaveProcessComponent, canActivate: [authGuard]},
-//	{path: 'list-process', component: ListProcessComponent},
 	{path: 'list-requisition', component: ListRequisitionComponent, canActivate: [authGuard]},
 	{path: 'users-checking-clock', component: UsersCheckingClockComponent, canActivate: [authGuard]},
 	{path: 'save-user-extra-fields/:user_id', component: SaveUserExtraFieldsComponent, canActivate: [authGuard]},
@@ -50,7 +50,8 @@ export const routes: Routes = [
 	{path: 'edit-payroll/:id', component: SavePayrollComponent, canActivate: [authGuard]},
 	{path: 'list-payroll', component: ListPayrollComponent, canActivate: [authGuard]},
 	{path: 'save-worklog-rules', component: SaveWorklogRulesComponent, canActivate: [authGuard]},
-	{ path: 'rentals', loadChildren: () => import('./modules/rentals/rentals.module').then(m => m.RentalsModule) }
+	{path: 'search-serial', component: SearchSerialComponent, canActivate: [authGuard]},
+	{path: 'rentals', loadChildren: () => import('./modules/rentals/rentals.module').then(m => m.RentalsModule)}
 ];
 
 

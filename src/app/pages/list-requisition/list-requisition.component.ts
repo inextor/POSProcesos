@@ -5,13 +5,13 @@ import { RouterModule } from '@angular/router';
 import { forkJoin,mergeMap, of } from 'rxjs';
 import { RestSimple } from '../../modules/shared/services/Rest';
 import { FormsModule } from '@angular/forms';
-import { Store,Check_In, User, Production,  Serial, Item, SerialInfo} from '../../modules/shared/RestModels';
+import { Store,Check_In, User, Production,  Serial, Item } from '../../modules/shared/RestModels';
 import { GetEmpty } from '../../modules/shared/GetEmpty';
 import { BaseComponent } from '../../modules/shared/base/base.component';
 import { Utils } from '../../modules/shared/Utils';
 import { SearchItemsComponent } from '../../components/search-items/search-items.component';
 import { ModalComponent } from '../../components/modal/modal.component';
-import { ItemInfo, SerialItemInfo } from '../../modules/shared/Models';
+import { ItemInfo, SerialInfo, SerialItemInfo } from '../../modules/shared/Models';
 
 interface CRequistionItem
 {
@@ -241,17 +241,17 @@ export class ListRequisitionComponent extends BaseComponent implements OnInit
 		const sortFunction =  (a:CRequisitionItem,b:CRequisitionItem) =>
 		{
 			const a_lower = a.item[sort_by]?.toLowerCase() || '';
-		   const b_lower = b.item[sort_by]?.toLowerCase() || '';
+		  const b_lower = b.item[sort_by]?.toLowerCase() || '';
 			const a_category_name = `${a.requisition?.category_name?.toLowerCase() + ' ' || '' }` + a_lower;
-		   const b_category_name = `${b.requisition?.category_name?.toLowerCase() + ' ' || ''}` + b_lower;
-		   const a_index = a_category_name.indexOf(str.toLowerCase());
-		   const b_index = b_category_name.indexOf(str.toLowerCase());
+		  const b_category_name = `${b.requisition?.category_name?.toLowerCase() + ' ' || ''}` + b_lower;
+		  const a_index = a_category_name.indexOf(str.toLowerCase());
+		  const b_index = b_category_name.indexOf(str.toLowerCase());
 
-		   if (a_index === -1 && b_index === -1) {
-			 return a_category_name.localeCompare(b_category_name);
-		   }
+		  if (a_index === -1 && b_index === -1) {
+			return a_category_name.localeCompare(b_category_name);
+		  }
 
-		   return a_index === -1 ? 1 : b_index === -1 ? -1 : a_index - b_index;
+		  return a_index === -1 ? 1 : b_index === -1 ? -1 : a_index - b_index;
 		};
 
 		this.requsition_obj_list.sort(sortFunction);

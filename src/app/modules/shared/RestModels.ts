@@ -1216,6 +1216,8 @@ export interface Serial{
 	serial_number:string;
 	status:'ACTIVE'|'INACTIVE';
 	store_id:number
+	last_order_id:number | null;
+	last_reservation_id:number | null;
 	updated:Date;
 	updated_by_user_id:number | null;
 }
@@ -1226,17 +1228,7 @@ interface Serial_Log{
 	reservation_item_id:number;
 	timestamp:Date;
 }
-interface CSerial extends Serial
-{
-	store_name?:string;
-}
-export interface SerialInfo
-{
-	serial:CSerial;
-	images:Serial_Image[];
-	order_item_serial?:Order_Item_Serial;
-	selected: boolean; //Just a help variable used in lists
-}
+
 export interface Serial_Image{
 	created:Date;
 	description:string | null;

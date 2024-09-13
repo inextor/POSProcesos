@@ -4,11 +4,11 @@
 			<h1 class="my-3">Reservaciones</h1>
 		</div>
 		<div class="col-12 col-xl-5 btn-group" role="group" aria-label="Basic example">
-			<button type="button" class="btn btn-primary" [ngClass]="{active:default_filter=='NOT_SCHEDULED'}" (click)="setFilter('NOT_SCHEDULED')">Sin Programacion</button>
-			<button type="button" class="btn btn-primary" [ngClass]="{active:default_filter=='NOT_RETURNED'}" (click)="setFilter('NOT_RETURNED')">Sin Recoleccion</button>
-			<button type="button" class="btn btn-primary" [ngClass]="{active:default_filter=='NEXT_DELIVERIES'}" (click)="setFilter('NEXT_DELIVERIES')">Entregas Próximas</button>
-			<button type="button" class="btn btn-primary" [ngClass]="{active:default_filter=='NEXT_RETURNS'}" (click)="setFilter('NEXT_RETURNS')">Recolecciones Próximas</button>
-			<button type="button" class="btn btn-primary" [ngClass]="{active:default_filter=='ALL'}" (click)="setFilter('ALL')">Todas</button>
+			<button type="button" class="btn btn-secondary" [ngClass]="{active:default_filter=='NOT_SCHEDULED'}" (click)="setFilter('NOT_SCHEDULED')">Sin Programacion</button>
+			<button type="button" class="btn btn-secondary" [ngClass]="{active:default_filter=='NOT_RETURNED'}" (click)="setFilter('NOT_RETURNED')">Sin Recoleccion</button>
+			<button type="button" class="btn btn-secondary" [ngClass]="{active:default_filter=='NEXT_DELIVERIES'}" (click)="setFilter('NEXT_DELIVERIES')">Entregas Próximas</button>
+			<button type="button" class="btn btn-secondary" [ngClass]="{active:default_filter=='NEXT_RETURNS'}" (click)="setFilter('NEXT_RETURNS')">Recolecciones Próximas</button>
+			<button type="button" class="btn btn-secondary" [ngClass]="{active:default_filter=='ALL'}" (click)="setFilter('ALL')">Todas</button>
 		</div>
 		<div class="col-12 col-xl-1 text-end">
 			<a class="btn btn-primary text-end" [routerLink]="['/rentals/add-reservation']">Agregar</a>
@@ -49,7 +49,7 @@
 		<div class="alert alert-info mt-3">No se encontraron reservaciones</div>
 	</ng-container>
 
-	<div class="card p-3 mt-3 " *ngIf="reservation_info_list.length > 0">
+	<div class="card px-1 px-md-2 py-3 mt-3 " *ngIf="reservation_info_list.length > 0">
 		<table class="table table-striped w-100">
 			<thead>
 				<tr>
@@ -71,10 +71,14 @@
 				<td class="border text-end">{{ri.reservation.start | shortDate: 'local' }}</td>
 				<td class="border text-end">{{ri.reservation._end | shortDate: 'local' }}</td>
 				<td class="border text-end">{{ri.reservation._to_schedule_return | shortDate: 'local' }}</td>
+				<td class="border text-end">{{ri.reservation._to_schedule_return | shortDate: 'local' }}</td>
 				<td class="border text-end">
-					<a class="btn btn-primary mx-1" [routerLink]="['/rentals/edit-reservation', ri.reservation.id]">Editar</a>
-					<button class="btn btn-primary mx-1" (click)="showAssignDelivery(ri)">Asignar Entrega</button>
-					<button class="btn btn-primary mx-1" (click)="showAssignReturn(ri)">Asignar Recoleccion</button>
+					<ng-container *ngIf="ri.reservation.condition == 'ACTIVE'">
+						<a class="btn btn-primary mx-1" [routerLink]="['/rentals/edit-reservation', ri.reservation.id]">Editar</a>
+						<button class="btn btn-primary mx-1" (click)="showAssignDelivery(ri)">Asignar Entrega</button>
+						<button class="btn btn-primary mx-1" (click)="showAssignReturn(ri)">Asignar Recoleccion</button>
+						<button class="btn btn-primary mx-1" (click)="closeReservation(ri)">Cerrar Reservación</button>
+					</ng-container>
 				</td>
 			</tr>
 		</table>

@@ -1,8 +1,8 @@
 import { Component, Pipe } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { BaseComponent } from '../../modules/shared/base/base.component';
-import { Category, Item,  Production, Requisition, Requisition_Item, Serial, SerialInfo,Shipping, Stock_Record, Store } from '../../modules/shared/RestModels';
-import { ItemInfo, ItemStockInfo, RequisitionInfo, RequisitionItemInfo, ShippingInfo, ShippingItemInfo, SerialItemInfo } from '../../modules/shared/Models';
+import { Category, Item,  Production, Requisition, Requisition_Item, Serial, Shipping, Stock_Record, Store } from '../../modules/shared/RestModels';
+import { ItemInfo, ItemStockInfo, RequisitionInfo, RequisitionItemInfo, ShippingInfo, ShippingItemInfo, SerialItemInfo, SerialInfo } from '../../modules/shared/Models';
 import { Rest, RestSimple, SearchObject } from '../../modules/shared/services/Rest';
 import { filter, forkJoin, from, mergeMap, of } from 'rxjs';
 import { RouterModule } from '@angular/router';
