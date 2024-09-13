@@ -414,4 +414,68 @@ export class BaseComponent	implements OnDestroy
 		search.page = 0;
 		this.search( search );
 	}
+
+	searchNoForceReload(item_search:Partial<SearchObject<any>> | null = null )
+	{
+		let search:Record<string,string|null> = {};
+
+		if( item_search != null )
+		{
+
+			for(let i in item_search.search_extra )
+			{
+				if( item_search.search_extra[ i ] && item_search.search_extra[ i ] !== 'null' )
+				{
+					let v = item_search.search_extra[ i ] as any;
+					if( (v instanceof Date) )
+					{
+						search['search_extra.'+i] = Utils.getUTCMysqlStringFromDate( v );
+					}
+					else
+					{
+							search['search_extra.'+i] = ''+item_search.search_extra[ i ];
+					}
+
+				}
+			}
+
+			item_search.page = 0;
+
+			let array = ['eq','le','lt','ge','gt','csv','lk','nn','start'];
+
+			let i: keyof typeof item_search;
+
+			for(i in item_search )
+			{
+				if(array.indexOf( i ) > -1 )
+				{
+					let ivalue = item_search[i] as any;
+					let j: keyof typeof ivalue;
+
+					for(j in ivalue)
+					{
+						if( ivalue[j] !== null && ivalue[j] !== 'null'&&ivalue[j] !== undefined)
+						{
+							let value = ivalue[j];
+
+							if( value !== null && value !== 'null' && value !== undefined )
+							{
+								if( value instanceof Date )
+								{
+									search[i+'.'+j] = Utils.getUTCMysqlStringFromDate( value );
+								}
+								else
+								{
+									search[i+'.'+j] = ''+value!;
+								}
+							}
+						}
+					}
+				}
+
+			}
+		}
+
+		this.router.navigate([this.path],{queryParams: search});
+	}
 }
