@@ -8,7 +8,7 @@ import { mergeMap } from 'rxjs';
 import { GetEmpty } from '../../../shared/GetEmpty';
 import { ShortDatePipe } from "../../../shared/pipes/short-date.pipe";
 import { FormsModule } from '@angular/forms';
-import { Delivery_Assignment, Price, Reservation_Item, Reservation_Item_Serial, User } from '../../../shared/RestModels';
+import { Delivery_Assignment, Price, Reservation_Item, Reservation_Item_Serial, Return_Assignment, User } from '../../../shared/RestModels';
 import { ModalComponent } from '../../../../components/modal/modal.component';
 import { LoadingComponent } from '../../../../components/loading/loading.component';
 import { SearchItemsComponent } from "../../../../components/search-items/search-items.component";
@@ -23,11 +23,11 @@ interface CReservation_Item_Serial extends Reservation_Item_Serial
 
 @Component
 ({
-    selector: 'app-view-reservation',
-    standalone: true,
-    templateUrl: './view-reservation.component.html',
-    styleUrl: './view-reservation.component.css',
-    imports: [CommonModule, ShortDatePipe, FormsModule, ModalComponent, LoadingComponent, RouterModule, SearchItemsComponent, ItemNamePipe, SearchUsersComponent]
+	selector: 'app-view-reservation',
+	standalone: true,
+	templateUrl: './view-reservation.component.html',
+	styleUrl: './view-reservation.component.css',
+	imports: [CommonModule, ShortDatePipe, FormsModule, ModalComponent, LoadingComponent, RouterModule, SearchItemsComponent, ItemNamePipe, SearchUsersComponent]
 })
 export class ViewReservationComponent extends BaseComponent
 {
@@ -46,9 +46,12 @@ export class ViewReservationComponent extends BaseComponent
 	new_item_info: ItemInfo | null = null;
 	new_item_qty: number = 1;
 	client_user: User | null = null;
+
 	rest_reservation_item: RestSimple<Reservation_Item> = this.rest.initRest('reservation_item');
 	rest_delivery_assignment = this.rest.initRestSimple<Delivery_Assignment>('delivery_assignment');
-    show_assign_return: boolean = false;
+	rest_return_assignment = this.rest.initRestSimple<Return_Assignment>('return_assignment');
+
+	show_assign_return: boolean = false;
 
 	ngOnInit(): void
 	{
@@ -332,8 +335,9 @@ export class ViewReservationComponent extends BaseComponent
 			{
 				console.log("Que pedo");
 				this.showSuccess('Asignación de entrega creada');
-				this.router.navigate(['/rentals/list-reservation']);
-				this.show_assign_delivery = false;
+				//this.router.navigate(['/rentals/list-reservation']);
+				//this.show_assign_delivery = false;
+				this.reloadReservationInfo();
 			},
 			error:(error)=>
 			{
@@ -361,15 +365,16 @@ export class ViewReservationComponent extends BaseComponent
 			}
 		);
 
-		this.subs.sink = this.rest_delivery_assignment
+		this.subs.sink = this.rest_return_assignment
 		.batchCreate( ri_array )
 		.subscribe
 		({
 			next:(response)=>
 			{
-				this.showSuccess('Asignación de entrega creada');
-				this.router.navigate(['/rentals/list-reservation']);
+				//this.showSuccess('Asignación de entrega creada');
+				//this.router.navigate(['/rentals/list-reservation']);
 				this.show_assign_delivery = false;
+				this.reloadReservationInfo();
 			},
 			error:(error)=>
 			{
