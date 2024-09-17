@@ -18,7 +18,7 @@ export class SearchSerialComponent extends BaseComponent
 {
 
 	rest_serial = this.rest.initRest<Serial,SerialInfo>('serial_info');
-    serial_info_list: SerialInfo[] = [];
+	serial_info_list: SerialInfo[] = [];
 	serial_search = this.rest_serial.getEmptySearch();
 
 	search_string:string = '';
@@ -57,6 +57,5 @@ export class SearchSerialComponent extends BaseComponent
 		this.search( this.serial_search );
 		this.search_string = search_string;
 		this.searchNoForceReload( this.serial_search );
-
 	}
 }
