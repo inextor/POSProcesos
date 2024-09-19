@@ -1205,19 +1205,20 @@ export interface Sat_Response{
 	updated:Date;
 	updated_by_user_id:number | null;
 }
-export interface Serial{
+export interface Serial
+{
+	id:number;
 	additional_data:string | null;
 	available_status:'AVAILABLE'|'RESERVED'|'MAINTENANCE';
 	created:Date;
 	created_by_user_id:number | null;
 	description:string | null;
-	id:number;
 	item_id:number
+	last_order_id:number | null;
+	last_reservation_id:number | null;
 	serial_number:string;
 	status:'ACTIVE'|'INACTIVE';
 	store_id:number
-	last_order_id:number | null;
-	last_reservation_id:number | null;
 	updated:Date;
 	updated_by_user_id:number | null;
 }
