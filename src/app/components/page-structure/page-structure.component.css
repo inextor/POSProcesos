@@ -1,0 +1,40 @@
+:host{
+	--height-header: 48px;
+}
+
+.menu-container
+{
+	background: var(--menu-background-image );
+	background-color: var(--menu-background-color);
+	background-color: rgba(0,0,0,0.1);
+    top: 0;
+}
+
+.main_background{
+	position: fixed;
+	overflow: hidden;
+	top: 0;
+	bottom: 0;
+	left: 0;
+	right: 0;
+}
+
+.content-container{
+	overflow-y: auto;
+	height: calc(100% - var(--height-header));
+}
+
+.sidebar-container {
+	display: none;
+}
+
+.header{
+    top: 0;
+    z-index: 1;
+	height: var(--height-header);
+}
+
+.main-animation{
+	
+
+}
