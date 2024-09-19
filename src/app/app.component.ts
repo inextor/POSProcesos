@@ -10,12 +10,11 @@ import { RestSimple } from './modules/shared/services/Rest';
 import { Store } from './modules/shared/RestModels';
 import { HeaderComponent } from './components/header/header.component';
 import { BuildInfo } from './modules/shared/BuildInfo';
-import { PageStructureComponent } from "./components/page-structure/page-structure.component";
 
 @Component({
 	selector: 'app-root',
 	standalone: true,
-	imports: [CommonModule, RouterOutlet, RouterModule, SharedModule, ModalComponent, HeaderComponent, PageStructureComponent],
+	imports: [CommonModule, RouterOutlet,RouterModule, SharedModule, ModalComponent, HeaderComponent],
 	templateUrl: './app.component.html',
 	styleUrl: './app.component.css'
 })
