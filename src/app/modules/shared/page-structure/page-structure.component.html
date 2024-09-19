@@ -1,13 +1,9 @@
-<div style="position:absolute;top:0;left:0;right:0;bottom:0;">
-	<div class="menu">
-
-	</div>
-	<div>
-		<div class="page-header">
-			<app-header></app-header>
-		</div>
-		<div>
-			<ng-content></ng-content>
-		</div>
+<div class="ps-menu" [ngClass]="{'menu-open': rest.show_menu}">
+	hello
+</div>
+<div class="ps-main"  [ngClass]="{'menu-open': rest.show_menu}">
+	<app-header></app-header>
+	<div class="main_content">
+		<ng-content />
 	</div>
 </div>
