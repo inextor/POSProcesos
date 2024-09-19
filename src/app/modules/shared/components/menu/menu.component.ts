@@ -1,8 +1,8 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule, RouterOutlet } from '@angular/router';
-import { RestService } from '../../modules/shared/services/rest.service';
-import { BuildInfo } from '../../modules/shared/BuildInfo';
+import { RestService } from '../../services/rest.service';
+import { BuildInfo } from '../../BuildInfo';
 
 @Component({
   selector: 'app-menu',
