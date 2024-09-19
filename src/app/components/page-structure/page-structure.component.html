@@ -1,0 +1,23 @@
+<div class="d-flex main_background">
+
+	<!-- Menú deslizante -->
+	<div class="menu-container sidebar-container flex-grow-0 flex-shrink-0 d-print-none"
+		style="min-height: 100dvh; width: 200px;" [ngClass]="{'d-block': rest.show_menu}">
+
+		<app-menu></app-menu>
+
+	</div>
+
+	<!-- Contenido principal -->
+	<div class="main-animation flex-grow-1 flex-shrink-1 w-100">
+
+		<header *ngIf="rest.user" class="header">
+			<app-header></app-header>
+		</header>
+
+		<div class="content-container">
+			<ng-content></ng-content>
+		</div>
+
+	</div>
+</div>

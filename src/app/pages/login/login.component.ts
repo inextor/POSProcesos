@@ -7,6 +7,7 @@ import { Observable, of } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { PageStructureComponent } from "../../components/page-structure/page-structure.component";
 
 interface CLogin {
 	username: string;
@@ -24,7 +25,7 @@ export interface LoginResponse
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, PageStructureComponent],
   templateUrl: './login.component.html',
   styleUrl: './login.component.css'
 })

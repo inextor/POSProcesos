@@ -12,6 +12,7 @@ import { Utils } from '../../modules/shared/Utils';
 import { SearchItemsComponent } from '../../components/search-items/search-items.component';
 import { ModalComponent } from '../../components/modal/modal.component';
 import { ItemInfo, SerialItemInfo } from '../../modules/shared/Models';
+import { PageStructureComponent } from "../../components/page-structure/page-structure.component";
 
 interface CRequistionItem
 {
@@ -43,7 +44,7 @@ interface CRequisitionItem
 @Component({
 	selector: 'app-list-requisition',
 	standalone: true,
-	imports: [CommonModule,RouterModule,FormsModule, SearchItemsComponent, ModalComponent],
+	imports: [CommonModule, RouterModule, FormsModule, SearchItemsComponent, ModalComponent, PageStructureComponent],
 	templateUrl: './list-requisition.component.html',
 	styleUrl: './list-requisition.component.css'
 })
