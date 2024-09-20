@@ -1,12 +1,12 @@
 :host{
-    display: flex;
-    flex-direction: column;
-    flex-wrap: nowrap;
-    justify-content: flex-start;
-    align-content: stretch;
-    align-items: flex-start;
-    height: 100%;
-    width: 100%;
+	display: flex;
+	flex-direction: column;
+	flex-wrap: nowrap;
+	justify-content: flex-start;
+	align-content: stretch;
+	align-items: flex-start;
+	height: 100%;
+	width: 100%;
 }
 .svg-icon
 {
@@ -26,7 +26,7 @@
 	order: 0;
 	flex: 1 1 auto;
 	align-self: stretch;
-    overflow-y: auto;
+	overflow-y: auto;
 
 }
 
@@ -34,7 +34,7 @@
 	order: 0;
 	flex: 0 1 auto;
 	align-self: stretch;
-    font-size: 12px;
+	font-size: 12px;
 }
 
 .side-nav{
@@ -53,7 +53,7 @@
 
 a.nav-link.active
 {
-  background-color: rgba(0,0,0,0.1);
+	background-color: rgba(0,0,0,0.1);
 }
 a, button {
 	outline: 0 !important;
@@ -107,12 +107,12 @@ a {
 }
 .side-nav .side-nav-link i
 {
-    display: inline-block;
-    line-height: 1.0625rem;
-    margin: 0 7px 0 0;
-    font-size: 1.1rem;
-    vertical-align: middle;
-    width: 20px;
+	display: inline-block;
+	line-height: 1.0625rem;
+	margin: 0 7px 0 0;
+	font-size: 1.1rem;
+	vertical-align: middle;
+	width: 20px;
 }
 
 .link-arrow
@@ -126,5 +126,5 @@ a {
 }
 a.side-nav-link.active
 {
-  background-color: rgba(0,0,0,0.1);
+	background-color: rgba(0,0,0,0.1);
 }
