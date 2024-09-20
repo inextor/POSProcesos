@@ -308,6 +308,19 @@ export interface File_Type{
 	name:string;
 	updated:Date;
 }
+export interface Form
+{
+	created:Date | null;
+	created_by_user_id:number;
+	description:string | null;
+	id:number;
+	is_active:number | null;
+	is_response_title_required:number | null;
+	responses_allowed:number | null;
+	title:string;
+	updated:Date | null;
+	updated_by_user_id:number;
+}
 export interface Fund{
 	amount:number;
 	cashier_hour:string;	// 'Se usa para imprimir el corte de caja, esta hora no es segura para hacer comparaciones de rango los usuario suelen cambiar las horas de los dispositivos, y se afecta en los cambios de horario anualmente, pero es para la refererencia en el misma linea de tiempo',
