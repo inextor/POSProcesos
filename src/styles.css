@@ -112,7 +112,23 @@ dialog{
 	border: 1px solid #DDDDDD;
 }
 
-dialog::backdrop 
+dialog::backdrop
 {
   background-color: rgba(0,0,0,0.8)!important;
 }
+
+
+@media(max-width:767px)
+{
+	.mobile-table table,
+	.mobile-table thead,
+	.mobile-table tbody,
+	.mobile-table th,
+	.mobile-table td,
+	.mobile-table tr
+	{
+		display:block;
+	}
+}
+
+

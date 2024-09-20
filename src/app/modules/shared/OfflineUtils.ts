@@ -1,9 +1,9 @@
-import {ItemInfo, OrderInfo,OFFLINE_DB_SCHEMA, SearchTerm} from "../models/models";
-import {Category, Category_Tree, Currency_Rate, Price_Type, Store, Table} from "../models/RestModels";
 import {DatabaseStore} from "./Finger/DatabaseStore";
 import {ObjectStore} from "./Finger/ObjectStore";
 import {Options} from "./Finger/OptionsUtils";
 import {StoreDictionary} from "./Finger/SchemeBuilder";
+import { ItemInfo } from "./Models";
+import { Category, Category_Tree, Currency_Rate, Price_Type, Store, Table } from "./RestModels";
 
 export class OfflineUtils
 {
@@ -265,7 +265,7 @@ export class OfflineUtils
 		});
 	}
 
-	static getItemByCode(db:DatabaseStore,code:string):Promise<ItemInfo> 
+	static getItemByCode(db:DatabaseStore,code:string):Promise<ItemInfo>
 	{
 		console.log('Get by code');
 

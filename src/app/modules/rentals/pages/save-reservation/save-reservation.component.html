@@ -1,1 +1,121 @@
-<p>save-reservation works!</p>
+<div class="container-fluid">
+
+	<h1 class="my-3">{{ reservation_info.reservation.id > 0 ? 'Editar' : 'Nueva' }} Reservación</h1>
+
+	<form ngNativeValidate (submit)="saveReservation($event)">
+		<div class="card p-3 mb-3">
+			<div class="row">
+				<div class="col-12 col-md-4" *ngIf="reservation_info.reservation.id > 0">
+					<div class="form-group">
+						{{reservation_info.reservation.client_name}}
+					</div>
+				</div>
+				<div class="col-12 col-md-4" *ngIf="!reservation_info.reservation.id">
+					<div class="form-group">
+						<label>Cliente</label>
+						<app-search-users [type]="'CLIENT'" [search_str]="client_search_str" (search_strChange)="onClientStrChange($event)" [reset_on_search]="false" (user_selected)="onSelectUser($event)"></app-search-users>
+					</div>
+				</div>
+				<!-- <div class="col-12 col-md">
+					<label>Tipo de cambio</label>
+					<select class="form-control" name="exchange_Rate" [(ngModel)]="reservation_info.reservation.currency_id">
+						<option *ngFor="let currency of currency_rate_list" [value]="currency.currency_id">{{ currency.currency_id }}</option>
+					</select>
+				</div> -->
+				<div class="col-12 col-md-3">
+					<label>Fecha inicio de reservación</label>
+					<input type="datetime-local" class="form-control" name="start_date" [(ngModel)]="reservation_info.reservation.start" (ngModelChange)="onStartDateChange($event)" required>
+				</div>
+				<div class="col-12 col-md-4" *ngIf="reservation_info.reservation.user_id">
+					<label>Dirección</label>
+					<select class="form-control" name="address_id" [(ngModel)]="reservation_info.reservation.address_id" [required]="reservation_info.reservation.user_id != 0">
+						<option value="">Seleccionar</option>
+						<option *ngFor="let address of address_user_list" [value]="address.id">{{ address.address }}</option>
+					</select>
+				</div>
+				<div class="col-12 col-md-2">
+					<label>Sucursal</label>
+					<select class="form-control" name="store" [(ngModel)]="reservation_info.reservation.store_id" required>
+						<option value="">Seleccionar</option>
+						<option *ngFor="let store of store_list" [value]="store.id">{{ store.name }}</option>
+					</select>
+				</div>
+				<div class="col-12 col-md">
+					<label>Nota</label>
+					<textarea class="form-control" name="note" rows="1" [(ngModel)]="reservation_info.reservation.note"></textarea>
+				</div>
+			</div>
+		</div>
+
+		<h2 class="my-3">Articulos</h2>
+		<div class="card p-3">
+			<div class="row">
+				<div class="col-12 col-md-6">
+					<label>Agregar artículo</label>
+					<app-search-items (item_selected)="onItemSelected($event)" [reset_on_search]="true" [for_reservation]="true"></app-search-items>
+				</div>
+			</div>
+		</div>
+
+		<ng-container *ngIf="reservation_info.items.length > 0">
+			<div class="card p-3 mt-3" *ngFor="let rii of reservation_info.items;let i=index">
+				<div class="row">
+					<div class="col-12 col-md-3">
+						<div *ngIf="rii.item.image_id || rii?.category?.image_id" class="d-inline-block ratio ratio-1x1" [style]="{'background-image':'url('+rest.getImagePath(rii.item.image_id,rii?.category?.image_id)+')','background-size':'contain',width:'40px','vertical-align':'middle','background-repeat':'no-repeat','background-position':'center center'}">
+							<img src="/assets/2px_transparent.png" width=40 height="40">
+						</div>
+						<span *ngIf="!(rii.item.image_id || rii?.category?.image_id)">
+							<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" width="40px" height="40px" preserveAspectRatio="xMidYMid meet" viewBox="0 0 24 24"><g fill="none"><path d="M13.409 2.512a3.75 3.75 0 0 0-2.818 0l-2.19.888l9.592 3.73l3.374-1.303a1.747 1.747 0 0 0-.46-.275l-7.498-3.04zM22 7.19l-9.25 3.574v10.923c.224-.045.444-.112.659-.199l7.498-3.04A1.75 1.75 0 0 0 22 16.826V7.19zM11.25 21.687V10.764L2 7.19v9.636a1.75 1.75 0 0 0 1.093 1.622l7.498 3.04c.215.087.435.154.659.2zM2.633 5.827L12 9.446l3.917-1.514l-9.543-3.71l-3.281 1.33c-.17.069-.324.162-.46.275z" fill="currentColor"/></g></svg>
+						</span>
+						<span *ngIf="rii.category">{{rii.category.name | titlecase }} - </span>
+							{{rii.item.name}}
+						<span *ngIf="rii.item.code" style="color: gray;">{{rii.item.code}}</span>
+					</div>
+					<div class="col-12 col-md-3">
+						<label>Cantidad</label>
+						<input type="number" class="form-control" name="${{i}}-qty" min="1" [(ngModel)]="rii.reservation_item.qty" required>
+					</div>
+					<!--div class="col-12 col-md-3">
+						<label>Fecha Inicio Renta</label>
+						<input type="datetime-local" class="form-control" name="${{i}}-start" [(ngModel)]="rii.reservation_item.start" required>
+					</div>
+					<div class="col-12 col-md-3">
+						<label>Fecha Fin Renta</label>
+						<input type="datetime-local" class="form-control" name="${{i}}-end" [(ngModel)]="rii.reservation_item.end" required>
+					</div-->
+					<!--div class="col-12 col-md-3">
+						<label>Periodo de cobro</label>
+						<select class="form-control" name="${{i}}-period_type" [(ngModel)]="rii.reservation_item.period_type" required>
+							<option value="BY_HOUR">HORA</option>
+							<option value="DAILY">DIA</option>
+							<option value="WEEKLY">SEMANA</option>
+							<option value="MONTHLY">MES</option>
+						</select>
+					</div------------------>
+					<div class="col-12 col-md-3">
+						<label>Precio</label>
+						<input type="number" class="form-control" name="${{i}}-price" [(ngModel)]="rii.reservation_item.price" required>
+					</div>
+					<!--div class="col-12 col-md-3">
+						<label>Iva Incluido</label>
+						<select class="form-control" name="${{i}}-tax_included" [(ngModel)]="rii.reservation_item.tax_included" required>
+							<option value="NO">No</option>
+							<option value="YES">Si</option>
+						</select>
+					</div-->
+					<div class="col-12 col-md-2">
+						<label>Notas</label>
+						<textarea class="form-control" name="${{i}}-note" rows="1" [(ngModel)]="rii.reservation_item.note"></textarea>
+					</div>
+					<div class="col-12 col-md-1">
+						<label>&nbsp;</label>
+						<button type="button" class="btn btn-danger mt-3 justify-content-center" (click)="removeItem(i)">
+							<svg xmlns="http://www.w3.org/2000/svg" width="1.2em" height="1.2em" viewBox="0 0 14 14"><path fill="currentColor" fill-rule="evenodd" d="M1.707.293A1 1 0 0 0 .293 1.707L5.586 7L.293 12.293a1 1 0 1 0 1.414 1.414L7 8.414l5.293 5.293a1 1 0 0 0 1.414-1.414L8.414 7l5.293-5.293A1 1 0 0 0 12.293.293L7 5.586z" clip-rule="evenodd"/></svg>
+						</button>
+					</div>
+				</div>
+			</div>
+		</ng-container>
+		<button type="submit" class="btn btn-primary mt-3">Guardar</button>
+	</form>
+</div>

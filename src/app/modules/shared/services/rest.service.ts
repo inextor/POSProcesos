@@ -4,9 +4,9 @@ import { Rest,RestResponse, RestSimple, SearchObject } from './Rest';
 import { GetEmpty } from '../GetEmpty';
 import { OFFLINE_DB_SCHEMA } from '../OfflineDBSchema';
 import { ErrorMessage, Utils } from '../Utils';
-import { Preferences, User, User_Permission } from '../RestModels';
+import { Preferences, Price_Type, User, User_Permission } from '../RestModels';
 import { HttpHeaders, HttpClient, HttpParams } from '@angular/common/http'
-import { BehaviorSubject, Observable, Subject } from 'rxjs';
+import { BehaviorSubject, mergeMap, Observable, of, Subject } from 'rxjs';
 import { environment } from '../../../../environments/environment';
 import { io, Socket } from 'socket.io-client';
 import { SocketMessage } from '../Models';
@@ -17,11 +17,13 @@ const USER_KEY = 'user';
 type SuperEmpty<Type> = Type | null | undefined;
 
 
-@Injectable({
+@Injectable
+({
 	providedIn: 'root'
 })
 export class RestService
 {
+
 	hades_counter:number = 0;
 	has_hades:boolean = false;
 	private socket: Socket | null = null;
@@ -57,7 +59,7 @@ export class RestService
 	public _offline_search_enabled = false;
 	public show_menu:boolean = false;
 
-	
+
 
 	//private offline_db: DatabaseStore	= DatabaseStore.builder
 	//(
@@ -129,6 +131,15 @@ export class RestService
 	{
 		this.show_menu = !this.show_menu;
 	}
+
+	getSyncId():string
+	{
+		if( this.user == null )
+			return 'FOO-'+Date.now();
+
+		return this.user.id + '-' + Date.now();
+	}
+
 
 	getSessionStart():Date
 	{
@@ -274,6 +285,25 @@ export class RestService
 		let url = `${this.domain_configuration.domain}/${this.url_base}/updates.php`;
 		return this.http.post<T>(`${url}`,obj , { withCredentials: true, headers: this.getSessionHeaders() });
 	}
+
+	reservationUpdates<T>(method:string,data:any):Observable<T>
+	{
+		let obj = Utils.transformDatesToString(data);
+
+		for(let i in data)
+		{
+			if( data[i] === null )
+				continue;
+
+			let d = Utils.transformDatesToString( data[i] );
+			obj[i] = d;
+		}
+		obj['method'] = method;
+
+		let url = `${this.domain_configuration.domain}/${this.url_base}/reservationUpdates.php`;
+		return this.http.post<T>(`${url}`,obj , { withCredentials: true, headers: this.getSessionHeaders() });
+	}
+
 
 
 	logout(redirect:boolean = true)
@@ -664,6 +694,21 @@ export class RestService
 			}
 			return Promise.resolve( this.local_preferences );
 		})
+	}
+
+	getPriceTypes(force_offline:boolean = false):Observable<RestResponse<Price_Type>>
+	{
+		let rest_price_type:RestSimple<Price_Type> = this.initRest('price_type');
+		return rest_price_type.search({limit:999999}).pipe
+		(
+			mergeMap((response)=>
+			{
+				response.data.sort((a:Price_Type,b:Price_Type)=>{
+					return b.sort_priority > a.sort_priority ? 1 : -1;
+				});
+				return of( response );
+			})
+		);
 	}
 
 	showWarning(msg:string)

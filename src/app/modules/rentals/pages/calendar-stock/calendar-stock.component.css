@@ -1,0 +1,52 @@
+:host
+{
+	--percentage: 1;
+}
+
+
+.day-cell
+{
+	width: 14%;
+	display: inline-block;
+	border: 1px solid #ccc;
+	color: black;
+	background-color: rgba(256, 256, 256, var(--percentage));
+	box-sizing: border-box;
+}
+.bg-percent
+{
+	background-color: rgba(256, 0, 0, var(--percentage));
+}
+
+.red-color
+{
+}
+
+.calendar_columns
+{
+	display: grid;
+	grid-template-columns: repeat(7, 1fr);
+	grid-template-rows: repeat(6, 1fr);
+	grid-column-gap: 0px;
+	grid-row-gap: 0px;
+	width: 100%;
+	font-size: min(8vw, 100px);
+	line-height: min(13vw, 160px);
+}
+
+.calendar_header
+{
+	display: grid;
+	grid-template-columns: repeat(7, 1fr);
+	grid-template-rows: repeat(1, 20px);
+	grid-column-gap: 0px;
+	grid-row-gap: 0px;
+	width: 100%;
+	font-weight: bold;
+}
+
+.today
+{
+	border: 1px solid black;
+	box-sizing: border-box;
+}

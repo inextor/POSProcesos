@@ -290,6 +290,14 @@ export interface Currency_Rate{
 	rate:number;
 	store_id:number
 }
+export interface Delivery_Assignment
+{
+	id:number;
+	created:Date;
+	user_id:number;
+	reservation_item_id:number;
+	updated:Date;
+}
 export interface File_Type{
 	content_type:string;
 	created:Date;
@@ -352,6 +360,7 @@ export interface Item{
 	description:string | null;
 	extra_name:string | null;
 	form_id:number | null;
+	for_reservation:'NO'|'YES';
 	has_serial_number:'NO'|'YES';
 	id:number;
 	image_id:number | null;
@@ -362,6 +371,7 @@ export interface Item{
 	note_required:'NO'|'YES';
 	on_sale:'NO'|'YES';
 	partial_sale:'NO'|'YES';
+	period_type:'BY_HOUR'|'DAILY'|'WEEKLY'|'MONTHLY';
 	product_id:number | null;
 	provider_user_id:number | null;
 	reference_currency_id:string;
@@ -443,38 +453,7 @@ export interface Item_Store{
 	updated:Date;
 	updated_by_user_id:number
 }
-export interface ItemOptionValueInfo
-{
-	item_option_value: Item_Option_Value;
-	item:Item;
-	category?:Category;
-}
-export interface ItemOptionInfo
-{
-	item_option:Item_Option;
-	values:ItemOptionValueInfo[];
-}
-export interface ItemInfo
-{
-	item:Item;
-	category:Category | null;
-	//product?:Product; //Category
-	//item_options?:ItemOptionInfo[];
-	//attributes?:Item_Attribute[];
 
-	price?:Price;
-	prices:Price[];
-	records:Stock_Record[];
-	stock_record?:Stock_Record;
-	options:ItemOptionInfo[];
-	exceptions:Item_Exception[];
-	display_category?:boolean;
-	serials:SerialInfo[];
-}
-export interface ItemStockInfo extends ItemInfo
-{
-	total:number;
-}
 export interface Keyboard_Shortcut{
 	created:Date;
 	created_by_user_id:number | null;
@@ -567,10 +546,12 @@ export interface Order{
 	id:number;
 	lat:number | null;
 	lng:number | null;
+	initial_payment:number;
 	marked_for_billing:'YES'|'NO';
 	note:string | null;
 	paid_status:'PENDING'|'PAID'|'PARTIALLY_PAID';
-	paid_timetamp:Date;
+	paid_timetamp:Date | null;
+	period_id:number | null;
 	price_type_id:number
 	quote_id:number | null;
 	sat_codigo_postal:string | null;
@@ -578,6 +559,7 @@ export interface Order{
 	sat_forma_pago:string | null;
 	sat_ieps:number;
 	sat_isr:number;
+	sat_exchange_rate:number;
 	sat_pdf_attachment_id:number | null;
 	sat_razon_social:string | null;
 	sat_receptor_email:string | null;
@@ -598,7 +580,7 @@ export interface Order{
 	subtotal:number;
 	suburb:string | null;
 	sync_id:string | null;
-	system_activated:Date;
+	system_activated:Date | null;
 	table_id:number | null;
 	tag:string | null;
 	tax:number;
@@ -609,6 +591,7 @@ export interface Order{
 	version_updated:string | null;
 }
 export interface Order_Item{
+    reservation_item_id: number | null;
 	commanda_id:number | null;
 	commanda_status:'NOT_DISPLAYED'|'PENDING'|'DISMISSED';
 	created:Date;
@@ -640,8 +623,8 @@ export interface Order_Item{
 	status:'ACTIVE'|'DELETED';
 	stock_status:'IN_STOCK'|'STOCK_REMOVED';
 	subtotal:number;
-	system_preparation_ended:Date;
-	system_preparation_started:Date;
+	system_preparation_ended:Date | null;
+	system_preparation_started:Date | null;
 	tax:number;
 	tax_included:'NO'|'YES';
 	total:number;
@@ -785,6 +768,19 @@ export interface Payroll_Concept_Value{
 	payroll_concept_id:number;
 	value:number;
 	status:'ACTIVE'|'DELETED';
+}
+export interface Period{
+	id:number;
+	created:Date;
+	created_by_user_id:number;
+	end_timestamp:Date;
+	minutes_offset:number;
+	note:string | null;
+	reservation_id:number;
+	start_timestamp:Date;
+	status:'ACTIVE'|'DELETED';
+	updated:Date;
+	updated_by_user_id:number;
 }
 export interface Points_Log{
 	client_user_id:number
@@ -930,7 +926,7 @@ export interface Price_Type{
 	model:'AMOUNT'|'PERCENT'|'ALL';
 	name:string;
 	show_bill_code:'YES'|'NO';
-	sort_priority:number | null;
+	sort_priority:number;
 	tax_model:'TAX_INCLUDED'|'PLUS_TAX'|'ALL';
 	type:'RETAIL'|'WHOLESALE';
 	updated:Date;
@@ -1098,6 +1094,74 @@ export interface Requisition_Item{
 	status:'ACTIVE'|'DELETED';
 	updated:Date;
 }
+export interface Reservation
+{
+	price_type_id: number;
+	id:number;
+	address_id:number | null;
+	client_name:string;
+	created:Date;
+	created_by_user_id:number;
+	condition:'DRAFT'|'ACTIVE'|'CLOSED';
+	currency_id:string;
+	note:string | null;
+	start:string;
+	status: 'ACTIVE' | 'DELETED';
+	store_id:number;
+	updated:Date;
+	updated_by_user_id:number;
+	user_id:number | null;
+}
+export interface Reservation_Item{
+	id: number;
+	created: Date;
+	delivered_qty: number;
+	end: string| null;
+	item_id: number;
+	last_period_id: number | null;
+	note: string | null;
+	period_type: 'BY_HOUR' | 'DAILY' | 'WEEKLY' | 'MONTHLY'|'ONCE_ONLY';
+	price: number;
+	tax_included: 'YES' | 'NO';
+	qty: number;
+	reservation_id: number;
+	returned_qty: number;
+	scheduled_delivery: Date | null;
+	scheduled_return: Date | null;
+	serial_item_id: number;
+	start: string;
+	status: 'ACTIVE' | 'DELETED';
+	updated: Date;
+}
+export interface Reservation_Item_Serial{
+	id: number;
+	created: Date;
+	created_by_user_id: number;
+	delivered_timestamp: Date | null;
+	delivery_by_user_id: number | null;
+	end: Date | null;
+	minutes_offset: number;
+	note: string | null;
+	reservation_item_id: number;
+	returned_timestamp: Date | null;
+	returned_by_user_id: number | null;
+	schedule_delivery: Date | null;
+	schedule_return: Date | null;
+	serial_id: number;
+	serial: string;
+	start: Date | null;
+	status: 'ACTIVE' | 'DELETED';
+	updated: Date;
+	updated_by_user_id: number;
+}
+export interface Return_Assignment
+{
+	id:number;
+	created:Date;
+	user_id:number;
+	reservation_item_id:number;
+	updated:Date;
+}
 export interface Returned_Item{
 	created:Date;
 	id:number;
@@ -1143,6 +1207,7 @@ export interface Sat_Response{
 }
 export interface Serial{
 	additional_data:string | null;
+	available_status:'AVAILABLE'|'RESERVED'|'MAINTENANCE';
 	created:Date;
 	created_by_user_id:number | null;
 	description:string | null;
@@ -1151,20 +1216,19 @@ export interface Serial{
 	serial_number:string;
 	status:'ACTIVE'|'INACTIVE';
 	store_id:number
+	last_order_id:number | null;
+	last_reservation_id:number | null;
 	updated:Date;
 	updated_by_user_id:number | null;
 }
-interface CSerial extends Serial
-{
-	store_name?:string;
+interface Serial_Log{
+	id:number;
+	serial_id:number;
+	note:string;
+	reservation_item_id:number;
+	timestamp:Date;
 }
-export interface SerialInfo
-{
-	serial:CSerial;
-	images:Serial_Image[];
-	order_item_serial?:Order_Item_Serial;
-	selected: boolean; //Just a help variable used in lists
-}
+
 export interface Serial_Image{
 	created:Date;
 	description:string | null;
@@ -1179,11 +1243,7 @@ export interface Serie_Counter{
 	id:string;
 	updated:Date;
 }
-export interface SerialItemInfo
-{
-	serial_info:SerialInfo;
-	item_info:ItemInfo;
-}
+
 export interface Session{
 	created:Date;
 	id:string;
@@ -1341,18 +1401,18 @@ export interface Store{
 	autofacturacion_enabled?:'YES'|'NO';
 	autofacturacion_settings:'ONLY_SAME_MONTH'|'ONLY_DAY_LIMIT'|'BOTH'|'DISABLED';
 	business_name?:string | null;
-	city?:string | null;
-	client_user_id?:number | null;
+	city:string | null;
+	client_user_id:number | null;
 	created?:Date;
 	created_by_user_id?:number | null;
-	default_billing_data_id?:number | null;
+	default_billing_data_id:number | null;
 	default_claveprodserv:string;
 	default_currency_id:string;
 	default_sat_item_name:string;
 	default_sat_serie:string;
 	electronic_transfer_percent_fee?:number | null;
 	//exchange_rate:number | null;
-	id?:number | null;
+	id:number;
 	image_id?:number | null;
 	lat:number | null;
 	lng:number | null;
@@ -1364,19 +1424,19 @@ export interface Store{
 	paypal_email?:string | null;
 	phone?:string | null;
 	pos_category_preferences?:'DEFAULT_BY_PRODUCT'|'HIDE_BY_DEFAULT'|'SHOW_BY_DEFAULT';
-	price_list_id?:number | null;
+	price_list_id:number;
 	print_receipt?:number | null;
 	print_receipt_copies:number;
 	printer_ticket_config:string | null;
 	production_enabled:number | null;
 	qr_size:'PERCENT_25'|'PERCENT_50'|'PERCENT_75'|'PERCENT_100';
-	rfc?:string | null;
+	rfc:string | null;
 	sales_enabled:number | null;
 	show_facturacion_qr:'NO'|'YES',
 	state?:string | null;
 	status:'ACTIVE'|'DISABLED';
 	suggested_tip:number;
-	tax_percent?:number | null;
+	tax_percent:number;
 	ticket_footer_text?:string | null;
 	ticket_image_id?:number | null;
 	updated?:Date;
@@ -1563,7 +1623,7 @@ export interface Work_Log
 {
 	id:number;
 	break_seconds: number;
-  	date:string;
+	date:string;
 	disciplinary_actions:string | null;
 	docking_pay:number;
 	end_timestamp:Date | null;

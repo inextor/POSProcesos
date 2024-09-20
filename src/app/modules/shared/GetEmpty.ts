@@ -1,8 +1,134 @@
-import { ShippingInfo } from "./Models";
-import { User_Permission,Preferences,Production_Area,Process, Production, Shipping, Store, Payroll, Payroll_Concept_Value, Work_log_rules, User_extra_fields, User, Production_Area_Item, Item, Category } from "./RestModels";
+import { ExtendedReservation, OrderInfo, OrderItemInfo, ReservationInfo, ReservationItemInfo, ShippingInfo } from "./Models";
+import { User_Permission,Preferences,Production_Area,Process, Production, Shipping, Store, Payroll, Payroll_Concept_Value, Work_log_rules, User_extra_fields, User, Production_Area_Item, Item, Category, Reservation, Reservation_Item, Period, Order, Price_Type, Order_Item, Price, Item_Exception } from "./RestModels";
+import { RestService } from "./services/rest.service";
 
 export class GetEmpty
 {
+    static price(): Price
+	{
+		let p:Price = {
+            id: 0,
+            price: 1,
+            price_type_id: 1,
+            currency_id: 'MXN',
+            tax_included: 'YES',
+            created_by_user_id: 1,
+            updated_by_user_id: 1,
+            created: new Date(),
+            updated: new Date(),
+            item_id: 0,
+            percent: 0,
+            price_list_id: 0
+        }
+		return p;
+    }
+
+	static order_item(item:Item): Order_Item
+	{
+		let order_item:Order_Item =
+		{
+			commanda_id: null,
+			commanda_status: "PENDING",
+			created: new Date(),
+			created_by_user_id: null,
+			delivered_qty: 0,
+			delivery_status: "PENDING",
+			discount: 0,
+			discount_percent: 0,
+			exceptions: '',
+			has_separator: "NO",
+			id: 0,
+			id_payment: null,
+			is_free_of_charge: "NO",
+			is_item_extra: "NO",
+			item_extra_id: null,
+			item_group: Date.now(),
+			item_id: item.id,
+			item_option_id: null,
+			item_option_qty: null,
+			note: null,
+			offer_id: null,
+			order_id: 0,
+			original_unitary_price: 0,
+			paid_qty: null,
+			preparation_status: "PENDING",
+			price_id: null,
+			qty: 0,
+			reservation_item_id: null,
+			return_required: "NO",
+			status: "ACTIVE",
+			stock_status: "IN_STOCK",
+			subtotal: 0,
+			system_preparation_ended: null,
+			system_preparation_started: null,
+			tax: 0,
+			tax_included: "YES",
+			total: 0,
+			type: "NORMAL",
+			unitary_price: 0,
+			unitary_price_meta: 0,
+			updated: new Date(),
+			updated_by_user_id: null
+		};
+
+		return order_item;
+	}
+
+	static orderItemInfo(item:Item,category:Category | null = null,price:Price | null = null, exceptions:Item_Exception[] = [],prices:Price[] = []):OrderItemInfo
+	{
+		let order_item = GetEmpty.order_item(item);
+
+		let order_item_info:OrderItemInfo =
+		{
+            order_item,
+            created: new Date(),
+            order_item_exceptions: [],
+            serials_string: "",
+            commanda_type_id: item.commanda_type_id,
+            item: item,
+            category: null,
+            //category_zero: 0,
+            price: undefined,
+            prices,
+            options: [],
+            exceptions: [],
+            records: [],
+            stock_record: undefined,
+            serials: [],
+            category_zero: null,
+            item_options: []
+        };
+
+		return order_item_info;
+	}
+	static period(user:User): Period
+	{
+		let date = new Date();
+		let minutes_offset = date.getTimezoneOffset();
+		return {
+			id:0,
+			created: new Date(),
+			created_by_user_id: user.id,
+			reservation_id: 0,
+			end_timestamp: new Date(),
+			note: '',
+			start_timestamp: new Date(),
+			status:'ACTIVE',
+			updated: new Date(),
+			minutes_offset,
+			updated_by_user_id: user.id,
+		};
+	}
+	static getEmptyReservationInfo(): ReservationInfo
+	{
+		return {
+			reservation: GetEmpty.reservation(),
+			user: GetEmpty.user(),
+			client_user: null,
+			items: []
+		};
+	}
+
 	static category(): Category {
 		return {
 			background: 'transparent',
@@ -46,6 +172,7 @@ export class GetEmpty
 			description: '',
 			extra_name: '',
 			form_id: null,
+			for_reservation:'NO',
 			has_serial_number: 'NO',
 			image_id: null,
 			image_style:'COVER',
@@ -55,6 +182,7 @@ export class GetEmpty
 			note_required: 'NO',
 			on_sale:'YES',
 			partial_sale: 'NO',
+			period_type: 'MONTHLY',
 			product_id: null,
 			provider_user_id: null,
 			reference_currency_id: 'MXN',
@@ -70,6 +198,106 @@ export class GetEmpty
 			updated_by_user_id:null,
 		};
 	}
+
+	static order_info(rest:RestService,store:Store,price_type:Price_Type):OrderInfo
+	{
+		let tax_percent = 0;
+
+		if( !rest.user )
+		{
+			throw new Error('No user');
+		}
+
+		let user = rest.user as User;
+
+		let version_created = rest.getVersion();
+		let items:OrderItemInfo[] = [];
+		let order:Order = {
+			id: 0,
+			address: "",
+			amount_paid: 0,
+			ares: 0,
+			client_name: "",
+			marked_for_billing: 'NO',
+			delivery_user_id: null,
+			note: "",
+			sat_codigo_postal: null,
+			sat_pdf_attachment_id: null,
+			sat_razon_social: null,
+			authorized_by: null,
+			cancellation_timestamp: null,
+			billing_data_id: null,
+			billing_address_id: null,
+			city: "",
+			delivery_status: 'PENDING',
+			client_user_id: null,
+			facturacion_code: "",
+			paid_timetamp: null,
+			sat_serie_consecutive: null,
+			sat_receptor_rfc: '',
+			sat_uso_cfdi: '',
+			facturado: 'NO',
+			guests: 1,
+			lat: null,
+			lng: null,
+			cashier_user_id: user.id,
+			created: new Date(),
+			currency_id: 'MXN',
+			cancellation_reason: '',
+			cancelled_by_user_id: null,
+			closed_timestamp: null,
+			discount: 0,
+			initial_payment: 0,
+			sat_isr: 0,
+			sat_ieps: 0,
+			discount_calculated: 0,
+			price_type_id: price_type.id,
+			sat_forma_pago: '99',
+			sat_serie: 'A',
+			sat_exchange_rate: 1,
+			sat_domicilio_fiscal_receptor: '',
+			sat_regimen_fiscal_receptor: '',
+			sat_regimen_capital_receptor: '',
+			service_type: 'QUICK_SALE',
+			status: 'PENDING',
+			paid_status: 'PENDING',
+			period_id: null,
+			store_id: user.store_id as number,
+			subtotal: 0,
+			sync_id: rest.getSyncId(),
+			system_activated: null,
+			table_id: null,
+			tag: '',
+			tax: 0,
+			tax_percent: 16,
+			total: 0,
+			updated: new Date(),
+			version_created,
+			version_updated: version_created,
+			quote_id: null,
+			sat_receptor_email: null,
+			sat_xml_attachment_id: null,
+			shipping_address_id: null,
+			shipping_cost: 0,
+			state: null,
+			store_consecutive: null,
+			suburb: null
+		};
+
+		let empty:OrderInfo = {
+			items,
+			order,
+			//structured_items:[],
+			cashier: rest.user,
+			delivery_user: null,
+			client: null,
+			store,
+			purchase: null,
+			offers: [],
+			price_type
+		};
+		return empty;
+	}
 	static shipping_info(): ShippingInfo
 	{
 		return {
@@ -77,7 +305,7 @@ export class GetEmpty
 			items: []
 		};
 	}
-    static shipping(): Shipping
+	static shipping(): Shipping
 	{
 		return {
 			created: new Date(),
@@ -97,7 +325,7 @@ export class GetEmpty
 			updated: new Date(),
 			updated_by_user_id: 0,
 		}
-    }
+	}
 
 	static process():Process
 	{
@@ -111,6 +339,89 @@ export class GetEmpty
 			item_id: null,
 			status:'ACTIVE',
 			updated: new Date(),
+		};
+	}
+
+	static reservation():ExtendedReservation
+	{
+		return {
+			id:0,
+			_end: '',
+			address_id: null,
+			client_name: '',
+			created: new Date(),
+			created_by_user_id: 0,
+			condition:'ACTIVE',
+			currency_id: 'MXN',
+			note: '',
+			price_type_id: 1,
+			start: '',
+			status:'ACTIVE',
+			store_id: 0,
+			updated: new Date(),
+			updated_by_user_id: 0,
+			user_id: null,
+			_timestamp_next_delivery: null,
+			_timestamp_next_return: null,
+			_timestamp_next_dispatch_after: null,
+			_to_schedule:0,
+			_to_schedule_delivery :0,
+			_to_schedule_return:0,
+			_to_be_returned:0,
+			_to_be_delivered:0,
+			_to_assign:0,
+			_return_assignments:0,
+			_delivery_assignments:0,
+			_count_items:0,
+			_total_qty:0
+		};
+	}
+
+	static reservation_item():Reservation_Item
+	{
+		return {
+			id:0,
+			created: new Date(),
+			delivered_qty: 0,
+			end: null,
+			item_id: 0,
+			last_period_id: null,
+			note: '',
+			period_type: 'MONTHLY',
+			price: 0,
+			qty: 0,
+			reservation_id: 0,
+			returned_qty: 0,
+			scheduled_delivery: null,
+			scheduled_return: null,
+			serial_item_id: 0,
+			start: '',
+			status:'ACTIVE',
+			tax_included: 'YES',
+			updated: new Date(),
+		};
+	}
+
+	static reservation_item_info():ReservationItemInfo
+	{
+		return {
+			reservation_item: GetEmpty.reservation_item(),
+			item: GetEmpty.item(),
+			serial_item: GetEmpty.item(),
+			category: null,
+			return_assignments: [],
+			delivery_assignments: [],
+			serials: [],
+		};
+	}
+
+	static reservation_info():ReservationInfo
+	{
+		return {
+			reservation: GetEmpty.reservation(),
+			client_user: null,
+			user: null,
+			items: []
 		};
 	}
 
@@ -143,7 +454,6 @@ export class GetEmpty
 			username:'',
 			workshift_id: null,
 		};
-	
 	}
 	static user_permission():User_Permission
 	{
@@ -397,7 +707,7 @@ export class GetEmpty
 	static store():Store
 	{
 		return {
-			address:'',
+			address:"",
 			accept_cash: 1,
 			accept_transfer: 1,
 			accept_credit_card: 1,

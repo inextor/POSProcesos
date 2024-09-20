@@ -5,12 +5,13 @@ import { RouterModule } from '@angular/router';
 import { forkJoin,mergeMap, of } from 'rxjs';
 import { RestSimple } from '../../modules/shared/services/Rest';
 import { FormsModule } from '@angular/forms';
-import { Store,Check_In, User, Production, ItemInfo, Serial, SerialInfo, SerialItemInfo, Item} from '../../modules/shared/RestModels';
+import { Store,Check_In, User, Production,  Serial, Item } from '../../modules/shared/RestModels';
 import { GetEmpty } from '../../modules/shared/GetEmpty';
 import { BaseComponent } from '../../modules/shared/base/base.component';
 import { Utils } from '../../modules/shared/Utils';
 import { SearchItemsComponent } from '../../components/search-items/search-items.component';
 import { ModalComponent } from '../../components/modal/modal.component';
+import { ItemInfo, SerialInfo, SerialItemInfo } from '../../modules/shared/Models';
 
 interface CRequistionItem
 {
@@ -65,7 +66,7 @@ export class ListRequisitionComponent extends BaseComponent implements OnInit
 	requsition_obj_list: CRequisitionItem[] = [];
 
 	total_pending:number = 0;
-	
+
 	serial_list:SerialItemInfo[] = [];
 	tmp_serial_list: SerialItemInfo[] = [];
 	show_serial_numbers: boolean = false;
@@ -97,7 +98,7 @@ export class ListRequisitionComponent extends BaseComponent implements OnInit
 				{
 					start.setHours(0,0,0,0);
 					this.search_requisition.search_extra['start_timestamp'] = start;
-			
+
 				}
 				this.fecha_inicial = Utils.getLocalMysqlStringFromDate(this.search_requisition.search_extra['start_timestamp'] as Date);
 
@@ -105,7 +106,7 @@ export class ListRequisitionComponent extends BaseComponent implements OnInit
 				{
 					this.search_requisition.search_extra['required_by_store_id'] = null;
 				}
-		
+
 				//let store_id: number = this.rest.user?.store_id as number;
 				let production_area_id: number = this.rest.user?.production_area_id as number;
 
@@ -127,28 +128,34 @@ export class ListRequisitionComponent extends BaseComponent implements OnInit
 				})
 			})
 		)
-		.subscribe((response)=>
+		.subscribe(
 		{
-			this.is_loading = false;
-
-			this.store_list = response.stores.data;
-
-			this.requsition_obj_list = response.requisition.map((cri:CRequisitionItem)=>
+			next: (response)=>
 			{
-				if( cri.requisition != null)
-					cri.requisition.required_by_store = this.store_list.find(s=>cri.requisition?.required_by_store_id) || null;
-				cri.input_production = GetEmpty.production();
-				return cri;
-			});
+				this.is_loading = false;
 
-			//console.log(this.requsition_obj_list);
+				this.store_list = response.stores.data;
 
-			//calculando el total de requeridos que proviene de cri.requisition.sum_qty
-			this.calculateTotalPending(this.requsition_obj_list);
-			//this.sortRequisitions(this.search_str);
+				this.requsition_obj_list = response.requisition.map((cri:CRequisitionItem)=>
+				{
+					if( cri.requisition != null)
+						cri.requisition.required_by_store = this.store_list.find(s=>cri.requisition?.required_by_store_id) || null;
+					cri.input_production = GetEmpty.production();
+					return cri;
+				});
 
-			this.user_list = response.users.data;
+				//console.log(this.requsition_obj_list);
 
+				//calculando el total de requeridos que proviene de cri.requisition.sum_qty
+				this.calculateTotalPending(this.requsition_obj_list);
+				//this.sortRequisitions(this.search_str);
+
+				this.user_list = response.users.data;
+			},
+			error: (error) =>
+			{
+				this.showError(error);
+			}
 		});
 	}
 
@@ -165,7 +172,7 @@ export class ListRequisitionComponent extends BaseComponent implements OnInit
 			this.total_pending = 0;
 			return;
 		}
-		
+
 		//solo se tomara en cuenta la produccion de los items que su cantidad requerida sea mayor a 0
 		let total_produced = 0;
 		requsition_obj_list.map((cri)=>
@@ -231,20 +238,20 @@ export class ListRequisitionComponent extends BaseComponent implements OnInit
 			return;
 		}
 		const sort_by = this.search_by_code ? 'code' : 'name';
-		const sortFunction =  (a:CRequisitionItem,b:CRequisitionItem) => 
+		const sortFunction =  (a:CRequisitionItem,b:CRequisitionItem) =>
 		{
 			const a_lower = a.item[sort_by]?.toLowerCase() || '';
-		    const b_lower = b.item[sort_by]?.toLowerCase() || '';
+		  const b_lower = b.item[sort_by]?.toLowerCase() || '';
 			const a_category_name = `${a.requisition?.category_name?.toLowerCase() + ' ' || '' }` + a_lower;
-		    const b_category_name = `${b.requisition?.category_name?.toLowerCase() + ' ' || ''}` + b_lower;
-		    const a_index = a_category_name.indexOf(str.toLowerCase());
-		    const b_index = b_category_name.indexOf(str.toLowerCase());
+		  const b_category_name = `${b.requisition?.category_name?.toLowerCase() + ' ' || ''}` + b_lower;
+		  const a_index = a_category_name.indexOf(str.toLowerCase());
+		  const b_index = b_category_name.indexOf(str.toLowerCase());
 
-		    if (a_index === -1 && b_index === -1) {
-		      return a_category_name.localeCompare(b_category_name);
-		    }
+		  if (a_index === -1 && b_index === -1) {
+			return a_category_name.localeCompare(b_category_name);
+		  }
 
-		    return a_index === -1 ? 1 : b_index === -1 ? -1 : a_index - b_index;
+		  return a_index === -1 ? 1 : b_index === -1 ? -1 : a_index - b_index;
 		};
 
 		this.requsition_obj_list.sort(sortFunction);
@@ -291,7 +298,7 @@ export class ListRequisitionComponent extends BaseComponent implements OnInit
 		//evt.preventDefault();
 		//evt.stopPropagation();
 		this.is_loading = true;
-		
+
 		this.new_production = GetEmpty.production();
 
 		let user = this.rest.user as User;

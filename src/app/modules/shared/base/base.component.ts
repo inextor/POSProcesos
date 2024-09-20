@@ -6,10 +6,17 @@ import { SubSink } from 'subsink';
 import { Location} from '@angular/common';
 import { ShortDatePipe } from '../pipes/short-date.pipe';
 import { Title } from '@angular/platform-browser';
-import { Observable, combineLatest, startWith } from 'rxjs';
+import { Observable, combineLatest, forkJoin, mergeMap, of, startWith } from 'rxjs';
 import { SearchObject } from '../services/Rest';
 import { ConfirmationService } from '../services/confirmation.service';
 import { Utils } from '../Utils';
+
+export interface ParamsAndQueriesMap
+{
+	param:ParamMap;
+	query:ParamMap;
+}
+
 
 @Component({
 	selector: 'app-base',
@@ -87,6 +94,7 @@ export class BaseComponent	implements OnDestroy
 		this.titleService.setTitle(newTitle);
 	}
 
+
 	getQueryParamObservable():Observable<ParamMap[]>
 	{
 		let p:ParamMap = {
@@ -101,6 +109,18 @@ export class BaseComponent	implements OnDestroy
 			this.route.queryParamMap.pipe(startWith(p)),
 			this.route.paramMap
 		])
+	}
+
+
+	getParamsAndQueriesObservable():Observable<ParamsAndQueriesMap>
+	{
+		return this.getQueryParamObservable().pipe
+		(
+			mergeMap
+			(
+				(response)=>of({query: response[0], param: response[1]})
+			)
+		);
 	}
 
 	getSearch<T>(param_map:ParamMap, fields:string[],extra_keys:string[]=[]):SearchObject<T>
@@ -121,7 +141,8 @@ export class BaseComponent	implements OnDestroy
 						if (v) {
 							let components = v.split(/T|-|:|\s/g);
 
-							let utcTime = Date.UTC(
+							let utcTime = Date.UTC
+							(
 								parseInt(components[0]),
 								parseInt(components[1]) - 1,
 								parseInt(components[2]),
@@ -392,5 +413,69 @@ export class BaseComponent	implements OnDestroy
 		this.applySortOrderFromArray(header,search.sort_order)
 		search.page = 0;
 		this.search( search );
+	}
+
+	searchNoForceReload(item_search:Partial<SearchObject<any>> | null = null )
+	{
+		let search:Record<string,string|null> = {};
+
+		if( item_search != null )
+		{
+
+			for(let i in item_search.search_extra )
+			{
+				if( item_search.search_extra[ i ] && item_search.search_extra[ i ] !== 'null' )
+				{
+					let v = item_search.search_extra[ i ] as any;
+					if( (v instanceof Date) )
+					{
+						search['search_extra.'+i] = Utils.getUTCMysqlStringFromDate( v );
+					}
+					else
+					{
+							search['search_extra.'+i] = ''+item_search.search_extra[ i ];
+					}
+
+				}
+			}
+
+			item_search.page = 0;
+
+			let array = ['eq','le','lt','ge','gt','csv','lk','nn','start'];
+
+			let i: keyof typeof item_search;
+
+			for(i in item_search )
+			{
+				if(array.indexOf( i ) > -1 )
+				{
+					let ivalue = item_search[i] as any;
+					let j: keyof typeof ivalue;
+
+					for(j in ivalue)
+					{
+						if( ivalue[j] !== null && ivalue[j] !== 'null'&&ivalue[j] !== undefined)
+						{
+							let value = ivalue[j];
+
+							if( value !== null && value !== 'null' && value !== undefined )
+							{
+								if( value instanceof Date )
+								{
+									search[i+'.'+j] = Utils.getUTCMysqlStringFromDate( value );
+								}
+								else
+								{
+									search[i+'.'+j] = ''+value!;
+								}
+							}
+						}
+					}
+				}
+
+			}
+		}
+
+		this.router.navigate([this.path],{queryParams: search});
 	}
 }

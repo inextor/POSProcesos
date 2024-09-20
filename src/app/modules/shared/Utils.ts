@@ -350,6 +350,53 @@ export class Utils
 	}
 
 
+
+	static dateCountDownDate(value:any, today:Date = new Date()):string
+	{
+		let date = value instanceof Date ? value : Utils.getDateFromValue( value ) as Date;
+
+		if( date == null )
+		{
+			return '';
+		}
+
+		let t = date.getTime();
+
+		if( isNaN( t ) )
+		{
+			console.log('date is invalid '+date);
+			return '';
+		}
+
+		let sign = '';
+
+		if( date > today )
+		{
+			sign = '-';
+			let tmp = date;
+			date = today;
+			today = tmp;
+		}
+
+		let days_diff = Math.floor( ( today.getTime() - date.getTime() ) / 1000 / 60 / 60 / 24 );
+		let hours_diff = Math.floor( ( today.getTime() - date.getTime() ) / 1000 / 60 / 60 );
+		let minutes_diff = Math.floor( ( today.getTime() - date.getTime() ) / 1000 / 60 ) % 60;
+		let seconds_diff = Math.floor( ( today.getTime() - date.getTime() ) / 1000 ) % 60;
+
+		if( days_diff == 0 )
+		{
+			return `${sign}${Utils.zero(hours_diff)}:${Utils.zero(minutes_diff)}:${Utils.zero(seconds_diff)}`;
+		}
+
+		if( days_diff > 2 || days_diff < -2 )
+		{
+			return `${sign}${days_diff} dias`;
+		}
+
+		return `${sign}${days_diff} dia ${Utils.zero(hours_diff)}:${Utils.zero(minutes_diff)}:${Utils.zero(seconds_diff)}`;
+	}
+
+
 	static getRelativeDateString(value:any, today:Date = new Date()):string
 	{
 		let date = Utils.getDateFromValue( value );
@@ -513,6 +560,13 @@ export class Utils
 		}
 
 		return body;
+	}
+
+	public static areSameDay(date1:Date,date2:Date):boolean
+	{
+		return date1.getFullYear() == date2.getFullYear()
+			&& date1.getMonth() == date2.getMonth()
+			&& date1.getDate() == date2.getDate();
 	}
 }
 

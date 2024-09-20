@@ -3,12 +3,13 @@ import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { BaseComponent } from '../../modules/shared/base/base.component';
 import { debounceTime, forkJoin, mergeMap, of } from 'rxjs';
-import { Category, Item, ItemInfo, Production_Area, Production_Area_Item } from '../../modules/shared/RestModels';
+import { Category, Item, Production_Area, Production_Area_Item } from '../../modules/shared/RestModels';
 import { Rest, RestSimple, SearchObject } from '../../modules/shared/services/Rest';
 import { FormsModule } from '@angular/forms';
 import { SearchItemsComponent } from '../../components/search-items/search-items.component';
 import { GetEmpty } from '../../modules/shared/GetEmpty';
 import { LoadingComponent } from '../../components/loading/loading.component';
+import { ItemInfo } from '../../modules/shared/Models';
 
 interface CProduction_Area_Item extends Production_Area_Item
 {
@@ -77,7 +78,7 @@ export class ListProductionAreaItemComponent extends BaseComponent implements On
 
 				return {
 					...production_area_item,
-					item: item_info?.item || GetEmpty.item(), 
+					item: item_info?.item || GetEmpty.item(),
 					production_area_name: production_area?.name || '',
 					category: item_info?.category || null
 				}
