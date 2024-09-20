@@ -5,13 +5,14 @@ import { RouterModule } from '@angular/router';
 import { forkJoin,mergeMap, of } from 'rxjs';
 import { RestSimple } from '../../modules/shared/services/Rest';
 import { FormsModule } from '@angular/forms';
-import { Store,Check_In, User, Production,  Serial, Item } from '../../modules/shared/RestModels';
+import { Store,Check_In, User, Production, Serial, Item } from '../../modules/shared/RestModels';
 import { GetEmpty } from '../../modules/shared/GetEmpty';
 import { BaseComponent } from '../../modules/shared/base/base.component';
 import { Utils } from '../../modules/shared/Utils';
 import { SearchItemsComponent } from '../../components/search-items/search-items.component';
 import { ModalComponent } from '../../components/modal/modal.component';
 import { ItemInfo, SerialInfo, SerialItemInfo } from '../../modules/shared/Models';
+import { PageStructureComponent } from "../../modules/shared/page-structure/page-structure.component";
 
 interface CRequistionItem
 {
@@ -40,12 +41,13 @@ interface CRequisitionItem
 	requisition: CRequistionItem | null;
 }
 
-@Component({
+@Component
+({
 	selector: 'app-list-requisition',
 	standalone: true,
-	imports: [CommonModule,RouterModule,FormsModule, SearchItemsComponent, ModalComponent],
 	templateUrl: './list-requisition.component.html',
-	styleUrl: './list-requisition.component.css'
+	styleUrl: './list-requisition.component.css',
+	imports: [CommonModule, RouterModule, FormsModule, SearchItemsComponent, ModalComponent, PageStructureComponent]
 })
 export class ListRequisitionComponent extends BaseComponent implements OnInit
 {
@@ -98,7 +100,6 @@ export class ListRequisitionComponent extends BaseComponent implements OnInit
 				{
 					start.setHours(0,0,0,0);
 					this.search_requisition.search_extra['start_timestamp'] = start;
-
 				}
 				this.fecha_inicial = Utils.getLocalMysqlStringFromDate(this.search_requisition.search_extra['start_timestamp'] as Date);
 
@@ -133,7 +134,6 @@ export class ListRequisitionComponent extends BaseComponent implements OnInit
 			next: (response)=>
 			{
 				this.is_loading = false;
-
 				this.store_list = response.stores.data;
 
 				this.requsition_obj_list = response.requisition.map((cri:CRequisitionItem)=>
@@ -219,8 +219,8 @@ export class ListRequisitionComponent extends BaseComponent implements OnInit
 					item_info: item_info
 				};
 			});
-			this.tmp_serial_list = this.serial_list;
 
+			this.tmp_serial_list = this.serial_list;
 			this.show_serial_numbers = true;
 		});
 	}
@@ -238,20 +238,20 @@ export class ListRequisitionComponent extends BaseComponent implements OnInit
 			return;
 		}
 		const sort_by = this.search_by_code ? 'code' : 'name';
-		const sortFunction =  (a:CRequisitionItem,b:CRequisitionItem) =>
+		const sortFunction = (a:CRequisitionItem,b:CRequisitionItem) =>
 		{
 			const a_lower = a.item[sort_by]?.toLowerCase() || '';
-		  const b_lower = b.item[sort_by]?.toLowerCase() || '';
+			const b_lower = b.item[sort_by]?.toLowerCase() || '';
 			const a_category_name = `${a.requisition?.category_name?.toLowerCase() + ' ' || '' }` + a_lower;
-		  const b_category_name = `${b.requisition?.category_name?.toLowerCase() + ' ' || ''}` + b_lower;
-		  const a_index = a_category_name.indexOf(str.toLowerCase());
-		  const b_index = b_category_name.indexOf(str.toLowerCase());
+			const b_category_name = `${b.requisition?.category_name?.toLowerCase() + ' ' || ''}` + b_lower;
+			const a_index = a_category_name.indexOf(str.toLowerCase());
+			const b_index = b_category_name.indexOf(str.toLowerCase());
 
-		  if (a_index === -1 && b_index === -1) {
-			return a_category_name.localeCompare(b_category_name);
-		  }
+			if (a_index === -1 && b_index === -1) {
+				return a_category_name.localeCompare(b_category_name);
+			}
 
-		  return a_index === -1 ? 1 : b_index === -1 ? -1 : a_index - b_index;
+			return a_index === -1 ? 1 : b_index === -1 ? -1 : a_index - b_index;
 		};
 
 		this.requsition_obj_list.sort(sortFunction);

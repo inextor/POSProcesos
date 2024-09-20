@@ -216,7 +216,7 @@ export interface Category{
 	image_style:'COVER'|'CONTAIN';
 	name:string;
 	shadow_color:string | null;
-	sort_weight:number | null;
+	sort_weight:number;
 	text_color:string | null;
 	text_style:'NEVER'|'CENTER'|'DOWN';
 	type:string | null;
@@ -391,7 +391,7 @@ export interface Item{
 	reference_price:number;
 	return_action:'RETURN_TO_STOCK'|'ADD_TO_MERMA'|'TRANSFORM_INTO_ITEM';
 	shadow_color:string | null;
-	sort_weight:number | null;
+	sort_weight:number;
 	status:'ACTIVE'|'DELETED';
 	text_color:string | null;
 	text_style:'NEVER'|'CENTER'|'DOWN';

@@ -1,5 +1,4 @@
 /* You can add global styles to this file, and also import other style files */
-
 :root
 {
   --menu-icon-color: #000000;
@@ -68,35 +67,6 @@
     border: var(--btn-secondary-border-color) 1px solid;
 }
 
-.main_background{
-    /*position: absolute;
-    top: 0px;
-    left: 0px;
-    right: 0px;
-    bottom: 0px;
-    */
-    background: var(--background-image);
-}
-
-.menu_container
-{
-	background: var(--menu-background-image );
-	background-color: var(--menu-background-color);
-}
-
-.header_container
-{
-	-webkit-order: 0;
-	-ms-flex-order: 0;
-	order: 0;
-	-webkit-flex: 0 1 auto;
-	-ms-flex: 0 1 auto;
-	flex: 0 1 auto;
-	-webkit-align-self: stretch;
-	-ms-flex-item-align: stretch;
-	align-self: stretch;
-	background-color: var(--header-background-color);
-}
 
 .card {
     background-color: var(--card-background-color);
@@ -130,5 +100,3 @@ dialog::backdrop
 		display:block;
 	}
 }
-
-

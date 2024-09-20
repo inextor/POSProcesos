@@ -35,6 +35,14 @@ export class SearchSerialComponent extends BaseComponent
 			mergeMap(params =>
 			{
 				let serial_search = this.rest_serial.getSearchObject(params.query,['serial_number']);
+
+				let search = params.query.get('lk.serial_number');
+
+				if( search && this.search_string.trim() != search.trim() )
+				{
+					this.search_string = search;
+				}
+
 				return this.rest_serial.search(serial_search);
 			})
 		)

@@ -6,19 +6,15 @@
 			<input type="text" class="form-control" id="search" name="search_str" [(ngModel)]="search_string" (ngModelChange)="onSearchStringChange($event)">
 		</div>
 	</div>
-
 	<div class="card my-3 px-1 px-md-3">
 		<div *ngFor="let serial_info of serial_info_list">
 			<div>
 				<!--a *ngIf="serial_info?.order_item_serial" href="/#/view-order/{{serial_info.order_item_serial.last_order_id}}">
 					Ver Orden {{serial_info?.order_item_serial?.order_item_id}}
 				</a-->
-
 				<a *ngIf="serial_info.serial.last_order_id" href="/#/view-order/{{serial_info.serial.last_order_id}}">
-
+					Ver Orden #{{serial_info.serial.last_order_id}}
 				</a>
-				{{serial_info.serial.serial_number}}
-				{{serial_info |json}}
 			</div>
 		</div>
 	</div>

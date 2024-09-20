@@ -39,7 +39,7 @@
 		<h3 class="my-3">Agregar Conceptos</h3>
 		<div class="card p-3 my-3">
 			<div class="row">
-				<div class="col-12 col-md-6">	
+				<div class="col-12 col-md-6">
 					<select name="payroll_concept_id" class="form-control" [(ngModel)]="selected_payroll_concept_id">
 						<option [value]="null">Seleccionar</option>
 						<ng-container *ngFor="let pc of payroll_concept_list">
@@ -94,7 +94,7 @@
 									</span>
 								</td>
 								<div class="input-group p-0">
-									<span class="input-group-text">$</span> 
+									<span class="input-group-text">$</span>
 									<input type="number" class="form-control text-end" (change)="calculatePayrollTotal()" name="payroll_concept_values[{{ i }}]" [(ngModel)]="pcv.value" [disabled]="payroll_info.payroll.paid_status == 'PAID' || rest.user_permission.add_payroll !=1">
 								</div>
 							</tr>
@@ -102,7 +102,7 @@
 						<tr>
 							<td colspan="2" class="text-end fw-bold">Total</td>
 							<td class="text-end">
-								<b>{{ payroll_info.payroll.total | currency: "$" }}</b>	
+								<b>{{ payroll_info.payroll.total | currency: "$" }}</b>
 							</td>
 						</tr>
 					</tbody>
@@ -118,7 +118,7 @@
 
 <div class="d-none d-print-flex row">
 	<div class="col-12 text-center">
-		<img [src]="rest.getImagePath(rest.local_preferences.default_ticket_image_id)" class="w-25">
+		<img [src]="rest.getImagePath(rest.preferences.default_ticket_image_id)" class="w-25">
 	</div>
 	<div class="col-12 mt-2">
 		<h2 class="text-center">Reporte de Nómina</h2>
@@ -160,7 +160,7 @@
 				<tr>
 					<td colspan="2" class="text-end fw-bold">Total</td>
 					<td class="text-end">
-						<b>{{ payroll_info.payroll.total | currency: "$" }}</b>	
+						<b>{{ payroll_info.payroll.total | currency: "$" }}</b>
 					</td>
 				</tr>
 			</tbody>

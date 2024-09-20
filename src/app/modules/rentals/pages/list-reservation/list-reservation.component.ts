@@ -6,12 +6,13 @@ import { SearchUsersComponent } from '../../../../components/search-users/search
 import { Delivery_Assignment, Reservation, Reservation_Item, Return_Assignment, User } from '../../../shared/RestModels';
 import { Rest, SearchObject } from '../../../shared/services/Rest';
 import { ExtendedReservation, ReservationInfo } from '../../../shared/Models';
-import { mergeMap } from 'rxjs';
+import { filter, mergeMap } from 'rxjs';
 import { RouterModule } from '@angular/router';
 import { Utils } from '../../../shared/Utils';
 import { ModalComponent} from '../../../../components/modal/modal.component';
 import { ShortDatePipe } from "../../../shared/pipes/short-date.pipe";
 import { LoadingComponent } from '../../../../components/loading/loading.component';
+import { PageStructureComponent } from "../../../shared/page-structure/page-structure.component";
 
 type ReservationFilter = 'ALL' | 'NOT_SCHEDULED' | 'NOT_ASSIGNED' | 'NOT_RETURNED' | 'NEXT_DELIVERIES' | 'NEXT_RETURNS';
 
@@ -21,11 +22,11 @@ interface CReservation extends ExtendedReservation
 }
 
 @Component({
-	selector: 'app-list-reservation',
-	standalone: true,
-	templateUrl: './list-reservation.component.html',
-	styleUrl: './list-reservation.component.css',
-	imports: [CommonModule, FormsModule, SearchUsersComponent, RouterModule, ModalComponent, ShortDatePipe, LoadingComponent]
+    selector: 'app-list-reservation',
+    standalone: true,
+    templateUrl: './list-reservation.component.html',
+    styleUrl: './list-reservation.component.css',
+    imports: [CommonModule, FormsModule, SearchUsersComponent, RouterModule, ModalComponent, ShortDatePipe, LoadingComponent, PageStructureComponent]
 })
 export class ListReservationComponent extends BaseComponent implements OnInit
 {
@@ -249,7 +250,17 @@ export class ListReservationComponent extends BaseComponent implements OnInit
 
 	closeReservation(reservation_info:ReservationInfo):void
 	{
-		this.subs.sink = this.rest.reservationUpdates('closeReservation',{reservation_id:reservation_info.reservation.id})
+		this.subs.sink = this.confirmation
+		.showConfirmAlert(reservation_info, 'Cerrar Reservación', 'Esta seguro que desea cerrar esta reservación')
+		.pipe
+		(
+			filter(response => response.accepted),
+			mergeMap(() =>
+			{
+				//Aqui la funcion de cerrar la reservacion
+				return this.rest.reservationUpdates('closeReservation',{reservation_id:reservation_info.reservation.id})
+			})
+		)
 		.subscribe
 		({
 			next:(response)=>

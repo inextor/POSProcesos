@@ -22,11 +22,12 @@
 						"tsConfig": "tsconfig.app.json",
 						"assets":
 						[
-              "src/assets/bootstrap/css/bootstrap.min.css",
-              "src/favicon.ico",
-              "src/manifest.webmanifest",
-              "src/manifest.webmanifest"
-            ],
+							"src/assets/bootstrap/css/bootstrap.min.css",
+							"src/assets/css/hamburger.min.css",
+							"src/assets/bootstrap/js/bootstrap.bundle.min.js",
+							"src/favicon.ico",
+							"src/manifest.webmanifest"
+						],
 						"styles": [
 							"src/assets/bootstrap/css/bootstrap.min.css",
 							"src/styles.css"
@@ -47,8 +48,8 @@
 									"maximumError": "4kb"
 								}
 							],
-              "outputHashing": "all",
-              "serviceWorker": "ngsw-config.json"
+							"outputHashing": "all",
+							"serviceWorker": "ngsw-config.json"
 						},
 						"development": {
 							"optimization": false,
@@ -85,11 +86,10 @@
 						],
 						"tsConfig": "tsconfig.spec.json",
 						"assets": [
-              "src/favicon.ico",
-              "src/assets",
-              "src/manifest.webmanifest",
-              "src/manifest.webmanifest"
-            ],
+							"src/favicon.ico",
+							"src/assets",
+							"src/manifest.webmanifest"
+						],
 						"styles": [
 							"src/styles.css"
 						],

@@ -1,8 +1,10 @@
 <div class="ps-menu" [ngClass]="{'menu-open': rest.show_menu}">
-	hello
+	<app-menu></app-menu>
 </div>
-<div class="ps-main"  [ngClass]="{'menu-open': rest.show_menu}">
-	<app-header></app-header>
+<div class="ps-main" [ngClass]="{'menu-open': rest.show_menu}">
+	<div class="header_container">
+		<app-header></app-header>
+	</div>
 	<div class="main_content">
 		<ng-content />
 	</div>

@@ -10,6 +10,7 @@ import { ModalComponent } from "../../../../components/modal/modal.component";
 import { ItemNamePipe } from "../../../shared/pipes/item-name.pipe";
 import { FormsModule } from '@angular/forms';
 import { LoadingComponent } from "../../../../components/loading/loading.component";
+import { PageStructureComponent } from "../../../shared/page-structure/page-structure.component";
 
 interface StockDate
 {
@@ -46,7 +47,7 @@ interface ReserveItemByDate
     standalone: true,
     templateUrl: './calendar-stock.component.html',
     styleUrl: './calendar-stock.component.css',
-    imports: [CommonModule, ModalComponent, ItemNamePipe, FormsModule, LoadingComponent]
+    imports: [CommonModule, ModalComponent, ItemNamePipe, FormsModule, LoadingComponent, PageStructureComponent]
 })
 
 export class CalendarStockComponent extends BaseComponent implements OnInit

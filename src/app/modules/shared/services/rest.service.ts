@@ -10,6 +10,7 @@ import { BehaviorSubject, mergeMap, Observable, of, Subject } from 'rxjs';
 import { environment } from '../../../../environments/environment';
 import { io, Socket } from 'socket.io-client';
 import { SocketMessage } from '../Models';
+import { OfflineUtils, ServerInfo } from '../OfflineUtils';
 
 export const USER_PERMISSION_KEY = 'user_permission';
 const USER_KEY = 'user';
@@ -47,7 +48,7 @@ export class RestService
 	public notification = new BehaviorSubject({});
 	errorBehaviorSubject = new BehaviorSubject<ErrorMessage>(new ErrorMessage('',''));
 	errorObservable = this.errorBehaviorSubject.asObservable();
-	public local_preferences = this.getPreferencesFromSession();
+	public preferences = this.getPreferencesFromSession();
 	public session_start?: Date | null;
 	public user:User | null = null;
 	public user_permission:User_Permission = GetEmpty.user_permission();
@@ -70,7 +71,7 @@ export class RestService
 	constructor(private http:HttpClient)
 	{
 		this.user = this.getUserFromSession();
-		this.local_preferences = this.getPreferencesFromSession();
+		this.preferences = this.getPreferencesFromSession();
 		this.session_start = this.getSessionStart();
 	}
 
@@ -415,7 +416,7 @@ export class RestService
 		if( window.location.hostname.indexOf('pos.integranet.xyz') !== -1)
 			return this.getUrlSafe('/assets/integranet_logo.jpg');
 
-		return this.getImagePath(this.local_preferences.login_image_id, this.local_preferences.logo_image_id );
+		return this.getImagePath(this.preferences.login_image_id, this.preferences.logo_image_id );
 	}
 	getFilePath(file_id: number,download=false): string
 	{
@@ -449,9 +450,9 @@ export class RestService
 
 		if( preferences )
 		{
-			this.local_preferences = JSON.parse( preferences );
+			this.preferences = JSON.parse( preferences );
 			this.applyTheme();
-			return this.local_preferences;
+			return this.preferences;
 		}
 
 		return GetEmpty.preferences();
@@ -460,47 +461,47 @@ export class RestService
 	applyTheme()
 	{
 
-		if( this.local_preferences == null )
+		if( this.preferences == null )
 			return;
 
 
 		let properties:Record<string,string> = {
-			'--menu-icon-color':this.local_preferences.menu_icon_color || '#F66151',
-			'--menu-text-color':this.local_preferences.menu_text_color || '#F66151',
-			'--menu-title-color':this.local_preferences.menu_title_color || '#F66151',
-			'--submenu-icon-color':this.local_preferences.submenu_icon_color || '#FFFFFF',
-			'--submenu-text-color':this.local_preferences.submenu_text_color || '#FFFFFF',
-			'--button-border-radius': this.local_preferences.button_border_radius || '.25em',
+			'--menu-icon-color':this.preferences.menu_icon_color || '#F66151',
+			'--menu-text-color':this.preferences.menu_text_color || '#F66151',
+			'--menu-title-color':this.preferences.menu_title_color || '#F66151',
+			'--submenu-icon-color':this.preferences.submenu_icon_color || '#FFFFFF',
+			'--submenu-text-color':this.preferences.submenu_text_color || '#FFFFFF',
+			'--button-border-radius': this.preferences.button_border_radius || '.25em',
 
-			'--btn-primary-bg-color': this.local_preferences.btn_primary_bg_color || '#F66151',
-			'--btn-primary-bg-color-hover': this.local_preferences.btn_primary_bg_color_hover || '#F66151',
-			'--btn-primary-text-color': this.local_preferences.btn_primary_text_color || '#FFFFFF',
-			'--btn-primary-text-color-hover': this.local_preferences.btn_primary_text_color_hover || '#FFFFFF',
-			'--btn-primary-border-color': this.local_preferences.btn_primary_border_color || '#F66151',
-			'--btn-primary-border-color-hover': this.local_preferences.btn_primary_border_color_hover || '#F66151',
+			'--btn-primary-bg-color': this.preferences.btn_primary_bg_color || '#F66151',
+			'--btn-primary-bg-color-hover': this.preferences.btn_primary_bg_color_hover || '#F66151',
+			'--btn-primary-text-color': this.preferences.btn_primary_text_color || '#FFFFFF',
+			'--btn-primary-text-color-hover': this.preferences.btn_primary_text_color_hover || '#FFFFFF',
+			'--btn-primary-border-color': this.preferences.btn_primary_border_color || '#F66151',
+			'--btn-primary-border-color-hover': this.preferences.btn_primary_border_color_hover || '#F66151',
 
-			'--btn-secondary-bg-color': this.local_preferences.btn_secondary_bg_color || '#6c757d',
-			'--btn-secondary-bg-color-hover': this.local_preferences.btn_secondary_bg_color_hover || '#6c757d',
-			'--btn-secondary-text-color': this.local_preferences.btn_secondary_text_color || '#000000',
-			'--btn-secondary-text-color-hover': this.local_preferences.btn_secondary_text_color_hover || '#000000',
-			'--btn-secondary-border-color': this.local_preferences.btn_secondary_border_color || '##6c757d',
-			'--btn-secondary-border-color-hover': this.local_preferences.btn_secondary_border_color_hover || '#6c757d',
+			'--btn-secondary-bg-color': this.preferences.btn_secondary_bg_color || '#6c757d',
+			'--btn-secondary-bg-color-hover': this.preferences.btn_secondary_bg_color_hover || '#6c757d',
+			'--btn-secondary-text-color': this.preferences.btn_secondary_text_color || '#000000',
+			'--btn-secondary-text-color-hover': this.preferences.btn_secondary_text_color_hover || '#000000',
+			'--btn-secondary-border-color': this.preferences.btn_secondary_border_color || '##6c757d',
+			'--btn-secondary-border-color-hover': this.preferences.btn_secondary_border_color_hover || '#6c757d',
 
-			'--header-background-color': this.local_preferences.header_background_color || '#F66151',
-			'--header-text-color': this.local_preferences.header_text_color || '#000000',
-			'--link-color': this.local_preferences.link_color || '#F66151',
-			'--link-color-hover': this.local_preferences.link_hover || '#F66151',
-			'--button-style': this.local_preferences.button_style || 'transparent',
-			'--titles-color': this.local_preferences.titles_color || '#000000',
-			'--card-border-radius': this.local_preferences.card_border_radius || '.25em',
-			'--button_border_radius': this.local_preferences.button_border_radius || '.25em',
-			'--text-color': this.local_preferences.text_color || '#000000',
-			'--icon-menu-color':this.local_preferences.pv_bar_background_color || 'white',
-			'--pv-bar-text-color': this.local_preferences.pv_bar_text_color || '#FFFFFF',
-			'--pv-bar-background-color': this.local_preferences.pv_bar_background_color || '#000000',
-			'--pv-bar-total-color': this.local_preferences.pv_bar_total_color || '#FFFFFF',
-			'--item-selected-background-color': this.local_preferences.item_selected_background_color || '#F66151',
-			'--item-selected-text-color': this.local_preferences.item_selected_text_color || '#FFFFFF',
+			'--header-background-color': this.preferences.header_background_color || '#F66151',
+			'--header-text-color': this.preferences.header_text_color || '#000000',
+			'--link-color': this.preferences.link_color || '#F66151',
+			'--link-color-hover': this.preferences.link_hover || '#F66151',
+			'--button-style': this.preferences.button_style || 'transparent',
+			'--titles-color': this.preferences.titles_color || '#000000',
+			'--card-border-radius': this.preferences.card_border_radius || '.25em',
+			'--button_border_radius': this.preferences.button_border_radius || '.25em',
+			'--text-color': this.preferences.text_color || '#000000',
+			'--icon-menu-color':this.preferences.pv_bar_background_color || 'white',
+			'--pv-bar-text-color': this.preferences.pv_bar_text_color || '#FFFFFF',
+			'--pv-bar-background-color': this.preferences.pv_bar_background_color || '#000000',
+			'--pv-bar-total-color': this.preferences.pv_bar_total_color || '#FFFFFF',
+			'--item-selected-background-color': this.preferences.item_selected_background_color || '#F66151',
+			'--item-selected-text-color': this.preferences.item_selected_text_color || '#FFFFFF',
 		};
 
 		let body = window.document.body;
@@ -513,7 +514,7 @@ export class RestService
 			}
 		}
 
-		if( this.local_preferences.display_categories_on_items == 'YES' )
+		if( this.preferences.display_categories_on_items == 'YES' )
 		{
 			body.style.setProperty('--pos_item_height', '56px')
 		}
@@ -523,23 +524,23 @@ export class RestService
 		}
 
 
-		if( this.local_preferences?.login_background_image_id )
+		if( this.preferences?.login_background_image_id )
 		{
-			let path = this.getImagePath(this.local_preferences.login_background_image_id);
+			let path = this.getImagePath(this.preferences.login_background_image_id);
 
-			if( this.local_preferences.login_background_image_size == 'cover')
+			if( this.preferences.login_background_image_size == 'cover')
 				body.style.setProperty('--login-background-image','url('+path+') no-repeat fixed center/cover transparent');
 			else
 				body.style.setProperty('--login-background-image','url('+path+') repeat fixed');
 		}
 
-		if( this.local_preferences.background_image_id )
+		if( this.preferences.background_image_id )
 		{
-			let path = this.getImagePath(this.local_preferences.background_image_id);
+			let path = this.getImagePath(this.preferences.background_image_id);
 
-			if( this.local_preferences.background_image_id )
+			if( this.preferences.background_image_id )
 			{
-				if( this.local_preferences.background_image_size == 'cover' )
+				if( this.preferences.background_image_size == 'cover' )
 				{
 					body.style.setProperty('--background-image', 'url('+path+') no-repeat fixed center/cover transparent');
 				}
@@ -548,7 +549,7 @@ export class RestService
 					body.style.setProperty('--background-image','url('+path+') repeat fixed');
 				}
 			}
-			else if( this.local_preferences.background_image_size == 'cover' )
+			else if( this.preferences.background_image_size == 'cover' )
 			{
 				body.style.setProperty('--menu-background-image','url(/assets/default_background.webp) no-repeat fixed center/cover transparent');
 			}
@@ -562,15 +563,15 @@ export class RestService
 			body.style.setProperty('--menu-background-image','url(/assets/default_background.webp) repeat fixed');
 		}
 
-		if( this.local_preferences.menu_background_type == 'COLOR' && this.local_preferences.menu_background_color)
+		if( this.preferences.menu_background_type == 'COLOR' && this.preferences.menu_background_color)
 		{
-			let hex = this.local_preferences.menu_background_color.substring(1,8);
+			let hex = this.preferences.menu_background_color.substring(1,8);
 			var bigint = parseInt(hex, 16);
 			var r = (bigint >> 16) & 255;
 			var g = (bigint >> 8) & 255;
 			var b = bigint & 255;
 
-			let percent = (this.local_preferences.menu_color_opacity ?? 1 )/100;
+			let percent = (this.preferences.menu_color_opacity ?? 1 )/100;
 
 			body.style.setProperty('--menu-background-image','none');
 			body.style.setProperty('--menu-background-color','rgba('+r+','+g+','+b+','+percent+')')
@@ -579,18 +580,18 @@ export class RestService
 		{
 			body.style.setProperty('--menu-background-color','transparent');
 
-			if( this.local_preferences.menu_background_image_id )
+			if( this.preferences.menu_background_image_id )
 			{
-				if( this.local_preferences.menu_background_image_size == 'cover' )
+				if( this.preferences.menu_background_image_size == 'cover' )
 				{
-					body.style.setProperty('--menu-background-image', 'url('+this.getImagePath( this.local_preferences.menu_background_image_id )+') no-repeat fixed center/cover transparent');
+					body.style.setProperty('--menu-background-image', 'url('+this.getImagePath( this.preferences.menu_background_image_id )+') no-repeat fixed center/cover transparent');
 				}
 				else
 				{
-					body.style.setProperty('--menu-background-image','url('+this.getImagePath( this.local_preferences.menu_background_image_id )+') repeat fixed');
+					body.style.setProperty('--menu-background-image','url('+this.getImagePath( this.preferences.menu_background_image_id )+') repeat fixed');
 				}
 			}
-			else if( this.local_preferences.menu_background_image_size == 'cover' )
+			else if( this.preferences.menu_background_image_size == 'cover' )
 			{
 				body.style.setProperty('--menu-background-image','url(/assets/default_menu_background.jpg) no-repeat fixed center/cover transparent');
 			}
@@ -600,15 +601,15 @@ export class RestService
 			}
 		}
 
-		if( this.local_preferences.submenu_background_color )
+		if( this.preferences.submenu_background_color )
 		{
-			let hex = this.local_preferences.submenu_background_color.substring(1,8);
+			let hex = this.preferences.submenu_background_color.substring(1,8);
 			var bigint = parseInt(hex, 16);
 			var r = (bigint >> 16) & 255;
 			var g = (bigint >> 8) & 255;
 			var b = bigint & 255;
 
-			let percent = (this.local_preferences.submenu_color_opacity ?? 1 )/100;
+			let percent = (this.preferences.submenu_color_opacity ?? 1 )/100;
 
 			body.style.setProperty('--submenu-background-color','rgba('+r+','+g+','+b+','+percent+')')
 		}
@@ -618,22 +619,22 @@ export class RestService
 			body.style.setProperty('--submenu-background-color','#eb5a4e');
 		}
 
-		if( this.local_preferences.card_background_image_id )
+		if( this.preferences.card_background_image_id )
 		{
 			body.style.setProperty('--card-background-color','transparent');
 		}
-		else if( this.local_preferences.card_background_color )
+		else if( this.preferences.card_background_color )
 		{
-			let hex = this.local_preferences.card_background_color.substring(1,8);
+			let hex = this.preferences.card_background_color.substring(1,8);
 
 			var bigint = parseInt(hex, 16);
 			var r = (bigint >> 16) & 255;
 			var g = (bigint >> 8) & 255;
 			var b = bigint & 255;
 
-			let percent = (this.local_preferences.card_background_opacity ?? 1) /100;
+			let percent = (this.preferences.card_background_opacity ?? 1) /100;
 			body.style.setProperty('--card-background-color','rgba('+r+','+g+','+b+','+percent+')');
-			body.style.setProperty('--card-background-color-plain',this.local_preferences.card_background_color);
+			body.style.setProperty('--card-background-color-plain',this.preferences.card_background_color);
 			body.style.setProperty('--card-background-image', 'none');
 		}
 		else
@@ -643,7 +644,7 @@ export class RestService
 			body.style.setProperty('--card-background-image', 'none');
 		}
 
-		if( this.local_preferences.card_border_color == 'transparent' )
+		if( this.preferences.card_border_color == 'transparent' )
 		{
 			body.style.setProperty('--card-border-style', 'none');
 			body.style.setProperty('--card-border-width', '0');
@@ -652,7 +653,7 @@ export class RestService
 		{
 			body.style.setProperty('--card-border-style', 'solid');
 			body.style.setProperty('--card-border-width', '1px');
-			body.style.setProperty('--card-border-color', this.local_preferences.card_border_color);
+			body.style.setProperty('--card-border-color', this.preferences.card_border_color);
 		}
 	}
 
@@ -681,18 +682,18 @@ export class RestService
 			if( response.data.length )
 			{
 
-				this.local_preferences = response.data[0];
+				this.preferences = response.data[0];
 				this.applyTheme();
 				//console.log('Preferencias en getPreferencesInfo');
-				localStorage.setItem('preferences', JSON.stringify( this.local_preferences ) );
+				localStorage.setItem('preferences', JSON.stringify( this.preferences ) );
 			}
 			else
 			{
-				this.local_preferences = this.getPreferencesFromSession();
-				this.local_preferences.name = '';
+				this.preferences = this.getPreferencesFromSession();
+				this.preferences.name = '';
 				//this.preferences.menu_background_color = '#FFFFFF';
 			}
-			return Promise.resolve( this.local_preferences );
+			return Promise.resolve( this.preferences );
 		})
 	}
 
@@ -806,9 +807,22 @@ export class RestService
 		params = params.set('report_name',report_name);
 		return this.http.get<any>(`${this.domain_configuration.domain}/${this.url_base}/reportes.php`, { params, headers: this.getSessionHeaders(), withCredentials: true });
 	}
+
+	syncData(event: Event)
+	{
+		event.preventDefault();
+	}
+
+	forceSyncOfflineItems():Promise<any>
+	{
+		let url_base = `${this.domain_configuration.domain}/${this.url_base}`;
+
+		let data = {
+			type: 'sync-items',
+			base_url: url_base,
+			credentials:localStorage.getItem('session_token'),
+		};
+		return OfflineUtils.updateDb(data as ServerInfo);
+	}
 }
 
-interface Sesion
-{
-
-}

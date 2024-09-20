@@ -1,4 +1,4 @@
-<div class="d-flex main_background" style="min-height: 100vh; overflow: hidden;">
+<!--div class="d-flex main_background" style="min-height: 100vh; overflow: hidden;">
 	<div class="menu_container sidebar-container flex-grow-0 flex-shrink-0 d-print-none" style="min-height: 100dvh; width: 200px;" [ngClass]="{'d-block': rest.show_menu}">
 		<div class="text-center mt-3">
 			<h2>Menú.</h2>
@@ -17,12 +17,6 @@
 					Articulos de producción
 				</a>
 			</li>
-			<!-- <li>
-				<a class="nav-link" [routerLink]="['list-proccess']">
-					<svg class="bi me-2" width="16" height="16"><use xlink:href="#speedometer2"/></svg>
-					Procedimientos
-				</a>
-			</li> -->
 			<li *ngIf="rest.user_permission.add_requisition || rest.user_permission.global_requisition">
 				<a class="nav-link" routerLink="list-requisition" routerLinkActive="active">
 					<i class="svg-icon">
@@ -121,7 +115,8 @@
 			<router-outlet></router-outlet>
 		</main>
 	</div>
-</div>
+</div-->
+<router-outlet></router-outlet>
 <div class="d-print-none"><app-toast-error></app-toast-error></div>
 <app-modal [(show)]="confirmation.show_confirmation">
 	<div class="p-3">

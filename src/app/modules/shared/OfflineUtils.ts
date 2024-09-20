@@ -2,8 +2,21 @@ import {DatabaseStore} from "./Finger/DatabaseStore";
 import {ObjectStore} from "./Finger/ObjectStore";
 import {Options} from "./Finger/OptionsUtils";
 import {StoreDictionary} from "./Finger/SchemeBuilder";
-import { ItemInfo } from "./Models";
+import { ItemInfo, OrderInfo, SearchTerm } from "./Models";
+import { OFFLINE_DB_SCHEMA } from "./OfflineDBSchema";
 import { Category, Category_Tree, Currency_Rate, Price_Type, Store, Table } from "./RestModels";
+
+interface IndexTerm
+{
+	term: SearchTerm;
+	index: number;
+}
+
+export interface ServerInfo
+{
+	base_url:string;
+	credentials:string;
+}
 
 export class OfflineUtils
 {
@@ -26,11 +39,11 @@ export class OfflineUtils
 		//options.index = 'id'; //Lanza un error por que es el indice por defecto
 
 		return db
-		.getAll<Record<string,Date>>('dates',options )
-		.then((response:Record<string,Date>[])=>
-		{
-			return response.length > 0 ? response[0].date : null;
-		});
+			.getAll<Record<string,Date>>('dates',options )
+			.then((response:Record<string,Date>[])=>
+			{
+				return response.length > 0 ? response[0]['date'] : null;
+			});
 	}
 
 	static syncOrderItemInfoList(
@@ -75,32 +88,32 @@ export class OfflineUtils
 			console.time('SyncData');
 
 			let remove_promises:Promise<any>[] = [
-				obj_stores.item_info.clear(),
-				obj_stores.category.clear(),
-				obj_stores.store.clear(),
-				obj_stores.price_type.clear(),
-				obj_stores.category_tree.clear(),
-				obj_stores.table.clear(),
-				obj_stores.currency_rate.clear(),
+				obj_stores['item_info'].clear(),
+				obj_stores['category'].clear(),
+				obj_stores['store'].clear(),
+				obj_stores['price_type'].clear(),
+				obj_stores['category_tree'].clear(),
+				obj_stores['table'].clear(),
+				obj_stores['currency_rate'].clear(),
 			];
 
 			terms_to_remove.map((opt:Options<SearchTerm>)=>
 			{
-				remove_promises.push( obj_stores.item_terms.removeAll(opt) );
+				remove_promises.push( obj_stores['item_terms'].removeAll(opt) );
 			})
 
 
 			let promises:Promise<any>[] = [
 				Promise.all( remove_promises ).then(()=>{
-					return obj_stores.item_terms.addAll(terms,false);
+					return obj_stores['item_terms'].addAll(terms,false);
 				}),
-				obj_stores.item_info.updateAll( item_info_list ),
-				obj_stores.category.updateAll( category_list ),
-				obj_stores.store.updateAll( stores ),
-				obj_stores.price_type.updateAll( price_type ),
-				obj_stores.category_tree.updateAll( category_tree ),
-				obj_stores.table.updateAll( table ),
-				obj_stores.currency_rate.updateAll( currency_rate)
+				obj_stores['item_info'].updateAll( item_info_list ),
+				obj_stores['category'].updateAll( category_list ),
+				obj_stores['store'].updateAll( stores ),
+				obj_stores['price_type'].updateAll( price_type ),
+				obj_stores['category_tree'].updateAll( category_tree ),
+				obj_stores['table'].updateAll( table ),
+				obj_stores['currency_rate'].updateAll( currency_rate)
 			];
 
 			return Promise.all( promises ).then(()=>{
@@ -168,17 +181,17 @@ export class OfflineUtils
 	{
 		return db.transaction(['item_info','item_terms'],'readonly',(stores,_txt)=>
 		{
-			return OfflineUtils.getTermsIndex( stores.item_terms, name )
+			return OfflineUtils.getTermsIndex( stores['item_terms'], name )
 			.then((terms:SearchTerm[])=>
 			{
 				let ids = terms.map( i => i.item_id );
 				ids.sort();
 
-				return stores.item_info.getAllByKeyIndex( ids )
+				return stores['item_info'].getAllByKeyIndex( ids )
 				.then((item_info_list:ItemInfo[])=>
 				{
 					//console.log('items found',item_info_list.length, ids );
-					let indexes:Record<number,Record<string,SearchTerm|number>> = {};
+					let indexes:Record<number,IndexTerm> = {};
 
 					terms.forEach((term:SearchTerm,index:number) =>{
 						indexes[ term.item_id ] ={ index: index, term }
@@ -194,8 +207,8 @@ export class OfflineUtils
 					term_items.sort(( a,b ) =>
 					{
 
-						let aa = a.item as ItemInfo;
-						let bb = b.item as ItemInfo;
+						let aa = a['item'] as ItemInfo;
+						let bb = b['item'] as ItemInfo;
 
 						if( indexes[ aa.item.id ].index == indexes[ bb.item.id ].index )
 							return 0;
@@ -203,7 +216,7 @@ export class OfflineUtils
 						return indexes[ aa.item.id ].index > indexes[ bb.item.id ].index ? 1 : -1;
 					});
 
-					let result = term_items.map( i => i.item ).filter((i,index)=>index<50);
+					let result = term_items.map( i => i['item'] ).filter((i,index)=>index<50);
 
 					return result;
 				});
@@ -218,9 +231,9 @@ export class OfflineUtils
 		let terms = toSearch.split(/\s/g);
 		let ts = terms[0];
 
-		return db.transaction(['item_info','item_terms'],'readonly',(stores,txt)=>
+		return db.transaction(['item_info','item_terms'],'readonly',(stores,_txt)=>
 		{
-			return OfflineUtils.getTermsIndex( stores.item_terms, ts, 0 )
+			return OfflineUtils.getTermsIndex( stores['item_terms'], ts, 0 )
 			.then((terms:SearchTerm[])=>
 			{
 				if( terms.length == 0 )
@@ -252,13 +265,14 @@ export class OfflineUtils
 					return str.includes(toSearch);
 				};
 
-				return stores.item_info.getAllByKeyIndexAndTest( ids, opt, filter_function )
+				return stores['item_info'].getAllByKeyIndexAndTest( ids, opt, filter_function )
 				.catch((error)=>{
 					console.log('Error cayo en getAllByKeyIndexAndTest',error);
 					throw error;
 				});
 			})
-			.catch((error)=>{
+			.catch((error)=>
+			{
 				console.log('Error en getAllByKeyIndexAndTest',error);
 				throw error;
 			})
@@ -296,7 +310,7 @@ export class OfflineUtils
 
 				return str.includes(toSearch);
 			};
-			return stores.item_info.getAll(opt, filter_function );
+			return stores['item_info'].getAll(opt, filter_function );
 		});
 	}
 
@@ -384,12 +398,12 @@ export class OfflineUtils
 				let item_option = new Options();
 				item_option.index = 'item.category_id';
 				item_option.comparations.set('=',category_id);
-				items_promise = stores.item_info.getAll( item_option ) as Promise<ItemInfo[]>;
+				items_promise = stores['item_info'].getAll( item_option ) as Promise<ItemInfo[]>;
 
 				//getAll<T>( store_name:string, options:Options<T> = new Options() ):Promise<T[]>
 				return Promise.all([
-					stores.category_tree.getAll(),
-					stores.category.getAll(),
+					stores['category_tree'].getAll(),
+					stores['category'].getAll(),
 					items_promise
 				]).then((results)=>
 				{
@@ -433,9 +447,9 @@ export class OfflineUtils
 			let filter = (ii:ItemInfo)=>!ii.item.category_id;
 
 			return Promise.all([
-				stores.category_tree.getAll(),
-				stores.category.getAll(),
-				stores.item_info.getAll(options,filter)
+				stores['category_tree'].getAll(),
+				stores['category'].getAll(),
+				stores['item_info'].getAll(options,filter)
 			])
 			.then((results)=>
 			{
@@ -468,7 +482,7 @@ export class OfflineUtils
 		return db.transaction(['category','category_tree','item_info'],'readonly',callback);
 	}
 
-	static removeOrderInfo(db:DatabaseStore, order_info ):Promise<any>
+	static removeOrderInfo(db:DatabaseStore, order_info:OrderInfo ):Promise<any>
 	{
 		if( order_info.id )
 		{
@@ -513,7 +527,7 @@ export class OfflineUtils
 		});
 	}
 
-	static updateDb(data:Record<string,string>):Promise<any>
+	static updateDb(data:ServerInfo):Promise<any>
 	{
 		let db	= DatabaseStore.builder
 		(

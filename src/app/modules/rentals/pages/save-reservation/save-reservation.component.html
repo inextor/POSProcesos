@@ -107,15 +107,18 @@
 						<label>Notas</label>
 						<textarea class="form-control" name="${{i}}-note" rows="1" [(ngModel)]="rii.reservation_item.note"></textarea>
 					</div>
-					<div class="col-12 col-md-1">
+					<div class="col-12 col-md-1 text-end">
 						<label>&nbsp;</label>
 						<button type="button" class="btn btn-danger mt-3 justify-content-center" (click)="removeItem(i)">
 							<svg xmlns="http://www.w3.org/2000/svg" width="1.2em" height="1.2em" viewBox="0 0 14 14"><path fill="currentColor" fill-rule="evenodd" d="M1.707.293A1 1 0 0 0 .293 1.707L5.586 7L.293 12.293a1 1 0 1 0 1.414 1.414L7 8.414l5.293 5.293a1 1 0 0 0 1.414-1.414L8.414 7l5.293-5.293A1 1 0 0 0 12.293.293L7 5.586z" clip-rule="evenodd"/></svg>
 						</button>
 					</div>
+
+					<div class="col-12 w-100 text-end">
+						<button type="submit" class="btn btn-primary mt-3">Guardar</button>
+					</div>
 				</div>
 			</div>
 		</ng-container>
-		<button type="submit" class="btn btn-primary mt-3">Guardar</button>
 	</form>
 </div>

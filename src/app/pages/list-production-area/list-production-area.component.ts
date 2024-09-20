@@ -5,13 +5,15 @@ import { Production_Area } from '../../modules/shared/RestModels';
 import { RouterModule } from '@angular/router';
 import { mergeMap } from 'rxjs';
 import { BaseComponent } from '../../modules/shared/base/base.component';
+import { PageStructureComponent } from "../../modules/shared/page-structure/page-structure.component";
 
-@Component({
+@Component
+({
 	selector: 'app-list-production-area',
 	standalone: true,
-	imports: [CommonModule,RouterModule],
 	templateUrl: './list-production-area.component.html',
-	styleUrl: './list-production-area.component.css'
+	styleUrl: './list-production-area.component.css',
+	imports: [CommonModule, RouterModule, PageStructureComponent]
 })
 export class ListProductionAreaComponent extends BaseComponent implements OnInit
 {
@@ -19,7 +21,7 @@ export class ListProductionAreaComponent extends BaseComponent implements OnInit
 	production_area_list:Production_Area[] = [];
 
 	ngOnInit()
-	{	
+	{
 		this.is_loading = true;
 		this.subs.sink = this.route.paramMap.pipe
 		(

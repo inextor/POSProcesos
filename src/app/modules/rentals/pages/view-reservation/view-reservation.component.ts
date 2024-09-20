@@ -50,7 +50,6 @@ export class ViewReservationComponent extends BaseComponent
 	rest_reservation_item: RestSimple<Reservation_Item> = this.rest.initRest('reservation_item');
 	rest_delivery_assignment = this.rest.initRestSimple<Delivery_Assignment>('delivery_assignment');
 	rest_return_assignment = this.rest.initRestSimple<Return_Assignment>('return_assignment');
-
 	show_assign_return: boolean = false;
 
 	ngOnInit(): void

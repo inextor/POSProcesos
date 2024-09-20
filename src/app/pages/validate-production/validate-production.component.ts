@@ -10,6 +10,7 @@ import { FormsModule } from '@angular/forms';
 import { Utils } from '../../modules/shared/Utils';
 import { ModalComponent } from '../../components/modal/modal.component';
 import { GetEmpty } from '../../modules/shared/GetEmpty';
+import { PageStructureComponent } from "../../modules/shared/page-structure/page-structure.component";
 
 interface CProductionInfo extends ProductionInfo
 {
@@ -31,11 +32,11 @@ interface CProduction
 }
 
 @Component({
-	selector: 'app-validate-production',
-	standalone: true,
-	imports: [CommonModule,ShortDatePipe,FormsModule,ModalComponent],
-	templateUrl: './validate-production.component.html',
-	styleUrl: './validate-production.component.css'
+    selector: 'app-validate-production',
+    standalone: true,
+    templateUrl: './validate-production.component.html',
+    styleUrl: './validate-production.component.css',
+    imports: [CommonModule, ShortDatePipe, FormsModule, ModalComponent, PageStructureComponent]
 })
 
 export class ValidateProductionComponent extends BaseComponent
@@ -105,7 +106,7 @@ export class ValidateProductionComponent extends BaseComponent
 
 				return forkJoin({
 					production_area: this.rest_production_area.search(search_production_area),
-					production_info: this.rest_production_info.search(this.search_production)	
+					production_info: this.rest_production_info.search(this.search_production)
 				})
 			}),
 		)
@@ -128,7 +129,7 @@ export class ValidateProductionComponent extends BaseComponent
 			{
 				continue;
 			}
-			
+
 			let pl = production_info_list.find(i => i.item_id == r.item.id );
 
 			//meter unicamente las produccion que no han sido validadas
@@ -147,14 +148,14 @@ export class ValidateProductionComponent extends BaseComponent
 				};
 				production_info_list.push( pl );
 			}
-		
+
 			pl.production_list.push({...r, qty: r.production.qty, merma_qty: r.production.merma_qty });
-			
+
 			pl.merma += r.production.merma_qty;
 			//el total deberia de ser unicamente de las producciones que han sido validadas
 			pl.total += r.production.qty + r.production.merma_qty;
 			pl.validated += r.production.qty;
-			
+
 		}
 		return production_info_list;
 	}
@@ -173,22 +174,22 @@ export class ValidateProductionComponent extends BaseComponent
 			return;
 		}
 		const sort_by = this.search_by_code ? 'code' : 'name';
-		const sortFunction =  (a:CProduction,b:CProduction) => 
+		const sortFunction =  (a:CProduction,b:CProduction) =>
 		{
 			const a_lower = a.item[sort_by]?.toLowerCase() || '';
-		    const b_lower = b.item[sort_by]?.toLowerCase() || '';
+		   const b_lower = b.item[sort_by]?.toLowerCase() || '';
 			const a_category_name = `${a.category?.name.toLowerCase() + ' ' || '' }` + a_lower;
-		    const b_category_name = `${b.category?.name?.toLowerCase() + ' ' || ''}` + b_lower;
-		    const a_index = a_category_name.indexOf(str.toLowerCase());
-		    const b_index = b_category_name.indexOf(str.toLowerCase());
+		   const b_category_name = `${b.category?.name?.toLowerCase() + ' ' || ''}` + b_lower;
+		   const a_index = a_category_name.indexOf(str.toLowerCase());
+		   const b_index = b_category_name.indexOf(str.toLowerCase());
 
-		    if (a_index === -1 && b_index === -1) {
-		      return a_category_name.localeCompare(b_category_name);
-		    }
+		   if (a_index === -1 && b_index === -1) {
+			 return a_category_name.localeCompare(b_category_name);
+		   }
 
-		    return a_index === -1 ? 1 : b_index === -1 ? -1 : a_index - b_index;
+		   return a_index === -1 ? 1 : b_index === -1 ? -1 : a_index - b_index;
 		};
-		
+
 		this.production_info_list.sort(sortFunction);
 	}
 
@@ -223,7 +224,7 @@ export class ValidateProductionComponent extends BaseComponent
 		if(pi.validated == null || pi.merma == null)
 		{
 			return this.showError('no puede ser null');
-		}	
+		}
 		//this is not ok, should be just one call, need to find a better way to manage producion validation
 		this.subs.sink = this.confirmation.showConfirmAlert(pi,'Validar?' ,'¿Estás seguro de validar la producción?')
 		.subscribe((response)=>
@@ -232,7 +233,7 @@ export class ValidateProductionComponent extends BaseComponent
 			{
 				//se filtran las producciones que no han sido validadas
 				let production_info_list = pi.production_list.filter(p => !p.production.verified_by_user_id)
-	
+
 				//ya que en el front se totaliza lo validado y la merma
 				//ahora tendremos que "repartir" entre cada una de las producciones la cantidad y merma
 				//osea, lo de los campos pl.validated y pl.merma
@@ -284,6 +285,6 @@ export class ValidateProductionComponent extends BaseComponent
 				})
 			}
 		})
-		
+
 	}
 }

@@ -13,7 +13,7 @@ import { RouterLink } from '@angular/router';
   styleUrl: './header.component.css'
 })
 export class HeaderComponent extends BaseComponent {
-  	push_notification_list:Push_Notification[] = [];
+	push_notification_list:Push_Notification[] = [];
 	unread_notifications:number = 0;
 	show_dropdown:boolean = false;
 	rest_push_notification:RestSimple<Push_Notification> = this.rest.initRest('push_notification');

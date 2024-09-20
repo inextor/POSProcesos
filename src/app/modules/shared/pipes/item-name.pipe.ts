@@ -16,7 +16,7 @@ export class ItemNamePipe implements PipeTransform {
 		if( !item_info.category)
 			return item_info.item.name;
 
-		if( this.rest.local_preferences.display_categories_on_items )
+		if( this.rest.preferences.display_categories_on_items )
 		{
 			return `${item_info.category.name} - ${item_info.item.name}`;
 		}

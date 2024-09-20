@@ -4,6 +4,12 @@ interface CSerial extends Serial
 {
 	store_name?:string;
 }
+export interface SearchTerm
+{
+	term: string;
+	position: number;
+	item_id: number;
+}
 export interface SerialInfo
 {
 	serial:CSerial;

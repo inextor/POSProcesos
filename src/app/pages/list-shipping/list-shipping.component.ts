@@ -9,6 +9,7 @@ import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { Utils } from '../../modules/shared/Utils';
 import { LoadingComponent } from '../../components/loading/loading.component';
+import { PageStructureComponent } from "../../modules/shared/page-structure/page-structure.component";
 
 
 interface CRequisitionByStore
@@ -21,11 +22,11 @@ interface CRequisitionByStore
 }
 
 @Component({
-	selector: 'app-list-shipping',
-	standalone: true,
-	imports: [CommonModule,RouterModule,FormsModule, BaseComponent, LoadingComponent],
-	templateUrl: './list-shipping.component.html',
-	styleUrl: './list-shipping.component.css'
+    selector: 'app-list-shipping',
+    standalone: true,
+    templateUrl: './list-shipping.component.html',
+    styleUrl: './list-shipping.component.css',
+    imports: [CommonModule, RouterModule, FormsModule, BaseComponent, LoadingComponent, PageStructureComponent]
 })
 
 export class ListShippingComponent extends BaseComponent
@@ -91,10 +92,10 @@ export class ListShippingComponent extends BaseComponent
 					this.production_search.le.created = end;
 				}
 
-				let search_obj = 
+				let search_obj =
 				{
 					production_area_id: this.production_search.eq.production_area_id,
-					start_timestamp: this.production_search.ge.created, 
+					start_timestamp: this.production_search.ge.created,
 					end_timestamp: this.production_search.le.created
 				}
 
@@ -109,7 +110,7 @@ export class ListShippingComponent extends BaseComponent
 
 			next: (response)=> {
 				this.crequisition_by_store_list = response.report as CRequisitionByStore[];
-				
+
 				this.total_required = this.crequisition_by_store_list.reduce((p,c)=>p+c.required,0);
 				this.total_shipped = this.crequisition_by_store_list.reduce((p,c)=>p+c.shipped,0);
 				this.total_pending = this.crequisition_by_store_list.reduce((p,c)=>p+c.pending,0);
