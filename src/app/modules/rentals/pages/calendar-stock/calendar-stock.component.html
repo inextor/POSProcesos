@@ -38,7 +38,7 @@
 				<div *ngFor="let cell of row;let col_index = index">
 					<div class="ratio ratio-1x1 border-bottom border-end" [ngClass]="{'border-start':col_index==0,'border-top':row_index==0}"  [ngStyle]="{'--percentage':cell.bg_percent}">
 						<div *ngIf="cell" class="bg-percent w-100 text-center" [ngClass]="{'today': cell.is_today}" (click)="showStockForDay(cell)">
-							{{cell?.day}}
+							{{cell}}
 						</div>
 					</div>
 				</div>

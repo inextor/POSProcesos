@@ -42,11 +42,11 @@ interface ReserveItemByDate
 
 @Component
 ({
-    selector: 'app-calendar-stock',
-    standalone: true,
-    templateUrl: './calendar-stock.component.html',
-    styleUrl: './calendar-stock.component.css',
-    imports: [CommonModule, ModalComponent, ItemNamePipe, FormsModule, LoadingComponent]
+		selector: 'app-calendar-stock',
+		standalone: true,
+		templateUrl: './calendar-stock.component.html',
+		styleUrl: './calendar-stock.component.css',
+		imports: [CommonModule, ModalComponent, ItemNamePipe, FormsModule, LoadingComponent]
 })
 
 export class CalendarStockComponent extends BaseComponent implements OnInit
@@ -61,8 +61,8 @@ export class CalendarStockComponent extends BaseComponent implements OnInit
 	show_stock_modal: boolean = false;
 	start_string:string = '';
 	stock_items:ItemInfo[] = [];
-    stock_item_id:number | '' = '';
-    start_date: Date = new Date();
+	stock_item_id:number | '' = '';
+	start_date: Date = new Date();
 
 	ngOnInit()
 	{
