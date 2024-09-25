@@ -5,13 +5,14 @@ import { RestService } from '../../services/rest.service';
 import { BuildInfo } from '../../BuildInfo';
 import { Form } from '../../RestModels';
 import { BaseComponent } from '../../base/base.component';
+import { OldMenuComponent } from "./old-menu/old-menu.component";
 
 @Component({
-	selector: 'app-menu',
-	standalone: true,
-	imports: [CommonModule, RouterOutlet, RouterModule],
-	templateUrl: './menu.component.html',
-	styleUrl: './menu.component.css'
+    selector: 'app-menu',
+    standalone: true,
+    templateUrl: './menu.component.html',
+    styleUrl: './menu.component.css',
+    imports: [CommonModule, RouterOutlet, RouterModule, OldMenuComponent]
 })
 export class MenuComponent extends BaseComponent
 {
@@ -27,7 +28,7 @@ export class MenuComponent extends BaseComponent
     show_menu_production: number | boolean  = false;
     show_menu_reservations: number | boolean = false;
     show_menu_settings: number | boolean = false;
-	show_old_menu: number | boolean = true;
+	show_old_menu: number | boolean = false;
 	show_old_production_menu: number | boolean = false;
     rest_form = this.rest.initRestSimple<Form>('form');
 
@@ -55,7 +56,8 @@ export class MenuComponent extends BaseComponent
 		this.show_menu_accountant = false;
 		this.show_menu_production = false;
 		this.show_menu_reservations = false;
-		this.show_menu_settings = false;
+		this.show_menu_settings = this.rest.user_permission.add_user
+			|| this.rest.user_permission.add_commandas;
 
 		this.subs.sink = this.rest_form.search({limit:9999})
 		.subscribe({
