@@ -33,6 +33,7 @@ export class MenuComponent extends BaseComponent
     rest_form = this.rest.initRestSimple<Form>('form');
 
 	forms_list:Form[] = [];
+    show_menu_reports: number | boolean = false;
 
 	//Permisos por añadir
 	// add_clients
@@ -56,8 +57,11 @@ export class MenuComponent extends BaseComponent
 		this.show_menu_accountant = false;
 		this.show_menu_production = false;
 		this.show_menu_reservations = false;
+		this.show_menu_reports = this.rest.user_permission.reports;
+
 		this.show_menu_settings = this.rest.user_permission.add_user
 			|| this.rest.user_permission.add_commandas;
+
 
 		this.subs.sink = this.rest_form.search({limit:9999})
 		.subscribe({
