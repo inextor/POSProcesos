@@ -22,8 +22,7 @@
 						"tsConfig": "tsconfig.app.json",
 						"assets":
 						[
-							"src/assets/bootstrap/css/bootstrap.min.css",
-							"src/assets/css/hamburger.min.css",
+							"src/assets/*",
 							"src/assets/bootstrap/js/bootstrap.bundle.min.js",
 							"src/favicon.ico",
 							"src/manifest.webmanifest"
