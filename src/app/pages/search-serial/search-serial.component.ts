@@ -6,13 +6,14 @@ import { Serial } from '../../modules/shared/RestModels';
 import { SerialInfo } from '../../modules/shared/Models';
 import { FormsModule } from '@angular/forms';
 import { LoadingComponent } from '../../components/loading/loading.component';
+import { PageStructureComponent } from "../../modules/shared/page-structure/page-structure.component";
 
 @Component({
-	selector: 'app-search-serial',
-	standalone: true,
-	imports: [CommonModule,FormsModule,LoadingComponent ],
-	templateUrl: './search-serial.component.html',
-	styleUrl: './search-serial.component.css'
+    selector: 'app-search-serial',
+    standalone: true,
+    templateUrl: './search-serial.component.html',
+    styleUrl: './search-serial.component.css',
+    imports: [CommonModule, FormsModule, LoadingComponent, PageStructureComponent]
 })
 export class SearchSerialComponent extends BaseComponent
 {

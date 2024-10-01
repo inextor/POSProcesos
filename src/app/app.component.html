@@ -116,7 +116,9 @@
 		</main>
 	</div>
 </div-->
-<router-outlet></router-outlet>
+<app-page-structure>
+	<router-outlet></router-outlet>
+</app-page-structure>
 <div class="d-print-none"><app-toast-error></app-toast-error></div>
 <app-modal [(show)]="confirmation.show_confirmation">
 	<div class="p-3">
