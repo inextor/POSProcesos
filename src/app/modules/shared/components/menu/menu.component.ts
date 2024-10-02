@@ -7,6 +7,8 @@ import { Form } from '../../RestModels';
 import { BaseComponent } from '../../base/base.component';
 import { OldMenuComponent } from "./old-menu/old-menu.component";
 
+type Falseable = boolean | number | null;
+
 @Component({
     selector: 'app-menu',
     standalone: true,
@@ -18,66 +20,78 @@ export class MenuComponent extends BaseComponent
 {
 
 	build_info = BuildInfo;
-    show_users_menu: number | boolean = false;
-    show_menu_users: number | boolean = false;
-    show_menu_stock: number | boolean = false;
-    show_menu_shippings: number | boolean = false;
-    show_menu_catalogs: number | boolean = false;
-    show_menu_prices: number | boolean = false;
-    show_menu_accountant: number | boolean = false;
+    show_users_menu: Falseable = false;
+    show_menu_users: Falseable = false;
+    show_menu_stock: Falseable = false;
+    show_menu_shippings: Falseable = false;
+    show_menu_catalogs: Falseable = false;
+    show_menu_prices: Falseable = false;
+    show_menu_accountant: Falseable = false;
     show_menu_production: number | boolean  = false;
-    show_menu_reservations: number | boolean = false;
-    show_menu_settings: number | boolean = false;
-	show_old_menu: number | boolean = false;
-	show_old_production_menu: number | boolean = false;
+    show_menu_reservations: Falseable = false;
+    show_menu_settings: Falseable = false;
+	show_old_menu: Falseable = false;
+	show_old_production_menu: Falseable = false;
     rest_form = this.rest.initRestSimple<Form>('form');
+	is_initialized:boolean = false;
 
 	forms_list:Form[] = [];
-    show_menu_reports: number | boolean = false;
-
-	//Permisos por añadir
+    show_menu_reports: Falseable = false;
+	show_menu_rentals: Falseable = false; //Permisos por añadir
 	// add_clients
 	//
 
 	ngOnInit()
 	{
-		this.show_menu_users = this.rest.user_permission.add_user || this.rest.user_permission.add_providers||
-			this.rest.user_permission.pos;
 
-		this.show_menu_stock = this.rest.user_permission.add_stock
-			|| this.rest.user_permission.global_add_stock
-			|| this.rest.user_permission.stocktake;
-
-		this.show_menu_catalogs = this.rest.user_permission.add_items;
-
-
-		this.show_menu_shippings = this.rest.user_permission.send_shipping || this.rest.user_permission.global_send_shipping;
-		this.show_menu_prices = this.rest.user_permission.store_prices || this.rest.user_permission.add_items;
-
-		this.show_menu_accountant = false;
-		this.show_menu_production = false;
-		this.show_menu_reservations = false;
-		this.show_menu_reports = this.rest.user_permission.reports;
-
-		this.show_menu_settings = this.rest.user_permission.add_user
-			|| this.rest.user_permission.add_commandas;
-
-
-		this.subs.sink = this.rest_form.search({limit:9999})
-		.subscribe({
-			next:(response)=>
+		this.subs.sink = this.getParamsAndQueriesObservable()
+		.subscribe((params:any)=>
+		{
+			if( this.rest.user?.id && !this.is_initialized )
 			{
-				this.forms_list = response.data;
-			},
-			error:(error)=>
+				this.show_menu_users = this.rest.user_permission.add_user || this.rest.user_permission.add_providers||
+					this.rest.user_permission.pos;
+
+				this.show_menu_stock = this.rest.user_permission.add_stock
+					|| this.rest.user_permission.global_add_stock
+					|| this.rest.user_permission.stocktake;
+
+				this.show_menu_catalogs = this.rest.user_permission.add_items;
+
+				this.show_menu_shippings = this.rest.user_permission.send_shipping || this.rest.user_permission.global_send_shipping;
+				this.show_menu_prices = this.rest.user_permission.store_prices || this.rest.user_permission.add_items;
+
+				this.show_menu_accountant = false;
+				this.show_menu_production = false;
+				this.show_menu_reservations = false;
+				this.show_menu_reports = this.rest.user_permission.reports;
+
+				this.show_menu_settings = this.rest.user_permission.add_user
+					|| this.rest.user_permission.add_commandas;
+
+
+				this.show_menu_rentals = this.rest.user_permission.pos;
+
+				this.subs.sink = this.rest_form.search({limit:9999})
+				.subscribe
+				({
+					next:(response)=>
+					{
+						this.forms_list = response.data;
+					},
+					error:(error)=>
+					{
+						this.rest.showError(error);
+					}
+				});
+				this.is_initialized = true;
+			}
+			else
 			{
-				this.rest.showError(error);
+				console.log('Menu: Sin inicializar');
 			}
 		});
 	}
-
-
-
 
 	syncData(evt:Event)
 	{

@@ -22,37 +22,44 @@ import { SaveWorklogRulesComponent } from './pages/save-worklog-rules/save-workl
 import { SaveUserExtraFieldsComponent } from './pages/save-user-extra-fields/save-user-extra-fields.component';
 import { DashboardComponent } from './pages/dashboard/dashboard.component';
 import { SearchSerialComponent } from './pages/search-serial/search-serial.component';
+import { HomeComponent } from './pages/home/home.component';
 
 export const routes: Routes = [
-	{path: '', component: LoginComponent, canActivate: [authGuard]},
-	{path: 'dashboard', component: DashboardComponent, canActivate: [authGuard]},
-	{path: 'add-production-area', component: SaveProductionAreaComponent, canActivate: [authGuard]},
-	{path: 'edit-production-area/:id', component: SaveProductionAreaComponent, canActivate: [authGuard]},
-	{path: 'list-production-area', component: ListProductionAreaComponent, canActivate: [authGuard]},
-	{path: 'view-production-area/:id', component: ViewProductionAreaComponent, canActivate: [authGuard]},
-	{path: 'add-process/:production_area_id', component: SaveProcessComponent, canActivate: [authGuard]},
-	{path: 'edit-process/:id', component: SaveProcessComponent, canActivate: [authGuard]},
-	{path: 'list-requisition', component: ListRequisitionComponent, canActivate: [authGuard]},
-	{path: 'users-checking-clock', component: UsersCheckingClockComponent, canActivate: [authGuard]},
-	{path: 'save-user-extra-fields/:user_id', component: SaveUserExtraFieldsComponent, canActivate: [authGuard]},
-	{path: 'users-attendance', component: ListUserAttendanceComponent, canActivate: [authGuard]},
-	{path: 'validate-production', component: ValidateProductionComponent, canActivate: [authGuard]},
-	{path: 'list-task', component: ListTaskComponent, canActivate: [authGuard]},
-	{path: 'list-shipping', component: ListShippingComponent, canActivate: [authGuard]},
-	{path: 'add-shipping', component: SaveShippingComponent, canActivate: [authGuard]},
-	{path: 'add-shipping/:store_id', component: SaveShippingComponent, canActivate: [authGuard]},
-	{path: 'edit-shipping/:id', component: SaveShippingComponent, canActivate: [authGuard]},
 	{path: 'login', component: LoginComponent},
-	{path: 'close-shift', component: CloseShiftComponent},
-	{path: 'save-production-payment', component: SaveProductionPaymentComponent, canActivate: [authGuard]},
-	{path: 'save-payroll-concept', component: SavePayrollConceptComponent, canActivate: [authGuard]},
-	{path: 'create-payroll', component: SavePayrollComponent, canActivate: [authGuard]},
-	{path: 'edit-payroll/:id', component: SavePayrollComponent, canActivate: [authGuard]},
-	{path: 'list-payroll', component: ListPayrollComponent, canActivate: [authGuard]},
-	{path: 'save-worklog-rules', component: SaveWorklogRulesComponent, canActivate: [authGuard]},
-	{path: 'search-serial', component: SearchSerialComponent, canActivate: [authGuard]},
-	{path: 'rentals', loadChildren: () => import('./modules/rentals/rentals.module').then(m => m.RentalsModule)}
-];
+	{
+		path: '', component: HomeComponent,
+		children:
+		[
+			{ path:'', component: DashboardComponent},
+			{path: 'dashboard', component: DashboardComponent, canActivate: [authGuard]},
+			{path: 'add-production-area', component: SaveProductionAreaComponent, canActivate: [authGuard]},
+			{path: 'edit-production-area/:id', component: SaveProductionAreaComponent, canActivate: [authGuard]},
+			{path: 'list-production-area', component: ListProductionAreaComponent, canActivate: [authGuard]},
+			{path: 'view-production-area/:id', component: ViewProductionAreaComponent, canActivate: [authGuard]},
+			{path: 'add-process/:production_area_id', component: SaveProcessComponent, canActivate: [authGuard]},
+			{path: 'edit-process/:id', component: SaveProcessComponent, canActivate: [authGuard]},
+			{path: 'list-requisition', component: ListRequisitionComponent, canActivate: [authGuard]},
+			{path: 'users-checking-clock', component: UsersCheckingClockComponent, canActivate: [authGuard]},
+			{path: 'save-user-extra-fields/:user_id', component: SaveUserExtraFieldsComponent, canActivate: [authGuard]},
+			{path: 'users-attendance', component: ListUserAttendanceComponent, canActivate: [authGuard]},
+			{path: 'validate-production', component: ValidateProductionComponent, canActivate: [authGuard]},
+			{path: 'list-task', component: ListTaskComponent, canActivate: [authGuard]},
+			{path: 'list-shipping', component: ListShippingComponent, canActivate: [authGuard]},
+			{path: 'add-shipping', component: SaveShippingComponent, canActivate: [authGuard]},
+			{path: 'add-shipping/:store_id', component: SaveShippingComponent, canActivate: [authGuard]},
+			{path: 'edit-shipping/:id', component: SaveShippingComponent, canActivate: [authGuard]},
+			{path: 'close-shift', component: CloseShiftComponent},
+			{path: 'save-production-payment', component: SaveProductionPaymentComponent, canActivate: [authGuard]},
+			{path: 'save-payroll-concept', component: SavePayrollConceptComponent, canActivate: [authGuard]},
+			{path: 'create-payroll', component: SavePayrollComponent, canActivate: [authGuard]},
+			{path: 'edit-payroll/:id', component: SavePayrollComponent, canActivate: [authGuard]},
+			{path: 'list-payroll', component: ListPayrollComponent, canActivate: [authGuard]},
+			{path: 'save-worklog-rules', component: SaveWorklogRulesComponent, canActivate: [authGuard]},
+			{path: 'search-serial', component: SearchSerialComponent, canActivate: [authGuard]},
+			{path: 'rentals', loadChildren: () => import('./modules/rentals/rentals.module').then(m => m.RentalsModule)}
+		]
+	},
+	];
 
 
 @NgModule({

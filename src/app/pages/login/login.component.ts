@@ -47,7 +47,12 @@ export class LoginComponent extends BaseComponent implements OnInit {
 			()=>{
 				console.log('Preferences not loaded');
 			}
-		);
+		)
+		.catch((error)=>
+		{
+			console.log(error );
+			this.showError(error);
+		});
 
 		this.subs.sink = this.getQueryParamObservable().subscribe
 		({
@@ -83,6 +88,7 @@ export class LoginComponent extends BaseComponent implements OnInit {
 	doLogin_starter(username: string, password: string): Observable<LoginResponse>
 	{
 		let rest_login: Rest<CLogin,LoginResponse> = this.rest.initRest("login");
+
 		return rest_login.create({username, password}).pipe(map(response => {
 				if (response && response.session.id) {
 					this.rest.user = response.user;
@@ -101,7 +107,9 @@ export class LoginComponent extends BaseComponent implements OnInit {
 	doLogin()
 	{
 		this.is_loading = true;
-		this.subs.sink = this.doLogin_starter(this.username, this.password).subscribe({
+		this.subs.sink = this.doLogin_starter(this.username, this.password)
+		.subscribe
+		({
 			next: (response) =>
 			{
 				this.is_loading = false;
