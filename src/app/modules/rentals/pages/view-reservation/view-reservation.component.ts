@@ -4,11 +4,11 @@ import { BaseComponent } from '../../../shared/base/base.component';
 import { Rest, RestSimple } from '../../../shared/services/Rest';
 import { ExtendedReservation, ItemInfo, ReservationInfo, ReservationItemInfo, ReservationItemSerialInfo } from '../../../shared/Models';
 import { ParamMap, RouterModule } from '@angular/router';
-import { mergeMap } from 'rxjs';
+import { forkJoin, mergeMap, of } from 'rxjs';
 import { GetEmpty } from '../../../shared/GetEmpty';
 import { ShortDatePipe } from "../../../shared/pipes/short-date.pipe";
 import { FormsModule } from '@angular/forms';
-import { Delivery_Assignment, Price, Reservation_Item, Reservation_Item_Serial, Return_Assignment, User } from '../../../shared/RestModels';
+import { Delivery_Assignment, Price, Reservation_Item, Reservation_Item_Serial, Return_Assignment, Serial, User } from '../../../shared/RestModels';
 import { ModalComponent } from '../../../../components/modal/modal.component';
 import { LoadingComponent } from '../../../../components/loading/loading.component';
 import { SearchItemsComponent } from "../../../../components/search-items/search-items.component";
@@ -51,6 +51,7 @@ export class ViewReservationComponent extends BaseComponent
 	rest_delivery_assignment = this.rest.initRestSimple<Delivery_Assignment>('delivery_assignment');
 	rest_return_assignment = this.rest.initRestSimple<Return_Assignment>('return_assignment');
 	show_assign_return: boolean = false;
+    rest_serial = this.rest.initRestSimple<Serial>('serial');
 
 	ngOnInit(): void
 	{
@@ -70,7 +71,7 @@ export class ViewReservationComponent extends BaseComponent
 
 				let reservation_id = parseInt( param_map.get('id') as string ) as number;
 
-				this.subs.sink = this.rest_reservation_item_serial.search({ eq: { reservation_id } }).subscribe
+				this.subs.sink = this.rest_reservation_item_serial.search({ eq: { reservation_id }, limit: 999999 }).subscribe
 				({
 					next: (response) =>
 					{
@@ -145,13 +146,36 @@ export class ViewReservationComponent extends BaseComponent
 			updated_by_user_id: 0
 		};
 
-		this.subs.sink = this.rest_reservation_item_serial.create( ris ).subscribe
+		this.subs.sink = this.rest_reservation_item_serial.create( ris )
+		.pipe
+		(
+			mergeMap((response)=>
+			{
+				return forkJoin
+				({
+					reservation_item_serial: of( response ),
+					serial: this.rest_serial.get( response.serial_id )
+				});
+			})
+		)
+		.subscribe
 		({
 			next:(response)=>
 			{
 				this.showSuccess('Inventario asignado');
 				this.search_serials = '';
-				this.reservation_item_serial_array.push( response );
+				this.reservation_item_serial_array.push( response.reservation_item_serial );
+
+
+				let  ris:ReservationItemSerialInfo = {
+					reservation_item_serial: response.reservation_item_serial,
+					serial: response.serial
+				};
+
+				let rii = this.reservation_info.items
+					.find( rii => rii.reservation_item.id == response.reservation_item_serial.reservation_item_id );
+
+					rii?.serials.push( response as ReservationItemSerialInfo );
 			},
 			error:(error)=>
 			{
@@ -513,5 +537,4 @@ export class ViewReservationComponent extends BaseComponent
 	{
 		this.show_assign_return = true;
 	}
-
 }
