@@ -30,7 +30,7 @@ export const routes: Routes = [
 		path: '', component: HomeComponent,
 		children:
 		[
-			{ path:'', component: DashboardComponent},
+			{path:'', component: DashboardComponent},
 			{path: 'dashboard', component: DashboardComponent, canActivate: [authGuard]},
 			{path: 'add-production-area', component: SaveProductionAreaComponent, canActivate: [authGuard]},
 			{path: 'edit-production-area/:id', component: SaveProductionAreaComponent, canActivate: [authGuard]},
@@ -59,7 +59,7 @@ export const routes: Routes = [
 			{path: 'rentals', loadChildren: () => import('./modules/rentals/rentals.module').then(m => m.RentalsModule)}
 		]
 	},
-	];
+];
 
 
 @NgModule({
