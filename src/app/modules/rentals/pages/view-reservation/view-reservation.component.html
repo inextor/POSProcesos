@@ -50,14 +50,14 @@
 		<div class="row">
 			<div class="col-12 col-md-6 form-group">
 				<label>Fecha de entrega</label>
-				<input type="datetime-local" name="scheduled_delivery" [ngModel]="scheduled_delivery" (ngModelChange)="updateScheduleDelivery($event)" class="form-control">
+				<input type="datetime-local" name="scheduled_delivery" [ngModel]="scheduled_delivery" (ngModelChange)="updateScheduleDelivery($event)" class="form-control" [disabled]="disable_all">
 			</div>
 			<div class="col-12 col-md-6 form-group">
 				<label>Fecha de recolección</label>
-				<input type="datetime-local" name="scheduled_return" [ngModel]="scheduled_return" (ngModelChange)="updateScheduleReturn($event)" class="form-control">
+				<input type="datetime-local" name="scheduled_return" [ngModel]="scheduled_return" (ngModelChange)="updateScheduleReturn($event)" class="form-control" [disabled]="disable_all">
 			</div>
 		</div>
-		<div class="row mt-3">
+		<div class="row mt-3" *ngIf="!disable_all">
 			<div class="col-9 d-none d-md-block">&nbsp;</div>
 			<div class="col-12 col-md-3 text-end">
 				<button class="btn btn-primary mx-1" (click)="showAssignDelivery(reservation_info)">Asignar Entrega</button>
@@ -95,100 +95,104 @@
 						<div *ngFor="let dd of ri.return_assignments">{{dd.user.name}}</div>
 					</td>
 					<td class="text-end">
-						<a class="btn btn-primary btn-sm mx-1" (click)="showAssignSerials(ri)">Asignar Inventario</a>
-						<button class="btn btn-primary btn-sm mx-1" (click)="markReservationItemAsDelivered(ri)">Marcar Entregado</button>
-						<button class="btn btn-primary btn-sm mx-1" (click)="markReservationItemAsReturned(ri)">Marcar Regresado</button>
+						<ng-container *ngIf="!disable_all">
+							<a class="btn btn-primary btn-sm mx-1" (click)="showAssignSerials(ri)">Asignar Inventario</a>
+							<button class="btn btn-primary btn-sm mx-1" (click)="markReservationItemAsDelivered(ri)">Marcar Entregado</button>
+							<button class="btn btn-primary btn-sm mx-1" (click)="markReservationItemAsReturned(ri)">Marcar Regresado</button>
+						</ng-container>
 					</td>
 				</tr>
 			</ng-container>
 		</table>
 	</div>
-	<h2 class="my-3">Agregar Extras</h2>
-	<div class="card p-3">
-		<div class="row">
-			<div class="col-12">
-				<label>Agregar artículo</label>
-				<app-search-items (item_selected)="onItemSelected($event)" [reset_on_search]="true" [for_reservation]="false"></app-search-items>
+	<ng-container *ngIf="!disable_all">
+		<h2 class="my-3">Agregar Extras</h2>
+		<div class="card p-3">
+			<div class="row">
+				<div class="col-12">
+					<label>Agregar artículo</label>
+					<app-search-items (item_selected)="onItemSelected($event)" [reset_on_search]="true" [for_reservation]="false"></app-search-items>
+				</div>
 			</div>
-		</div>
-		<form (submit)="addNewItem($event)"  ngNativeValidate>
-			<div class="col-6 col-md-6" *ngIf="new_item_info">
+			<form (submit)="addNewItem($event)"  ngNativeValidate>
 				<div class="col-6 col-md-6" *ngIf="new_item_info">
-					{{new_item_info | itemName}}
-				</div>
-				<div class="col-6 col-md-3">
-					<label>Cantidad</label>
-					<input type="number" class="form-control" name="new_item_qty" [(ngModel)]="new_item_qty" required>
-				</div>
-				<div>
+					<div class="col-6 col-md-6" *ngIf="new_item_info">
+						{{new_item_info | itemName}}
+					</div>
 					<div class="col-6 col-md-3">
-						<button type="submit" class="btn btn-primary">Agregar</button>
+						<label>Cantidad</label>
+						<input type="number" class="form-control" name="new_item_qty" [(ngModel)]="new_item_qty" required>
+					</div>
+					<div>
+						<div class="col-6 col-md-3">
+							<button type="submit" class="btn btn-primary">Agregar</button>
+						</div>
 					</div>
 				</div>
-			</div>
-		</form>
-	</div>
-	<h2 class="my-3">Extras</h2>
-	<div class="card py-3 px-1 px-md-3">
-		<table class="w-100">
-			<ng-container *ngFor="let ri of reservation_info.items">
-				<tr *ngIf="ri.reservation_item.period_type=='ONCE_ONLY' && ri.reservation_item.last_period_id == null">
-					<td>{{ri?.item?.name}}</td>
-					<td class="text-end">{{ri.reservation_item.qty}}</td>
-					<td class="text-end">{{ri.reservation_item.scheduled_delivery | shortDate: 'local'}}</td>
-					<td class="text-end"></td>
-				</tr>
-			</ng-container>
-		</table>
-	</div>
-	<div class="col-6 col-md-8">
-		<div class="row align-items-center">
-			<div class="col-6 col-md-8">
-				<h2 class="my-3">Inventario Asignado</h2>
-			</div>
-			<div class="col-3 col-md-2 text-end">
-				<button type="button" class="btn btn-primary btn-sm mx-1" (click)="markAllAsDelivered()">
-					Entregar todo
-				</button>
-			</div>
-			<div class="col-3 col-md-2 text-end">
-				<button type="button" class="btn btn-primary btn-sm" (click)="markAllAsReturned()">
-					Regresar Todo
-				</button>
-			</div>
+			</form>
 		</div>
-		<div class="card p-3">
+		<h2 class="my-3">Extras</h2>
+		<div class="card py-3 px-1 px-md-3">
 			<table class="w-100">
-				<thead>
-					<tr>
-						<th>Articulo</th>
-						<th>Serie</th>
-						<th>Entrega</th>
-						<th>Recolección</th>
+				<ng-container *ngFor="let ri of reservation_info.items">
+					<tr *ngIf="ri.reservation_item.period_type=='ONCE_ONLY' && ri.reservation_item.last_period_id == null">
+						<td>{{ri?.item?.name}}</td>
+						<td class="text-end">{{ri.reservation_item.qty}}</td>
+						<td class="text-end">{{ri.reservation_item.scheduled_delivery | shortDate: 'local'}}</td>
+						<td class="text-end"></td>
 					</tr>
-				</thead>
-				<tbody>
-					<ng-container *ngFor="let rii of reservation_info.items">
-						<tr *ngFor="let ris of rii.serials">
-							<td>{{rii?.category?.name}} {{rii.item.name}}</td>
-							<td>{{ris.reservation_item_serial.serial}}</td>
-							<td>{{ris.reservation_item_serial.delivered_timestamp | shortDate}}</td>
-							<td>{{ris.reservation_item_serial.returned_timestamp | shortDate}}</td>
-							<td class="text-end">
-								<button type="button" class="btn btn-primary btn-sm" *ngIf="ris.reservation_item_serial.delivered_timestamp == null" (click)="markReservationItemSerialAsDelivered(ris)">
-									Recolectado
-								</button>
-
-								<button type="button" class="btn btn-primary btn-sm" *ngIf="ris.reservation_item_serial.returned_timestamp == null" (click)="markReservationItemSerialAsReturned(ris)">
-									Recolectado
-								</button>
-							</td>
-						</tr>
-					</ng-container>
-				</tbody>
+				</ng-container>
 			</table>
 		</div>
-	</div>
+		<div class="col-6 col-md-8">
+			<div class="row align-items-center">
+				<div class="col-6 col-md-8">
+					<h2 class="my-3">Inventario Asignado</h2>
+				</div>
+				<div class="col-3 col-md-2 text-end">
+					<button type="button" class="btn btn-primary btn-sm mx-1" (click)="markAllAsDelivered()">
+						Entregar todo
+					</button>
+				</div>
+				<div class="col-3 col-md-2 text-end">
+					<button type="button" class="btn btn-primary btn-sm" (click)="markAllAsReturned()">
+						Regresar Todo
+					</button>
+				</div>
+			</div>
+			<div class="card p-3">
+				<table class="w-100">
+					<thead>
+						<tr>
+							<th>Articulo</th>
+							<th>Serie</th>
+							<th>Entrega</th>
+							<th>Recolección</th>
+						</tr>
+					</thead>
+					<tbody>
+						<ng-container *ngFor="let rii of reservation_info.items">
+							<tr *ngFor="let ris of rii.serials">
+								<td>{{rii?.category?.name}} {{rii.item.name}}</td>
+								<td>{{ris.reservation_item_serial.serial}}</td>
+								<td>{{ris.reservation_item_serial.delivered_timestamp | shortDate}}</td>
+								<td>{{ris.reservation_item_serial.returned_timestamp | shortDate}}</td>
+								<td class="text-end">
+									<button type="button" class="btn btn-primary btn-sm" *ngIf="ris.reservation_item_serial.delivered_timestamp == null" (click)="markReservationItemSerialAsDelivered(ris)">
+										Recolectado
+									</button>
+
+									<button type="button" class="btn btn-primary btn-sm" *ngIf="ris.reservation_item_serial.returned_timestamp == null" (click)="markReservationItemSerialAsReturned(ris)">
+										Recolectado
+									</button>
+								</td>
+							</tr>
+						</ng-container>
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</ng-container>
 </div>
 <app-modal [(show)]="show_assign_serials">
 	<h2>Asignar Inventario</h2>

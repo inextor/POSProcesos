@@ -53,6 +53,8 @@ export class ViewReservationComponent extends BaseComponent
 	show_assign_return: boolean = false;
     rest_serial = this.rest.initRestSimple<Serial>('serial');
 
+	disable_all:boolean = false;
+
 	ngOnInit(): void
 	{
 		this.is_loading = true;
@@ -92,6 +94,7 @@ export class ViewReservationComponent extends BaseComponent
 			{
 				this.is_loading = false;
 				this.reservation_info = response;
+				this.disable_all = this.reservation_info.reservation.condition == 'CLOSED';
 			},
 			error: (error:any) =>
 			{
