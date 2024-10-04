@@ -1,3 +1,1 @@
-export const BuildInfo = {
-	timestamp:1720551719398
-}
+export const BuildInfo = {timestamp:1728083612000}
