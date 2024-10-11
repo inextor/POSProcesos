@@ -244,10 +244,7 @@ export class ViewReservationComponent extends BaseComponent
 		});
 	}
 
-	markAllAsDelivered()
-	{
 
-	}
 
 	showAssignSerials(rii: ReservationItemInfo)
 	{
@@ -510,6 +507,25 @@ export class ViewReservationComponent extends BaseComponent
 				this.showError(error);
 			}
 		});
+	}
+
+	markAllAsDelivered()
+	{
+		this.subs.sink = this.rest
+		.reservationUpdates('setAllReservationItemsSerialsAsDelivered', { reservation_id: this.reservation_info.reservation.id } )
+		.subscribe
+		({
+			next:(response)=>
+			{
+				this.showSuccess('Se marcaron todos los artículos como devueltos');
+				this.reloadReservationInfo();
+			},
+			error:(error)=>
+			{
+				this.showError(error);
+			}
+		});
+
 	}
 
 	markAllAsReturned()
