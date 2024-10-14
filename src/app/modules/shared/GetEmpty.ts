@@ -101,6 +101,7 @@ export class GetEmpty
 
 		return order_item_info;
 	}
+
 	static period(user:User): Period
 	{
 		let date = new Date();
@@ -119,17 +120,9 @@ export class GetEmpty
 			updated_by_user_id: user.id,
 		};
 	}
-	static getEmptyReservationInfo(): ReservationInfo
-	{
-		return {
-			reservation: GetEmpty.reservation(),
-			user: GetEmpty.user(),
-			client_user: null,
-			items: []
-		};
-	}
 
-	static category(): Category {
+	static category(): Category
+	{
 		return {
 			background: 'transparent',
 			code: '',
@@ -421,7 +414,8 @@ export class GetEmpty
 			reservation: GetEmpty.reservation(),
 			client_user: null,
 			user: null,
-			items: []
+			items: [],
+			address: null
 		};
 	}
 

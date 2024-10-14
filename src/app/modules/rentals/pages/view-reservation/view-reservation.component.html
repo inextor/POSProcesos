@@ -177,11 +177,11 @@
 							<td>{{ris.reservation_item_serial.returned_timestamp | shortDate}}</td>
 							<td class="text-end">
 								<button type="button" class="btn btn-primary btn-sm" *ngIf="ris.reservation_item_serial.delivered_timestamp == null" (click)="markReservationItemSerialAsDelivered(ris)">
-									Recolectado
+									Marcar como entregado
 								</button>
 
 								<button type="button" class="btn btn-primary btn-sm" *ngIf="ris.reservation_item_serial.returned_timestamp == null" (click)="markReservationItemSerialAsReturned(ris)">
-									Recolectado
+									Marcar como  recolectado
 								</button>
 							</td>
 						</tr>

@@ -4,7 +4,7 @@ import { BaseComponent } from '../../../shared/base/base.component';
 import { Rest, RestSimple } from '../../../shared/services/Rest';
 import { ExtendedReservation, ItemInfo, ReservationInfo, ReservationItemInfo, ReservationItemSerialInfo } from '../../../shared/Models';
 import { ParamMap, RouterModule } from '@angular/router';
-import { mergeMap } from 'rxjs';
+import { Observable, forkJoin, mergeMap } from 'rxjs';
 import { GetEmpty } from '../../../shared/GetEmpty';
 import { ShortDatePipe } from "../../../shared/pipes/short-date.pipe";
 import { FormsModule } from '@angular/forms';
@@ -31,7 +31,6 @@ interface CReservation_Item_Serial extends Reservation_Item_Serial
 })
 export class ViewReservationComponent extends BaseComponent
 {
-
 	rest_reservation_info:Rest<ExtendedReservation, ReservationInfo> = this.rest.initRest('reservation_info');
 	reservation_info: ReservationInfo = GetEmpty.getEmptyReservationInfo();
 	show_assign_delivery: boolean = false;
@@ -71,19 +70,11 @@ export class ViewReservationComponent extends BaseComponent
 
 				let reservation_id = parseInt( param_map.get('id') as string ) as number;
 
-				this.subs.sink = this.rest_reservation_item_serial.search({ eq: { reservation_id } }).subscribe
+				return forkJoin
 				({
-					next: (response) =>
-					{
-						this.reservation_item_serial_array = response.data;
-					},
-					error: (error: any) =>
-					{
-						console.error('Error al cargar informacion de seriales',error);
-					}
-				});
-
-				return this.rest_reservation_info.get( reservation_id );
+					reservation_info: this.rest_reservation_info.get( reservation_id ),
+					reservation_item_serial_array: this.rest_reservation_item_serial.search({ eq: { reservation_id, status: 'ACTIVE' } })
+				})
 			})
 		)
 		.subscribe
@@ -91,7 +82,9 @@ export class ViewReservationComponent extends BaseComponent
 			next: (response) =>
 			{
 				this.is_loading = false;
-				this.reservation_info = response;
+				this.reservation_item_serial_array.splice(0,this.reservation_item_serial_array.length);
+				this.reservation_item_serial_array.push(...response.reservation_item_serial_array.data );
+				this.reservation_info = response.reservation_info;
 			},
 			error: (error:any) =>
 			{
@@ -114,10 +107,12 @@ export class ViewReservationComponent extends BaseComponent
 			return ris.serial == serial;
 		}
 
+		console.log('Looking for the tazo dorado',this.reservation_item_serial_array);
 		let x = this.reservation_item_serial_array.find(serial_found_fun);
 
 		if( x )
 		{
+			console.error('Ya existe un Serial asignado a este Elemento',this.reservation_item_serial_array);
 			this.showError('Ya existe un Serial asignado a este Elemento');
 			console.log( x );
 			return;
@@ -150,9 +145,8 @@ export class ViewReservationComponent extends BaseComponent
 		({
 			next:(response)=>
 			{
-				this.showSuccess('Inventario asignado');
 				this.search_serials = '';
-				this.reservation_item_serial_array.push( response );
+				this.reloadReservationInfo();
 			},
 			error:(error)=>
 			{
@@ -335,6 +329,7 @@ export class ViewReservationComponent extends BaseComponent
 			{
 				console.log("Que pedo");
 				this.showSuccess('Asignación de entrega creada');
+				this.show_assign_delivery = false;
 				//this.router.navigate(['/rentals/list-reservation']);
 				//this.show_assign_delivery = false;
 				this.reloadReservationInfo();
@@ -390,19 +385,11 @@ export class ViewReservationComponent extends BaseComponent
 		let obj = { reservation_item_id: reservatio_item_info.reservation_item.id };
 
 		this.subs.sink = this.rest.reservationUpdates('setReservationItemAsDelivered', obj )
-		.pipe
-		(
-			mergeMap((response:any)=>
-			{
-				this.showSuccess('Se marcaron todos los artículos como entregados');
-				return this.rest_reservation_info.get( this.reservation_info.reservation.id );
-			})
-		)
 		.subscribe
 		({
 			next:(_response)=>
 			{
-				this.reservation_info = _response
+				this.reloadReservationInfo();
 			},
 			error:(error:any)=>
 			{
@@ -423,7 +410,6 @@ export class ViewReservationComponent extends BaseComponent
 			{
 				this.showSuccess('Se marcaron todos los artículos como devueltos');
 				this.reloadReservationInfo();
-
 			},
 			error:(error)=>
 			{
@@ -454,11 +440,20 @@ export class ViewReservationComponent extends BaseComponent
 
 	reloadReservationInfo()
 	{
-		this.subs.sink = this.rest_reservation_info.get( this.reservation_info.reservation.id ).subscribe
+		this.is_loading = true;
+
+		this.subs.sink = forkJoin
+		({
+			reservation_info: this.rest_reservation_info.get( this.reservation_info.reservation.id ),
+			reservation_item_serial_array: this.rest_reservation_item_serial.search({ eq: { reservation_id: this.reservation_info.reservation.id, status: 'ACTIVE' } })
+		})
+		.subscribe
 		({
 			next:(response)=>
 			{
-				this.reservation_info = response;
+				this.reservation_info = response.reservation_info;
+				this.reservation_item_serial_array.splice(0,this.reservation_item_serial_array.length);
+				this.reservation_item_serial_array.push(...response.reservation_item_serial_array.data );
 			},
 			error:(error)=>
 			{
@@ -473,12 +468,13 @@ export class ViewReservationComponent extends BaseComponent
 
 		this.subs.sink = this.rest
 		.reservationUpdates('setReservationItemSerialAsReturned',{ id })
+		//.pipe(mergeMap((response:any)=>	this.reloadReservationInfo()))
 		.subscribe
 		({
 			next:(response)=>
 			{
-				this.showSuccess('Se marco il artículo como entregado');
 				this.reloadReservationInfo();
+				this.showSuccess('Se marco el artículo como entregado');
 			},
 			error:(error)=>
 			{
@@ -491,11 +487,11 @@ export class ViewReservationComponent extends BaseComponent
 	{
 		this.subs.sink = this.rest
 		.reservationUpdates('setAllReservationItemsSerialsAsReturned', { reservation_id: this.reservation_info.reservation.id } )
+		//.pipe(mergeMap((response:any)=>	this.reloadReservationInfo()))
 		.subscribe
 		({
 			next:(response)=>
 			{
-				this.showSuccess('Se marcaron todos los artículos como devueltos');
 				this.reloadReservationInfo();
 			},
 			error:(error)=>

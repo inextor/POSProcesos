@@ -1,4 +1,4 @@
-import { Category, Delivery_Assignment, Item,  Item_Exception, Item_Option, Item_Option_Value, Offer, Order, Order_Item, Order_Item_Exception, Order_Item_Serial, Period, Price, Price_Type, Process, Production, Purchase, Requisition, Requisition_Item, Reservation, Reservation_Item, Reservation_Item_Serial, Return_Assignment, Serial, Serial_Image, Shipping, Shipping_Item, Stock_Record, Store, Task, User } from "./RestModels";
+import { Address, Category, Delivery_Assignment, Item,  Item_Exception, Item_Option, Item_Option_Value, Offer, Order, Order_Item, Order_Item_Exception, Order_Item_Serial, Period, Price, Price_Type, Process, Production, Purchase, Requisition, Requisition_Item, Reservation, Reservation_Item, Reservation_Item_Serial, Return_Assignment, Serial, Serial_Image, Shipping, Shipping_Item, Stock_Record, Store, Task, User } from "./RestModels";
 
 interface CSerial extends Serial
 {
@@ -222,4 +222,5 @@ export interface ReservationInfo
 	reservation:ExtendedReservation;
 	items:ReservationItemInfo[]
 	user:User | null;
+	address:Address | null;
 }
