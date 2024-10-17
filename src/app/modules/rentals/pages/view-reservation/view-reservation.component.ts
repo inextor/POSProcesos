@@ -33,7 +33,7 @@ export class ViewReservationComponent extends BaseComponent
 {
 
 	rest_reservation_info:Rest<ExtendedReservation, ReservationInfo> = this.rest.initRest('reservation_info');
-	reservation_info: ReservationInfo = GetEmpty.getEmptyReservationInfo();
+	reservation_info: ReservationInfo = GetEmpty.reservation_info();
 	show_assign_delivery: boolean = false;
 	scheduled_delivery:string = '';
 	scheduled_return: string = '';

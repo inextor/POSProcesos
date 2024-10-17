@@ -4,24 +4,24 @@ import { RestService } from "./services/rest.service";
 
 export class GetEmpty
 {
-    static price(): Price
+	static price(): Price
 	{
 		let p:Price = {
-            id: 0,
-            price: 1,
-            price_type_id: 1,
-            currency_id: 'MXN',
-            tax_included: 'YES',
-            created_by_user_id: 1,
-            updated_by_user_id: 1,
-            created: new Date(),
-            updated: new Date(),
-            item_id: 0,
-            percent: 0,
-            price_list_id: 0
-        }
+			id: 0,
+			price: 1,
+			price_type_id: 1,
+			currency_id: 'MXN',
+			tax_included: 'YES',
+			created_by_user_id: 1,
+			updated_by_user_id: 1,
+			created: new Date(),
+			updated: new Date(),
+			item_id: 0,
+			percent: 0,
+			price_list_id: 0
+		}
 		return p;
-    }
+	}
 
 	static order_item(item:Item): Order_Item
 	{
@@ -119,17 +119,9 @@ export class GetEmpty
 			updated_by_user_id: user.id,
 		};
 	}
-	static getEmptyReservationInfo(): ReservationInfo
-	{
-		return {
-			reservation: GetEmpty.reservation(),
-			user: GetEmpty.user(),
-			client_user: null,
-			items: []
-		};
-	}
 
-	static category(): Category {
+	static category(): Category
+	{
 		return {
 			background: 'transparent',
 			code: '',
@@ -421,6 +413,7 @@ export class GetEmpty
 			reservation: GetEmpty.reservation(),
 			client_user: null,
 			user: null,
+			address: null,
 			items: []
 		};
 	}
