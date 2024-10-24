@@ -51,9 +51,10 @@ export class ViewReservationComponent extends BaseComponent
 	rest_delivery_assignment = this.rest.initRestSimple<Delivery_Assignment>('delivery_assignment');
 	rest_return_assignment = this.rest.initRestSimple<Return_Assignment>('return_assignment');
 	show_assign_return: boolean = false;
-    rest_serial = this.rest.initRestSimple<Serial>('serial');
+	rest_serial = this.rest.initRestSimple<Serial>('serial');
 
 	disable_all:boolean = false;
+	map_route: any[] = [];
 
 	ngOnInit(): void
 	{
@@ -66,6 +67,8 @@ export class ViewReservationComponent extends BaseComponent
 			mergeMap((param_map:ParamMap) =>
 			{
 				this.is_loading = true;
+				this.map_route = [];
+
 				if( !param_map.has('id') )
 				{
 					throw new Error('No se encontró la reservación');
@@ -88,6 +91,17 @@ export class ViewReservationComponent extends BaseComponent
 				this.reservation_item_serial_array.splice(0,this.reservation_item_serial_array.length);
 				this.reservation_item_serial_array.push(...response.reservation_item_serial_array.data );
 				this.reservation_info = response.reservation_info;
+
+				if( response.reservation_info?.address?.lat )
+				{
+					let title = response.reservation_info.reservation.client_name;
+					this.map_route = [
+						'/view-map',
+						title,
+						response.reservation_info.address.lat,
+						response.reservation_info.address.lng
+					];
+				}
 			},
 			error: (error:any) =>
 			{

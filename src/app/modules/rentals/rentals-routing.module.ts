@@ -6,6 +6,7 @@ import { SaveReservationComponent } from './pages/save-reservation/save-reservat
 import { ViewReservationComponent } from './pages/view-reservation/view-reservation.component';
 import { SavePeriodComponent } from '../../pages/save-period/save-period.component';
 import { CalendarStockComponent } from './pages/calendar-stock/calendar-stock.component';
+import { ViewMapComponent } from './view-map/view-map.component';
 
 const routes: Routes =
 [
@@ -16,6 +17,7 @@ const routes: Routes =
 	{path: 'view-reservation/:id', component: ViewReservationComponent},
 	{path: 'add-period/:reservation_id', component: SavePeriodComponent},
 	{path: 'calendar-stock', component: CalendarStockComponent},
+	{path: 'view-map/:title/:lat/:lng', component: ViewMapComponent},
 ];
 
 @NgModule({
