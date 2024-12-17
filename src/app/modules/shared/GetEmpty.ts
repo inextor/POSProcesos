@@ -119,9 +119,17 @@ export class GetEmpty
 			updated_by_user_id: user.id,
 		};
 	}
-
-	static category(): Category
+	static getEmptyReservationInfo(): ReservationInfo
 	{
+		return {
+			reservation: GetEmpty.reservation(),
+			user: GetEmpty.user(),
+			client_user: null,
+			items: []
+		};
+	}
+
+	static category(): Category {
 		return {
 			background: 'transparent',
 			code: '',
