@@ -61,14 +61,13 @@ export class SaveProductionAreaComponent extends BaseComponent implements OnInit
 			});
 			return;
 		}
-		
-		this.production_area_rest
+
+		this.subs.sink = this.production_area_rest
 		.create( this.production_area )
 		.subscribe((production_area)=>
 		{
 			this.is_loading = false;
 			this.location.back();
 		})
-		
 	}
 }
