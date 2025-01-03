@@ -10,7 +10,8 @@ declare var BarcodeDetector: any;
 	templateUrl: './code-reader.component.html',
 	styleUrl: './code-reader.component.css'
 })
-export class CodeReaderComponent implements OnInit {
+export class CodeReaderComponent implements OnInit
+{
 	@Input() cam_debounce: number = 300;
 	@Input() cam_code_type: string | undefined;
 	@Output() onDetect: EventEmitter<any> = new EventEmitter();
@@ -29,10 +30,11 @@ export class CodeReaderComponent implements OnInit {
 			let formats = this.cam_code_type ? [this.cam_code_type] : undefined;
 			this.barcodeDetector = new BarcodeDetector({ formats: formats });
 			this.startCamera();
+			this.isScannerMode = true;
 		}
 		else
 		{
-				console.error('BarcodeDetector no está soportado en este navegador.');
+			this.isScannerMode = false;
 		}
 	}
 
@@ -45,53 +47,62 @@ export class CodeReaderComponent implements OnInit {
 	startCamera(): void
 	{
 		navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } })
-			.then((stream) =>
-			{
-				const video = document.querySelector('video') as HTMLVideoElement;
-				video.srcObject = stream;
-				video.play();
+		.then((stream) =>
+		{
+			const video = document.querySelector('video') as HTMLVideoElement;
+			video.srcObject = stream;
+			video.play();
 
-				video.addEventListener('play', () =>
-				{
-					this.scanBarcode(video);
-				});
-			})
-			.catch((err) =>
-			{
-				//this.showError('Error al acceder a la cámara');
-			});
+			video.addEventListener('play', ()=> this.scanBarcode(video));
+		})
+		.catch((err) =>
+		{
+			//this.showError('Error al acceder a la cámara');
+		});
 	}
 
-	stopCamera(): void {
+	stopCamera(): void
+	{
 		const video = document.querySelector('video') as HTMLVideoElement;
 		const stream = video.srcObject as MediaStream;
-		if (stream) {
+		if (stream)
+		{
 			stream.getTracks().forEach(track => track.stop());
 		}
 	}
 
-	scanBarcode(video: HTMLVideoElement): void {
-		const scanInterval = setInterval(() => {
-			if (video.readyState === video.HAVE_ENOUGH_DATA && this.isScannerMode) {
-				if (this.barcodeDetector) {
+	scanBarcode(video: HTMLVideoElement): void
+	{
+		const scanInterval = setInterval(() =>
+		{
+			console.log('camara iniciada');
+			if (video.readyState === video.HAVE_ENOUGH_DATA && this.isScannerMode)
+			{
+				if (this.barcodeDetector)
+				{
 					this.barcodeDetector.detect(video)
-						.then((barcodes: any) => {
-							const currentTime = Date.now();
-							if (barcodes.length > 0 && (currentTime - this.lastDetectionTime > this.cam_debounce)) {
-								this.onDetect.emit(barcodes);
-								this.lastDetectionTime = currentTime;
-							}
-						})
-						.catch((err: any) => {
+					.then((barcodes: any) =>
+					{
+						const currentTime = Date.now();
+						if (barcodes.length > 0 && (currentTime - this.lastDetectionTime > this.cam_debounce))
+						{
+							this.onDetect.emit(barcodes);
+							this.lastDetectionTime = currentTime;
+						}
+					})
+					.catch((err: any) =>
+					{
 							console.error('Error detectando códigos de barras:', err);
-						});
+					});
 				}
 			}
 		}, 100);
 	}
 
-	manualSubmit(): void {
-		if (this.manualCode) {
+	manualSubmit(): void
+	{
+		if (this.manualCode)
+		{
 			this.onDetect.emit([{ rawValue: this.manualCode }]);
 			this.manualCode = '';
 		}

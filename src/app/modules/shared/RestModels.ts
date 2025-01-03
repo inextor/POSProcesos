@@ -1092,7 +1092,7 @@ export interface Requisition{
 	id:number;
 	requested_to_store_id:number | null;
 	required_by_store_id:number
-	required_by_timestamp:string | null;
+	required_by_timestamp: string | null;
 	status:'PENDING'|'CANCELLED'|'NOT_APPROVED'|'SHIPPED'|'CLOSED'|'APPROVED';
 	updated:Date;
 	updated_by_user_id:number | null;

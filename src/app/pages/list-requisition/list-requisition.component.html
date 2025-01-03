@@ -1,233 +1,234 @@
-	<div class="container-fluid">
-		<div class="row my-3 align-items-center mx-0">
-			<div class="col p-0">
-				<h1 class="text-capitalize">Requisiciones</h1>
+<div class="container-fluid">
+	<div class="row my-3 align-items-center mx-0">
+		<div class="col p-0">
+			<h1 class="text-capitalize">Requisiciones</h1>
+		</div>
+		<div class="col-4 col-sm-3 card p-2 align-self-center text-end">
+			<span class="fs-6 text-center">Progreso:</span>
+			<span class="text-center fw-bold fs-3" [ngClass]="{'text-danger': total_pending < 100 ,'text-success': total_pending >= 100 }" >{{this.total_pending||0}}%</span>
+		</div>
+	</div>
+	<div class="card p-3">
+		<form (submit)="search(search_requisition)" class="row">
+			<div class="col-12 col-md-3">
+				<label>Sucursal</label>
+				<select name="store_id" class="form-control" [(ngModel)]="search_requisition.search_extra['required_by_store_id']">
+					<option [ngValue]="null">Todas</option>
+					<option *ngFor="let s of store_list" [value]="s.id">{{s.name | titlecase}}</option>
+				</select>
 			</div>
-			<div class="col-4 col-sm-3 card p-2 align-self-center text-end">
-				<span class="fs-6 text-center">Progreso:</span>
-				<span class="text-center fw-bold fs-3" [ngClass]="{'text-danger': total_pending < 100 ,'text-success': total_pending >= 100 }" >{{this.total_pending||0}}%</span>
+			<div class="col-12 col-md-3">
+				<label>Fecha Inicial</label>
+				<input type="datetime-local" class="form-control" name="fecha_inicial" [(ngModel)]="fecha_inicial" (ngModelChange)="onDateChange($event,search_requisition.search_extra,'start_timestamp')">
+			</div>
+			<div class="col-12 col-md-3">
+				<label>Fecha Final</label>
+				<input type="datetime-local" class="form-control" name="fecha_final" [(ngModel)]="fecha_final" (ngModelChange)="onDateChange($event,search_requisition.search_extra,'end_timestamp','',59)">
+			</div>
+			<div class="col-12 col-md-3">
+				<label>&nbsp;</label>
+				<button type="submit" class="btn btn-primary w-100">Buscar</button>
+				<!--button type="button" class="btn btn-primary w-100" (click)="sendNotification($event)">SN</button-->
+			</div>
+		</form>
+	</div>
+
+	<h4 class="my-3">Artículos requeridos</h4>
+	<div class="card p-3 mt-3">
+		<!-- <div class="table-responsive">
+			<table class="table table-sm table-nowrap mb-0">
+				<thead class="thead-light">
+					<tr>
+						<th>Artículo</th>
+						<th>Sucursal</th>
+						<th class="text-end">Requeridos</th>
+						<th class="text-end">Producidos</th>
+						<th class="text-end">Merma</th>
+						<th class="text-end">Pendientes</th>
+						<th class="text-end">Acciones</th>
+					</tr>
+				</thead>
+				<tbody>
+					<ng-container *ngIf="requsition_obj_list.length == 0">
+						<tr>
+							<td colspan="7" class="text-center">
+								<div class="alert alert-light m-3" role="alert">No se encontraron requisiciones</div>
+							</td>
+						</tr>
+					</ng-container>
+					<tr *ngFor="let cri of requsition_obj_list">
+						<td>{{cri.requisition.item_id}} - {{cri.requisition.category_name??''}} {{cri.requisition.item_name }}</td>
+						<td>{{cri.requisition.required_by_store?.name}}</td>
+						<td class="text-end">{{cri.requisition.sum_qty}}</td>
+						<td class="text-end">
+							<input type="number" class="form-control text-end" name="input_production_new" [(ngModel)]="cri.input_production.qty" [min]="0" required>
+						</td>
+						<td class="text-end">{{(cri?.production?.production_merma_qty || 0) | number}}</td>
+						<td class="text-end" [ngClass]="{'text-danger': cri.requisition.sum_qty > (cri?.production?.produced||0)}">{{cri.requisition.sum_qty - (cri?.production?.produced||0) | number}}</td>
+						<td class="text-end">
+							<button class="btn btn-primary" type="button" (click)="showProduction(cri)">Agregar Prod</button>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+		</div> -->
+		<div class="row">
+			<div class="col-12 col-md-6 my-1 my-md-0">
+				<input type="text" class="form-control" [placeholder]="search_by_code == true ? 'Escribe un Código' : 'Escribe un Nombre'" [(ngModel)]="search_str" (ngModelChange)="sortRequisitions($event)" >
+			</div>
+			<div class="col-12 col-md-3 my-1 my-md-0">
+				<div class="form-check form-switch">
+					<label class="form-check-label">Busqueda por código</label>
+					<input class="form-check-input" type="checkbox" [checked]="search_by_code" (click)="changeSearch()"  >
+				</div>
+			</div>
+			<div class="col-12 col-md-3 my-1 my-md-0">
+				<button type="button" class="btn btn-primary w-100" (click)="show_add_production = true">
+					Agregar producción
+				</button>
 			</div>
 		</div>
-		<div class="card p-3">
-			<form (submit)="search(search_requisition)" class="row">
-				<div class="col-12 col-md-3">
-					<label>Sucursal</label>
-					<select name="store_id" class="form-control" [(ngModel)]="search_requisition.search_extra['required_by_store_id']">
-						<option [ngValue]="null">Todas</option>
-						<option *ngFor="let s of store_list" [value]="s.id">{{s.name | titlecase}}</option>
-					</select>
+		<hr>
+		<div class="row d-none d-md-flex fw-bold border-bottom align-items-end">
+			<div class="col-2 px-2" style="cursor: pointer;" (click)="sort('item_name', search_requisition)">Artículo</div>
+			<div class="col-2 text-end pointer" style="cursor: pointer;" (click)="sort('sum_qty', search_requisition)">Req/Pendientes</div>
+			<div class="col-2 text-end">Agregar</div>
+			<div class="col-2 text-end">Merma</div>
+			<div class="col-2 text-end">Tipo de merma</div>
+			<div class="col-2 text-end">Acciones</div>
+		</div>
+		<div class="row border-bottom align-items-center" *ngFor="let cri of requsition_obj_list">
+			<div class="col-12 col-md-2 fw-bold">
+
+				{{cri.requisition?.category_name | titlecase }} - {{cri.item.name }}
+				<span style="color: gray;">
+					{{cri.item.code}}
+				</span>
+			</div>
+			<div class="d-md-none col-6">Req/Pedientes</div>
+			<div class="col-6 col-md-2 text-start text-md-end fw-bold">
+				{{ (cri.requisition ? cri.requisition.sum_qty : 0 ) + ' / '}}
+				<ng-template [ngIf]="cri.requisition">
+					<span [ngClass]="{'text-danger': cri.requisition.sum_qty > (cri?.production?.produced||0), 'text-success': cri.requisition.sum_qty <= (cri?.production?.produced || 0)}">
+						{{ (cri.requisition.sum_qty - (cri?.production?.produced||0)) >= 0 ? (cri.requisition.sum_qty - (cri?.production?.produced||0)) : 0 | number}}
+					</span>
+				</ng-template>
+				<ng-template [ngIf]="!cri.requisition && cri.production">
+					{{ cri.production.produced || 0}}
+				</ng-template>
+			</div>
+			<div class="d-md-none col-6">Agregar</div>
+			<div class="col-6 col-md-2 text-start text-md-end fw-bold">
+				<input type="number" class="form-control text-start text-md-end" name="input_production_new_qty" [(ngModel)]="cri.input_production.qty" [min]="0" (click)="selectText($event)" required>
+			</div>
+			<div class="d-md-none col-6">Merma</div>
+			<div class="col-6 col-md-2 text-start text-md-end fw-bold">
+				<input type="number" class="form-control text-start text-md-end" name="input_production_new_merma_qty" [(ngModel)]="cri.input_production.merma_qty" [min]="0" (click)="selectText($event)">
+			</div>
+			<div class="d-md-none col-6">Tipo de merma</div>
+			<div class="col-6 col-md-2 text-start text-md-end fw-bold">
+				<input type="text" name="input_production_merma_reason" [(ngModel)]="cri.input_production.merma_reason" class="form-control" [required]="cri.input_production.qty > 0" [disabled]="cri.input_production.merma_qty <= 0" list="mermalist">
+				<datalist id="mermalist">
+					<option value="Producción">
+					<option value="Calidad">
+					<option value="Quemado">
+					<option value="Mal hecho">
+				</datalist>
+			</div>
+			<div class="d-md-none col-6">Acciones</div>
+			<div class="col-6 col-md-2 text-start text-md-end">
+				<button class="btn btn-primary w-100" type="button" (click)="addProduction(cri)" [disabled]="is_loading">Agregar</button>
+			</div>
+		</div>
+	</div>
+	<!--div class="row my-3">
+		<div class="col-10">
+			<h2>Articulos de producción</h2>
+		</div>
+		<div class="col-2 text-end">
+			<a class="btn btn-primary">Asignar nuevo</a>
+		</div>
+	</div>
+	<div class="card p-3 mt-3">
+		<div class="table-responsive">
+			<table class="table table-sm table-nowrap mb-0">
+				<thead class="thead-light">
+					<tr>
+						<th>Nombre</th>
+						<th>Creacion</th>
+						<th class="text-end">Actualización</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr *ngFor="let citem of citem_list">
+						<td>
+							<a [routerLink]="['/view-production-area',production_area.id]">
+								{{citem.item.id}} - {{citem.item.name}}
+							</a>
+						</td>
+						<td>{{citem.item.created | date: 'MMM d, y' }}</td>
+						<td class="text-end">{{production_area.updated | date: 'MMM d, y,	h:mm a' }}</td>
+						<td class="text-end">
+							<a [routerLink]="['/edit-production-area',production_area.id]">Editar</a>
+						</td>
+					</tr>
+					<tr *ngIf="citem_list.length == 0 && !is_loading" colspan="4">
+						<div class="alert alert-light m-3" role="alert">No se encontraron elementos</div>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+	</div-->
+	<!-- <dialog id="modal-add-production">
+		<div *ngIf="selected_crequistion_item">
+			<h2>{{selected_crequistion_item.requisition.item_name}}</h2>
+			<form name="show_add_production" (submit)="addProduction()" ngNativeValidate>
+				<div class="row">
+					<div class="col-6">
+						<label>Cantidad Producida</label>
+						<input class="form-control" type="number" name="production_qty"	[min]="production.merma_qty==0?1:0" [(ngModel)]="production.qty" required>
+					</div>
+
+					<div class="col-6">
+						<label>Usuario</label>
+						<select name="production_user_id" class="form-control" [(ngModel)]="production.produced_by_user_id">
+							<option selected value="null">Seleccionar</option>
+							<option *ngFor="let user of user_list" [ngValue]="user.id" >{{user.name | uppercase}}</option>
+						</select>
+					</div>
+
+					<div class="col-6">
+						<label>Merma</label>
+						<input class="form-control" type="number" name="production_merma_qty" [min]="production.qty==0?1:0" [(ngModel)]="production.merma_qty"	required>
+					</div>
+
+					<div class="col-6" *ngIf="production.merma_qty > 0">
+						<label>Motivo de merma</label>
+						<input type="text" name="production_merma_reason" [(ngModel)]="production.merma_reason" class="form-control" [required]="production.merma_qty > 0" list="mermalist">
+
+						<datalist id="mermalist">
+							<option value="Producción">
+							<option value="Calidad">
+						</datalist>
+						<select name="production_merma_reason" class="form-control" [(ngModel)]="production.merma_reason">
+							<option value="">Seleccionar</option>
+							<option value="Producción">Producción</option>
+							<option value="Calidad">Calidad</option>
+						</select>
+					</div>
 				</div>
-				<div class="col-12 col-md-3">
-					<label>Fecha Inicial</label>
-					<input type="datetime-local" class="form-control" name="fecha_inicial" [(ngModel)]="fecha_inicial" (ngModelChange)="onDateChange($event,search_requisition.search_extra,'start_timestamp')">
-				</div>
-				<div class="col-12 col-md-3">
-					<label>Fecha Final</label>
-					<input type="datetime-local" class="form-control" name="fecha_final" [(ngModel)]="fecha_final" (ngModelChange)="onDateChange($event,search_requisition.search_extra,'end_timestamp','',59)">
-				</div>
-				<div class="col-12 col-md-3">
-					<label>&nbsp;</label>
-					<button type="submit" class="btn btn-primary w-100">Buscar</button>
+				<div class="row">
+					<div class="col-6 mt-3">
+						<button type="button" class="btn btn-secondary w-100" (click)="closeModal('modal-add-production')">Cerrar</button>
+					</div>
+					<div class="col-6 mt-3">
+						<button type="submit" class="btn btn-primary w-100">Agregar</button>
+					</div>
 				</div>
 			</form>
 		</div>
-
-		<h4 class="my-3">Artículos requeridos</h4>
-		<div class="card p-3 mt-3">
-			<!-- <div class="table-responsive">
-				<table class="table table-sm table-nowrap mb-0">
-					<thead class="thead-light">
-						<tr>
-							<th>Artículo</th>
-							<th>Sucursal</th>
-							<th class="text-end">Requeridos</th>
-							<th class="text-end">Producidos</th>
-							<th class="text-end">Merma</th>
-							<th class="text-end">Pendientes</th>
-							<th class="text-end">Acciones</th>
-						</tr>
-					</thead>
-					<tbody>
-						<ng-container *ngIf="requsition_obj_list.length == 0">
-							<tr>
-								<td colspan="7" class="text-center">
-									<div class="alert alert-light m-3" role="alert">No se encontraron requisiciones</div>
-								</td>
-							</tr>
-						</ng-container>
-						<tr *ngFor="let cri of requsition_obj_list">
-							<td>{{cri.requisition.item_id}} - {{cri.requisition.category_name??''}} {{cri.requisition.item_name }}</td>
-							<td>{{cri.requisition.required_by_store?.name}}</td>
-							<td class="text-end">{{cri.requisition.sum_qty}}</td>
-							<td class="text-end">
-								<input type="number" class="form-control text-end" name="input_production_new" [(ngModel)]="cri.input_production.qty" [min]="0" required>
-							</td>
-							<td class="text-end">{{(cri?.production?.production_merma_qty || 0) | number}}</td>
-							<td class="text-end" [ngClass]="{'text-danger': cri.requisition.sum_qty > (cri?.production?.produced||0)}">{{cri.requisition.sum_qty - (cri?.production?.produced||0) | number}}</td>
-							<td class="text-end">
-								<button class="btn btn-primary" type="button" (click)="showProduction(cri)">Agregar Prod</button>
-							</td>
-						</tr>
-					</tbody>
-				</table>
-			</div> -->
-			<div class="row">
-				<div class="col-12 col-md-6 my-1 my-md-0">
-					<input type="text" class="form-control" [placeholder]="search_by_code == true ? 'Escribe un Código' : 'Escribe un Nombre'" [(ngModel)]="search_str" (ngModelChange)="sortRequisitions($event)" >
-				</div>
-				<div class="col-12 col-md-3 my-1 my-md-0">
-					<div class="form-check form-switch">
-						<label class="form-check-label">Busqueda por código</label>
-						<input class="form-check-input" type="checkbox" [checked]="search_by_code" (click)="changeSearch()"  >
-					</div>
-				</div>
-				<div class="col-12 col-md-3 my-1 my-md-0">
-					<button type="button" class="btn btn-primary w-100" (click)="show_add_production = true">
-						Agregar producción
-					</button>
-				</div>
-			</div>
-			<hr>
-			<div class="row d-none d-md-flex fw-bold border-bottom align-items-end">
-				<div class="col-2 px-2" style="cursor: pointer;" (click)="sort('item_name', search_requisition)">Artículo</div>
-				<div class="col-2 text-end pointer" style="cursor: pointer;" (click)="sort('sum_qty', search_requisition)">Req/Pendientes</div>
-				<div class="col-2 text-end">Agregar</div>
-				<div class="col-2 text-end">Merma</div>
-				<div class="col-2 text-end">Tipo de merma</div>
-				<div class="col-2 text-end">Acciones</div>
-			</div>
-			<div class="row border-bottom align-items-center" *ngFor="let cri of requsition_obj_list">
-				<div class="col-12 col-md-2 fw-bold">
-
-					{{cri.requisition?.category_name | titlecase }} - {{cri.item.name }}
-					<span style="color: gray;">
-						{{cri.item.code}}
-					</span>
-				</div>
-				<div class="d-md-none col-6">Req/Pedientes</div>
-				<div class="col-6 col-md-2 text-start text-md-end fw-bold">
-					{{ (cri.requisition ? cri.requisition.sum_qty : 0 ) + ' / '}}
-					<ng-template [ngIf]="cri.requisition">
-						<span [ngClass]="{'text-danger': cri.requisition.sum_qty > (cri?.production?.produced||0), 'text-success': cri.requisition.sum_qty <= (cri?.production?.produced || 0)}">
-							{{ (cri.requisition.sum_qty - (cri?.production?.produced||0)) >= 0 ? (cri.requisition.sum_qty - (cri?.production?.produced||0)) : 0 | number}}
-						</span>
-					</ng-template>
-					<ng-template [ngIf]="!cri.requisition && cri.production">
-						{{ cri.production.produced || 0}}
-					</ng-template>
-				</div>
-				<div class="d-md-none col-6">Agregar</div>
-				<div class="col-6 col-md-2 text-start text-md-end fw-bold">
-					<input type="number" class="form-control text-start text-md-end" name="input_production_new_qty" [(ngModel)]="cri.input_production.qty" [min]="0" (click)="selectText($event)" required>
-				</div>
-				<div class="d-md-none col-6">Merma</div>
-				<div class="col-6 col-md-2 text-start text-md-end fw-bold">
-					<input type="number" class="form-control text-start text-md-end" name="input_production_new_merma_qty" [(ngModel)]="cri.input_production.merma_qty" [min]="0" (click)="selectText($event)">
-				</div>
-				<div class="d-md-none col-6">Tipo de merma</div>
-				<div class="col-6 col-md-2 text-start text-md-end fw-bold">
-					<input type="text" name="input_production_merma_reason" [(ngModel)]="cri.input_production.merma_reason" class="form-control" [required]="cri.input_production.qty > 0" [disabled]="cri.input_production.merma_qty <= 0" list="mermalist">
-					<datalist id="mermalist">
-						<option value="Producción">
-						<option value="Calidad">
-						<option value="Quemado">
-						<option value="Mal hecho">
-					</datalist>
-				</div>
-				<div class="d-md-none col-6">Acciones</div>
-				<div class="col-6 col-md-2 text-start text-md-end">
-					<button class="btn btn-primary w-100" type="button" (click)="addProduction(cri)" [disabled]="is_loading">Agregar</button>
-				</div>
-			</div>
-		</div>
-		<!--div class="row my-3">
-			<div class="col-10">
-				<h2>Articulos de producción</h2>
-			</div>
-			<div class="col-2 text-end">
-				<a class="btn btn-primary">Asignar nuevo</a>
-			</div>
-		</div>
-		<div class="card p-3 mt-3">
-			<div class="table-responsive">
-				<table class="table table-sm table-nowrap mb-0">
-					<thead class="thead-light">
-						<tr>
-							<th>Nombre</th>
-							<th>Creacion</th>
-							<th class="text-end">Actualización</th>
-						</tr>
-					</thead>
-					<tbody>
-						<tr *ngFor="let citem of citem_list">
-							<td>
-								<a [routerLink]="['/view-production-area',production_area.id]">
-									{{citem.item.id}} - {{citem.item.name}}
-								</a>
-							</td>
-							<td>{{citem.item.created | date: 'MMM d, y' }}</td>
-							<td class="text-end">{{production_area.updated | date: 'MMM d, y,	h:mm a' }}</td>
-							<td class="text-end">
-								<a [routerLink]="['/edit-production-area',production_area.id]">Editar</a>
-							</td>
-						</tr>
-						<tr *ngIf="citem_list.length == 0 && !is_loading" colspan="4">
-							<div class="alert alert-light m-3" role="alert">No se encontraron elementos</div>
-						</tr>
-					</tbody>
-				</table>
-			</div>
-		</div-->
-		<!-- <dialog id="modal-add-production">
-			<div *ngIf="selected_crequistion_item">
-				<h2>{{selected_crequistion_item.requisition.item_name}}</h2>
-				<form name="show_add_production" (submit)="addProduction()" ngNativeValidate>
-					<div class="row">
-						<div class="col-6">
-							<label>Cantidad Producida</label>
-							<input class="form-control" type="number" name="production_qty"	[min]="production.merma_qty==0?1:0" [(ngModel)]="production.qty" required>
-						</div>
-
-						<div class="col-6">
-							<label>Usuario</label>
-							<select name="production_user_id" class="form-control" [(ngModel)]="production.produced_by_user_id">
-								<option selected value="null">Seleccionar</option>
-								<option *ngFor="let user of user_list" [ngValue]="user.id" >{{user.name | uppercase}}</option>
-							</select>
-						</div>
-
-						<div class="col-6">
-							<label>Merma</label>
-							<input class="form-control" type="number" name="production_merma_qty" [min]="production.qty==0?1:0" [(ngModel)]="production.merma_qty"	required>
-						</div>
-
-						<div class="col-6" *ngIf="production.merma_qty > 0">
-							<label>Motivo de merma</label>
-							<input type="text" name="production_merma_reason" [(ngModel)]="production.merma_reason" class="form-control" [required]="production.merma_qty > 0" list="mermalist">
-
-							<datalist id="mermalist">
-								<option value="Producción">
-								<option value="Calidad">
-							</datalist>
-							<select name="production_merma_reason" class="form-control" [(ngModel)]="production.merma_reason">
-								<option value="">Seleccionar</option>
-								<option value="Producción">Producción</option>
-								<option value="Calidad">Calidad</option>
-							</select>
-						</div>
-					</div>
-					<div class="row">
-						<div class="col-6 mt-3">
-							<button type="button" class="btn btn-secondary w-100" (click)="closeModal('modal-add-production')">Cerrar</button>
-						</div>
-						<div class="col-6 mt-3">
-							<button type="submit" class="btn btn-primary w-100">Agregar</button>
-						</div>
-					</div>
-				</form>
-			</div>
-		</dialog> -->
-	</div>
+	</dialog> -->
+</div>
 <app-modal [(show)]="show_add_production" [biggest_posible]="true" [closable]="true" >
 	<div class="card p-3">
 		<h4 class="my-3">Agregar producción</h4>

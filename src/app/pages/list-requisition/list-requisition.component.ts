@@ -2,16 +2,16 @@ import { Component,OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Rest, RestResponse, SearchObject} from '../../modules/shared/services/Rest';
 import { RouterModule } from '@angular/router';
-import { forkJoin,mergeMap, of } from 'rxjs';
+import { Observable, filter, forkJoin,mergeMap, of } from 'rxjs';
 import { RestSimple } from '../../modules/shared/services/Rest';
 import { FormsModule } from '@angular/forms';
-import { Store,Check_In, User, Production, Serial, Item } from '../../modules/shared/RestModels';
+import { Store,Check_In, User, Production, Serial, Item, Production_Area, Requisition } from '../../modules/shared/RestModels';
 import { GetEmpty } from '../../modules/shared/GetEmpty';
 import { BaseComponent } from '../../modules/shared/base/base.component';
 import { Utils } from '../../modules/shared/Utils';
 import { SearchItemsComponent } from '../../components/search-items/search-items.component';
 import { ModalComponent } from '../../components/modal/modal.component';
-import { ItemInfo, SerialInfo, SerialItemInfo } from '../../modules/shared/Models';
+import { ItemInfo, RequisitionInfo, SerialInfo, SerialItemInfo } from '../../modules/shared/Models';
 import { PageStructureComponent } from "../../modules/shared/page-structure/page-structure.component";
 
 interface CRequistionItem
@@ -33,10 +33,16 @@ interface CProduction
 	production_merma_qty:number;
 }
 
+interface ItemProductions
+{
+	item_info:ItemInfo;
+	production_list:Production[];
+}
+
 interface CRequisitionItem
 {
 	item: Item;
-	production: CProduction | null;
+	production: CProduction;
 	input_production: Production;
 	requisition: CRequistionItem | null;
 }
@@ -56,9 +62,11 @@ export class ListRequisitionComponent extends BaseComponent implements OnInit
 	show_add_production: boolean = false;
 	selected_crequistion_item: CRequisitionItem | null = null;
 	rest_check_in:RestSimple<Check_In> = this.rest.initRestSimple('check_in',['current']);
-	rest_users:RestSimple<User> = this.rest.initRestSimple('user',['id']);
 	rest_production:RestSimple<Production> = this.rest.initRestSimple('production',['id','created_by_user_id','produced_by_user_id','verified_by_user_id']);
 	rest_serial_info:Rest<Serial,SerialInfo> = this.rest.initRest('serial_info');
+	rest_users:RestSimple<User> = this.rest.initRestSimple('user',['id']);
+	rest_item_info: Rest<Item, ItemInfo> = this.rest.initRest('item_info');
+	rest_production_area:RestSimple<Production_Area> = this.rest.initRestSimple('production_area',['id','name','created','updated']);
 
 	user_list:User[] = [];
 	new_production:Production = GetEmpty.production();
@@ -75,9 +83,31 @@ export class ListRequisitionComponent extends BaseComponent implements OnInit
 
 	search_str:string = '';
 	search_by_code:boolean = false;
+	rest_requisition:Rest<Requisition, RequisitionInfo> = this.rest.initRest('requisition');
 
 	ngOnInit()
 	{
+		console.log('subscribing to updates');
+
+		this.subs.sink = this.rest.updates.pipe
+		(
+			filter((response)=>{
+				console.log('Notificacion de update recibida',response);
+				return response.type == 'requisition'
+			})
+			//filter((requisition_info)=>
+			//{
+			//	let date = Utils.getDateFromLocalMysqlString( this.fecha_inicial );
+
+			//	return requisition_info.requisition.required_by_timestamp.getTime() >= date.getTime();
+			//})
+		)
+		.subscribe((response)=>
+		{
+			console.log('Recibido un update de requisition');
+			this.searchNoForceReload(this.search_requisition);
+		});
+
 		this.subs.sink = this.route.queryParamMap.pipe
 		(
 			mergeMap((param_map)=>
@@ -94,6 +124,7 @@ export class ListRequisitionComponent extends BaseComponent implements OnInit
 					end.setHours(23,59,59);
 					this.search_requisition.search_extra['end_timestamp'] = end;
 				}
+
 				this.fecha_final = Utils.getLocalMysqlStringFromDate(this.search_requisition.search_extra['end_timestamp'] as Date);
 
 				if( !param_map.has('search_extra.start_timestamp') )
@@ -101,6 +132,7 @@ export class ListRequisitionComponent extends BaseComponent implements OnInit
 					start.setHours(0,0,0,0);
 					this.search_requisition.search_extra['start_timestamp'] = start;
 				}
+
 				this.fecha_inicial = Utils.getLocalMysqlStringFromDate(this.search_requisition.search_extra['start_timestamp'] as Date);
 
 				if( !param_map.has('search_extra.required_by_store_id') )
@@ -108,13 +140,16 @@ export class ListRequisitionComponent extends BaseComponent implements OnInit
 					this.search_requisition.search_extra['required_by_store_id'] = null;
 				}
 
-				//let store_id: number = this.rest.user?.store_id as number;
 				let production_area_id: number = this.rest.user?.production_area_id as number;
+
+				let store_id: number = this.rest?.user?.store_id as number;
 
 				return forkJoin
 				({
 					stores: this.rest_store.search({limit:999999, eq:{status:'ACTIVE', sales_enabled: 1}}),
 					requisition: this.rest.getReport('requisitionItems',{required_by_store_id: this.search_requisition.search_extra['required_by_store_id'] , production_area_id ,start_timestamp: this.search_requisition.search_extra['start_timestamp'], end_timestamp: this.search_requisition.search_extra['end_timestamp'], _sort: this.search_requisition.sort_order }),
+					production_areas: this.rest_production_area.search({eq:{store_id},limit:999999}),
+					item_production: this.getItemProductions(store_id),
 					users: this.rest_check_in.search({eq:{current:1},limit:999999}).pipe
 					(
 						mergeMap((response)=>
@@ -129,8 +164,8 @@ export class ListRequisitionComponent extends BaseComponent implements OnInit
 				})
 			})
 		)
-		.subscribe(
-		{
+		.subscribe
+		({
 			next: (response)=>
 			{
 				this.is_loading = false;
@@ -140,10 +175,31 @@ export class ListRequisitionComponent extends BaseComponent implements OnInit
 				{
 					if( cri.requisition != null)
 						cri.requisition.required_by_store = this.store_list.find(s=>cri.requisition?.required_by_store_id) || null;
+
 					cri.input_production = GetEmpty.production();
+					cri.production = { item_id: cri.item.id, produced:0, production_merma_qty:0};
 					return cri;
 				});
 
+				for(let production of response.item_production)
+				{
+					let cRequisition_item:CRequisitionItem| undefined = this.requsition_obj_list.find(cri=>cri.item.id == production.item_info.item.id);
+
+					if( !cRequisition_item )
+					{
+
+						cRequisition_item= {
+							item: production.item_info.item,
+							production: {item_id: production.item_info.item.id, produced:0, production_merma_qty:0},
+							input_production: GetEmpty.production(),
+							requisition: null
+						};
+
+						this.requsition_obj_list.push(cRequisition_item);
+					}
+					cRequisition_item.production.produced += production.production_list.reduce((prev,curr)=>prev + curr.qty,0);
+					cRequisition_item.production.production_merma_qty += production.production_list.reduce((prev,curr)=>prev + curr.merma_qty,0);
+				}
 				//console.log(this.requsition_obj_list);
 
 				//calculando el total de requeridos que proviene de cri.requisition.sum_qty
@@ -193,7 +249,7 @@ export class ListRequisitionComponent extends BaseComponent implements OnInit
 			//se construye el objeto crequisition_item para agregar la produccion
 			let cri:CRequisitionItem = {
 				item: item_info.item,
-				production: null,
+				production: {item_id: item_info.item.id, produced:0, production_merma_qty:0},
 				input_production: GetEmpty.production(),
 				requisition: null
 			};
@@ -385,5 +441,33 @@ export class ListRequisitionComponent extends BaseComponent implements OnInit
 				this.showError(error);
 			}
 		});
+	}
+
+	getItemProductions(store_id:number):Observable<ItemProductions[]>
+	{
+		return this.rest_production.search({eq:{store_id},limit:999999}).pipe
+		(
+			mergeMap((production_response)=>
+			{
+				let item_ids = production_response.data.map((pr)=>pr.item_id);
+				return forkJoin
+				({
+					production: of(production_response),
+					items: this.rest_item_info.search({csv:{id:item_ids},limit:999999})
+				})
+			}),
+			mergeMap((response)=>
+			{
+				let item_productions = response.items.data.map((item_info)=>{
+					let x:ItemProductions = {
+						item_info: item_info,
+						production_list: response.production.data.filter((pr)=>pr.item_id == item_info.item.id)
+					};
+					return x;
+				});
+
+				return of(item_productions);
+			})
+		);
 	}
 }

@@ -7,26 +7,6 @@
 		</div>
 	</div>
 	<h1 class="my-3">Reservaciones</h1>
-	<!--div class="card my-3" *ngIf="reservation_info.client_user">
-		<table>
-			<tr>
-				<td rowspan="3" style="width:80px">
-					<img [src]="rest.getImagePath(reservation_info.client_user.image_id)" width="60px">
-				</td>
-				<td style="width:200px">Nombre</td>
-				<th>{{reservation_info.client_user.id}}-{{reservation_info.client_user.name | titlecase}}</th>
-			</tr>
-			<tr>
-				<td style="width:200px">Saldo Pendiente:</td>
-				<span class="fw-bold">{{reservation.client_user?.balance | currency:'$'}}</span>
-			</tr>
-			<tr *ngIf="reservation_info.client_user.points>=1">
-				<td style="width:200px">Puntos</td>
-				<th>{{reservation_info.client_user.points | number:'1.2-2'}}</th>
-			</tr>
-		</table>
-	</div -->
-
 	<div class="card p-3 my-3">
 		<div class="row">
 			<div class="col-12 col-md-3">
@@ -212,12 +192,13 @@
 	<h2>Asignar Inventario</h2>
 	<div style="min-height:400px">
 		<div class="row">
-			<div class="col-12 col-md-6">
+			<app-code-reader (onDetect)="addSerial($event)"></app-code-reader>
+			<!--div class="col-12 col-md-6">
 				<input type="text" class="form-control" placeholder="Buscar..." name="search_serials"  [(ngModel)]="search_serials">
 			</div>
 			<div class="col-12 col-md-6">
 				<button class="btn btn-primary" (click)="addSerial(search_serials)">Añadir</button>
-			</div>
+			</div-->
 		</div>
 	</div>
 </app-modal>
@@ -231,5 +212,3 @@
 		<app-search-users [type]="'USER'" [null_user_string]="'cancelar'" [reset_on_search]="true" (user_selected)="onSelectReturnUser($event)"></app-search-users>
 	</div>
 </app-modal>
-
-

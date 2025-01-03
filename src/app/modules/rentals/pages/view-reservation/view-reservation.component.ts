@@ -15,6 +15,7 @@ import { SearchItemsComponent } from "../../../../components/search-items/search
 import { ItemNamePipe } from "../../../shared/pipes/item-name.pipe";
 import { Utils } from '../../../shared/Utils';
 import { SearchUsersComponent } from "../../../../components/search-users/search-users.component";
+import { CodeReaderComponent } from "../../../shared/code-reader/code-reader.component";
 
 interface CReservation_Item_Serial extends Reservation_Item_Serial
 {
@@ -27,7 +28,7 @@ interface CReservation_Item_Serial extends Reservation_Item_Serial
 	standalone: true,
 	templateUrl: './view-reservation.component.html',
 	styleUrl: './view-reservation.component.css',
-	imports: [CommonModule, ShortDatePipe, FormsModule, ModalComponent, LoadingComponent, RouterModule, SearchItemsComponent, ItemNamePipe, SearchUsersComponent]
+	imports: [CommonModule, ShortDatePipe, FormsModule, ModalComponent, LoadingComponent, RouterModule, SearchItemsComponent, ItemNamePipe, SearchUsersComponent, CodeReaderComponent]
 })
 export class ViewReservationComponent extends BaseComponent
 {
@@ -109,6 +110,11 @@ export class ViewReservationComponent extends BaseComponent
 				this.showError(error);
 			}
 		})
+	}
+
+	onCodeArrived(code:string)
+	{
+		this.addSerial(code);
 	}
 
 	addSerial(serial:string)
@@ -529,9 +535,16 @@ export class ViewReservationComponent extends BaseComponent
 		.reservationUpdates('setAllReservationItemsSerialsAsDelivered', { reservation_id: this.reservation_info.reservation.id } )
 		.subscribe
 		({
-			next:(response)=>
+			next:(response:any)=>
 			{
-				this.showSuccess('Se marcaron todos los artículos como devueltos');
+				if( response?.length )
+				{
+					this.showSuccess(`Se marcaron "${response.length}" artículos como entregados`);
+				}
+				else
+				{
+					this.showError('Se marcaron todos los artículos como entregados');
+				}
 				this.reloadReservationInfo();
 			},
 			error:(error)=>
@@ -548,9 +561,16 @@ export class ViewReservationComponent extends BaseComponent
 		.reservationUpdates('setAllReservationItemsSerialsAsReturned', { reservation_id: this.reservation_info.reservation.id } )
 		.subscribe
 		({
-			next:(response)=>
+			next:(response:any)=>
 			{
-				this.showSuccess('Se marcaron todos los artículos como devueltos');
+				if( response?.length )
+				{
+					this.showSuccess(`Se marcaron "${response.length}" artículos como devueltos`);
+				}
+				else
+				{
+					this.showError('Se marcaron todos los artículos como devueltos');
+				}
 				this.reloadReservationInfo();
 			},
 			error:(error)=>

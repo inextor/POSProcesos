@@ -125,6 +125,7 @@ export class GetEmpty
 			reservation: GetEmpty.reservation(),
 			user: GetEmpty.user(),
 			client_user: null,
+			address: null,
 			items: []
 		};
 	}
@@ -373,7 +374,7 @@ export class GetEmpty
 			_return_assignments:0,
 			_delivery_assignments:0,
 			_count_items:0,
-			_total_qty:0
+			_total_qty:0,
 		};
 	}
 

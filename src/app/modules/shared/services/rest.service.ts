@@ -45,6 +45,7 @@ export class RestService
 	};
 
 	private updatesSubject = new Subject<SocketMessage>();
+
 	public notification = new BehaviorSubject({});
 	errorBehaviorSubject = new BehaviorSubject<ErrorMessage>(new ErrorMessage('',''));
 	errorObservable = this.errorBehaviorSubject.asObservable();
@@ -59,6 +60,7 @@ export class RestService
 	public _is_offline:boolean = false;
 	public _offline_search_enabled = false;
 	public show_menu:boolean = false;
+    public updates: Observable<SocketMessage>;
 
 
 
@@ -73,25 +75,30 @@ export class RestService
 		this.user = this.getUserFromSession();
 		this.preferences = this.getPreferencesFromSession();
 		this.session_start = this.getSessionStart();
+		this.initSocketIo();
+		this.updates = this.updatesSubject.asObservable();
 	}
+
+	sendNotification(type:string,id:number)
+	{
+		if( this.socket )
+		{
+			console.log('Emitiendo notificacion');
+			this.socket.emit('update',{type,id});
+		}
+	}
+
 
 	initSocketIo()
 	{
-		if( this.socket )
+		if( this.socket || environment.app_settings.socket_io_url == '' )
 		{
 			return;
 		}
 
-		let url = 'https://notifications.integranet.xyz:5000';
+		this.socket = io( environment.app_settings.socket_io_url );
 
-		if( window.location.href.indexOf('127.0.0.') > -1 || environment.app_settings.test_url)
-			url = 'http://127.0.0.1:5000';
-
-		this.socket = io( url );
-
-		this.socket.on("connect",()=>{
-
-		});
+		this.socket.on("connect",()=>{});
 
 		this.socket.on('connect',()=>{
 			this.socket_is_connected = true;
@@ -211,13 +218,11 @@ export class RestService
 	public initRestPlatform<T,U>(path:string)
 	{
 		let url_platform ='';
-
 		return new Rest<T,U>(this.platform_domain_configuration,`${this.url_platform}/${path}.php`, this.http);
 	}
 
-	public initRest<T, U>(path: string, fields:string[] | undefined = undefined, extra_keys:string[] | undefined	= undefined)
+	public initRest<T, U>(path: string, fields:string[] | undefined = undefined, extra_keys:string[] | undefined	= undefined):Rest<T,U>
 	{
-
 		//constructor(domain_configuration:DomainConfiguration,url_base:string,http:HttpClient,public fields:string[]=[],public extra_keys=[])
 		return new Rest<T, U>(this.domain_configuration,`${this.url_base}/${path}.php`, this.http, fields, extra_keys);
 	}
