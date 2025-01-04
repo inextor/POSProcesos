@@ -127,6 +127,9 @@ export class ViewReservationComponent extends BaseComponent
 
 		let serial_found_fun = (ris:Reservation_Item_Serial)=>
 		{
+			if( ris.delivered_timestamp )
+				return false;
+
 			return ris.serial == serial;
 		}
 
