@@ -66,12 +66,14 @@ export class SaveReservationComponent extends BaseComponent implements OnInit
 			{
 				let reservation_client_id = 0;
 
-				if(responses.reservation_info.reservation.id == 0)
+				if(responses.reservation_info.reservation.id )
 				{
 					reservation_client_id = responses.reservation_info.reservation.user_id as number;
 				}
 
-				let address_obs = reservation_client_id != 0 ? this.rest_address.search({ eq:{user_id: reservation_client_id} }) : of({total:0,data:[]});
+				let address_obs = reservation_client_id
+					? this.rest_address.search({ eq:{user_id: reservation_client_id} })
+					: of({total:0,data:[]});
 
 				return forkJoin
 				({
@@ -83,19 +85,18 @@ export class SaveReservationComponent extends BaseComponent implements OnInit
 				});
 			})
 		)
-		.subscribe({
-			next: (responses) => {
-
-				this.reservation_info = responses.reservation_info;
+		.subscribe
+		({
+			next: (responses) =>
+			{
 				this.address_user_list = responses.address_user.data;
 				this.price_type_list = responses.price_types.data;
 				this.store_list = responses.stores.data;
+				this.reservation_info = responses.reservation_info;
 
 				let user = this.rest.user as User;
 
-
 				let price_type = this.price_type_list[0];
-
 
 
 				if(this.reservation_info.reservation.id == 0)
