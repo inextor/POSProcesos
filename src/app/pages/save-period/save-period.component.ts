@@ -116,10 +116,10 @@ export class SavePeriodComponent extends BaseComponent implements OnInit
 					start.setSeconds(start.getSeconds()+1);
 				}
 
-				for(let ri of this.reservation_info.items)
-				{
-					let citem = this.getCItem(ri, start, response.items.data);
-				}
+				//for(let ri of this.reservation_info.items)
+				//{
+				//	let citem = this.getCItem(ri, start, response.items.data);
+				//}
 
 				this.custom_items = this.reservation_info.items.map(x=>this.getCItem(x, start, response.items.data));
 
@@ -194,7 +194,7 @@ export class SavePeriodComponent extends BaseComponent implements OnInit
 			'ONCE_ONLY':'Unico'
 		};
 
-		let period	= period_type[ reservation_item_info.reservation_item.period_type ]
+		const period	= period_type[ reservation_item_info.reservation_item.period_type ]
 		let qty = reservation_item_info.reservation_item.qty;
 		let end = new Date();
 
@@ -341,7 +341,6 @@ export class SavePeriodComponent extends BaseComponent implements OnInit
             updated: new Date(),
             updated_by_user_id: user.id,
         };
-
 
 
 		order_builder.updateOrderTotal();

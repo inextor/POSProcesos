@@ -18,18 +18,16 @@
 						{{ri.reservation_item_info.item.name}}
 					</div>
 					<div class="col-12 col-md-1">
-						<input type="number" name="'ri_qty'+ri.reservation_item.id" [(ngModel)]="ri.qty" class="form-control" (ngModelChange)="updatePrice(ri)" required>
+						<input type="number" [name]="'ri_qty'+ri.reservation_item_info.reservation_item.id" [(ngModel)]="ri.qty" class="form-control" (ngModelChange)="updatePrice(ri)" required>
 					</div>
 					<div class="col-12 col-md-1">
-						<input type="number" name="'ri_qty_period'+ri.reservation_item.id" [(ngModel)]="ri.qty_period" (ngModelChange)="updatePrice(ri)" class="form-control" required>
+						<input type="number" [name]="'ri_qty_period'+ri.reservation_item_info.reservation_item.id" [(ngModel)]="ri.qty_period" (ngModelChange)="updatePrice(ri)" class="form-control" required>
 					</div>
 					<div class="col-12 col-md-1">{{ri.period}}</div>
 					<div class="col-12 col-md-2">
-						<input type="number" name="'ri_price'+ri.reservation_item.id" [(ngModel)]="ri.price" (ngModelChange)="updatePrice(ri)" class="form-control" required>
+						<input type="number" [name]="'ri_price'+ri.reservation_item_info.reservation_item.id" [(ngModel)]="ri.price" (ngModelChange)="updatePrice(ri)" class="form-control" required>
 					</div>
-					<div class="col-12 col-md-2">
-						{{ri.total | currency}}
-					</div>
+					<div class="col-12 col-md-2">{{ri.total | currency}}</div>
 				</div>
 			</ng-container>
 			<div class="text-end mt-3">
