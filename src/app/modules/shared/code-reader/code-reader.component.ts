@@ -19,7 +19,7 @@ export class CodeReaderComponent implements OnInit
 	private barcode_detector: any = null;
 	private last_detection_time: number = 0;
 	public is_scanner_mode: boolean = true;
-	public manualCode: string = '';
+	public manual_code: string = '';
 	check_scan_interval: number = 0;
 	is_scanning: boolean = false;
 
@@ -92,6 +92,8 @@ export class CodeReaderComponent implements OnInit
 				return;
 			}
 
+			this.is_scanning = true;
+
 			this.barcode_detector.detect( video )
 			.then((barcodes: any) =>
 			{
@@ -114,10 +116,10 @@ export class CodeReaderComponent implements OnInit
 
 	manualSubmit(): void
 	{
-		if (this.manualCode)
+		if (this.manual_code)
 		{
-			this.onDetect.emit([{ rawValue: this.manualCode }]);
-			this.manualCode = '';
+			this.onDetect.emit([{ rawValue: this.manual_code }]);
+			this.manual_code = '';
 		}
 	}
 }
