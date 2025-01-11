@@ -67,12 +67,13 @@ export class ListReservationComponent extends BaseComponent implements OnInit
 				this.reservation_search.eq.condition = 'ACTIVE';
 				this.reservation_search.sort_order = ['start_ASC']
 				this.reservation_search.limit = this.page_size;
-
 				this.reservation_search.ge._to_schedule_delivery = undefined; //bueno
 				this.reservation_search.ge._to_be_returned = null; //bueno
 				this.reservation_search.le._timestamp_next_delivery = null;
 				this.reservation_search.le._timestamp_next_return = null;
 				this.reservation_search.eq.condition = undefined; //bueno
+				this.reservation_search.eq._to_schedule = undefined;
+				this.reservation_search.eq._to_be_delivered = undefined;
 
 
 				if(this.default_filter == 'ALL')
@@ -93,7 +94,8 @@ export class ListReservationComponent extends BaseComponent implements OnInit
 				{
 					let next_week = new Date();
 					next_week.setDate(next_week.getDate() + 7);
-					this.reservation_search.le._timestamp_next_delivery = next_week; //Bueno
+					//this.reservation_search.le._timestamp_next_delivery = next_week; //Bueno
+					this.reservation_search.ge._to_be_delivered =1;
 					this.reservation_search.eq.condition = 'ACTIVE'; //Bueno
 				}
 				else if(this.default_filter == 'NEXT_RETURNS')
@@ -102,7 +104,7 @@ export class ListReservationComponent extends BaseComponent implements OnInit
 					next_week.setDate(next_week.getDate() + 7);
 
 					this.reservation_search.ge._to_be_returned = 1; //Bueno
-					this.reservation_search.le._timestamp_next_return = next_week; //Bueno
+					//this.reservation_search.le._timestamp_next_return = next_week; //Bueno
 					this.reservation_search.eq.condition = 'ACTIVE'; //Bueno
 				}
 
