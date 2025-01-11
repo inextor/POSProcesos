@@ -14,19 +14,21 @@ import { ShortDatePipe } from "../../../shared/pipes/short-date.pipe";
 import { LoadingComponent } from '../../../../components/loading/loading.component';
 import { PageStructureComponent } from "../../../shared/page-structure/page-structure.component";
 
-type ReservationFilter = 'ALL' | 'NOT_SCHEDULED' | 'NOT_ASSIGNED' | 'NOT_RETURNED' | 'NEXT_DELIVERIES' | 'NEXT_RETURNS';
+type ReservationFilter = 'ALL' | 'TO_SCHEDULE' | 'NOT_DELIVERED' | 'NOT_RETURNED' | 'NEXT_DELIVERIES' | 'NEXT_RETURNS';
 
 interface CReservation extends ExtendedReservation
 {
 	default_filter: ReservationFilter;
+	next_delivery: Date | null;
+	next_return: Date | null;
 }
 
 @Component({
-    selector: 'app-list-reservation',
-    standalone: true,
-    templateUrl: './list-reservation.component.html',
-    styleUrl: './list-reservation.component.css',
-    imports: [CommonModule, FormsModule, SearchUsersComponent, RouterModule, ModalComponent, ShortDatePipe, LoadingComponent, PageStructureComponent]
+	selector: 'app-list-reservation',
+	standalone: true,
+	templateUrl: './list-reservation.component.html',
+	styleUrl: './list-reservation.component.css',
+	imports: [CommonModule, FormsModule, SearchUsersComponent, RouterModule, ModalComponent, ShortDatePipe, LoadingComponent, PageStructureComponent]
 })
 export class ListReservationComponent extends BaseComponent implements OnInit
 {
@@ -42,7 +44,7 @@ export class ListReservationComponent extends BaseComponent implements OnInit
 	show_assign_return: boolean = false;
 	rest_delivery_assignment = this.rest.initRestSimple<Delivery_Assignment>('delivery_assignment');
 	selected_reservation_info: ReservationInfo | null = null;
-    rest_return_assignment = this.rest.initRestSimple<Return_Assignment>('return_assignment');
+	rest_return_assignment = this.rest.initRestSimple<Return_Assignment>('return_assignment');
 
 	ngOnInit(): void
 	{
@@ -77,9 +79,9 @@ export class ListReservationComponent extends BaseComponent implements OnInit
 				{
 
 				}
-				else if(this.default_filter == 'NOT_SCHEDULED')
+				else if( this.default_filter == 'TO_SCHEDULE')
 				{
-					this.reservation_search.ge._to_schedule_delivery = 1; //Bueno
+					this.reservation_search.ge._to_schedule = 1; //Bueno
 					this.reservation_search.eq.condition = 'ACTIVE'; //Bueno
 				}
 				else if(this.default_filter == 'NOT_RETURNED')
@@ -137,17 +139,21 @@ export class ListReservationComponent extends BaseComponent implements OnInit
 		this.reservation_search.eq.default_filter = filter;
 		console.log(this.reservation_search);
 
-		if( filter == 'NOT_ASSIGNED' )
+		if( filter == 'TO_SCHEDULE' )
 		{
 			this.reservation_search.sort_order = ['start_ASC'];
 		}
-		if( filter == 'NEXT_DELIVERIES' )
+		else if( filter == 'NEXT_DELIVERIES' )
 		{
 			this.reservation_search.sort_order = ['_timestamp_next_delivery_ASC'];
 		}
 		else if( filter == 'NEXT_RETURNS' )
 		{
 			this.reservation_search.sort_order = ['_timestamp_next_delivery_ASC'];
+		}
+		else
+		{
+			this.reservation_search.sort_order = ['start_ASC'];
 		}
 
 		this.search( this.reservation_search );

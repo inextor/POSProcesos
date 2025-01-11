@@ -4,7 +4,7 @@
 				<h1 class="my-3">Reservaciones</h1>
 			</div>
 			<div class="col-12 col-xl-5 btn-group" role="group" aria-label="Basic example">
-				<button type="button" class="btn btn-secondary" [ngClass]="{active:default_filter=='NOT_SCHEDULED'}" (click)="setFilter('NOT_SCHEDULED')">Sin Programacion</button>
+				<button type="button" class="btn btn-secondary" [ngClass]="{active:default_filter=='TO_SCHEDULE'}" (click)="setFilter('TO_SCHEDULE')">Sin Programacion</button>
 				<button type="button" class="btn btn-secondary" [ngClass]="{active:default_filter=='NOT_RETURNED'}" (click)="setFilter('NOT_RETURNED')">Sin Recoleccion</button>
 				<button type="button" class="btn btn-secondary" [ngClass]="{active:default_filter=='NEXT_DELIVERIES'}" (click)="setFilter('NEXT_DELIVERIES')">Entregas Próximas</button>
 				<button type="button" class="btn btn-secondary" [ngClass]="{active:default_filter=='NEXT_RETURNS'}" (click)="setFilter('NEXT_RETURNS')">Recolecciones Próximas</button>
