@@ -1,89 +1,90 @@
-	<div class="container-fluid">
-		<div class="row align-items-center">
-			<div class="col-6">
-				<h1 class="my-3">Reservaciones</h1>
-			</div>
-			<div class="col-12 col-xl-5 btn-group" role="group" aria-label="Basic example">
-				<button type="button" class="btn btn-secondary" [ngClass]="{active:default_filter=='TO_SCHEDULE'}" (click)="setFilter('TO_SCHEDULE')">Sin Programacion</button>
-				<button type="button" class="btn btn-secondary" [ngClass]="{active:default_filter=='NOT_RETURNED'}" (click)="setFilter('NOT_RETURNED')">Sin Recoleccion</button>
-				<button type="button" class="btn btn-secondary" [ngClass]="{active:default_filter=='NEXT_DELIVERIES'}" (click)="setFilter('NEXT_DELIVERIES')">Entregas Próximas</button>
-				<button type="button" class="btn btn-secondary" [ngClass]="{active:default_filter=='NEXT_RETURNS'}" (click)="setFilter('NEXT_RETURNS')">Recolecciones Próximas</button>
-				<button type="button" class="btn btn-secondary" [ngClass]="{active:default_filter=='ALL'}" (click)="setFilter('ALL')">Todas</button>
-			</div>
-			<div class="col-12 col-xl-1 text-end">
-				<a class="btn btn-primary text-end" [routerLink]="['/rentals/add-reservation']">Agregar</a>
-			</div>
+<div class="container-fluid">
+	<div class="row align-items-center">
+		<div class="col-6">
+			<h1 class="my-3">Reservaciones</h1>
 		</div>
-
-		<div class="card p-3">
-			<div class="row">
-				<div class="col-12 col-md-3">
-					<div class="form-group mb-3">
-						<label for="client_id">Cliente</label>
-						<app-search-users [type]="'CLIENT'" [reset_on_search]="false" (user_selected)="onSelectUser($event)"></app-search-users>
-					</div>
-				</div>
-				<div class="col-12 col-md-3">
-					<div class="form-group mb-3">
-						<label>Fecha Creacion Inicial</label>
-						<input type="datetime-local" class="form-control" name="initial_date" [(ngModel)]="initial_date" (ngModelChange)="onDateChange($event, reservation_search.ge, 'created')">
-					</div>
-				</div>
-				<div class="col-12 col-md-3">
-					<div class="form-group mb-3">
-						<label for="end_date">Fecha Creacion Final</label>
-						<input type="datetime-local" class="form-control" id="end_date" [(ngModel)]="end_date" (ngModelChange)="onDateChange($event, reservation_search.le, 'created', '', 59)">
-					</div>
-				</div>
-				<div class="col-12 col-md-3">
-					<div class="form-group mb-3">
-						<label>&nbsp;</label>
-						<button class="btn btn-primary w-100" (click)="search(reservation_search)">Buscar</button>
-					</div>
-				</div>
-			</div>
+		<div class="col-12 col-xl-5 btn-group" role="group" aria-label="Basic example">
+			<a routerLink="/rentals/list-reservation" [queryParams]="{'eq.default_filter':'TO_SCHEDULE',sort_order:'start_ASC','eq.condition':'ACTIVE'}" class="btn btn-secondary" [ngClass]="{active:default_filter=='TO_SCHEDULE'}">Sin Programación</a>
+			<!--button type="button" class="btn btn-secondary" [ngClass]="{active:default_filter=='TO_SCHEDULE'}" (click)="setFilter('TO_SCHEDULE')">Sin Programacion</button-->
+			<!--button type="button" class="btn btn-secondary" [ngClass]="{active:default_filter=='NOT_RETURNED'}" (click)="setFilter('NOT_RETURNED')">Sin Recoleccion</button-->
+			<a routerLink="/rentals/list-reservation" [queryParams]="{'eq.default_filter':'NEXT_DELIVERIES',sort_order:'start_ASC','eq.condition':'ACTIVE'}" class="btn btn-secondary" [ngClass]="{active:default_filter=='NEXT_DELIVERIES'}">Entregas Próximas</a>
+			<button type="button" class="btn btn-secondary" [ngClass]="{active:default_filter=='NEXT_RETURNS'}" (click)="setFilter('NEXT_RETURNS')">Recolecciones Próximas</button>
+			<a class="btn btn-secondary" routerLink="/rentals/list-reservation">Todas</a>
 		</div>
-
-		<app-loading [is_loading]="is_loading"></app-loading>
-		<ng-container *ngIf="reservation_info_list.length == 0">
-			<div class="alert alert-info mt-3">No se encontraron reservaciones</div>
-		</ng-container>
-
-		<div class="card px-1 px-md-2 py-3 mt-3 " *ngIf="reservation_info_list.length > 0">
-			<table class="table table-striped w-100">
-				<thead>
-					<tr>
-						<th>Cliente</th>
-						<th class="text-end">Inicio</th>
-						<th class="text-end">Fin</th>
-						<th class="text-end">Entrega Programada</th>
-						<th class="text-end">Recoleccion Programada</th>
-						<th class="text-end">Acciones</th>
-					</tr>
-				</thead>
-				<tr *ngFor="let ri of reservation_info_list">
-					<td class="border">
-						<a [routerLink]="['/rentals/view-reservation', ri.reservation.id]">
-							<b>#{{ri.reservation.id}}</b>
-							{{ ri.reservation.client_name }}
-						</a>
-					</td>
-					<td class="border text-end">{{ri.reservation.start | shortDate: 'local' }}</td>
-					<td class="border text-end">{{ri.reservation._end | shortDate: 'local' }}</td>
-					<td class="border text-end">{{ri.reservation._to_schedule_return | shortDate: 'local' }}</td>
-					<td class="border text-end">{{ri.reservation._to_schedule_return | shortDate: 'local' }}</td>
-					<td class="border text-end">
-						<ng-container *ngIf="ri.reservation.condition == 'ACTIVE'">
-							<a class="btn btn-primary mx-1" [routerLink]="['/rentals/edit-reservation', ri.reservation.id]">Editar</a>
-							<!--button class="btn btn-primary mx-1" (click)="showAssignDelivery(ri)">Asignar Entrega</button-->
-							<!--button class="btn btn-primary mx-1" (click)="showAssignReturn(ri)">Asignar Recoleccion</button-->
-							<!--button class="btn btn-primary mx-1" (click)="closeReservation(ri)">Cerrar Reservación</button-->
-						</ng-container>
-					</td>
-				</tr>
-			</table>
+		<div class="col-12 col-xl-1 text-end">
+			<a class="btn btn-primary text-end" [routerLink]="['/rentals/add-reservation']">Agregar</a>
 		</div>
 	</div>
+
+	<div class="card p-3">
+		<div class="row">
+			<div class="col-12 col-md-3">
+				<div class="form-group mb-3">
+					<label for="client_id">Cliente</label>
+					<app-search-users [type]="'CLIENT'" [reset_on_search]="false" (user_selected)="onSelectUser($event)"></app-search-users>
+				</div>
+			</div>
+			<div class="col-12 col-md-3">
+				<div class="form-group mb-3">
+					<label>Fecha Creacion Inicial</label>
+					<input type="datetime-local" class="form-control" name="initial_date" [(ngModel)]="initial_date" (ngModelChange)="onDateChange($event, reservation_search.ge, 'created')">
+				</div>
+			</div>
+			<div class="col-12 col-md-3">
+				<div class="form-group mb-3">
+					<label for="end_date">Fecha Creacion Final</label>
+					<input type="datetime-local" class="form-control" id="end_date" [(ngModel)]="end_date" (ngModelChange)="onDateChange($event, reservation_search.le, 'created', '', 59)">
+				</div>
+			</div>
+			<div class="col-12 col-md-3">
+				<div class="form-group mb-3">
+					<label>&nbsp;</label>
+					<button class="btn btn-primary w-100" (click)="search(reservation_search)">Buscar</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<app-loading [is_loading]="is_loading"></app-loading>
+	<ng-container *ngIf="reservation_info_list.length == 0">
+		<div class="alert alert-info mt-3">No se encontraron reservaciones</div>
+	</ng-container>
+
+	<div class="card px-1 px-md-2 py-3 mt-3 " *ngIf="reservation_info_list.length > 0">
+		<table class="table table-striped w-100">
+			<thead>
+				<tr>
+					<th>Cliente</th>
+					<th class="text-end">Inicio</th>
+					<th class="text-end">Fin</th>
+					<th class="text-end">Entrega Programada</th>
+					<th class="text-end">Recoleccion Programada</th>
+					<th class="text-end">Acciones</th>
+				</tr>
+			</thead>
+			<tr *ngFor="let ri of reservation_info_list">
+				<td class="border">
+					<a [routerLink]="['/rentals/view-reservation', ri.reservation.id]">
+						<b>#{{ri.reservation.id}}</b>
+						{{ ri.reservation.client_name }}
+					</a>
+				</td>
+				<td class="border text-end">{{ri.reservation.start | shortDate: 'local' }}</td>
+				<td class="border text-end">{{ri.reservation._end | shortDate: 'local' }}</td>
+				<td class="border text-end">{{ri.reservation._to_schedule_return | shortDate: 'local' }}</td>
+				<td class="border text-end">{{ri.reservation._to_schedule_return | shortDate: 'local' }}</td>
+				<td class="border text-end">
+					<ng-container *ngIf="ri.reservation.condition == 'ACTIVE'">
+						<a class="btn btn-primary mx-1" [routerLink]="['/rentals/edit-reservation', ri.reservation.id]">Editar</a>
+						<!--button class="btn btn-primary mx-1" (click)="showAssignDelivery(ri)">Asignar Entrega</button-->
+						<!--button class="btn btn-primary mx-1" (click)="showAssignReturn(ri)">Asignar Recoleccion</button-->
+						<!--button class="btn btn-primary mx-1" (click)="closeReservation(ri)">Cerrar Reservación</button-->
+					</ng-container>
+				</td>
+			</tr>
+		</table>
+	</div>
+</div>
 <app-modal [(show)]="show_assign_delivery">
 	<div style="min-height:400px">
 		<app-search-users [type]="'USER'" [null_user_string]="'cancelar'" [reset_on_search]="true" (user_selected)="onSelectDeliveryUser($event)"></app-search-users>
