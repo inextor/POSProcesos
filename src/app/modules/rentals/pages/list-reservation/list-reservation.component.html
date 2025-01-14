@@ -71,8 +71,8 @@
 				</td>
 				<td class="border text-end">{{ri.reservation.start | shortDate: 'local' }}</td>
 				<td class="border text-end">{{ri.reservation._end | shortDate: 'local' }}</td>
-				<td class="border text-end">{{ri.reservation._to_schedule_return | shortDate: 'local' }}</td>
-				<td class="border text-end">{{ri.reservation._to_schedule_return | shortDate: 'local' }}</td>
+				<td class="border text-end">{{ri?.next_delivery | shortDate: 'local' }}</td>
+				<td class="border text-end">{{ri?.next_return | shortDate: 'local' }}</td>
 				<td class="border text-end">
 					<ng-container *ngIf="ri.reservation.condition == 'ACTIVE'">
 						<a class="btn btn-primary mx-1" [routerLink]="['/rentals/edit-reservation', ri.reservation.id]">Editar</a>

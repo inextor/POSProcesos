@@ -5,7 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { SearchUsersComponent } from '../../../../components/search-users/search-users.component';
 import { Delivery_Assignment, Reservation, Reservation_Item, Return_Assignment, User } from '../../../shared/RestModels';
 import { Rest, SearchObject } from '../../../shared/services/Rest';
-import { ExtendedReservation, ReservationInfo } from '../../../shared/Models';
+import { ExtendedReservation, ReservationInfo, ReservationItemInfo } from '../../../shared/Models';
 import { filter, mergeMap } from 'rxjs';
 import { RouterModule } from '@angular/router';
 import { Utils } from '../../../shared/Utils';
@@ -19,6 +19,12 @@ type ReservationFilter = 'ALL' | 'TO_SCHEDULE' | 'NOT_DELIVERED' | 'NOT_RETURNED
 interface CReservation extends ExtendedReservation
 {
 	default_filter: ReservationFilter;
+	next_delivery: Date | null;
+	next_return: Date | null;
+}
+
+interface CReservationInfo extends ReservationInfo
+{
 	next_delivery: Date | null;
 	next_return: Date | null;
 }
@@ -38,7 +44,7 @@ export class ListReservationComponent extends BaseComponent implements OnInit
 	initial_date:string = '';
 	end_date:string = '';
 
-	reservation_info_list:ReservationInfo[] = [];
+	reservation_info_list:CReservationInfo[] = [];
 	default_filter: ReservationFilter = 'ALL';
 	show_assign_delivery: boolean = false;
 	show_assign_return: boolean = false;
@@ -117,7 +123,7 @@ export class ListReservationComponent extends BaseComponent implements OnInit
 		({
 			next: (response) =>
 			{
-				this.reservation_info_list = response.data;
+				this.reservation_info_list = response.data.map(x=>this.getCReservationInfo(x));
 				this.setPages(this.reservation_search.page, response.total);
 				this.is_loading = false;
 			},
@@ -129,6 +135,8 @@ export class ListReservationComponent extends BaseComponent implements OnInit
 		})
 	}
 
+
+
 	onSelectUser(user:User | null):void
 	{
 		if(user)
@@ -136,6 +144,7 @@ export class ListReservationComponent extends BaseComponent implements OnInit
 			this.reservation_search.eq.user_id = user.id;
 		}
 	}
+
 	setFilter(filter:ReservationFilter):void
 	{
 		this.reservation_search.eq.default_filter = filter;
@@ -281,5 +290,24 @@ export class ListReservationComponent extends BaseComponent implements OnInit
 				this.showError(error);
 			}
 		});
+	}
+
+	getCReservationInfo(x: ReservationInfo): CReservationInfo
+	{
+		let scheduled_returns = x.items.map(ri=>ri.reservation_item.scheduled_delivery)
+		let scheduled_delivery = x.items.map(ri=>ri.reservation_item.scheduled_return)
+
+		let smallest = (array:(Date|null)[])=>
+		{
+			let y = array.filter(x=>x != null).sort((a:any,b:any)=>a>b?1:-1);
+			if( y.length )
+				return y[0]
+			return null;
+		};
+
+		let next_delivery = smallest(scheduled_delivery);
+		let next_return = smallest(scheduled_returns);
+
+		return { ...x, next_delivery, next_return };
 	}
 }
