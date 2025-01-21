@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { BaseComponent } from '../../modules/shared/base/base.component';
-import { forkJoin, mergeMap, of } from 'rxjs';
+import { forkJoin, mergeMap, of, retry } from 'rxjs';
 import { GetEmpty } from '../../modules/shared/GetEmpty';
 import { ReservationInfo,OrderInfo, ReservationItemInfo, OrderItemInfo, ItemInfo } from '../../modules/shared/Models';
 import { Rest, RestSimple } from '../../modules/shared/services/Rest';
@@ -358,19 +358,28 @@ export class SavePeriodComponent extends BaseComponent implements OnInit
 			(
 				mergeMap((order_info:OrderInfo)=>
 				{
-					return this.rest.update('closeOrder',{order_id:order_info.order.id})
-					.pipe
+					return forkJoin
+					({
+						order_info: of(order_info),
+						update: this.rest.update('closeOrder',{order_id:order_info.order.id})
+					})
+				})
+				,mergeMap((response)=>
+				{
+					this.showWarning('Corte de Reservación agregado');
+					let request = { reservation_id: this.reservation_info.reservation.id };
+					return this.rest.reservationUpdates('closeReservation', request ).pipe
 					(
-						mergeMap(()=>of( order_info ))
+						retry(3),
+						mergeMap(()=>of(response.order_info)),
 					)
 				})
 			)
 			.subscribe
 			({
-				next:(order_info:OrderInfo)=>
+				next:(order_info)=>
 				{
-					this.showWarning('Corte de Reservación agregado');
-
+					this.showSuccess('Reservación cerrada con exito');
 					let f = ()=>
 					{
 						console.log('Redirecting to ', window.location.protocol+window.location.hostname+'/#/view-order/'+order_info.order.id);

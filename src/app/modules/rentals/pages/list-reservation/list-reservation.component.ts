@@ -84,7 +84,7 @@ export class ListReservationComponent extends BaseComponent implements OnInit
 
 				if(this.default_filter == 'ALL')
 				{
-
+					this.reservation_search.eq.condition = undefined; //Bueno
 				}
 				else if( this.default_filter == 'TO_SCHEDULE')
 				{
@@ -95,6 +95,11 @@ export class ListReservationComponent extends BaseComponent implements OnInit
 				{
 					this.reservation_search.ge._to_be_returned = 1; //Bueno
 					this.reservation_search.eq.condition = 'ACTIVE'; //Bueno
+
+					if( this.reservation_search.sort_order.length == 0 )
+					{
+						this.reservation_search.sort_order = ['_timestamp_next_return_ASC'];
+					}
 				}
 				else if(this.default_filter == 'NEXT_DELIVERIES')
 				{
@@ -103,6 +108,10 @@ export class ListReservationComponent extends BaseComponent implements OnInit
 					//this.reservation_search.le._timestamp_next_delivery = next_week; //Bueno
 					this.reservation_search.ge._to_be_delivered =1;
 					this.reservation_search.eq.condition = 'ACTIVE'; //Bueno
+					if( this.reservation_search.sort_order.length == 0 )
+					{
+						this.reservation_search.sort_order = ['_timestamp_next_delivery_ASC'];
+					}
 				}
 				else if(this.default_filter == 'NEXT_RETURNS')
 				{
@@ -112,6 +121,15 @@ export class ListReservationComponent extends BaseComponent implements OnInit
 					this.reservation_search.ge._to_be_returned = 1; //Bueno
 					//this.reservation_search.le._timestamp_next_return = next_week; //Bueno
 					this.reservation_search.eq.condition = 'ACTIVE'; //Bueno
+					if( this.reservation_search.sort_order.length == 0 )
+					{
+						this.reservation_search.sort_order = ['_timestamp_next_return_ASC'];
+					}
+				}
+
+				if( this.reservation_search.sort_order.length == 0 )
+				{
+					this.reservation_search.sort_order = ['id_DESC'];
 				}
 
 				console.log(JSON.stringify(this.reservation_search));

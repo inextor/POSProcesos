@@ -592,4 +592,20 @@ export class ViewReservationComponent extends BaseComponent
 	{
 		this.show_assign_return = true;
 	}
+	closeReservation()
+	{
+		let request = { reservation_id: this.reservation_info.reservation.id };
+		this.subs.sink = this.rest.reservationUpdates('closeReservation', request )
+		.subscribe({
+			next:(_response)=>
+			{
+				this.showSuccess('Reservación cerrada con exito');
+				this.router.navigate(['/rentals/list-reservation']);
+			},
+			error:(error)=>
+			{
+				this.showError(error);
+			}
+		});
+	}
 }

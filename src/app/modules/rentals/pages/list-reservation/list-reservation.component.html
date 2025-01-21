@@ -4,12 +4,13 @@
 			<h1 class="my-3">Reservaciones</h1>
 		</div>
 		<div class="col-12 col-xl-5 btn-group" role="group" aria-label="Basic example">
-			<a routerLink="/rentals/list-reservation" [queryParams]="{'eq.default_filter':'TO_SCHEDULE',sort_order:'start_ASC','eq.condition':'ACTIVE'}" class="btn btn-secondary" [ngClass]="{active:default_filter=='TO_SCHEDULE'}">Sin Programación</a>
+			<a routerLink="/rentals/list-reservation" [queryParams]="{'eq.default_filter':'TO_SCHEDULE','eq.condition':'ACTIVE'}" class="btn btn-secondary" [ngClass]="{active:default_filter=='TO_SCHEDULE'}">Sin Programación</a>
 			<!--button type="button" class="btn btn-secondary" [ngClass]="{active:default_filter=='TO_SCHEDULE'}" (click)="setFilter('TO_SCHEDULE')">Sin Programacion</button-->
 			<!--button type="button" class="btn btn-secondary" [ngClass]="{active:default_filter=='NOT_RETURNED'}" (click)="setFilter('NOT_RETURNED')">Sin Recoleccion</button-->
-			<a routerLink="/rentals/list-reservation" [queryParams]="{'eq.default_filter':'NEXT_DELIVERIES',sort_order:'start_ASC','eq.condition':'ACTIVE'}" class="btn btn-secondary" [ngClass]="{active:default_filter=='NEXT_DELIVERIES'}">Entregas Próximas</a>
-			<button type="button" class="btn btn-secondary" [ngClass]="{active:default_filter=='NEXT_RETURNS'}" (click)="setFilter('NEXT_RETURNS')">Recolecciones Próximas</button>
-			<a class="btn btn-secondary" routerLink="/rentals/list-reservation">Todas</a>
+			<a routerLink="/rentals/list-reservation" [queryParams]="{'eq.default_filter':'NEXT_DELIVERIES','eq.condition':'ACTIVE'}" class="btn btn-secondary" [ngClass]="{active:default_filter=='NEXT_DELIVERIES'}">Entregas Próximas</a>
+			<a routerLink="/rentals/list-reservation" [queryParams]="{'eq.default_filter':'NEXT_RETURNS','eq.condition':'ACTIVE'}" class="btn btn-secondary" [ngClass]="{active:default_filter=='NEXT_RETURNS'}">Recolecciones Próximas</a>
+			<!--button type="button" class="btn btn-secondary" [ngClass]="{active:default_filter=='NEXT_RETURNS'}" (click)="setFilter('NEXT_RETURNS')">Recolecciones Próximas</button-->
+			<a class="btn btn-secondary" routerLink="/rentals/list-reservation" [ngClass]="{active:default_filter=='ALL'}">Todos</a>
 		</div>
 		<div class="col-12 col-xl-1 text-end">
 			<a class="btn btn-primary text-end" [routerLink]="['/rentals/add-reservation']">Agregar</a>
@@ -44,7 +45,6 @@
 			</div>
 		</div>
 	</div>
-
 	<app-loading [is_loading]="is_loading"></app-loading>
 	<ng-container *ngIf="reservation_info_list.length == 0">
 		<div class="alert alert-info mt-3">No se encontraron reservaciones</div>

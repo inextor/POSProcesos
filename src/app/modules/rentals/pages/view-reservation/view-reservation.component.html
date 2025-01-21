@@ -38,6 +38,7 @@
 				<span></span>
 				<div>
 					<a [routerLink]="['/rentals/add-period', reservation_info.reservation.id]" class="btn btn-primary">Generar Corte</a>
+					<button type="button" (click)="closeReservation()" class="btn btn-primary ms-1">Cerrar Reservacion</button>
 				</div>
 			</div>
 		</div>
