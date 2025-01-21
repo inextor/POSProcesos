@@ -231,13 +231,13 @@ export class SavePeriodComponent extends BaseComponent implements OnInit
 		switch(period)
 		{
 			case 'MONTHLY':
-				return this.getMonthsQty(start, end);
+				return Math.round( this.getMonthsQty(start, end) );
 			case 'WEEKLY':
-				return this.getDaysBetweenDates(start, end)/7;
+				return Math.round( this.getDaysBetweenDates(start, end)/7);
 			case 'DAILY':
-				return this.getDaysBetweenDates(start, end);
+				return Math.round( this.getDaysBetweenDates(start, end) );
 			case 'BY_HOUR':
-				return this.getHoursDifference(start, end);
+				return Math.round( this.getHoursDifference(start, end));
 			case 'ONCE_ONLY':
 		}
 		return 1;
