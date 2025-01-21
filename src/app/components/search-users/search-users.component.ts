@@ -74,6 +74,7 @@ export class SearchUsersComponent implements OnInit, OnDestroy, OnChanges
 				({
 					eq:{ status: 'ACTIVE', type: this.type, },
 					start:{ name: response},
+					search_extra:{'user_permission_production': 1},
 					limit: 50,
 				})
 			})
