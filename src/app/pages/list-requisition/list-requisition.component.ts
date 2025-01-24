@@ -144,12 +144,25 @@ export class ListRequisitionComponent extends BaseComponent implements OnInit
 
 				let store_id: number = this.rest?.user?.store_id as number;
 
+
+				let start_time = this.search_requisition.search_extra['start_timestamp'] as Date;
+				let endtime = this.search_requisition.search_extra['end_timestamp'] as Date;
+
+				let requisition_item_search =
+				{
+					required_by_store_id: this.search_requisition.search_extra['required_by_store_id'] ,
+					production_area_id ,
+					start_timestamp: this.search_requisition.search_extra['start_timestamp'],
+					end_timestamp: this.search_requisition.search_extra['end_timestamp'],
+					_sort: this.search_requisition.sort_order
+				};
+
 				return forkJoin
 				({
 					stores: this.rest_store.search({limit:999999, eq:{status:'ACTIVE', sales_enabled: 1}}),
-					requisition: this.rest.getReport('requisitionItems',{required_by_store_id: this.search_requisition.search_extra['required_by_store_id'] , production_area_id ,start_timestamp: this.search_requisition.search_extra['start_timestamp'], end_timestamp: this.search_requisition.search_extra['end_timestamp'], _sort: this.search_requisition.sort_order }),
+					requisition: this.rest.getReport('requisitionItems', requisition_item_search),
 					production_areas: this.rest_production_area.search({eq:{store_id},limit:999999}),
-					item_production: this.getItemProductions(store_id),
+					item_production: this.getItemProductions(store_id, start_time, endtime),
 					users: this.rest_check_in.search({eq:{current:1},limit:999999}).pipe
 					(
 						mergeMap((response)=>
@@ -443,9 +456,19 @@ export class ListRequisitionComponent extends BaseComponent implements OnInit
 		});
 	}
 
-	getItemProductions(store_id:number):Observable<ItemProductions[]>
+	getItemProductions(store_id:number, start_time: Date|null, endtime: Date|null):Observable<ItemProductions[]>
 	{
-		return this.rest_production.search({eq:{store_id},limit:999999}).pipe
+		start_time = start_time || new Date();
+
+		let production_search=
+		{
+			eq:{ store_id },
+			lg:{ created: endtime},
+			gt:{ created: start_time},
+			limit:999999
+		};
+
+		return this.rest_production.search(production_search).pipe
 		(
 			mergeMap((production_response)=>
 			{

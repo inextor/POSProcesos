@@ -205,11 +205,11 @@
 </app-modal>
 <app-modal [(show)]="show_assign_delivery">
 	<div style="min-height:400px">
-		<app-search-users [type]="'USER'" [null_user_string]="'cancelar'" [reset_on_search]="true" (user_selected)="onSelectDeliveryUser($event)"></app-search-users>
+		<app-search-users type="USER" null_user_string="cancelar" [reset_on_search]="true" (user_selected)="onSelectDeliveryUser($event)"></app-search-users>
 	</div>
 </app-modal>
 <app-modal [(show)]="show_assign_return">
 	<div style="min-height:400px">
-		<app-search-users [type]="'USER'" [null_user_string]="'cancelar'" [reset_on_search]="true" (user_selected)="onSelectReturnUser($event)"></app-search-users>
+		<app-search-users type="USER" null_user_string="cancelar" [reset_on_search]="true" (user_selected)="onSelectReturnUser($event)"></app-search-users>
 	</div>
 </app-modal>
