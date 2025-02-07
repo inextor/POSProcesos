@@ -6,7 +6,7 @@ import { SubSink } from 'subsink';
 import { Location} from '@angular/common';
 import { ShortDatePipe } from '../pipes/short-date.pipe';
 import { Title } from '@angular/platform-browser';
-import { Observable, combineLatest, forkJoin, mergeMap, of, startWith } from 'rxjs';
+import { Observable, Subscriber, SubscriptionLike, combineLatest, forkJoin, mergeMap, of, startWith } from 'rxjs';
 import { SearchObject } from '../services/Rest';
 import { ConfirmationService } from '../services/confirmation.service';
 import { Utils } from '../Utils';
@@ -477,5 +477,10 @@ export class BaseComponent	implements OnDestroy
 		}
 
 		this.router.navigate([this.path],{queryParams: search});
+	}
+
+	set sink(s:SubscriptionLike)
+	{
+		this.subs.sink = s;
 	}
 }
