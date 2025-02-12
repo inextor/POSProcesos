@@ -1,4 +1,4 @@
-import { Observable, of } from 'rxjs';
+import { forkJoin, Observable, of } from 'rxjs';
 import { HttpClient, HttpHeaders,HttpParams } from '@angular/common/http';
 import { Utils} from '../Utils';
 import {mergeMap, retry} from 'rxjs/operators';
@@ -8,6 +8,10 @@ import { ParamMap } from '@angular/router';
 
 export interface CsvArray{
 	[key: string]: any[];
+}
+export interface CsvNumberArray
+{
+	[key: string]: number[];
 }
 
 /*
@@ -36,6 +40,7 @@ export interface SearchObject<T>
 	is_null:string[];
 	sort_order:string[]; //Sort order like 'updated_ASC','name_DESC' //Etc
 	csv:CsvArray; //Posiblemente String tambien
+	//range:CsvNumberArray; //Posiblemente
 	start:Partial<T>;
 	ends:Partial<T>;
 	search_extra:Record<string,string|number|null|Date>
@@ -73,7 +78,8 @@ export interface DomainConfiguration
 	domain:string
 }
 
-export class Rest<U,T>{
+export class Rest<U,T>
+{
 	private url_base:string;
 	private http:HttpClient;
 	private domain_configuration:DomainConfiguration;
@@ -142,8 +148,6 @@ export class Rest<U,T>{
 		return this.http.get<RestResponse<T>>(`${this.domain_configuration.domain}/${this.url_base}`,{params,headers:this.getSessionHeaders(),withCredentials:true}).pipe( retry(2) );
 	}
 
-
-
 	getParamsFromSearch(searchObj:Partial<SearchObject<U>>):HttpParams
 	{
 		let params = new HttpParams();
@@ -154,8 +158,15 @@ export class Rest<U,T>{
 			{
 				if( searchObj.search_extra[i] === null || searchObj.search_extra[i] === '' || searchObj.search_extra[i] === undefined )
 					continue;
-
-				params = params.set(i,''+searchObj.search_extra[''+i]);
+				let tmp_val = searchObj.search_extra[i];
+				if( tmp_val instanceof Date )
+				{
+					params = params.set(i,Utils.getUTCMysqlStringFromDate( tmp_val ) );
+				}
+				else
+				{
+					params = params.set(i,''+tmp_val );
+				}
 			}
 		}
 
@@ -257,8 +268,6 @@ export class Rest<U,T>{
 		);
 	}
 
-
-
 	search(so:Partial<SearchObject<U>> | ParamMap | null ):Observable<RestResponse<T>>
 	{
 		let search_object:Partial<SearchObject<U>> = this.getEmptySearch();
@@ -278,6 +287,50 @@ export class Rest<U,T>{
 		(
 			retry(2),
 			mergeMap((r)=> of( Utils.convertToDate( r ) as RestResponse<T> ) )
+		);
+	}
+
+	searchAll(obj_search:Partial<SearchObject<U>>,page_size:number = 100, as_post:boolean = false):Observable<RestResponse<T>>
+	{
+		let search = {...obj_search, limit: page_size } as Partial<SearchObject<U>>;
+		let first_observable = as_post
+			? this.searchAsPost( search )
+			: this.search( search );
+
+		return first_observable
+		.pipe
+		(
+			mergeMap((response)=>
+			{
+				let observables = [ of(response) ];
+				let pages_needed = Math.ceil( response.total/page_size );
+
+				for(let i=1;i<pages_needed;i++)
+				{
+					let s = { ...search, limit: page_size, page: i } as Partial<SearchObject<U>>;
+					s.limit = page_size;
+					s.page = i;
+
+					//console.log('Searching page', s);
+					observables.push( as_post ? this.searchAsPost( s ) : this.search( s ) );
+				}
+
+				return forkJoin( observables );
+			}),
+			mergeMap((responses:RestResponse<T>[])=>
+			{
+				let items = responses.reduce((p,c)=>
+				{
+					p.push(...c.data );
+					return p;
+				},[] as	T[]);
+
+				let item_response:RestResponse<T> = {
+					total: items.length,
+					data: items
+				};
+				return of( item_response );
+			})
 		);
 	}
 

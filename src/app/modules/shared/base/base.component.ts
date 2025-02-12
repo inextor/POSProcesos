@@ -421,7 +421,6 @@ export class BaseComponent	implements OnDestroy
 
 		if( item_search != null )
 		{
-
 			for(let i in item_search.search_extra )
 			{
 				if( item_search.search_extra[ i ] && item_search.search_extra[ i ] !== 'null' )
@@ -435,7 +434,6 @@ export class BaseComponent	implements OnDestroy
 					{
 							search['search_extra.'+i] = ''+item_search.search_extra[ i ];
 					}
-
 				}
 			}
 
@@ -472,7 +470,6 @@ export class BaseComponent	implements OnDestroy
 						}
 					}
 				}
-
 			}
 		}
 

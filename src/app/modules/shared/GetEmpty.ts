@@ -45,7 +45,7 @@ export class GetEmpty
 			item_group: Date.now(),
 			item_id: item.id,
 			item_option_id: null,
-			item_option_qty: null,
+			item_option_qty: 1,
 			note: null,
 			offer_id: null,
 			order_id: 0,
@@ -80,24 +80,24 @@ export class GetEmpty
 
 		let order_item_info:OrderItemInfo =
 		{
-            order_item,
-            created: new Date(),
-            order_item_exceptions: [],
-            serials_string: "",
-            commanda_type_id: item.commanda_type_id,
-            item: item,
-            category: null,
-            //category_zero: 0,
-            price: undefined,
-            prices,
-            options: [],
-            exceptions: [],
-            records: [],
-            stock_record: undefined,
-            serials: [],
-            category_zero: null,
-            item_options: []
-        };
+			order_item,
+			created: new Date(),
+			order_item_exceptions: [],
+			serials_string: "",
+			commanda_type_id: item.commanda_type_id,
+			item: item,
+			category: null,
+			//category_zero: 0,
+			price: undefined,
+			prices,
+			options: [],
+			exceptions: [],
+			records: [],
+			stock_record: undefined,
+			serials: [],
+			category_zero: null,
+			item_options: []
+		};
 
 		return order_item_info;
 	}

@@ -13,6 +13,7 @@ import { SearchItemsComponent } from '../../components/search-items/search-items
 import { ModalComponent } from '../../components/modal/modal.component';
 import { ItemInfo, RequisitionInfo, SerialInfo, SerialItemInfo } from '../../modules/shared/Models';
 import { PageStructureComponent } from "../../modules/shared/page-structure/page-structure.component";
+import { OrderItemsComponent } from "./order-items/order-items.component";
 
 interface CRequistionItem
 {
@@ -53,7 +54,7 @@ interface CRequisitionItem
 	standalone: true,
 	templateUrl: './list-requisition.component.html',
 	styleUrl: './list-requisition.component.css',
-	imports: [CommonModule, RouterModule, FormsModule, SearchItemsComponent, ModalComponent, PageStructureComponent]
+	imports: [CommonModule, RouterModule, FormsModule, SearchItemsComponent, ModalComponent, PageStructureComponent, OrderItemsComponent]
 })
 export class ListRequisitionComponent extends BaseComponent implements OnInit
 {
@@ -67,6 +68,7 @@ export class ListRequisitionComponent extends BaseComponent implements OnInit
 	rest_users:RestSimple<User> = this.rest.initRestSimple('user',['id']);
 	rest_item_info: Rest<Item, ItemInfo> = this.rest.initRest('item_info');
 	rest_production_area:RestSimple<Production_Area> = this.rest.initRestSimple('production_area',['id','name','created','updated']);
+	start_timestamp: Date = new Date();
 
 	user_list:User[] = [];
 	new_production:Production = GetEmpty.production();

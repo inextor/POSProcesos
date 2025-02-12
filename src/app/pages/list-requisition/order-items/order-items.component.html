@@ -1,0 +1,17 @@
+<table class="w-100">
+	<ng-container  *ngFor="let oi of order_info_list">
+		<tr *ngFor="let oii of oi.structured_items;let i=index" [ngClass]="{'border-bottom': i==oi.structured_items.length-1}">
+			<td>{{oi.order.id}} - {{oi.order.client_name }}</td>
+			<td>{{oi.order.note}}</td>
+			<td>{{oii.item.name}}</td>
+			<td>{{oii.order_item.qty}}</td>
+			<td>{{oii.order_item.note}}</td>
+			<td>{{oii.order_item.commanda_status == 'DISMISSED' ? 'LISTO' : 'PENDIENTE'}}</td>
+			<td>
+				<button *ngIf="oii.order_item.commanda_status != 'DISMISSED'" (click)="setAsReady(oii)" class="btn btn-primary">Listo</button>
+				<button *ngIf="oii.order_item.commanda_status == 'DISMISSED'" (click)="setAsPending(oii)" class="btn btn-primary">Pendiente</button>
+			</td>
+		</tr>
+	</ng-container>
+</table>
+

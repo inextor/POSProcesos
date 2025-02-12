@@ -30,6 +30,12 @@ export interface OrderItemInfo extends ItemInfo
 	category_zero: number | null;
 }
 
+export interface OrderItemStructureInfo extends OrderItemInfo
+{
+	childs:OrderItemInfo[];
+	total_options:number;
+	total_cost:number;
+}
 
 export interface OrderInfo
 {
@@ -46,6 +52,11 @@ export interface OrderInfo
 	store: Store;
 	purchase: Purchase | null;
 	offers:Offer[];
+}
+
+export interface StructuredOrderInfo extends OrderInfo
+{
+	structured_items: OrderItemStructureInfo[]; //Obligatorio
 }
 
 export interface ProductionInfo

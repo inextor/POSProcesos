@@ -623,7 +623,7 @@ export interface Order_Item{
 	item_group:number | null;
 	item_id:number
 	item_option_id:number | null;
-	item_option_qty:number | null;
+	item_option_qty:number;
 	note:string | null;
 	offer_id:number | null;
 	order_id:number

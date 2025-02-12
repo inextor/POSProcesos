@@ -9,7 +9,7 @@ import { HttpHeaders, HttpClient, HttpParams } from '@angular/common/http'
 import { BehaviorSubject, mergeMap, Observable, of, Subject } from 'rxjs';
 import { environment } from '../../../../environments/environment';
 import { io, Socket } from 'socket.io-client';
-import { SocketMessage } from '../Models';
+import { OrderInfo, OrderItemInfo, OrderItemStructureInfo, SocketMessage, StructuredOrderInfo } from '../Models';
 import { OfflineUtils, ServerInfo } from '../OfflineUtils';
 
 export const USER_PERMISSION_KEY = 'user_permission';
@@ -17,14 +17,12 @@ const USER_KEY = 'user';
 
 type SuperEmpty<Type> = Type | null | undefined;
 
-
 @Injectable
 ({
 	providedIn: 'root'
 })
 export class RestService
 {
-
 	hades_counter:number = 0;
 	has_hades:boolean = false;
 	private socket: Socket | null = null;
@@ -60,9 +58,7 @@ export class RestService
 	public _is_offline:boolean = false;
 	public _offline_search_enabled = false;
 	public show_menu:boolean = false;
-    public updates: Observable<SocketMessage>;
-
-
+	public updates: Observable<SocketMessage>;
 
 	//private offline_db: DatabaseStore	= DatabaseStore.builder
 	//(
@@ -87,7 +83,6 @@ export class RestService
 			this.socket.emit('update',{type,id});
 		}
 	}
-
 
 	initSocketIo()
 	{
@@ -147,7 +142,6 @@ export class RestService
 
 		return this.user.id + '-' + Date.now();
 	}
-
 
 	getSessionStart():Date
 	{
@@ -217,17 +211,16 @@ export class RestService
 
 	public initRestPlatform<T,U>(path:string)
 	{
-		let url_platform ='';
 		return new Rest<T,U>(this.platform_domain_configuration,`${this.url_platform}/${path}.php`, this.http);
 	}
 
-	public initRest<T, U>(path: string, fields:string[] | undefined = undefined, extra_keys:string[] | undefined	= undefined):Rest<T,U>
+	public initRest<T, U>(path: string, fields:string[] = [], extra_keys:string[] = []):Rest<T,U>
 	{
 		//constructor(domain_configuration:DomainConfiguration,url_base:string,http:HttpClient,public fields:string[]=[],public extra_keys=[])
 		return new Rest<T, U>(this.domain_configuration,`${this.url_base}/${path}.php`, this.http, fields, extra_keys);
 	}
 
-	public initRestSimple<T>(path: string, fields:string[]|undefined = undefined, extra_keys:string[]|undefined = undefined)
+	public initRestSimple<T>(path: string, fields:string[] = [], extra_keys:string[] = [])
 	{
 		return this.initRest<T,T>(path, fields,extra_keys) as RestSimple<T>;
 	}
@@ -247,16 +240,6 @@ export class RestService
 		let headers = new HttpHeaders().set('Authorization', 'Bearer ' + localStorage.getItem('session_token'));
 		return headers;
 	}
-
-	//getClientPlatformFromSession():Platform_Client | null
-	//{
-	//	let usr:string|null = localStorage.getItem('platform_client');
-
-	//	if( usr )
-	//		return Utils.transformJson( usr );
-
-	//	return null;
-	//}
 
 	getUserFromSession():User | null
 	{
@@ -289,7 +272,8 @@ export class RestService
 		obj['method'] = method;
 
 		let url = `${this.domain_configuration.domain}/${this.url_base}/updates.php`;
-		return this.http.post<T>(`${url}`,obj , { withCredentials: true, headers: this.getSessionHeaders() });
+		let options = { withCredentials: true, headers: this.getSessionHeaders() };
+		return this.http.post<T>(`${url}`, obj , options );
 	}
 
 	reservationUpdates<T>(method:string,data:any):Observable<T>
@@ -310,8 +294,6 @@ export class RestService
 		return this.http.post<T>(`${url}`,obj , { withCredentials: true, headers: this.getSessionHeaders() });
 	}
 
-
-
 	logout(redirect:boolean = true)
 	{
 		let obj = {
@@ -320,7 +302,7 @@ export class RestService
 
 		let path = '/produccion/#/login';
 
-		this.http.post<any>
+		let subs = this.http.post<any>
 		(
 			`${this.domain_configuration.domain}/${this.url_base}/updates.php`,
 			obj,
@@ -332,9 +314,10 @@ export class RestService
 			{
 				this.user = null;
 				localStorage.clear();
+				subs.unsubscribe();
+
 				if (redirect)
 					window.location.href=path;
-
 			},
 			error: (error:any)=>
 			{
@@ -355,49 +338,13 @@ export class RestService
 
 		return null;
 	}
-	//doLoginPlatform(email:string,password:string):Observable<LoginResponse>
-	//{
-	//	let url	= `${this.getPlatformDomain()}/${this.getUrlPlatform()}/login.php`;
-	//	let credentials = 'include';
 
-	//	let params	= new FormData();
-	//	params.set('password',password );
-	//	params.set('email', email );
-
-	//	let headers = { 'Content-Type':'application/json' };
-	//	let method = 'POST';
-
-	//	return fetch(url, {method, headers, params, credentials, body })
-	//	.then(response =>
-	//	{
-	//		if (!response.ok) {
-	//			throw new Error('Network response was not ok.');
-	//		}
-	//		return response.text(); // Assuming the response is JSON, adjust as needed
-	//	})
-	//	.then( text=>
-	//	{
-	//		let response = Utils.transformJson( text ) as RestResponse<T>;
-	//		// Process the data if needed before returning
-	//		if (response && response.session.id)
-	//		{
-	//			this.current_platform_client = response.platform_client;
-	//			this.user_permission = GetEmpty.user_permission();
-
-	//			localStorage.setItem('platform_client', JSON.stringify(response));
-	//			localStorage.setItem('session_token', response.session.id);
-	//			localStorage.removeItem(USER_PERMISSION_KEY);
-	//			localStorage.removeItem('session');
-	//		}
-	//		return response;
-
-	//	});
-	//}
 	getUrlSafe(url:string):string
 	{
 		return url;
 		//return this.dom_sanitizer.bypassSecurityTrustUrl(url);
 	}
+
 	getImagePath(image1_id:SuperEmpty<number>,image2_id:SuperEmpty<number> = null,image3_id:SuperEmpty<number> = null,image4_id:SuperEmpty<number> = null ,image5_id:SuperEmpty<number> = null):string
 	{
 		if (image1_id)
@@ -465,10 +412,8 @@ export class RestService
 
 	applyTheme()
 	{
-
 		if( this.preferences == null )
 			return;
-
 
 		let properties:Record<string,string> = {
 			'--menu-icon-color':this.preferences.menu_icon_color || '#F66151',
@@ -527,7 +472,6 @@ export class RestService
 		{
 			body.style.setProperty('--pos_item_height', '44px')
 		}
-
 
 		if( this.preferences?.login_background_image_id )
 		{
@@ -794,7 +738,7 @@ export class RestService
 		this.has_hades = this.user_permission.hades>0 && this.hades_counter >= 5;
 	}
 
-	getReport(report_name:string, query:Record<string,any>):Observable<any>
+	private _getParams(query:any):HttpParams
 	{
 		let params = new HttpParams();
 
@@ -804,13 +748,31 @@ export class RestService
 			{
 				params = params.set(i,Utils.getUTCMysqlStringFromDate( query[i] ));
 			}
-			else if( query[i] )
+			else if( query[i] != null && query[i] != undefined && query[i] != '' )
 			{
 				params = params.set( i, ''+query[ i ] );
 			}
 		}
+
+		return params;
+	}
+
+	public getReportByPath(report_name: string, query:any):Observable<any>
+	{
+		let params = this._getParams(query);
+		let url = `${this.domain_configuration.domain}/${this.url_base}/reports/${report_name}.php`;
+		let options = { params, headers: this.getSessionHeaders(), withCredentials: true };
+		return this.http.get<any>( url, options );
+	}
+
+	getReport(report_name:string, query:Record<string,any>):Observable<any>
+	{
+		let params = this._getParams(query);
 		params = params.set('report_name',report_name);
-		return this.http.get<any>(`${this.domain_configuration.domain}/${this.url_base}/reportes.php`, { params, headers: this.getSessionHeaders(), withCredentials: true });
+
+		let url = `${this.domain_configuration.domain}/${this.url_base}/reportes.php`;
+		let options = { params, headers: this.getSessionHeaders(), withCredentials: true };
+		return this.http.get<any>( url , options );
 	}
 
 	syncData(event: Event)
@@ -828,6 +790,71 @@ export class RestService
 			credentials:localStorage.getItem('session_token'),
 		};
 		return OfflineUtils.updateDb(data as ServerInfo);
+	}
+
+	normalizarOrderItems(order_item_info_list:OrderItemInfo[]):OrderItemInfo[]
+	{
+		let temp_list = order_item_info_list.map(i=>i);
+		let final_list:OrderItemInfo[] = [];
+
+		temp_list.sort((a,b)=>
+		{
+			let aa= !!a.order_item.item_option_id;
+			let bb= !!b.order_item.item_option_id;
+
+			if( aa == bb )
+				return 0;
+
+			return aa ? -1 : 1;
+		});
+
+		while( temp_list.length )
+		{
+			let item_info = temp_list.pop() as OrderItemInfo;
+			let subitems = temp_list.filter((i)=>i.order_item.item_group == item_info.order_item.item_group);
+			final_list.push( item_info );
+			subitems.forEach((a)=>
+			{
+				let index = temp_list.indexOf(a);
+				temp_list.splice(index,1);
+				a.order_item.qty = a.order_item.item_option_qty*item_info.order_item.qty;
+				final_list.push( a );
+			});
+		}
+		return final_list;
+	}
+
+
+
+	createStructuredItems(oi:OrderInfo):StructuredOrderInfo
+	{
+		let order_info:StructuredOrderInfo = {...oi, structured_items: []};
+
+		let ois:OrderItemStructureInfo[] = [];
+
+		order_info.items.forEach((oii:OrderItemInfo,index:number)=>
+		{
+			oii.serials_string = oii.serials
+			.map((oii)=>oii.serial.serial_number+'\n'+(oii.serial.description? '-'+oii.serial.description : ''))
+			.join('\n--------------------\n');
+
+			if( ois.length == 0 ||
+				order_info.items[index-1].order_item.item_group != oii.order_item.item_group ||
+				order_info.items[index-1].order_item.item_group != oii.order_item.item_group
+			)
+			{
+				ois.push({...oii,childs:[], total_options: 0,total_cost:oii.order_item.total})
+			}
+			else
+			{
+				ois[ois.length-1].childs.push(oii);
+				ois[ois.length-1].total_options += oii.order_item.qty;
+				ois[ois.length-1].total_cost += oii.order_item.qty*oii.order_item.total;
+			}
+		});
+
+		order_info.structured_items = ois;
+		return order_info;
 	}
 }
 

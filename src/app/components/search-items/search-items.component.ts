@@ -14,15 +14,16 @@ interface CItemInfo extends ItemInfo
 	display_category:boolean;
 }
 
-@Component({
-  selector: 'app-search-items',
-  standalone: true,
-  imports: [CommonModule, FormsModule],
-  templateUrl: './search-items.component.html',
-  styleUrl: './search-items.component.css'
+@Component
+({
+	selector: 'app-search-items',
+	standalone: true,
+	imports: [CommonModule, FormsModule],
+	templateUrl: './search-items.component.html',
+	styleUrl: './search-items.component.css'
 })
-export class SearchItemsComponent extends BaseComponent implements OnInit,OnDestroy,OnChanges{
-
+export class SearchItemsComponent extends BaseComponent implements OnInit,OnDestroy,OnChanges
+{
 	@ViewChild('item_search', { read: ElementRef })
 	item_search!: ElementRef;
 	item_info_list:ItemInfo[] = [];

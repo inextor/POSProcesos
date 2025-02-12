@@ -70,11 +70,13 @@ export class SearchUsersComponent implements OnInit, OnDestroy, OnChanges
 			debounceTime(350),
 			mergeMap((response)=>
 			{
+				let permissions:Record<string,string|number|null|Date> = this.type == 'CLIENT' ? {}: {'user_permission_production': 1};
+
 				return this.rest_user.search
 				({
 					eq:{ status: 'ACTIVE', type: this.type, },
 					start:{ name: response},
-					search_extra:{'user_permission_production': 1},
+					search_extra: permissions,
 					limit: 50,
 				})
 			})
