@@ -34,7 +34,7 @@
 				</div>
 			</div>
 
-			<div class="col-12 col-md-3">
+			<div class="col-12 col-md-3"  *ngIf="reservation_info.reservation.condition!='CLOSED'">
 				<span></span>
 				<div>
 					<a [routerLink]="['/rentals/add-period', reservation_info.reservation.id]" class="btn btn-primary">Generar Corte</a>
@@ -42,7 +42,7 @@
 				</div>
 			</div>
 		</div>
-		<div class="row">
+		<div class="row" *ngIf="reservation_info.reservation.condition!='CLOSED'">
 			<div class="col-12 col-md-6 form-group">
 				<label>Fecha de entrega</label>
 				<input type="datetime-local" name="scheduled_delivery" [ngModel]="scheduled_delivery" (ngModelChange)="updateScheduleDelivery($event)" class="form-control" [disabled]="disable_all">
@@ -89,7 +89,7 @@
 					<td class="text-end">
 						<div *ngFor="let dd of ri.return_assignments">{{dd.user.name}}</div>
 					</td>
-					<td class="text-end">
+					<td class="text-end" *ngIf="reservation_info.reservation.condition!='CLOSED'">
 						<ng-container *ngIf="!disable_all">
 							<a class="btn btn-primary btn-sm mx-1" (click)="showAssignSerials(ri)">Asignar Inventario</a>
 							<button class="btn btn-primary btn-sm mx-1" (click)="markReservationItemAsDelivered(ri)">Marcar Entregado</button>
@@ -172,7 +172,7 @@
 								<td>{{ris.reservation_item_serial.serial}}</td>
 								<td>{{ris.reservation_item_serial.delivered_timestamp | shortDate}}</td>
 								<td>{{ris.reservation_item_serial.returned_timestamp | shortDate}}</td>
-								<td class="text-end">
+								<td class="text-end" *ngIf="reservation_info.reservation.condition!='CLOSED'">
 									<button type="button" class="btn btn-primary btn-sm" *ngIf="ris.reservation_item_serial.delivered_timestamp == null" (click)="markReservationItemSerialAsDelivered(ris)">
 										Marcar Entregado
 									</button>
