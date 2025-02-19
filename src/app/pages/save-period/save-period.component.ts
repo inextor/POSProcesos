@@ -291,9 +291,11 @@ export class SavePeriodComponent extends BaseComponent implements OnInit
 		return price_type;
 	}
 
-	save(evt:Event):void
+	save(evt:SubmitEvent):void
 	{
 		evt.preventDefault();
+		let target:any = evt.submitter;
+		console.log(target.value);
 
 		let store = this.store_list.find(x=>x.id == this.reservation_info.reservation.store_id) as Store
 		console.log('Store is ', store);
@@ -353,47 +355,52 @@ export class SavePeriodComponent extends BaseComponent implements OnInit
 		console.log('Items has', order_info.items);
 
 		this.subs.sink = this
-			.rest_order_info
-			.create( order_info )
-			.pipe
-			(
-				mergeMap((order_info:OrderInfo)=>
-				{
-					return forkJoin
-					({
-						order_info: of(order_info),
-						update: this.rest.update('closeOrder',{order_id:order_info.order.id})
-					})
+		.rest_order_info
+		.create( order_info )
+		.pipe
+		(
+			mergeMap((order_info:OrderInfo)=>
+			{
+				return forkJoin
+				({
+					order_info: of(order_info),
+					update: this.rest.update('closeOrder',{order_id:order_info.order.id})
 				})
-				,mergeMap((response)=>
+			})
+			,mergeMap((response)=>
+			{
+				this.showWarning('Corte de Reservación agregado');
+				
+				if(target.value === 'create_and_close')
 				{
-					this.showWarning('Corte de Reservación agregado');
 					let request = { reservation_id: this.reservation_info.reservation.id };
 					return this.rest.reservationUpdates('closeReservation', request ).pipe
 					(
 						retry(3),
 						mergeMap(()=>of(response.order_info)),
 					)
-				})
-			)
-			.subscribe
-			({
-				next:(order_info)=>
+				}
+				return of(response.order_info);
+			})
+		)
+		.subscribe
+		({
+			next:(order_info)=>
+			{
+				this.showSuccess('Reservación cerrada con exito');
+				let f = ()=>
 				{
-					this.showSuccess('Reservación cerrada con exito');
-					let f = ()=>
-					{
-						console.log('Redirecting to ', window.location.protocol+window.location.hostname+'/#/view-order/'+order_info.order.id);
-						window.location.href = window.location.protocol+"//"+window.location.hostname+'/#/view-order/'+order_info.order.id;
-					};
+					console.log('Redirecting to ', window.location.protocol+window.location.hostname+'/#/view-order/'+order_info.order.id);
+					window.location.href = window.location.protocol+"//"+window.location.hostname+'/#/view-order/'+order_info.order.id;
+				};
 
-					setTimeout( f, 700);
-				}
-				,error:(error:any)=>
-				{
-					this.showError(error);
-				}
-			});
+				setTimeout( f, 700);
+			}
+			,error:(error:any)=>
+			{
+				this.showError(error);
+			}
+		});
 	}
 
 	getDaysBetweenDates(start:Date, end:Date):number
