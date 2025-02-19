@@ -348,6 +348,7 @@ export class SavePeriodComponent extends BaseComponent implements OnInit
 
 		let order_info = order_builder.order_info;
 		order_info.order.client_user_id = this.reservation_info.reservation.user_id;
+		order_info.order.client_name = this.reservation_info.reservation.client_name;
 
 		console.log('Items has', order_info.items);
 

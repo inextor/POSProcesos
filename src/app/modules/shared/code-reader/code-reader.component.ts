@@ -3,6 +3,20 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 declare var BarcodeDetector: any;
 
+
+interface x_y {
+	x: number;
+	y: number;
+};
+export interface CodeValue
+{
+	rawValue: string;
+	boundingBox?: DOMRectReadOnly;
+	cornerPoints: x_y[];
+	format:	string;
+
+}
+
 @Component({
 	selector: 'app-code-reader',
 	standalone: true,
@@ -14,7 +28,7 @@ export class CodeReaderComponent implements OnInit
 {
 	@Input() cam_debounce: number = 300;
 	@Input() cam_code_type: string | undefined;
-	@Output() onDetect: EventEmitter<any> = new EventEmitter();
+	@Output() onDetect: EventEmitter<CodeValue[]> = new EventEmitter();
 
 	private barcode_detector: any = null;
 	private last_detection_time: number = 0;
@@ -56,7 +70,7 @@ export class CodeReaderComponent implements OnInit
 
 			video.addEventListener('play', ()=> this.scanBarcode(video));
 		})
-		.catch((err) =>
+		.catch((_err) =>
 		{
 			//this.showError('Error al acceder a la cámara');
 		});
@@ -98,7 +112,7 @@ export class CodeReaderComponent implements OnInit
 			.then((barcodes: any) =>
 			{
 				const current_time = Date.now();
-				if (barcodes.length > 0 && (current_time - this.last_detection_time > this.cam_debounce))
+				if ( barcodes.length > 0 && (current_time - this.last_detection_time > this.cam_debounce))
 				{
 					this.onDetect.emit(barcodes);
 					this.last_detection_time = current_time;
@@ -118,7 +132,13 @@ export class CodeReaderComponent implements OnInit
 	{
 		if (this.manual_code)
 		{
-			this.onDetect.emit([{ rawValue: this.manual_code }]);
+			this.onDetect.emit
+			([{
+				rawValue: this.manual_code,
+				cornerPoints: [],
+				format: 'text'
+			}]);
+
 			this.manual_code = '';
 		}
 	}

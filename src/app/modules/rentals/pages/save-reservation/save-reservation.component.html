@@ -12,7 +12,13 @@
 				<div class="col-12 col-md-4" *ngIf="!reservation_info.reservation.id">
 					<div class="form-group">
 						<label>Cliente</label>
-						<app-search-users [type]="'CLIENT'" [search_str]="client_search_str" (search_strChange)="onClientStrChange($event)" [reset_on_search]="false" (user_selected)="onSelectUser($event)"></app-search-users>
+						<app-search-users
+							[type]="'CLIENT'"
+							[search_str]="client_search_str"
+							(search_strChange)="onClientStrChange($event)"
+							[reset_on_search]="false"
+							(user_selected)="onSelectUser($event)"
+							null_user_string="Registrar"></app-search-users>
 					</div>
 				</div>
 				<!-- <div class="col-12 col-md">

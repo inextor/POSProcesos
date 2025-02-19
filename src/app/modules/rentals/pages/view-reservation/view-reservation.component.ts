@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { BaseComponent } from '../../../shared/base/base.component';
-import { Rest, RestSimple } from '../../../shared/services/Rest';
+import { Rest, RestSimple, SearchObject } from '../../../shared/services/Rest';
 import { ExtendedReservation, ItemInfo, ReservationInfo, ReservationItemInfo, ReservationItemSerialInfo } from '../../../shared/Models';
 import { ParamMap, RouterModule } from '@angular/router';
 import { forkJoin, mergeMap, of } from 'rxjs';
@@ -15,7 +15,7 @@ import { SearchItemsComponent } from "../../../../components/search-items/search
 import { ItemNamePipe } from "../../../shared/pipes/item-name.pipe";
 import { Utils } from '../../../shared/Utils';
 import { SearchUsersComponent } from "../../../../components/search-users/search-users.component";
-import { CodeReaderComponent } from "../../../shared/code-reader/code-reader.component";
+import { CodeReaderComponent, CodeValue } from "../../../shared/code-reader/code-reader.component";
 
 interface CReservation_Item_Serial extends Reservation_Item_Serial
 {
@@ -32,7 +32,6 @@ interface CReservation_Item_Serial extends Reservation_Item_Serial
 })
 export class ViewReservationComponent extends BaseComponent
 {
-
 	rest_reservation_info:Rest<ExtendedReservation, ReservationInfo> = this.rest.initRest('reservation_info');
 	reservation_info: ReservationInfo = GetEmpty.reservation_info();
 	show_assign_delivery: boolean = false;
@@ -112,9 +111,9 @@ export class ViewReservationComponent extends BaseComponent
 		})
 	}
 
-	onCodeArrived(code:string)
+	onCodeArrived(code:CodeValue[])
 	{
-		this.addSerial(code);
+		this.addSerial(code[0].rawValue);
 	}
 
 	addSerial(serial:string)
@@ -188,7 +187,7 @@ export class ViewReservationComponent extends BaseComponent
 				this.reservation_item_serial_array.push( response.reservation_item_serial );
 
 
-				let  ris:ReservationItemSerialInfo = {
+				let ris:ReservationItemSerialInfo = {
 					reservation_item_serial: response.reservation_item_serial,
 					serial: response.serial
 				};
@@ -218,7 +217,7 @@ export class ViewReservationComponent extends BaseComponent
 		.reservationUpdates('assignReservationScheduleDelivery', obj )
 		.subscribe
 		({
-			next:(response)=>
+			next:(_response)=>
 			{
 				this.showSuccess('Asignación de entrega creada');
 				this.scheduled_delivery = scheduled_delivery;
@@ -267,13 +266,12 @@ export class ViewReservationComponent extends BaseComponent
 		});
 	}
 
-
-
 	showAssignSerials(rii: ReservationItemInfo)
 	{
 		this.selected_reservation_item = rii.reservation_item;
 		this.show_assign_serials = true;
 	}
+
 	showAddItem()
 	{
 		this.show_add_item = true;
@@ -285,7 +283,6 @@ export class ViewReservationComponent extends BaseComponent
 		this.new_item_qty = 1;
 		this.new_item_info = item_info;
 	}
-
 
 	addNewItem(submit_event:Event)
 	{
@@ -314,7 +311,6 @@ export class ViewReservationComponent extends BaseComponent
 		reservation_item.price = price ? price.price : 1;
 		reservation_item.tax_included = price ? price.tax_included : 'YES';
 		reservation_item.delivered_qty = this.new_item_qty;
-
 
 		this.subs.sink = this.rest_reservation_item
 		.create( reservation_item )
@@ -346,6 +342,7 @@ export class ViewReservationComponent extends BaseComponent
 			}
 		});
 	}
+
 	onSelectDeliveryUser(user:User|null)
 	{
 		if( user == null )
@@ -372,7 +369,7 @@ export class ViewReservationComponent extends BaseComponent
 		.batchCreate( ri_array )
 		.subscribe
 		({
-			next:(response)=>
+			next:(_response)=>
 			{
 				console.log("Que pedo");
 				this.showSuccess('Asignación de entrega creada');
@@ -491,10 +488,14 @@ export class ViewReservationComponent extends BaseComponent
 	{
 		this.is_loading = true;
 
+		let riss = this.rest_reservation_item_serial.getEmptySearch();
+		riss.eq.reservation_id = this.reservation_info.reservation.id;
+		riss.eq.status = 'ACTIVE';
+
 		this.subs.sink = forkJoin
 		({
 			reservation_info: this.rest_reservation_info.get( this.reservation_info.reservation.id ),
-			reservation_item_serial_array: this.rest_reservation_item_serial.search({ eq: { reservation_id: this.reservation_info.reservation.id, status: 'ACTIVE' } })
+			reservation_item_serial_array: this.rest_reservation_item_serial.search(riss)
 		})
 		.subscribe
 		({
@@ -507,6 +508,7 @@ export class ViewReservationComponent extends BaseComponent
 			},
 			error:(error)=>
 			{
+				console.log( error );
 				this.showError("Ocurrio un error al recargar la informacion de la reservación");
 			}
 		});
