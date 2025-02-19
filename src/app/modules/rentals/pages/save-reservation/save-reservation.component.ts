@@ -75,7 +75,8 @@ export class SaveReservationComponent extends BaseComponent implements OnInit
 					? this.rest_address.search({ eq: { user_id: reservation_client_id } })
 					: of({ total: 0, data: [] });
 
-				return forkJoin({
+				return forkJoin
+				({
 					reservation_info: of(responses.reservation_info),
 					currency_rates: of(responses.currency_rates),
 					price_types: of(responses.price_types),
