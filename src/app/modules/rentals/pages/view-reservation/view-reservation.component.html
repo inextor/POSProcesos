@@ -16,24 +16,17 @@
 				</div>
 			</div>
 			<div class="col-12 col-md-3">
-				<span>Creation: </span>
+				<span>Fecha de Registro: </span>
 				<div>
 					<strong>{{reservation_info.reservation.created | shortDate}}</strong>
 				</div>
 			</div>
 			<div class="col-12 col-md-3">
-				<span>Ultimo Corte</span>
+				<span>Último Corte</span>
 				<div>
 					<strong>N/A</strong>
 				</div>
 			</div>
-			<!-- <div class="col-12 col-md-3">
-				<span>Ultimo Corte</span>
-				<div>
-					<strong>N/A</strong>
-				</div>
-			</div> -->
-
 			<div class="col-12 col-md-3"  *ngIf="reservation_info.reservation.condition!='CLOSED'">
 				<span></span>
 				<div>
@@ -48,7 +41,7 @@
 				<input type="datetime-local" name="scheduled_delivery" [ngModel]="scheduled_delivery" (ngModelChange)="updateScheduleDelivery($event)" class="form-control" [disabled]="disable_all">
 			</div>
 			<div class="col-12 col-md-6 form-group">
-				<label>Fecha de recolección</label>
+				<label>Fecha de Recolección</label>
 				<input type="datetime-local" name="scheduled_return" [ngModel]="scheduled_return" (ngModelChange)="updateScheduleReturn($event)" class="form-control" [disabled]="disable_all">
 			</div>
 		</div>
@@ -125,7 +118,6 @@
 						<ul class="list-unstyled">
 							<li *ngFor="let dd of ri.return_assignments">- {{dd.user.name}}</li>
 						</ul>
-						
 						<div class="text-end" *ngIf="reservation_info.reservation.condition!='CLOSED'">
 							<ng-container *ngIf="!disable_all">
 								<a class="btn btn-primary btn-sm m-1" (click)="showAssignSerials(ri)">Asignar Inventario</a>
@@ -138,7 +130,6 @@
 			</ng-container>
 		</div>
 	</div>
-	
 	<ng-container *ngIf="!disable_all">
 		<h2 class="my-3">Agregar Extras</h2>
 		<div class="card p-3">
@@ -242,14 +233,12 @@
 							<p><strong>Serie:</strong> {{ris.reservation_item_serial.serial}}</p>
 							<p><strong>Entrega:</strong> {{ris.reservation_item_serial.delivered_timestamp | shortDate}}</p>
 							<p><strong>Recolección:</strong> {{ris.reservation_item_serial.returned_timestamp | shortDate}}</p>
-		
 							<div class="text-end" *ngIf="reservation_info.reservation.condition!='CLOSED'">
 								<button type="button" class="btn btn-primary btn-sm mx-1" 
 									*ngIf="ris.reservation_item_serial.delivered_timestamp == null" 
 									(click)="markReservationItemSerialAsDelivered(ris)">
 									Marcar Entregado
 								</button>
-		
 								<button type="button" class="btn btn-primary btn-sm mx-1" 
 									*ngIf="ris.reservation_item_serial.returned_timestamp == null" 
 									(click)="markReservationItemSerialAsReturned(ris)">
