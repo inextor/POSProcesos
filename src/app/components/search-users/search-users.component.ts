@@ -29,7 +29,7 @@ export class SearchUsersComponent implements OnInit, OnDestroy, OnChanges
 	user_list:User[] = [];
 
 	subs = new SubSink();
-
+	show_null_option:Boolean = true;
 	selected_index = -1;
 
 	constructor(public rest:RestService, public shortcuts:ShortcutsService) { }
@@ -172,6 +172,7 @@ export class SearchUsersComponent implements OnInit, OnDestroy, OnChanges
 
 	onUserSelected(user:User | null)
 	{
+		this.show_null_option = false;
 		this.user_selected.emit( user );
 
 		if( this.reset_on_search )
