@@ -31,7 +31,9 @@
 							"src/assets/bootstrap/css/bootstrap.min.css",
 							"src/styles.css"
 						],
-						"scripts": []
+						"scripts": [
+							"src/assets/js/maps.js"
+						]
 					},
 					"configurations": {
 						"production": {
