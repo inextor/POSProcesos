@@ -307,5 +307,15 @@ export class SaveReservationComponent extends BaseComponent implements OnInit
 	{
 		this.reservation_info.items.splice(index, 1);
 	}
+
+	navigateToSaveAddress(user_id: number)
+	{
+		if (!user_id) 
+		{
+			console.error('No se encontró el ID del usuario');
+			return;
+		}
+		window.location.href = window.location.protocol + "//" + window.location.hostname + '/#/add-address/' + user_id;
+	}
 }
 

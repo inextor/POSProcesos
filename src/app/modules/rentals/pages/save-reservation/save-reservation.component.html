@@ -37,6 +37,9 @@
 						<option value="">Seleccionar</option>
 						<option *ngFor="let address of address_user_list" [value]="address.id">{{ address.address }}</option>
 					</select>
+					<button *ngIf="address_user_list.length === 0" type="button" class="btn btn-secondary mt-2" (click)="navigateToSaveAddress(reservation_info.reservation.user_id)">
+						Agregar dirección
+					</button>
 				</div>
 				<div class="col-12 col-md-2">
 					<label>Sucursal</label>
