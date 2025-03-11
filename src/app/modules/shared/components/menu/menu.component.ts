@@ -44,7 +44,7 @@ export class MenuComponent extends BaseComponent
 	ngOnInit()
 	{
 
-		this.subs.sink = this.getParamsAndQueriesObservable()
+		this.sink = this.getParamsAndQueriesObservable()
 		.subscribe((params:any)=>
 		{
 			if( this.rest.user?.id && !this.is_initialized )

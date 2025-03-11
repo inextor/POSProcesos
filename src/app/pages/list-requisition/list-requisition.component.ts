@@ -202,7 +202,6 @@ export class ListRequisitionComponent extends BaseComponent implements OnInit
 
 					if( !cRequisition_item )
 					{
-
 						cRequisition_item= {
 							item: production.item_info.item,
 							production: {item_id: production.item_info.item.id, produced:0, production_merma_qty:0},
