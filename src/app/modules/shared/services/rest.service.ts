@@ -11,6 +11,7 @@ import { environment } from '../../../../environments/environment';
 import { io, Socket } from 'socket.io-client';
 import { OrderInfo, OrderItemInfo, OrderItemStructureInfo, SocketMessage, StructuredOrderInfo } from '../Models';
 import { OfflineUtils, ServerInfo } from '../OfflineUtils';
+import { BuildInfo } from '../BuildInfo';
 
 export const USER_PERMISSION_KEY = 'user_permission';
 const USER_KEY = 'user';
@@ -694,11 +695,7 @@ export class RestService
 
 	getVersion():string
 	{
-		let buildTime = new Date();
-		//buildTime.setTime(BuildInfo.timestamp);
-		let date_pipe = new DatePipe('en-us');
-		let version_created = date_pipe.transform( buildTime, 'yyMMdd:HHmm','UTC')+'-'+date_pipe.transform(buildTime,'hhmm');
-		return version_created;
+		return 'P-'+BuildInfo.timestamp;
 	}
 	public get is_offline()
 	{
