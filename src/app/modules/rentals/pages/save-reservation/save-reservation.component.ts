@@ -135,6 +135,12 @@ export class SaveReservationComponent extends BaseComponent implements OnInit
 			status: 'ACTIVE'
 		};
 
+		if (!this.reservation_info.reservation.user_id)
+		{
+			this.showError('Seleccione un cliente registrado');
+			return;
+		}
+
 		if (this.reservation_info.reservation.id == 0)
 		{
 			this.sink =this.rest_reservation_info.create(this.reservation_info)
