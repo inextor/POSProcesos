@@ -1004,7 +1004,7 @@ export interface Production_Area_Item{
 }
 
 export interface Production_Role_Price{
-	created:Date;
+	created:Date;	created:Date;
 	created_by_user_id:number;
 	id:number;
 	item_id:number;

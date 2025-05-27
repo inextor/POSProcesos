@@ -8,6 +8,6 @@ import { CommonModule } from '@angular/common';
   templateUrl: './list-production-role.component.html',
   styleUrl: './list-production-role.component.css'
 })
-export class ListProductionRoleComponent {
+export class ListRoleComponent {
 
 }

@@ -4,15 +4,15 @@
 			<h1 class="my-3">Roles de produccion</h1>
 		</div>
 		<div class="col-12 col-xl-1 text-end">
-			<a class="btn btn-primary text-end" [routerLink]="['/add-production-role']">Agregar</a>
+			<a class="btn btn-primary text-end" [routerLink]="['/add-role']">Agregar</a>
 		</div>
 	</div>
 	<app-loading [is_loading]="is_loading"></app-loading>
-	<ng-container *ngIf="production_role_list.length == 0">
+	<ng-container *ngIf="role_list.length == 0">
 		<div class="alert alert-info mt-3">No se encontraron reservaciones</div>
 	</ng-container>
 
-	<div class="card px-1 px-md-2 py-3 mt-3 " *ngIf="production_role_list.length > 0">
+	<div class="card px-1 px-md-2 py-3 mt-3 " *ngIf="role_list.length > 0">
 		<table class="table table-striped w-100">
 			<thead>
 				<tr>
@@ -24,11 +24,11 @@
 					<th class="text-end">Acciones</th>
 				</tr>
 			</thead>
-			<tr *ngFor="let production_role of production_role_list">
+			<tr *ngFor="let role of role_list">
 				<td class="border">
 					<!--a [routerLink]="['/view-production-role', ri.production_role.id]"-->
-						<b>#{{production_role.id}}</b>
-						{{production_role.client_name }}
+						<b>#{{role.id}}</b>
+						{{role.client_name }}
 					<!--/a -->
 				</td>
 			</tr>

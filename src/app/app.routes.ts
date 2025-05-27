@@ -2,6 +2,7 @@ import { PreloadAllModules, RouterModule, Routes } from '@angular/router';
 import { SaveProductionAreaComponent } from './pages/save-production-area/save-production-area.component';
 import { ListProductionAreaComponent } from './pages/list-production-area/list-production-area.component';
 import { ViewProductionAreaComponent } from './pages/view-production-area/view-production-area.component';
+import { ListRoleComponent } from './pages/list-role/list-role.component';
 import { SaveProcessComponent } from './pages/save-process/save-process.component';
 import { ListRequisitionComponent } from './pages/list-requisition/list-requisition.component';
 import { UsersCheckingClockComponent } from './pages/users-checking-clock/users-checking-clock.component';
@@ -30,6 +31,9 @@ export const routes: Routes = [
 	{path: 'edit-production-area/:id', component: SaveProductionAreaComponent, canActivate: [authGuard]},
 	{path: 'list-production-area', component: ListProductionAreaComponent, canActivate: [authGuard]},
 	{path: 'view-production-area/:id', component: ViewProductionAreaComponent, canActivate: [authGuard]},
+	{path: 'add-role', component: ListRoleComponent, canActivate: [authGuard]},
+	{path: 'edit-role/:id', component: ListRoleComponent, canActivate: [authGuard]},
+	{path: 'list-role', component: ListRoleComponent, canActivate: [authGuard]},
 	{path: 'add-process/:production_area_id', component: SaveProcessComponent, canActivate: [authGuard]},
 	{path: 'edit-process/:id', component: SaveProcessComponent, canActivate: [authGuard]},
 //	{path: 'list-process', component: ListProcessComponent},
