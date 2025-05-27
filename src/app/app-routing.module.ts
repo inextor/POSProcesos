@@ -23,6 +23,7 @@ import { SaveUserExtraFieldsComponent } from './pages/save-user-extra-fields/sav
 import { DashboardComponent } from './pages/dashboard/dashboard.component';
 import { SearchSerialComponent } from './pages/search-serial/search-serial.component';
 import { HomeComponent } from './pages/home/home.component';
+import { ListProductionRolePriceComponent } from './pages/list-production-role-price/list-production-role-price.component';
 
 export const routes: Routes = [
 	{path: 'login', component: LoginComponent},
@@ -56,7 +57,8 @@ export const routes: Routes = [
 			{path: 'list-payroll', component: ListPayrollComponent, canActivate: [authGuard]},
 			{path: 'save-worklog-rules', component: SaveWorklogRulesComponent, canActivate: [authGuard]},
 			{path: 'search-serial', component: SearchSerialComponent, canActivate: [authGuard]},
-			{path: 'rentals', loadChildren: () => import('./modules/rentals/rentals.module').then(m => m.RentalsModule)}
+			{path: 'rentals', loadChildren: () => import('./modules/rentals/rentals.module').then(m => m.RentalsModule)},
+			{path: 'list-role-price', component: ListProductionRolePriceComponent, canActivate: [authGuard]},
 		]
 	},
 ];

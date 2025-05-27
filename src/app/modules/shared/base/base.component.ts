@@ -476,7 +476,7 @@ export class BaseComponent	implements OnDestroy
 		this.router.navigate([this.path],{queryParams: search});
 	}
 
-	set sink(s:SubscriptionLike)
+	public set sink(s:SubscriptionLike)
 	{
 		this.subs.sink = s;
 	}

@@ -1,0 +1,37 @@
+<div class="container-fluid">
+	<div class="row align-items-center mx-0">
+		<div class="col-8">
+			<h1 class="my-3 text-capitalize">Precio por rol de producción</h1>
+		</div>
+		<div class="col-4 text-right">
+			<a class="btn btn-primary" routerLink="/add-production-role-price">Agrega</a>
+		</div>
+	</div>
+
+	<div  class="card p-3 mt-3">
+		<app-loading [is_loading]="is_loading"></app-loading>
+		<div>
+			<table class="table table-sm table-nowrap mb-0">
+				<thead class="thead-light">
+					<tr>
+						<th>Nombre</th>
+						<th>Actualizacíon</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr *ngFor="let prpi_info of production_role_price_info_list">
+						<td>{{prpi_info | itemName }}</td>
+						<td>{{prpi_info.production_role_price.price | currency}}</td>
+						<td>{{prpi_info.production_role_price.updated | shortDate: 'relative' }}</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+		<div class="card" *ngIf="production_role_price_info_list.length == 0">
+			<div class="card-body">
+				No hay registros para mostrar
+			</div>
+		</div>
+	</div>
+	<app-pagination [path]="'/list-table'" [pages]="pages" [total_pages]="total_pages" [current_page]="current_page"></app-pagination>
+</div>

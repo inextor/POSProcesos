@@ -1002,6 +1002,18 @@ export interface Production_Area_Item{
 	status:'ACTIVE'|'DELETED';
 	updated:Date;
 }
+
+export interface Production_Role_Price{
+	created:Date;
+	created_by_user_id:number;
+	id:number;
+	item_id:number;
+	price:number;
+	production_role_id:number;
+	updated:Date;
+	updated_by_user_id:number;
+}
+
 export interface Purchase{
 	created:Date;
 	created_by_user_id:number | null;
@@ -1196,6 +1208,14 @@ export interface Returns{
 	store_id:number
 	total:number;
 	updated:Date;
+}
+export interface Role{
+	created:Date;
+	created_by_user_id:number | null;
+	id:number;
+	name:string;
+	updated:Date;
+	updated_by_user_id:number | null;
 }
 export interface Sat_Factura{
 	created:Date;

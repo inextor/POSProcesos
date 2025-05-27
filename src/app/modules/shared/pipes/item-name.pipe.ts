@@ -11,7 +11,7 @@ export class ItemNamePipe implements PipeTransform {
 
 	constructor(private rest: RestService) {}
 
-	transform(item_info: ItemInfo, ...args: unknown[]): string
+	transform(item_info: any, ...args: unknown[]): string
 	{
 		if( !item_info.category)
 			return item_info.item.name;
