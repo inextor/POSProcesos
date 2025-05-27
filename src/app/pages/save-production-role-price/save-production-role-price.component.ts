@@ -17,7 +17,7 @@ export class SaveProductionRolePriceComponent extends BaseComponent implements O
 {
 	rest_production_role_price: RestSimple<Production_Role_Price> = this.rest.initRest('production_role_price',['id','name','price','created','updated']);
 	rest_role: RestSimple<Role> = this.rest.initRest('role',['id','name','created','updated']);
-	role_list: Role[] = [];
+	role_list: Role[] = []; // Changed from roleList to role_list
 
 	ngOnInit(): void
 	{
@@ -41,7 +41,7 @@ export class SaveProductionRolePriceComponent extends BaseComponent implements O
 		.subscribe((response)=>
 		{
 			this.is_loading = false;
-			this.role_list = response.role.data;
+			this.role_list = response.role.data; // Updated reference
 			this.is_loading = false;
 		});
 	}
