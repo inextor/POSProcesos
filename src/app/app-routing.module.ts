@@ -24,6 +24,8 @@ import { DashboardComponent } from './pages/dashboard/dashboard.component';
 import { SearchSerialComponent } from './pages/search-serial/search-serial.component';
 import { HomeComponent } from './pages/home/home.component';
 import { ListProductionRolePriceComponent } from './pages/list-production-role-price/list-production-role-price.component';
+import { ListRoleComponent } from './pages/list-role/list-role.component';
+import { SaveRoleComponent } from './pages/save-role/save-role.component';
 
 export const routes: Routes = [
 	{path: 'login', component: LoginComponent},
@@ -59,6 +61,9 @@ export const routes: Routes = [
 			{path: 'search-serial', component: SearchSerialComponent, canActivate: [authGuard]},
 			{path: 'rentals', loadChildren: () => import('./modules/rentals/rentals.module').then(m => m.RentalsModule)},
 			{path: 'list-role-price', component: ListProductionRolePriceComponent, canActivate: [authGuard]},
+			{path: 'list-role', component: ListRoleComponent, canActivate: [authGuard]},
+			{path: 'add-role', component: SaveRoleComponent, canActivate: [authGuard]},
+			{path: 'edit-role/:id', component: SaveRoleComponent, canActivate: [authGuard]}
 		]
 	},
 ];

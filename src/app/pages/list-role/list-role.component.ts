@@ -4,11 +4,13 @@ import { BaseComponent } from '../../modules/shared/base/base.component';
 import { RestSimple, SearchObject } from '../../modules/shared/services/Rest';
 import { Role } from '../../modules/shared/RestModels';
 import { mergeMap } from 'rxjs';
+import { RouterModule } from '@angular/router';
+import { ShortDatePipe } from "../../modules/shared/pipes/short-date.pipe";
 
 @Component({
 	selector: 'app-list-role',
 	standalone: true,
-	imports: [CommonModule],
+	imports: [CommonModule, RouterModule, ShortDatePipe],
 	templateUrl: './list-role.component.html',
 	styleUrl: './list-role.component.css'
 })

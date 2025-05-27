@@ -1,9 +1,20 @@
 import { ExtendedReservation, OrderInfo, OrderItemInfo, ReservationInfo, ReservationItemInfo, ShippingInfo } from "./Models";
-import { User_Permission,Preferences,Production_Area,Process, Production, Shipping, Store, Payroll, Payroll_Concept_Value, Work_log_rules, User_extra_fields, User, Production_Area_Item, Item, Category, Reservation, Reservation_Item, Period, Order, Price_Type, Order_Item, Price, Item_Exception, Production_Role_Price } from "./RestModels";
+import { User_Permission,Preferences,Production_Area,Process, Production, Shipping, Store, Payroll, Payroll_Concept_Value, Work_log_rules, User_extra_fields, User, Production_Area_Item, Item, Category, Reservation, Reservation_Item, Period, Order, Price_Type, Order_Item, Price, Item_Exception, Production_Role_Price, Role } from "./RestModels";
 import { RestService } from "./services/rest.service";
 
 export class GetEmpty
 {
+    static role(): Role
+	{
+		return {
+			created: new Date(),
+			created_by_user_id: 0,
+			id: 0,
+			name: '',
+			updated: new Date(),
+			updated_by_user_id: 0
+		}
+    }
     static production_role_price(): Production_Role_Price {
         let p: Production_Role_Price = {
             id: 0,
