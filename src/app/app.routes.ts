@@ -18,7 +18,7 @@ import { CloseShiftComponent } from './pages/close-shift/close-shift.component';
 import { ListPayrollComponent } from './pages/list-payroll/list-payroll.component';
 import { SavePayrollConceptComponent } from './pages/save-payroll-concept/save-payroll-concept.component';
 import { SavePayrollComponent } from './pages/save-payroll/save-payroll.component';
-import { SaveProductionPaymentComponent } from './pages/save-production-payment/save-production-payment.component';
+import { SaveRoleItemPriceComponent } from './pages/save-role-item-price/save-role-item-price.component';
 import { SaveWorklogRulesComponent } from './pages/save-worklog-rules/save-worklog-rules.component';
 import { SaveUserExtraFieldsComponent } from './pages/save-user-extra-fields/save-user-extra-fields.component';
 import { ListProductionAreaItemComponent } from './pages/list-production-area-item/list-production-area-item.component';
@@ -49,7 +49,7 @@ export const routes: Routes = [
 	{path: 'edit-shipping/:id', component: SaveShippingComponent, canActivate: [authGuard]},
 	{path: 'login', component: LoginComponent},
 	{path: 'close-shift', component: CloseShiftComponent},
-	{path: 'save-production-payment', component: SaveProductionPaymentComponent, canActivate: [authGuard]},
+	{path: 'save-role-item-price', component: SaveRoleItemPriceComponent, canActivate: [authGuard]},
 	{path: 'save-payroll-concept', component: SavePayrollConceptComponent, canActivate: [authGuard]},
 	{path: 'create-payroll', component: SavePayrollComponent, canActivate: [authGuard]},
 	{path: 'edit-payroll/:id', component: SavePayrollComponent, canActivate: [authGuard]},
