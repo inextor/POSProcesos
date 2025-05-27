@@ -13,7 +13,7 @@ export class GetEmpty
             created: new Date(),
             updated: new Date(),
             item_id: 0,
-            production_role_id: 0
+            role_id: 0
         }
         throw new Error('Method not implemented.');
     }
