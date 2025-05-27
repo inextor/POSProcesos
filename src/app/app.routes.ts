@@ -12,6 +12,7 @@ import { ListTaskComponent } from './pages/list-task/list-task.component';
 import { LoginComponent } from './pages/login/login.component';
 import { SaveShippingComponent } from './pages/save-shipping/save-shipping.component';
 import { ListShippingComponent } from './pages/list-shipping/list-shipping.component';
+import { ListRoleItemPriceComponent } from './pages/list-role-item-price/list-role-item-price.component';
 import { NgModule } from '@angular/core';
 import { authGuard } from './modules/shared/finger/auth.guard';
 import { CloseShiftComponent } from './pages/close-shift/close-shift.component';
@@ -49,6 +50,7 @@ export const routes: Routes = [
 	{path: 'edit-shipping/:id', component: SaveShippingComponent, canActivate: [authGuard]},
 	{path: 'login', component: LoginComponent},
 	{path: 'close-shift', component: CloseShiftComponent},
+	{path: 'list-role-item-price', component: ListRoleItemPriceComponent, canActivate: [authGuard]},
 	{path: 'save-role-item-price', component: SaveRoleItemPriceComponent, canActivate: [authGuard]},
 	{path: 'save-payroll-concept', component: SavePayrollConceptComponent, canActivate: [authGuard]},
 	{path: 'create-payroll', component: SavePayrollComponent, canActivate: [authGuard]},

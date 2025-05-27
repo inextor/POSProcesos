@@ -60,10 +60,10 @@ export const routes: Routes = [
 			{path: 'save-worklog-rules', component: SaveWorklogRulesComponent, canActivate: [authGuard]},
 			{path: 'search-serial', component: SearchSerialComponent, canActivate: [authGuard]},
 			{path: 'rentals', loadChildren: () => import('./modules/rentals/rentals.module').then(m => m.RentalsModule)},
-			{path: 'list-role-price', component: ListProductionRolePriceComponent, canActivate: [authGuard]},
 			{path: 'list-role', component: ListRoleComponent, canActivate: [authGuard]},
 			{path: 'add-role', component: SaveRoleComponent, canActivate: [authGuard]},
-			{path: 'edit-role/:id', component: SaveRoleComponent, canActivate: [authGuard]}
+			{path: 'edit-role/:id', component: SaveRoleComponent, canActivate: [authGuard]},
+			{path: 'list-role-item-price', component: ListRoleItemPriceComponent, canActivate: [authGuard]},
 		]
 	},
 ];
