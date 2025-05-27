@@ -1,0 +1,30 @@
+<app-page-structure [showTitle]="true" [title]="'Save Role Item Price'">
+    <div class="page-content">
+        <form (submit)="onSubmit($event)" ngNativeValidate>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="mb-3">
+ <label for="role" class="form-label">Role</label>
+ <select id="role" class="form-select" [(ngModel)]="role_item_price.role_id" name="role" required>
+ <option *ngFor="let role of roles" [ngValue]="role.id">{{ role.name }}</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-6">
+ <div class="mb-3">
+                        <label for="price" class="form-label">Price</label>
+                        <input type="number" id="price" class="form-control" [(ngModel)]="role_item_price.price" name="price" required min="0">
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col">
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <button type="button" class="btn btn-secondary me-md-2" (click)="onCancel()">Cancel</button>
+                        <button type="submit" class="btn btn-primary" [disabled]="!form.valid">Save</button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</app-page-structure>
