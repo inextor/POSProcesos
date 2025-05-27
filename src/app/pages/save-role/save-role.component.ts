@@ -2,8 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RestSimple, SearchObject } from '../../modules/shared/services/Rest';
 import { Role, Production_Role_Price } from '../../modules/shared/RestModels';
-import { BaseComponent } from '../../modules/shared/base/base.component';
-import { forkJoin, mergeMap} from 'rxjs';
+import { BaseComponent } from './../../modules/shared/base/base.component';
+import { forkJoin, mergeMap, of} from 'rxjs';
 
 @Component({
 	selector: 'app-save-role',

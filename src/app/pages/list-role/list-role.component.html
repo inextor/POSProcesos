@@ -1,1 +1,32 @@
-<p>list-production-role works!</p>
+<div class="container-fluid">
+  <div class="row align-items-center">
+    <div class="col-6">
+      <h1 class="my-3">Roles</h1>
+    </div>
+    <div class="col-auto">
+      <button type="button" class="ml-2 btn btn-secondary lift" [routerLink]="['/add-role']"> Add Role</button>
+    </div>
+  </div>
+
+  <div class="card px-1 px-md-2 py-3 mt-3">
+    <table class="table table-striped w-100">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Name</th>
+          <th>Created</th>
+          <th>Updated</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let role of role_list">
+          <td>{{ role.id }}</td>
+          <td>{{ role.name }}</td>
+          <td>{{ role.created }}</td>
+          <td>{{ role.updated }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
