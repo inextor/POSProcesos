@@ -19,23 +19,23 @@ interface RoleItemPriceInfo
 }
 
 @Component({
-	selector: 'app-list-production-role-price',
+	selector: 'app-list-role-item-price',
 	standalone: true,
 	imports: [CommonModule, SharedModule, PaginationComponent, LoadingComponent, ShortDatePipe, ItemNamePipe],
-	templateUrl: './list-production-role-price.component.html',
-	styleUrl: './list-production-role-price.component.css'
+	templateUrl: './list-role-item-price.component.html',
+	styleUrl: './list-role-item-price.component.css'
 })
-export class ListProductionRolePriceComponent extends BaseComponent implements OnInit
+export class ListRoleItemPriceComponent extends BaseComponent implements OnInit
 {
 	search_props  =['id','created','updated','price','item_id','role_id'];
 	rest_role_item_price:RestSimple<Production_Role_Price> = this.rest.initRestSimple('production_role_price', this.search_props);
 	role_item_price_search:SearchObject<Production_Role_Price> = this.rest_role_item_price.getEmptySearch();
-	role_item_price_info_list: RoleItemPriceInfo[] = [];
+	role_item_price_info_list: RoleItemPriceInfo[] = []; // Changed from production_role_price_info_list to role_item_price_info_list
 	rest_item_info: Rest<Item,ItemInfo> = this.rest.initRest('item_info',['id','name','created','updated']);
 
 	ngOnInit(): void
 	{
-		this.path = '/list-production-role-price';
+		this.path = '/list-role-item-price';
 		this.subs.sink = this.route.paramMap.pipe
 		(
 			mergeMap((param_map:any)=>
@@ -63,7 +63,7 @@ export class ListProductionRolePriceComponent extends BaseComponent implements O
 		{
 			this.is_loading = false;
 
-			this.role_item_price_info_list = response.role_item_price_list.map((i:any)=>
+			this.role_item_price_info_list = response.role_item_price_list.map((i:any)=> // Changed from production_role_price_info_list to role_item_price_info_list
 			{
 				let item_info = response.item_list.data.find((ii:ItemInfo)=>ii.item.id == i.item_id);
 				return { role_item_price: i, item: item_info.item, category: item_info.category };

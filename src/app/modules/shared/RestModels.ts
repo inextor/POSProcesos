@@ -1003,7 +1003,7 @@ export interface Production_Area_Item{
 	updated:Date;
 }
 
-export interface Production_Role_Price{
+export interface Role_Item_Price{
 	created:Date;
 	created_by_user_id:number;
 	id:number;
