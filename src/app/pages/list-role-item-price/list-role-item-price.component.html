@@ -1,14 +1,12 @@
 <div class="container-fluid">
 	<div class="row align-items-center mx-0">
 		<div class="col-8">
-			<h1 class="my-3 text-capitalize">Precio por rol de producción</h1>
-			<h1 class="my-3 text-capitalize">List Role Item Price</h1>
+			<h1 class="my-3 text-capitalize">Precios Para Rol {{role.name}}</h1>
 		</div>
 		<div class="col-4 text-right">
-			<a class="btn btn-primary" routerLink="/add-role-item-price">Agrega</a>
+			<button class="btn btn-primary" (click)="show_dialog=true">Agregar</button>
 		</div>
 	</div>
-
 	<div  class="card p-3 mt-3">
 		<app-loading [is_loading]="is_loading"></app-loading>
 		<div>
@@ -36,3 +34,28 @@
 	</div>
 	<app-pagination [path]="'/list-table'" [pages]="pages" [total_pages]="total_pages" [current_page]="current_page"></app-pagination>
 </div>
+
+<app-modal [(show)]="show_dialog">
+	<div class="m-3" style="min-height: 300px;">
+		<form (submit)="onSubmit($event)" ngnativevalidate>
+			<div class="form-group">
+				<label>{{role.name}}</label>
+			</div>
+			<div class="form-group">
+				<label>Articulo</label>
+				<app-search-items (item_selected)="onItemSelected($event)" *ngIf="!item_info.item.id"></app-search-items>
+				<div *ngIf="item_info.item.id">
+					{{item_info | itemName}}
+					<button class="btn btn-primary btn-small" (click)="reset()">✗</button>
+				</div>
+			</div>
+			<div class="form-group">
+				<label>precio</label>
+				<input type="number" class="form-control" name="price" [(ngModel)]="price" required>
+			</div>
+			<div class="form-group">
+				<button type="submit" class="btn btn-primary">Agregar</button>
+			</div>
+		</form>
+	</div>
+</app-modal>
