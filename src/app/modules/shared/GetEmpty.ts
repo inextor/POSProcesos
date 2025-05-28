@@ -1,10 +1,25 @@
-import { ExtendedReservation, OrderInfo, OrderItemInfo, ReservationInfo, ReservationItemInfo, ShippingInfo } from "./Models";
-import { User_Permission,Preferences,Production_Area,Process, Production, Shipping, Store, Payroll, Payroll_Concept_Value, Work_log_rules, User_extra_fields, User, Production_Area_Item, Item, Category, Reservation, Reservation_Item, Period, Order, Price_Type, Order_Item, Price, Item_Exception, Production_Role_Price, Role } from "./RestModels";
+import { ExtendedReservation, ItemInfo, OrderInfo, OrderItemInfo, ReservationInfo, ReservationItemInfo, ShippingInfo } from "./Models";
+import { User_Permission,Preferences,Production_Area,Process, Production, Shipping, Store, Payroll, Payroll_Concept_Value, Work_log_rules, User_extra_fields, User, Production_Area_Item, Item, Category, Reservation, Reservation_Item, Period, Order, Price_Type, Order_Item, Price, Item_Exception, Role, Role_Item_Price } from "./RestModels";
 import { RestService } from "./services/rest.service";
 
 export class GetEmpty
 {
-    static role(): Role
+	static item_info(): ItemInfo
+	{
+		return {
+			item: GetEmpty.item(),
+			category: null,
+			price: undefined,
+			prices: [],
+			options: [],
+			exceptions: [],
+			records: [],
+			stock_record: undefined,
+			serials: [],
+			item_options: []
+		};
+	}
+	static role(): Role
 	{
 		return {
 			created: new Date(),
@@ -14,20 +29,20 @@ export class GetEmpty
 			updated: new Date(),
 			updated_by_user_id: 0
 		}
-    }
-    static production_role_price(): Production_Role_Price {
-        let p: Production_Role_Price = {
-            id: 0,
-            price: 1,
-            created_by_user_id: 1,
-            updated_by_user_id: 1,
-            created: new Date(),
-            updated: new Date(),
-            item_id: 0,
-            role_id: 0
-        }
-        throw new Error('Method not implemented.');
-    }
+	}
+	static production_role_price(): Role_Item_Price {
+		let p: Role_Item_Price = {
+			id: 0,
+			price: 1,
+			created_by_user_id: 1,
+			updated_by_user_id: 1,
+			created: new Date(),
+			updated: new Date(),
+			item_id: 0,
+			role_id: 0
+		}
+		throw new Error('Method not implemented.');
+	}
 	static price(): Price
 	{
 		let p:Price = {
