@@ -1597,6 +1597,7 @@ export interface User_Permission{
 	add_providers:number;
 	add_purchases:number;
 	add_requisition:number;
+	add_roles: number;
 	add_stock:number;
 	add_user:number;
 	advanced_order_search:number;

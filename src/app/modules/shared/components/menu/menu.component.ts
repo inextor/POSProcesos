@@ -20,6 +20,7 @@ export class MenuComponent extends BaseComponent
 {
 
 	build_info = BuildInfo;
+
     show_users_menu: Falseable = false;
     show_menu_users: Falseable = false;
     show_menu_stock: Falseable = false;
@@ -27,7 +28,7 @@ export class MenuComponent extends BaseComponent
     show_menu_catalogs: Falseable = false;
     show_menu_prices: Falseable = false;
     show_menu_accountant: Falseable = false;
-    show_menu_production: number | boolean  = false;
+    show_menu_production: Falseable  = false;
     show_menu_reservations: Falseable = false;
     show_menu_settings: Falseable = false;
 	show_old_menu: Falseable = false;
@@ -57,12 +58,12 @@ export class MenuComponent extends BaseComponent
 					|| this.rest.user_permission.stocktake;
 
 				this.show_menu_catalogs = this.rest.user_permission.add_items;
-
 				this.show_menu_shippings = this.rest.user_permission.send_shipping || this.rest.user_permission.global_send_shipping;
 				this.show_menu_prices = this.rest.user_permission.store_prices || this.rest.user_permission.add_items;
 
 				this.show_menu_accountant = false;
-				this.show_menu_production = false;
+				this.show_menu_production = this.rest.user_permission.production || this.rest.user_permission.add_roles;
+
 				this.show_menu_reservations = false;
 				this.show_menu_reports = this.rest.user_permission.reports;
 

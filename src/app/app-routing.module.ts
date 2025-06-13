@@ -26,6 +26,7 @@ import { HomeComponent } from './pages/home/home.component';
 import { ListRoleComponent } from './pages/list-role/list-role.component';
 import { SaveRoleComponent } from './pages/save-role/save-role.component';
 import { ListRoleItemPriceComponent } from './pages/list-role-item-price/list-role-item-price.component';
+import { ListItemProductionComponent } from './pages/list-item-production/list-item-production.component';
 
 export const routes: Routes = [
 	{path: 'login', component: LoginComponent},

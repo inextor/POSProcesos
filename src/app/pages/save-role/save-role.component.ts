@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RestSimple, SearchObject } from '../../modules/shared/services/Rest';
-import { Role, Production_Role_Price } from '../../modules/shared/RestModels';
+import { Role } from '../../modules/shared/RestModels';
 import { BaseComponent } from './../../modules/shared/base/base.component';
 import { forkJoin, mergeMap, of} from 'rxjs';
 import { GetEmpty } from '../../modules/shared/GetEmpty';

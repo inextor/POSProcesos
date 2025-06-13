@@ -1,5 +1,5 @@
 <div class="menu-title text-center mt-3">
-	<h2 class="mb-1">Menú.</h2>
+	<h2 class="mb-1">Menú</h2>
 	<hr class="m-0">
 </div>
 <div class="simplebar-content-wrapper w-100" style="height: 100%; overflow: hidden auto;" *ngIf="!show_old_menu && rest?.user?.type == 'USER'">
@@ -357,8 +357,9 @@
 								<span>Categorías</span>
 							</a>
 						</li>
+
 						<li class="side-nav-item" *ngIf="rest.user_permission.add_user">
-							<a class="side-nav-link" href="/list-table" aria-expanded="false" routerLinkActive="active">
+							<a class="side-nav-link" href="/#/list-table" aria-expanded="false" routerLinkActive="active">
 								<i class="svg-icon">
 									<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><path fill="currentColor" d="m22.33 11l-2-7H3.67l-2 7H5.2L4 20h2l.67-5h10.67l.66 5h2l-1.2-9zm-15.4 2l.27-2h9.6l.27 2z"/></svg>
 								</i>
@@ -368,6 +369,7 @@
 					</ul>
 				</div>
 			</li>
+
 			<li class="side-nav-item" *ngIf="show_menu_shippings">
 				<span class="side-nav-link d-flex justify-content-between align-items-center pointer" data-bs-toggle="collapse" data-bs-target="#show_shippings">
 					<span>
@@ -537,6 +539,40 @@
 					</ul>
 				</div>
 			</li>
+			<li class="side-nav-item" *ngIf="show_menu_production">
+				<span class="side-nav-link d-flex justify-content-between align-items-center pointer" data-bs-toggle="collapse" data-bs-target="#show_reservations">
+					<span>
+						<i class="svg-icon">
+							<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" focusable="false" width="1em" height="1em" style="-ms-transform: rotate(360deg); -webkit-transform: rotate(360deg); transform: rotate(360deg);" preserveAspectRatio="xMidYMid meet" viewBox="0 0 16 16"><path d="M5 3a3 3 0 1 1 6 0a3 3 0 0 1-6 0zm7.001 4h-.553l-3.111 6.316L9.5 7.5L8 6L6.5 7.5l1.163 5.816L4.552 7h-.554c-1.999 0-1.999 1.344-1.999 3v5h12v-5c0-1.656 0-3-1.999-3z" fill="currentColor" /></svg>
+						</i>
+						<span>Producción</span>
+					</span>
+					<span style="font-size:12px" class="link-arrow">
+						<svg aria-hidden="true" width="1em" height="1em" focusable="false" data-prefix="fas" data-icon="chevron-right" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><path fill="currentColor" d="M285.476 272.971L91.132 467.314c-9.373 9.373-24.569 9.373-33.941 0l-22.667-22.667c-9.357-9.357-9.375-24.522-.04-33.901L188.505 256 34.484 101.255c-9.335-9.379-9.317-24.544.04-33.901l22.667-22.667c9.373-9.373 24.569-9.373 33.941 0L285.475 239.03c9.373 9.372 9.373 24.568.001 33.941z" fill="currentColor"></path></svg>
+					</span>
+				</span>
+				<div id="show_reservations" class="collapse ps-3"	data-bs-parent="#collapse_parent">
+					<ul class="flex-column nav">
+						<li class="side-nav-item" *ngIf="rest.user_permission.add_roles">
+							<a class="side-nav-link" routerLink="/list-role" aria-expanded="false" routerLinkActive="active">
+								<i class="svg-icon">
+									<svg _ngcontent-ska-c125="" xmlns="http://www.w3.org/2000/svg" width="1.2em" height="1.2em" viewBox="0 0 512 512"><path _ngcontent-ska-c125="" fill="currentColor" fill-rule="evenodd" d="m213.33 28.445l72.568 96.757l106.085-26.521l-25.985 103.942c-20.742-2.159-42.612 4.795-58.788 22.769c-4.567 5.075-12.525 5.075-17.092 0c-38.594-42.882-109.598-23.038-120.366 33.64l-11.584 60.969H90.007l-55.33-221.32l106.085 26.521zm193.288 234.569c-7.475-39.342-56.761-53.117-83.551-23.351c-13.042 14.491-35.764 14.491-48.806 0c-26.789-29.766-76.076-15.991-83.551 23.351l-18.934 99.654h253.777zm22.988 120.987H167.723l-4.054 21.333H128v42.667h341.333v-42.667h-35.674z" clip-rule="evenodd"></path></svg>
+								</i>
+								<span>Roles</span>
+							</a>
+						</li>
+						<li class="side-nav-item" *ngIf="rest.user_permission.add_user">
+							<a class="side-nav-link" routerLink="/list-production-area" aria-expanded="false" routerLinkActive="active">
+								<i class="svg-icon">
+									<svg xmlns="http://www.w3.org/2000/svg" width="1.2em" height="1em" viewBox="0 0 16 16"><path fill="currentColor" d="M0 5a5 5 0 0 0 4.027 4.905a6.5 6.5 0 0 1 .544-2.073C3.695 7.536 3.132 6.864 3 5.91h-.5v-.426h.466V5.05q-.001-.07.004-.135H2.5v-.427h.511C3.236 3.24 4.213 2.5 5.681 2.5c.316 0 .59.031.819.085v.733a3.5 3.5 0 0 0-.815-.082c-.919 0-1.538.466-1.734 1.252h1.917v.427h-1.98q-.004.07-.003.147v.422h1.983v.427H3.93c.118.602.468 1.03 1.005 1.229a6.5 6.5 0 0 1 4.97-3.113A5.002 5.002 0 0 0 0 5m16 5.5a5.5 5.5 0 1 1-11 0a5.5 5.5 0 0 1 11 0m-7.75 1.322c.069.835.746 1.485 1.964 1.562V14h.54v-.62c1.259-.086 1.996-.74 1.996-1.69c0-.865-.563-1.31-1.57-1.54l-.426-.1V8.374c.54.06.884.347.966.745h.948c-.07-.804-.779-1.433-1.914-1.502V7h-.54v.629c-1.076.103-1.808.732-1.808 1.622c0 .787.544 1.288 1.45 1.493l.358.085v1.78c-.554-.08-.92-.376-1.003-.787zm1.96-1.895c-.532-.12-.82-.364-.82-.732c0-.41.311-.719.824-.809v1.54h-.005zm.622 1.044c.645.145.943.38.943.796c0 .474-.37.8-1.02.86v-1.674z"/></svg>
+								</i>
+								<span>Grupos de trabajo</span>
+							</a>
+						</li>
+					</ul>
+				</div>
+			</li>
+
 			<li class="side-nav-item" *ngIf="show_menu_settings">
 				<span class="side-nav-link d-flex justify-content-between align-items-center pointer" data-bs-toggle="collapse" data-bs-target="#show_settings">
 					<span>

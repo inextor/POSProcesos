@@ -4,7 +4,7 @@
 			<h1 class="my-3">Roles</h1>
 		</div>
 		<div class="col-4 text-end">
-			<button type="button" class="ml-2 btn btn-secondary lift" [routerLink]="['/add-role']">Add Role</button>
+			<button type="button" class="ml-2 btn btn-secondary lift" [routerLink]="['/add-role']">Agregar Nuevo</button>
 		</div>
 	</div>
 
@@ -15,6 +15,7 @@
 					<th>ID</th>
 					<th>Rol</th>
 					<th>Modificado</th>
+					<th>Acciones</th>
 				</tr>
 			</thead>
 			<tbody>
@@ -23,10 +24,10 @@
 					<td>
 						<a [routerLink]="['/edit-role', role.id]">{{ role.name }}</a>
 					</td>
+					<td>{{ role.updated | shortDate: 'relative' }}</td>
 					<td>
 						<a [routerLink]="['/list-role-item-price']" [queryParams]="{ role_id: role.id }">Ver Precios</a>
 					</td>
-					<td>{{ role.updated | shortDate: 'relative' }}</td>
 				</tr>
 			</tbody>
 		</table>

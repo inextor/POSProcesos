@@ -511,6 +511,7 @@ export class GetEmpty
 			add_providers:0,
 			add_purchases:0,
 			add_requisition:0,
+			add_roles: 0,
 			add_stock:0,
 			add_user:0,
 			advanced_order_search:0,

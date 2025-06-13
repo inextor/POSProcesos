@@ -31,10 +31,7 @@ interface RoleItemPriceInfo
 })
 export class ListRoleItemPriceComponent extends BaseComponent implements OnInit
 {
-
-
-
-	search_props  =['id','created','updated','price','item_id','role_id'];
+	search_props =['id','created','updated','price','item_id','role_id'];
 	rest_role_item_price:RestSimple<Role_Item_Price> = this.rest.initRestSimple('role_item_price', this.search_props);
 	role_item_price_search:SearchObject<Role_Item_Price> = this.rest_role_item_price.getEmptySearch();
 	role_item_price_info_list: RoleItemPriceInfo[] = []; // Changed from production_role_price_info_list to role_item_price_info_list
@@ -43,17 +40,20 @@ export class ListRoleItemPriceComponent extends BaseComponent implements OnInit
 	role = GetEmpty.role();
 	show_dialog: boolean = false;
 	item_info: ItemInfo = GetEmpty.item_info();
-    rest_role:  Rest<Role,Role> = this.rest.initRest('role',['id','name','created','updated']);
+	rest_role:  Rest<Role,Role> = this.rest.initRest('role',['id','name','created','updated']);
 	price:number | ''  = '';
 
 	ngOnInit(): void
 	{
 		this.path = '/list-role-item-price';
+
 		this.subs.sink = this.route.queryParamMap.pipe
 		(
 			mergeMap((param_map:any)=>
 			{
 				this.role_item_price_search = this.rest_role_item_price.getSearchObject(param_map);
+				this.role_item_price_search.eq.role_id = param_map.get('role_id');
+
 				this.current_page = this.role_item_price_search.page;
 				let role_id = param_map.get('role_id');
 
@@ -92,6 +92,7 @@ export class ListRoleItemPriceComponent extends BaseComponent implements OnInit
 			});
 		});
 	}
+
 	onSubmit(evt: SubmitEvent)
 	{
 		this.is_loading = true;
