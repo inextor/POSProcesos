@@ -1,20 +1,24 @@
 <div class="card mt-3">
-	<div class="card-body">
-		<form id="codeReaderForm" (ngSubmit)="manualSubmit()">
-			<div class="mb-3">
-				<button class="btn btn-primary" (click)="toggleMode()" type="button">
-					{{ is_scanner_mode ? 'Cambiar a Modo Manual' : 'Cambiar a Modo Scanner' }}
-				</button>
-			</div>
+  <div class="card-body">
+    <form id="codeReaderForm" (ngSubmit)="manualSubmit()">
+      <div class="mb-3">
+        <button class="btn btn-primary" (click)="toggleMode()" type="button">
+          {{ is_scanner_mode ? 'Cambiar a Modo Manual' : 'Cambiar a Modo Scanner' }}
+        </button>
+      </div>
 
-			<div *ngIf="is_scanner_mode">
-				<video></video>
-			</div>
+      @if (is_scanner_mode) {
+        <div>
+          <video></video>
+        </div>
+      }
 
-			<div *ngIf="!is_scanner_mode">
-				<input type="text" [(ngModel)]="manual_code" class="form-control" placeholder="Escriba el código" name="manual_code" />
-				<button class="btn btn-primary mt-2" type="submit">Agregar</button>
-			</div>
-		</form>
-	</div>
+      @if (!is_scanner_mode) {
+        <div>
+          <input type="text" [(ngModel)]="manual_code" class="form-control" placeholder="Escriba el código" name="manual_code" />
+          <button class="btn btn-primary mt-2" type="submit">Agregar</button>
+        </div>
+      }
+    </form>
+  </div>
 </div>

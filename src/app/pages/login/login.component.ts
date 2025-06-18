@@ -5,7 +5,7 @@ import { GetEmpty } from '../../modules/shared/GetEmpty';
 import { Rest } from '../../modules/shared/services/Rest';
 import { Observable, of } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { CommonModule } from '@angular/common';
+
 import { FormsModule } from '@angular/forms';
 
 interface CLogin {
@@ -23,7 +23,7 @@ export interface LoginResponse
 
 @Component({
     selector: 'app-login',
-    imports: [CommonModule, FormsModule],
+    imports: [FormsModule],
     templateUrl: './login.component.html',
     styleUrl: './login.component.css'
 })

@@ -1,41 +1,43 @@
 <div class="container-fluid py-3">
-	<h2>Agregar Corte #{{reservation_info.reservation.id}} {{reservation_info.reservation.client_name}}</h2>
-	<app-loading [is_loading]="is_loading"></app-loading>
-	<div class="card py-3 px-1 px-md-3">
-		<div>
-		</div>
-		<form (submit)="save($event)" ngNativeValidate>
-			<div class="row align-items-center">
-				<div class="col-12 col-md-2 fw-bold">Articulo</div>
-				<div class="col-12 col-md-1 fw-bold">Cantidad</div>
-				<div class="col-12 col-md-2 fw-bold">Cantidad Periodo</div>
-				<div class="col-12 col-md-2 fw-bold">Precio</div>
-				<div class="col-12 col-md-2 fw-bold">Total</div>
-			</div>
-			<ng-container *ngFor="let ri of custom_items">
-				<div class="row align-items-center" *ngIf="ri.reservation_item_info.reservation_item.last_period_id != null || ri.reservation_item_info.reservation_item.period_type != 'ONCE_ONLY'">
-					<div class="col-12 col-md-2">
-						{{ri.reservation_item_info.item.name}}
-					</div>
-					<div class="col-12 col-md-1">
-						<input type="number" [name]="'ri_qty'+ri.reservation_item_info.reservation_item.id" [(ngModel)]="ri.qty" class="form-control" (ngModelChange)="updatePrice(ri)" required>
-					</div>
-					<div class="col-12 col-md-1">
-						<input type="number" [name]="'ri_qty_period'+ri.reservation_item_info.reservation_item.id" [(ngModel)]="ri.qty_period" (ngModelChange)="updatePrice(ri)" class="form-control" min="1" required>
-					</div>
-					<div class="col-12 col-md-1">{{ri.period}}</div>
-					<div class="col-12 col-md-2">
-						<input type="number" [name]="'ri_price'+ri.reservation_item_info.reservation_item.id" [(ngModel)]="ri.price" (ngModelChange)="updatePrice(ri)" class="form-control" min="0.01" step="any" required>
-					</div>
-					<div class="col-12 col-md-2">{{ri.total | currency}}</div>
-				</div>
-			</ng-container>
-			<div class="text-end mt-3">
-				<button type="submit" class="btn btn-primary mx-3" value="only_create">Agregar Corte</button>
-				<button type="submit" class="btn btn-primary" value="create_and_close">
-					Agregar Corte y Cerrar Reservación
-				</button>
-			</div>
-		</form>
-	</div>
+  <h2>Agregar Corte #{{reservation_info.reservation.id}} {{reservation_info.reservation.client_name}}</h2>
+  <app-loading [is_loading]="is_loading"></app-loading>
+  <div class="card py-3 px-1 px-md-3">
+    <div>
+    </div>
+    <form (submit)="save($event)" ngNativeValidate>
+      <div class="row align-items-center">
+        <div class="col-12 col-md-2 fw-bold">Articulo</div>
+        <div class="col-12 col-md-1 fw-bold">Cantidad</div>
+        <div class="col-12 col-md-2 fw-bold">Cantidad Periodo</div>
+        <div class="col-12 col-md-2 fw-bold">Precio</div>
+        <div class="col-12 col-md-2 fw-bold">Total</div>
+      </div>
+      @for (ri of custom_items; track ri) {
+        @if (ri.reservation_item_info.reservation_item.last_period_id != null || ri.reservation_item_info.reservation_item.period_type != 'ONCE_ONLY') {
+          <div class="row align-items-center">
+            <div class="col-12 col-md-2">
+              {{ri.reservation_item_info.item.name}}
+            </div>
+            <div class="col-12 col-md-1">
+              <input type="number" [name]="'ri_qty'+ri.reservation_item_info.reservation_item.id" [(ngModel)]="ri.qty" class="form-control" (ngModelChange)="updatePrice(ri)" required>
+            </div>
+            <div class="col-12 col-md-1">
+              <input type="number" [name]="'ri_qty_period'+ri.reservation_item_info.reservation_item.id" [(ngModel)]="ri.qty_period" (ngModelChange)="updatePrice(ri)" class="form-control" min="1" required>
+            </div>
+            <div class="col-12 col-md-1">{{ri.period}}</div>
+            <div class="col-12 col-md-2">
+              <input type="number" [name]="'ri_price'+ri.reservation_item_info.reservation_item.id" [(ngModel)]="ri.price" (ngModelChange)="updatePrice(ri)" class="form-control" min="0.01" step="any" required>
+            </div>
+            <div class="col-12 col-md-2">{{ri.total | currency}}</div>
+          </div>
+        }
+      }
+      <div class="text-end mt-3">
+        <button type="submit" class="btn btn-primary mx-3" value="only_create">Agregar Corte</button>
+        <button type="submit" class="btn btn-primary" value="create_and_close">
+          Agregar Corte y Cerrar Reservación
+        </button>
+      </div>
+    </form>
+  </div>
 </div>

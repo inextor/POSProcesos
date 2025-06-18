@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { BaseComponent } from '../../modules/shared/base/base.component';
 import { ItemInfo, Price, Production, User, User_extra_fields, Work_Log, Work_log_rules } from '../../modules/shared/RestModels';
 import { Utils } from '../../modules/shared/Utils';
@@ -11,7 +11,7 @@ import { CustomToTitlePipe } from '../../modules/shared/pipes/custom-to-title.pi
 
 @Component({
     selector: 'app-production-report',
-    imports: [CommonModule, BaseComponent, FormsModule, CustomToTitlePipe],
+    imports: [BaseComponent, FormsModule, CustomToTitlePipe],
     templateUrl: './production-report.component.html',
     styleUrl: './production-report.component.css'
 })

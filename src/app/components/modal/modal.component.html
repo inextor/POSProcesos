@@ -1,6 +1,8 @@
 <div style="" [ngClass]="{'d-block':show,'app-modal':true}">
-	<!--dialog #dialog-->
-		<div class="rounded" [ngClass]="{biggest_posible:biggest_posible}"><ng-content></ng-content><a *ngIf="closable" (click)="close()" class="close-button">✕</a></div>
-	<!--/dialog-->
+  <!--dialog #dialog-->
+  <div class="rounded" [ngClass]="{biggest_posible:biggest_posible}"><ng-content></ng-content>@if (closable) {
+  <a (click)="close()" class="close-button">✕</a>
+}</div>
+<!--/dialog-->
 </div>
 

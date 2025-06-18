@@ -1,9 +1,9 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 
 @Component({
     selector: 'app-loading',
-    imports: [CommonModule],
+    imports: [],
     templateUrl: './loading.component.html',
     styleUrl: './loading.component.css'
 })

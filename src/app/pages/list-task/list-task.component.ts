@@ -1,5 +1,5 @@
 import { Component,OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { BaseComponent } from '../../modules/shared/base/base.component';
 import { forkJoin } from 'rxjs';
 import { Task } from '../../modules/shared/RestModels';
@@ -8,7 +8,7 @@ import { SearchObject } from '../../modules/shared/services/Rest';
 
 @Component({
     selector: 'app-list-task',
-    imports: [CommonModule],
+    imports: [],
     templateUrl: './list-task.component.html',
     styleUrl: './list-task.component.css'
 })

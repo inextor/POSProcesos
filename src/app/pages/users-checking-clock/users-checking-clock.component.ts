@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { User,Check_In } from '../../modules/shared/RestModels';
 import { mergeMap, of, forkJoin } from 'rxjs';
 import { RestResponse } from '../../modules/shared/services/Rest';
@@ -19,7 +19,7 @@ export interface UserCheckInfo
 
 @Component({
     selector: 'app-users-checking-clock',
-    imports: [CommonModule, FormsModule, ShortDatePipe, RouterOutlet, RouterModule],
+    imports: [FormsModule, ShortDatePipe, RouterOutlet, RouterModule],
     templateUrl: './users-checking-clock.component.html',
     styleUrl: './users-checking-clock.component.css'
 })

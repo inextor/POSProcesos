@@ -1,102 +1,106 @@
-	<div class="container-fluid">
-		<h1 class="my-3">Validar Producción</h1>
-		<div class="card p-3 mb-2">
-			<div class="row">
-				<div class="col-12 col-md-3">
-					<label>Sucursal de Producción</label>
-					<select class="form-control" [(ngModel)]="search_production.eq.production_area_id">
-						<option *ngFor="let pa of production_area_list" [value]="pa.id">{{pa.name}}</option>
-					</select>
-				</div>
-				<div class="col-12 col-md-3">
-					<label>Fecha Inicial</label>
-					<input type="datetime-local" name="search_start_date" class="form-control" [(ngModel)]="search_start_date" (ngModelChange)="onDateChange($event, search_production.ge, 'created')">
-				</div>
-				<div class="col-12 col-md-3">
-					<label>Fecha Final</label>
-					<input type="datetime-local" name="search_end_date" class="form-control" [(ngModel)]="search_end_date" (ngModelChange)="onDateChange($event, search_production.le, 'created','', 59)">
-				</div>
-				<div class="col-12 col-md-3">
-					<label>&nbsp;</label>
-					<button type="submit" class="btn btn-primary w-100" (click)="search(search_production)">
-						<svg xmlns="http://www.w3.org/2000/svg" width="1.06em" height="1.2em" viewBox="0 0 740 840"><path fill="currentColor" d="M734 668q8 9 0 17l-49 49q-3 3-8 3t-8-3L519 584q-50 38-112 55t-133 6q-53-8-99-33t-83-61t-59-85T3 366q-10-79 16-150T96 95t121-76T367 3q53 7 100 30t84 59t62 82t33 100q11 69-6 131t-55 114zM325 557q48 0 90-18t74-50t50-74t18-90t-18-90t-50-74t-74-50t-90-18t-90 18t-73 50t-50 74t-18 90t18 90t50 74t73 50t90 18"/></svg>
-						Buscar
-					</button>
-				</div>
-			</div>
-		</div>
-		<div class="row my-3">
-			<div class="col-6">
-				<input type="text" class="form-control" [placeholder]="search_by_code == true ? 'Escribe un Código' : 'Escribe un Nombre'" [(ngModel)]="search_str" (ngModelChange)="sortValidations($event)" >
-			</div>
-			<div class="col-6">
-				<div class="form-check form-switch">
-					<label class="form-check-label">Busqueda por código</label>
-					<input class="form-check-input" type="checkbox" [checked]="search_by_code" (click)="changeSearch()"  >
-				</div>
-			</div>
-		</div>
-		<div class="card p-3">
-			<div class="row border-last align-items-center d-none d-md-flex ">
-				<div class="col-2 text-end"></div>
-				<div class="col-2 text-end">Producido</div>
-				<div class="col-2 text-end">Validado</div>
-				<div class="col-2 text-end">Merma</div>
-				<div class="col-2 text-end">Motivo de Merma</div>
-				<div class="col-2 text-end">Acciones</div>
-			</div>
-			<ng-container *ngIf="production_info_list.length == 0">
-				<div class="text-center fw-bold mt-2">
-					No hay producciones por validar
-				</div>
-			</ng-container>
-			@for(pl of production_info_list;track pl.expand)
-			{
-				<div class="row border-last border-4 align-items-center py-1">
-					<div class="col-12 col-md-2 fw-bold">
-						{{pl.item.name}}
-						<span style="color: gray;">
-							{{pl.item.code}}
-						</span>
-					</div>
+<div class="container-fluid">
+  <h1 class="my-3">Validar Producción</h1>
+  <div class="card p-3 mb-2">
+    <div class="row">
+      <div class="col-12 col-md-3">
+        <label>Sucursal de Producción</label>
+        <select class="form-control" [(ngModel)]="search_production.eq.production_area_id">
+          @for (pa of production_area_list; track pa) {
+            <option [value]="pa.id">{{pa.name}}</option>
+          }
+        </select>
+      </div>
+      <div class="col-12 col-md-3">
+        <label>Fecha Inicial</label>
+        <input type="datetime-local" name="search_start_date" class="form-control" [(ngModel)]="search_start_date" (ngModelChange)="onDateChange($event, search_production.ge, 'created')">
+      </div>
+      <div class="col-12 col-md-3">
+        <label>Fecha Final</label>
+        <input type="datetime-local" name="search_end_date" class="form-control" [(ngModel)]="search_end_date" (ngModelChange)="onDateChange($event, search_production.le, 'created','', 59)">
+      </div>
+      <div class="col-12 col-md-3">
+        <label>&nbsp;</label>
+        <button type="submit" class="btn btn-primary w-100" (click)="search(search_production)">
+          <svg xmlns="http://www.w3.org/2000/svg" width="1.06em" height="1.2em" viewBox="0 0 740 840"><path fill="currentColor" d="M734 668q8 9 0 17l-49 49q-3 3-8 3t-8-3L519 584q-50 38-112 55t-133 6q-53-8-99-33t-83-61t-59-85T3 366q-10-79 16-150T96 95t121-76T367 3q53 7 100 30t84 59t62 82t33 100q11 69-6 131t-55 114zM325 557q48 0 90-18t74-50t50-74t18-90t-18-90t-50-74t-74-50t-90-18t-90 18t-73 50t-50 74t-18 90t18 90t50 74t73 50t90 18"/></svg>
+          Buscar
+        </button>
+      </div>
+    </div>
+  </div>
+  <div class="row my-3">
+    <div class="col-6">
+      <input type="text" class="form-control" [placeholder]="search_by_code == true ? 'Escribe un Código' : 'Escribe un Nombre'" [(ngModel)]="search_str" (ngModelChange)="sortValidations($event)" >
+    </div>
+    <div class="col-6">
+      <div class="form-check form-switch">
+        <label class="form-check-label">Busqueda por código</label>
+        <input class="form-check-input" type="checkbox" [checked]="search_by_code" (click)="changeSearch()"  >
+      </div>
+    </div>
+  </div>
+  <div class="card p-3">
+    <div class="row border-last align-items-center d-none d-md-flex ">
+      <div class="col-2 text-end"></div>
+      <div class="col-2 text-end">Producido</div>
+      <div class="col-2 text-end">Validado</div>
+      <div class="col-2 text-end">Merma</div>
+      <div class="col-2 text-end">Motivo de Merma</div>
+      <div class="col-2 text-end">Acciones</div>
+    </div>
+    @if (production_info_list.length == 0) {
+      <div class="text-center fw-bold mt-2">
+        No hay producciones por validar
+      </div>
+    }
+    @for(pl of production_info_list;track pl.expand)
+      {
+      <div class="row border-last border-4 align-items-center py-1">
+        <div class="col-12 col-md-2 fw-bold">
+          {{pl.item.name}}
+          <span style="color: gray;">
+            {{pl.item.code}}
+          </span>
+        </div>
 
-					<div class="col-6 col-md-2">
-						<label class="d-md-none fw-bold text-start">Producido</label>
-						<div class="text-end">
-							{{pl.total | number}}
-						</div>
-					</div>
+        <div class="col-6 col-md-2">
+          <label class="d-md-none fw-bold text-start">Producido</label>
+          <div class="text-end">
+            {{pl.total | number}}
+          </div>
+        </div>
 
-					<div class="col-6 col-md-2">
-						<label class="d-md-none fw-bold text-start">Validado</label>
-						<input type="number" name="'qty'+pl.id" [(ngModel)]="pl.validated" class="form-control text-end">
-					</div>
+        <div class="col-6 col-md-2">
+          <label class="d-md-none fw-bold text-start">Validado</label>
+          <input type="number" name="'qty'+pl.id" [(ngModel)]="pl.validated" class="form-control text-end">
+        </div>
 
-					<div class="col-6 col-md-2">
-						<label class="d-md-none fw-bold text-start">Merma</label>
-						<input type="number" name="'merma_qty'+pl.id" [(ngModel)]="pl.merma" class="form-control text-end">
-					</div>
+        <div class="col-6 col-md-2">
+          <label class="d-md-none fw-bold text-start">Merma</label>
+          <input type="number" name="'merma_qty'+pl.id" [(ngModel)]="pl.merma" class="form-control text-end">
+        </div>
 
-					<div class="col-6 col-md-2">
-						<label class="d-md-none fw-bold text-start">Motivo de Merma</label>
-						<input type="text" name="'merma_reason'+pl.id" [(ngModel)]="pl.merma_reason" class="form-control text-end" [disabled]="pl.merma <= 0" autocomplete="off" [required]="pl.merma > 0" list="mermalist">
+        <div class="col-6 col-md-2">
+          <label class="d-md-none fw-bold text-start">Motivo de Merma</label>
+          <input type="text" name="'merma_reason'+pl.id" [(ngModel)]="pl.merma_reason" class="form-control text-end" [disabled]="pl.merma <= 0" autocomplete="off" [required]="pl.merma > 0" list="mermalist">
 
-						<datalist id="mermalist">
-							<option value="Producción">
-							<option value="Calidad">
-						</datalist>
+          <datalist id="mermalist">
+            <option value="Producción">
+              <option value="Calidad">
+              </datalist>
 
-					</div>
-					<div class="col-12 col-md-2 text-end">
-						<div class="row ">
-							<div class="col-12 mb-2 mb-lg-0 p-2 p-md-1">
-								<button *ngIf="pl.production_list.length > 0" type="button" class="btn btn-primary w-100" (click)="validateAll(pl)">
-									<span class="">Validar</span>
-								</button>
-							</div>
-						</div>
-					</div>
-				</div>
-			}
-		</div>
-	</div>
+            </div>
+            <div class="col-12 col-md-2 text-end">
+              <div class="row ">
+                <div class="col-12 mb-2 mb-lg-0 p-2 p-md-1">
+                  @if (pl.production_list.length > 0) {
+                    <button type="button" class="btn btn-primary w-100" (click)="validateAll(pl)">
+                      <span class="">Validar</span>
+                    </button>
+                  }
+                </div>
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+    </div>

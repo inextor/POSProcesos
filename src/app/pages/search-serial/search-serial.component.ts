@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { BaseComponent } from '../../modules/shared/base/base.component';
 import { debounceTime, mergeMap, of } from 'rxjs';
 import { Serial } from '../../modules/shared/RestModels';
@@ -12,7 +12,7 @@ import { PageStructureComponent } from "../../modules/shared/page-structure/page
     selector: 'app-search-serial',
     templateUrl: './search-serial.component.html',
     styleUrl: './search-serial.component.css',
-    imports: [CommonModule, FormsModule, LoadingComponent, PageStructureComponent]
+    imports: [FormsModule, LoadingComponent, PageStructureComponent]
 })
 export class SearchSerialComponent extends BaseComponent
 {

@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { Router, RouterModule, RouterOutlet } from '@angular/router';
 import { RestService } from './modules/shared/services/rest.service';
 import { SharedModule } from './modules/shared/SharedModule';
@@ -16,7 +16,7 @@ import { PageStructureComponent } from "./modules/shared/page-structure/page-str
     selector: 'app-root',
     templateUrl: './app.component.html',
     styleUrl: './app.component.css',
-    imports: [CommonModule, RouterOutlet, RouterModule, SharedModule, ModalComponent, HeaderComponent, PageStructureComponent]
+    imports: [RouterOutlet, RouterModule, SharedModule, ModalComponent, HeaderComponent, PageStructureComponent]
 })
 export class AppComponent implements OnInit {
 	title = 'POSProcesos';

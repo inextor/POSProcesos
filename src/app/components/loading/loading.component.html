@@ -1,8 +1,10 @@
-<div *ngIf="is_loading">
-	<div class="text-center">
-		<div class="spinner-grow btn-primary" role="status">
-			<span class="sr-only"></span>
-		</div>
-	</div>
-</div>
+@if (is_loading) {
+  <div>
+    <div class="text-center">
+      <div class="spinner-grow btn-primary" role="status">
+        <span class="sr-only"></span>
+      </div>
+    </div>
+  </div>
+}
 

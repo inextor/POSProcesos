@@ -1,61 +1,69 @@
 <div class="container-fluid">
-	<div class="row align-items-center mx-0">
-		<div class="col-8">
-			<h1 class="my-3 text-capitalize">Precios Para Rol {{role.name}}</h1>
-		</div>
-		<div class="col-4 text-right">
-			<button class="btn btn-primary" (click)="show_dialog=true">Agregar</button>
-		</div>
-	</div>
-	<div  class="card p-3 mt-3">
-		<app-loading [is_loading]="is_loading"></app-loading>
-		<div>
-			<table class="table table-sm table-nowrap mb-0">
-				<thead class="thead-light">
-					<tr>
-						<th>Nombre</th>
-						<th>Actualizacíon</th>
-					</tr>
-				</thead>
-				<tbody>
-					<tr *ngFor="let prpi_info of role_item_price_info_list">
-						<td>{{prpi_info | itemName }}</td>
-						<td>{{prpi_info.role_item_price.price | currency}}</td>
-						<td>{{prpi_info.role_item_price.updated | shortDate: 'relative' }}</td>
-					</tr>
-				</tbody>
-			</table>
-		</div>
-		<div class="card" *ngIf="role_item_price_info_list.length == 0">
-			<div class="card-body">
-				No hay registros para mostrar
-			</div>
-		</div>
-	</div>
-	<app-pagination [path]="'/list-table'" [pages]="pages" [total_pages]="total_pages" [current_page]="current_page"></app-pagination>
+  <div class="row align-items-center mx-0">
+    <div class="col-8">
+      <h1 class="my-3 text-capitalize">Precios Para Rol {{role.name}}</h1>
+    </div>
+    <div class="col-4 text-right">
+      <button class="btn btn-primary" (click)="show_dialog=true">Agregar</button>
+    </div>
+  </div>
+  <div  class="card p-3 mt-3">
+    <app-loading [is_loading]="is_loading"></app-loading>
+    <div>
+      <table class="table table-sm table-nowrap mb-0">
+        <thead class="thead-light">
+          <tr>
+            <th>Nombre</th>
+            <th>Actualizacíon</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (prpi_info of role_item_price_info_list; track prpi_info) {
+            <tr>
+              <td>{{prpi_info | itemName }}</td>
+              <td>{{prpi_info.role_item_price.price | currency}}</td>
+              <td>{{prpi_info.role_item_price.updated | shortDate: 'relative' }}</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+    @if (role_item_price_info_list.length == 0) {
+      <div class="card">
+        <div class="card-body">
+          No hay registros para mostrar
+        </div>
+      </div>
+    }
+  </div>
+  <app-pagination [path]="'/list-table'" [pages]="pages" [total_pages]="total_pages" [current_page]="current_page"></app-pagination>
 </div>
 
 <app-modal [(show)]="show_dialog">
-	<div class="m-3" style="min-height: 300px;">
-		<form (submit)="onSubmit($event)" ngnativevalidate>
-			<div class="form-group">
-				<label>{{role.name}}</label>
-			</div>
-			<div class="form-group">
-				<label>Articulo</label>
-				<app-search-items (item_selected)="onItemSelected($event)" *ngIf="!item_info.item.id"></app-search-items>
-				<div *ngIf="item_info.item.id">
-					{{item_info | itemName}}
-					<button class="btn btn-primary btn-small" (click)="reset()">✗</button>
-				</div>
-			</div>
-			<div class="form-group">
-				<label>precio</label>
-				<input type="number" class="form-control" name="price" [(ngModel)]="price" required>
-			</div>
-			<div class="form-group">
-				<button type="submit" class="btn btn-primary">Agregar</button>
-			</div>
-		</form>
-	</div>
+  <div class="m-3" style="min-height: 300px;">
+    <form (submit)="onSubmit($event)" ngnativevalidate>
+      <div class="form-group">
+        <label>{{role.name}}</label>
+      </div>
+      <div class="form-group">
+        <label>Articulo</label>
+        @if (!item_info.item.id) {
+          <app-search-items (item_selected)="onItemSelected($event)"></app-search-items>
+        }
+        @if (item_info.item.id) {
+          <div>
+            {{item_info | itemName}}
+            <button class="btn btn-primary btn-small" (click)="reset()">✗</button>
+          </div>
+        }
+      </div>
+      <div class="form-group">
+        <label>precio</label>
+        <input type="number" class="form-control" name="price" [(ngModel)]="price" required>
+      </div>
+      <div class="form-group">
+        <button type="submit" class="btn btn-primary">Agregar</button>
+      </div>
+    </form>
+  </div>
 </app-modal>

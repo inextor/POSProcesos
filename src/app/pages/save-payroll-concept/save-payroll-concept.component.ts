@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { FormsModule } from '@angular/forms';
 import { BaseComponent } from '../../modules/shared/base/base.component';
 import { RestSimple } from '../../modules/shared/services/Rest';
@@ -9,7 +9,7 @@ import { ModalComponent } from '../../components/modal/modal.component';
 
 @Component({
     selector: 'app-save-payroll-concept',
-    imports: [CommonModule, BaseComponent, FormsModule, ModalComponent],
+    imports: [BaseComponent, FormsModule, ModalComponent],
     templateUrl: './save-payroll-concept.component.html',
     styleUrl: './save-payroll-concept.component.css'
 })

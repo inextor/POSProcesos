@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { GetEmpty } from '../../modules/shared/GetEmpty';
 import { Production_Area,Item,Production_Area_Item, Process, User, User_extra_fields } from '../../modules/shared/RestModels';
 import { forkJoin,of,mergeMap, filter } from 'rxjs';
@@ -34,7 +34,7 @@ interface CUser extends User
 
 @Component({
     selector: 'app-view-production-area',
-    imports: [CommonModule, RouterModule, FormsModule, ModalComponent, SaveProductionAreaItemComponent, SearchItemsComponent, ShortDatePipe, LoadingComponent, SearchUsersComponent, ModalComponent],
+    imports: [RouterModule, FormsModule, ModalComponent, SaveProductionAreaItemComponent, SearchItemsComponent, ShortDatePipe, LoadingComponent, SearchUsersComponent, ModalComponent],
     templateUrl: './view-production-area.component.html',
     styleUrl: './view-production-area.component.css'
 })

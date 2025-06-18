@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { BaseComponent } from '../../modules/shared/base/base.component';
 import { Work_log_rules } from '../../modules/shared/RestModels';
 import { RestSimple } from '../../modules/shared/services/Rest';
@@ -15,7 +15,7 @@ interface Rule {
 
 @Component({
     selector: 'app-save-worklog-rules',
-    imports: [CommonModule, BaseComponent, FormsModule],
+    imports: [BaseComponent, FormsModule],
     templateUrl: './save-worklog-rules.component.html',
     styleUrl: './save-worklog-rules.component.css'
 })

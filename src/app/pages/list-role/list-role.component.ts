@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { BaseComponent } from '../../modules/shared/base/base.component';
 import { RestSimple, SearchObject } from '../../modules/shared/services/Rest';
 import { Role } from '../../modules/shared/RestModels';
@@ -9,7 +9,7 @@ import { ShortDatePipe } from "../../modules/shared/pipes/short-date.pipe";
 
 @Component({
     selector: 'app-list-role',
-    imports: [CommonModule, RouterModule, ShortDatePipe],
+    imports: [RouterModule, ShortDatePipe],
     templateUrl: './list-role.component.html',
     styleUrl: './list-role.component.css'
 })

@@ -1,51 +1,61 @@
 <div class="container-fluid">
-	<h1 class="my-3">Artículos de area de producción</h1>
-	<form (submit)="search(production_area_item_search)">
-		<div class="card p-3 mb-3">
-			<div class="row">
-				<div class="col-12 col-md-4 form-group">
-					<label class="">Artículo</label>
-					<input type="text" name="name" [(ngModel)]="production_area_item_search.search_extra['category_name']" class="form-control">
-				</div>
-				<div class="col-12 col-md-4 form-group">
-					<label class="">Área de producción</label>
-					<select name="production_area_id" [(ngModel)]="production_area_item_search.eq.production_area_id" class="form-control">
-						<option value="">Todos</option>
-						<option *ngFor="let production_area of production_area_list" [value]="production_area.id">{{production_area.name}}</option>
-					</select>
-				</div>
-				<div class="col-12 col-md-4">
-					<label>&nbsp;</label>
-					<button type="button" class="w-100 btn btn-primary" (click)="search(production_area_item_search)">Buscar</button>
-				</div>
-			</div>
-		</div>
-	</form>
-	
+  <h1 class="my-3">Artículos de area de producción</h1>
+  <form (submit)="search(production_area_item_search)">
+    <div class="card p-3 mb-3">
+      <div class="row">
+        <div class="col-12 col-md-4 form-group">
+          <label class="">Artículo</label>
+          <input type="text" name="name" [(ngModel)]="production_area_item_search.search_extra['category_name']" class="form-control">
+        </div>
+        <div class="col-12 col-md-4 form-group">
+          <label class="">Área de producción</label>
+          <select name="production_area_id" [(ngModel)]="production_area_item_search.eq.production_area_id" class="form-control">
+            <option value="">Todos</option>
+            @for (production_area of production_area_list; track production_area) {
+              <option [value]="production_area.id">{{production_area.name}}</option>
+            }
+          </select>
+        </div>
+        <div class="col-12 col-md-4">
+          <label>&nbsp;</label>
+          <button type="button" class="w-100 btn btn-primary" (click)="search(production_area_item_search)">Buscar</button>
+        </div>
+      </div>
+    </div>
+  </form>
 
-	<div class="card p-3">
-		<div class="row">
-			<div class="col-12">
-				<app-loading [is_loading]="is_loading"></app-loading>
-				<table class="table" *ngIf="production_area_item_list">
-					<thead>
-						<tr>
-							<th>Artículo</th>
-							<th>Area de producción</th>
-						</tr>
-					</thead>
-					<tbody>
-						<tr *ngFor="let production_area_item of production_area_item_list">
-							<td>
-								<span *ngIf="production_area_item.category">{{production_area_item.category.name | titlecase }} - </span> 
-									{{production_area_item.item.name}} 
-								<span *ngIf="production_area_item.item.code" style="color: gray;">{{production_area_item.item.code}}</span>
-							</td>
-							<td>{{production_area_item.production_area_name}}</td>
-						</tr>
-					</tbody>
-				</table>
-			</div>
-		</div>
-	</div>
+
+  <div class="card p-3">
+    <div class="row">
+      <div class="col-12">
+        <app-loading [is_loading]="is_loading"></app-loading>
+        @if (production_area_item_list) {
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Artículo</th>
+                <th>Area de producción</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (production_area_item of production_area_item_list; track production_area_item) {
+                <tr>
+                  <td>
+                    @if (production_area_item.category) {
+                      <span>{{production_area_item.category.name | titlecase }} - </span>
+                    }
+                    {{production_area_item.item.name}}
+                    @if (production_area_item.item.code) {
+                      <span style="color: gray;">{{production_area_item.item.code}}</span>
+                    }
+                  </td>
+                  <td>{{production_area_item.production_area_name}}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        }
+      </div>
+    </div>
+  </div>
 </div>

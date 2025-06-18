@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { Production_Area, Store } from '../../modules/shared/RestModels';
 import { RestSimple } from '../../modules/shared/services/Rest';
 import { GetEmpty } from '../../modules/shared/GetEmpty';
@@ -9,7 +9,7 @@ import { BaseComponent } from '../../modules/shared/base/base.component';
 
 @Component({
     selector: 'app-save-production-area',
-    imports: [CommonModule, FormsModule, BaseComponent],
+    imports: [FormsModule, BaseComponent],
     templateUrl: './save-production-area.component.html',
     styleUrl: './save-production-area.component.css'
 })

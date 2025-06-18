@@ -1,9 +1,9 @@
 import { Component } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 
 @Component({
     selector: 'app-list-task-comment',
-    imports: [CommonModule],
+    imports: [],
     templateUrl: './list-task-comment.component.html',
     styleUrl: './list-task-comment.component.css'
 })

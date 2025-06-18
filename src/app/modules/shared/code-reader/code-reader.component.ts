@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { FormsModule } from '@angular/forms';
 declare var BarcodeDetector: any;
 
@@ -19,7 +19,7 @@ export interface CodeValue
 
 @Component({
     selector: 'app-code-reader',
-    imports: [CommonModule, FormsModule],
+    imports: [FormsModule],
     templateUrl: './code-reader.component.html',
     styleUrl: './code-reader.component.css'
 })

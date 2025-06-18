@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { BaseComponent } from '../../modules/shared/base/base.component';
 import { FormsModule } from '@angular/forms';
 import { RestSimple, SearchObject } from '../../modules/shared/services/Rest';
@@ -30,7 +30,7 @@ interface CPayrollInfo
 
 @Component({
     selector: 'app-payroll-report',
-    imports: [CommonModule, BaseComponent, RouterModule, FormsModule, ShortDatePipe],
+    imports: [BaseComponent, RouterModule, FormsModule, ShortDatePipe],
     templateUrl: './payroll-report.component.html',
     styleUrl: './payroll-report.component.css'
 })

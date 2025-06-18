@@ -1,17 +1,27 @@
 <input type="text" (input)="keyPressed($event)" [(ngModel)]="search_str" [placeholder]="type === 'USER' ? 'Buscar usuario' : 'Buscar cliente'" autocomplete="off" class="form-control w-100">
 <div style="overflow:visible;max-height:10px;position:relative;z-index:3">
-	<div class="pointer border" style="background-color:white" *ngIf="search_str">
-		<div *ngIf="show_null_option" (click)="onUserSelected(null)" class="search_item border-bottom" [ngClass]="{'active':selected_index==0}">
-			<span>{{null_user_string}}</span>
-		</div>
-		<div *ngFor="let user of user_list;let i=index" (click)="onUserSelected(user)" class="search_item border-bottom" [ngClass]="{'active':selected_index==i+1}">
-			<div *ngIf="user.image_id" class="d-inline-block ratio ratio-1x1" [style]="{'background-image':'url('+rest.getImagePath(user.image_id)+')','background-size':'contain',width:'40px','vertical-align':'middle','background-repeat':'no-repeat','background-position':'center center'}">
-				<img src="/assets/2px_transparent.png" width=40 height="40">
-			</div>
-			<span *ngIf="!(user)">
-				<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" width="40px" height="40px" preserveAspectRatio="xMidYMid meet" viewBox="0 0 24 24"><g fill="none"><path d="M13.409 2.512a3.75 3.75 0 0 0-2.818 0l-2.19.888l9.592 3.73l3.374-1.303a1.747 1.747 0 0 0-.46-.275l-7.498-3.04zM22 7.19l-9.25 3.574v10.923c.224-.045.444-.112.659-.199l7.498-3.04A1.75 1.75 0 0 0 22 16.826V7.19zM11.25 21.687V10.764L2 7.19v9.636a1.75 1.75 0 0 0 1.093 1.622l7.498 3.04c.215.087.435.154.659.2zM2.633 5.827L12 9.446l3.917-1.514l-9.543-3.71l-3.281 1.33c-.17.069-.324.162-.46.275z" fill="currentColor"/></g></svg>
-			</span>
-			{{user.name}}
-		</div>
-	</div>
+  @if (search_str) {
+    <div class="pointer border" style="background-color:white">
+      @if (show_null_option) {
+        <div (click)="onUserSelected(null)" class="search_item border-bottom" [ngClass]="{'active':selected_index==0}">
+          <span>{{null_user_string}}</span>
+        </div>
+      }
+      @for (user of user_list; track user; let i = $index) {
+        <div (click)="onUserSelected(user)" class="search_item border-bottom" [ngClass]="{'active':selected_index==i+1}">
+          @if (user.image_id) {
+            <div class="d-inline-block ratio ratio-1x1" [style]="{'background-image':'url('+rest.getImagePath(user.image_id)+')','background-size':'contain',width:'40px','vertical-align':'middle','background-repeat':'no-repeat','background-position':'center center'}">
+              <img src="/assets/2px_transparent.png" width=40 height="40">
+            </div>
+          }
+          @if (!(user)) {
+            <span>
+              <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" width="40px" height="40px" preserveAspectRatio="xMidYMid meet" viewBox="0 0 24 24"><g fill="none"><path d="M13.409 2.512a3.75 3.75 0 0 0-2.818 0l-2.19.888l9.592 3.73l3.374-1.303a1.747 1.747 0 0 0-.46-.275l-7.498-3.04zM22 7.19l-9.25 3.574v10.923c.224-.045.444-.112.659-.199l7.498-3.04A1.75 1.75 0 0 0 22 16.826V7.19zM11.25 21.687V10.764L2 7.19v9.636a1.75 1.75 0 0 0 1.093 1.622l7.498 3.04c.215.087.435.154.659.2zM2.633 5.827L12 9.446l3.917-1.514l-9.543-3.71l-3.281 1.33c-.17.069-.324.162-.46.275z" fill="currentColor"/></g></svg>
+            </span>
+          }
+          {{user.name}}
+        </div>
+      }
+    </div>
+  }
 </div>

@@ -1,5 +1,5 @@
 import { Component, OnInit, OnDestroy} from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { RestService } from '../services/rest.service';
 import { ActivatedRoute, ParamMap, Router } from '@angular/router';
 import { SubSink } from 'subsink';
@@ -20,7 +20,7 @@ export interface ParamsAndQueriesMap
 
 @Component({
     selector: 'app-base',
-    imports: [CommonModule],
+    imports: [],
     templateUrl: './base.component.html',
     styleUrl: './base.component.css'
 })

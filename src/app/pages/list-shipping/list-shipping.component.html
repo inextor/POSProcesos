@@ -1,120 +1,124 @@
-	<div class="container-fluid">
-		<div class="row">
-			<div class="col-12 col-md-6">
-				<h1 class="my-3">Envíos</h1>
-			</div>
-			<div class="col-12 col-md-6 text-end">
-				<a class="btn btn-secondary my-3" type="button" [routerLink]="['/add-shipping']">Envío entre sucursales</a>
-			</div>
-		</div>
-		<div class="card p-3 mb-2">
-			<div class="row">
-				<div class="col-12 col-md-3">
-					<label>Area de producción</label>
-					<select [(ngModel)]="production_search.eq.production_area_id" class="form-control">
-						<option *ngFor="let area of production_area_list" [value]="area.id">{{area.name}}</option>
-					</select>
-				</div>
-				<div class="col-12 col-md-3">
-					<label>Fecha Inicial</label>
-					<input type="date" class="form-control" [(ngModel)]="fecha_inicial" (ngModelChange)="fechaInicialChange($event)">
-				</div>
-				<div class="col-12 col-md-3">
-					<label>Fecha Final</label>
-					<input type="date" class="form-control" [(ngModel)]="fecha_final" (ngModelChange)="fechaFinalChange($event)">
-				</div>
-				<div class="col-12 col-md-3">
-					<label>&nbsp;</label>
-					<button type="submit" class="btn btn-primary w-100" (click)="search(production_search)">
-						<svg xmlns="http://www.w3.org/2000/svg" width="1.06em" height="1.2em" viewBox="0 0 740 840"><path fill="currentColor" d="M734 668q8 9 0 17l-49 49q-3 3-8 3t-8-3L519 584q-50 38-112 55t-133 6q-53-8-99-33t-83-61t-59-85T3 366q-10-79 16-150T96 95t121-76T367 3q53 7 100 30t84 59t62 82t33 100q11 69-6 131t-55 114zM325 557q48 0 90-18t74-50t50-74t18-90t-18-90t-50-74t-74-50t-90-18t-90 18t-73 50t-50 74t-18 90t18 90t50 74t73 50t90 18"/></svg>
-						Buscar
-					</button>
-				</div>
-			</div>
-		</div>
-		<div class="px-1 my-3">
-			<div class="row text-center">
-				<div class="col-12 col-md-3 my-2">
-					<div class="card mx-3 px-4">
-						<b class="fs-6">Total Requeridos</b>
-						<div class="fw-bold fs-2">{{total_required}}</div>
-					</div>
-				</div>
-				<div class="col-12 col-md-3 my-2">
-					<div class="card mx-3 px-4">
-						<b class="fs-6 fs-md-1">Total Enviados</b>
-						<div class="fw-bold fs-2">{{total_shipped}}</div>
-					</div>
-				</div>
-				<div class="col-12 col-md-3 my-2">
-					<div class="card mx-3 px-4">
-						<b class="fs-6 fs-md-1">Total Enviados Requeridos</b>
-						<div class="fw-bold fs-2">{{total_required_shipped}}</div>
-					</div>
-				</div>
-				<div class="col-12 col-md-3 my-2">
-					<div class="card mx-3 px-4">
-						<b class="fs-6 fs-md-1">Total Envíos Pendientes</b>
-						<div class="fw-bold fs-2" [ngClass]="{'text-danger': total_pending > 0, 'text-success': total_pending <= 0}">{{total_pending < 0 ? 0 : total_pending }}</div>
-					</div>
-				</div>
-			</div>
-		</div>
-		<div class="card p-1 p-lg-3">
-			<!--table>
-				<thead>
-					<th>Sucursal</th>
-					<th>Piezas Requeridas</th>
-					<th>Piezas Enviadas</th>
-					<th>Pendientes</th>
-				</thead>
-				<tbody>
-					<tr *ngFor="let creq of crequisition_by_store_list">
-						<td>{{creq.store.name}}</td>
-						<td>{{creq.required | number}}</td>
-						<td>{{creq.shipped | number}}</td>
-						<td>{{creq.shipped >= creq.required ? 0 : creq.required-creq.shipped | number}}</td>
-						<td>
-							<a class="btn btn-primary" [routerLink]="['/add-shipping',creq.store.id, 0]">Crear Envio</a>
-						</td>
-					</tr>
-				</tbody>
-			</table-->
-			<div class="d-none d-md-flex fw-bold border-bottom align-items-end">
-				<div class="col-3">Sucursal</div>
-				<div class="col-9">
-					<div class="row text-end align-items-end">
-						<div class="col-2 col-lg-2">Requeridos</div>
-						<div class="col-2 col-lg-2">Enviados</div>
-						<div class="col-2 col-lg-2">Enviados Requeridos</div>
-						<div class="col-2 col-lg-2">Pendientes</div>
-					</div>
-				</div>
-			</div>
-			<app-loading [is_loading]="is_loading"></app-loading>
-			<div class="row border-bottom align-items-center" *ngFor="let creq of crequisition_by_store_list">
-				<div class="col-8 col-md-3 fw-bold">{{creq.store.name}}</div>
-				<div class="col-4 col-md-12 fw-bold d-lg-none order-md-3 text-end text-md">
-					<a class="btn btn-primary my-1" type="button" [routerLink]="['/add-shipping',creq.store.id, 0]">
-						<svg class="d-inline d-md-none"  xmlns="http://www.w3.org/2000/svg" width="1.2em" height="1.2em" viewBox="0 0 24 24"><path fill="currentColor" d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6z"/></svg>
-						<span class="d-none d-md-inline">Crear envío</span>
-					</a>
-				</div>
-				<div class="col-12 col-md-9">
-					<div class="row align-items-center">
-						<div class="d-md-none col-6">Requeridos</div>
-						<div class="col-6 col-md-2 col-lg-2 text-end">{{creq.required | number}}</div>
-						<div class="d-md-none col-6">Enviados</div>
-						<div class="col-6 col-md-2 col-lg-2 text-end">{{creq.shipped | number}}</div>
-						<div class="d-md-none col-6">Enviados Requeridos</div>
-						<div class="col-6 col-md-2 col-lg-2 text-end">{{creq.required_shipped | number}}</div>
-						<div class="d-md-none col-6">Pendientes</div>
-						<div class="col-6 col-md-2 col-lg-2 text-end">{{creq.pending > 0 ? creq.pending : 0}}</div>
-						<div class="d-none d-lg-block col-md-4 text-end">
-							<a class="btn btn-primary my-1 text-end" type="button" [routerLink]="['/add-shipping',creq.store.id]">Crear Envio</a>
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
-	</div>
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-12 col-md-6">
+      <h1 class="my-3">Envíos</h1>
+    </div>
+    <div class="col-12 col-md-6 text-end">
+      <a class="btn btn-secondary my-3" type="button" [routerLink]="['/add-shipping']">Envío entre sucursales</a>
+    </div>
+  </div>
+  <div class="card p-3 mb-2">
+    <div class="row">
+      <div class="col-12 col-md-3">
+        <label>Area de producción</label>
+        <select [(ngModel)]="production_search.eq.production_area_id" class="form-control">
+          @for (area of production_area_list; track area) {
+            <option [value]="area.id">{{area.name}}</option>
+          }
+        </select>
+      </div>
+      <div class="col-12 col-md-3">
+        <label>Fecha Inicial</label>
+        <input type="date" class="form-control" [(ngModel)]="fecha_inicial" (ngModelChange)="fechaInicialChange($event)">
+      </div>
+      <div class="col-12 col-md-3">
+        <label>Fecha Final</label>
+        <input type="date" class="form-control" [(ngModel)]="fecha_final" (ngModelChange)="fechaFinalChange($event)">
+      </div>
+      <div class="col-12 col-md-3">
+        <label>&nbsp;</label>
+        <button type="submit" class="btn btn-primary w-100" (click)="search(production_search)">
+          <svg xmlns="http://www.w3.org/2000/svg" width="1.06em" height="1.2em" viewBox="0 0 740 840"><path fill="currentColor" d="M734 668q8 9 0 17l-49 49q-3 3-8 3t-8-3L519 584q-50 38-112 55t-133 6q-53-8-99-33t-83-61t-59-85T3 366q-10-79 16-150T96 95t121-76T367 3q53 7 100 30t84 59t62 82t33 100q11 69-6 131t-55 114zM325 557q48 0 90-18t74-50t50-74t18-90t-18-90t-50-74t-74-50t-90-18t-90 18t-73 50t-50 74t-18 90t18 90t50 74t73 50t90 18"/></svg>
+          Buscar
+        </button>
+      </div>
+    </div>
+  </div>
+  <div class="px-1 my-3">
+    <div class="row text-center">
+      <div class="col-12 col-md-3 my-2">
+        <div class="card mx-3 px-4">
+          <b class="fs-6">Total Requeridos</b>
+          <div class="fw-bold fs-2">{{total_required}}</div>
+        </div>
+      </div>
+      <div class="col-12 col-md-3 my-2">
+        <div class="card mx-3 px-4">
+          <b class="fs-6 fs-md-1">Total Enviados</b>
+          <div class="fw-bold fs-2">{{total_shipped}}</div>
+        </div>
+      </div>
+      <div class="col-12 col-md-3 my-2">
+        <div class="card mx-3 px-4">
+          <b class="fs-6 fs-md-1">Total Enviados Requeridos</b>
+          <div class="fw-bold fs-2">{{total_required_shipped}}</div>
+        </div>
+      </div>
+      <div class="col-12 col-md-3 my-2">
+        <div class="card mx-3 px-4">
+          <b class="fs-6 fs-md-1">Total Envíos Pendientes</b>
+          <div class="fw-bold fs-2" [ngClass]="{'text-danger': total_pending > 0, 'text-success': total_pending <= 0}">{{total_pending < 0 ? 0 : total_pending }}</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="card p-1 p-lg-3">
+    <!--table>
+    <thead>
+      <th>Sucursal</th>
+      <th>Piezas Requeridas</th>
+      <th>Piezas Enviadas</th>
+      <th>Pendientes</th>
+    </thead>
+    <tbody>
+      <tr *ngFor="let creq of crequisition_by_store_list">
+        <td>{{creq.store.name}}</td>
+        <td>{{creq.required | number}}</td>
+        <td>{{creq.shipped | number}}</td>
+        <td>{{creq.shipped >= creq.required ? 0 : creq.required-creq.shipped | number}}</td>
+        <td>
+          <a class="btn btn-primary" [routerLink]="['/add-shipping',creq.store.id, 0]">Crear Envio</a>
+        </td>
+      </tr>
+    </tbody>
+  </table-->
+  <div class="d-none d-md-flex fw-bold border-bottom align-items-end">
+    <div class="col-3">Sucursal</div>
+    <div class="col-9">
+      <div class="row text-end align-items-end">
+        <div class="col-2 col-lg-2">Requeridos</div>
+        <div class="col-2 col-lg-2">Enviados</div>
+        <div class="col-2 col-lg-2">Enviados Requeridos</div>
+        <div class="col-2 col-lg-2">Pendientes</div>
+      </div>
+    </div>
+  </div>
+  <app-loading [is_loading]="is_loading"></app-loading>
+  @for (creq of crequisition_by_store_list; track creq) {
+    <div class="row border-bottom align-items-center">
+      <div class="col-8 col-md-3 fw-bold">{{creq.store.name}}</div>
+      <div class="col-4 col-md-12 fw-bold d-lg-none order-md-3 text-end text-md">
+        <a class="btn btn-primary my-1" type="button" [routerLink]="['/add-shipping',creq.store.id, 0]">
+          <svg class="d-inline d-md-none"  xmlns="http://www.w3.org/2000/svg" width="1.2em" height="1.2em" viewBox="0 0 24 24"><path fill="currentColor" d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6z"/></svg>
+          <span class="d-none d-md-inline">Crear envío</span>
+        </a>
+      </div>
+      <div class="col-12 col-md-9">
+        <div class="row align-items-center">
+          <div class="d-md-none col-6">Requeridos</div>
+          <div class="col-6 col-md-2 col-lg-2 text-end">{{creq.required | number}}</div>
+          <div class="d-md-none col-6">Enviados</div>
+          <div class="col-6 col-md-2 col-lg-2 text-end">{{creq.shipped | number}}</div>
+          <div class="d-md-none col-6">Enviados Requeridos</div>
+          <div class="col-6 col-md-2 col-lg-2 text-end">{{creq.required_shipped | number}}</div>
+          <div class="d-md-none col-6">Pendientes</div>
+          <div class="col-6 col-md-2 col-lg-2 text-end">{{creq.pending > 0 ? creq.pending : 0}}</div>
+          <div class="d-none d-lg-block col-md-4 text-end">
+            <a class="btn btn-primary my-1 text-end" type="button" [routerLink]="['/add-shipping',creq.store.id]">Crear Envio</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  }
+</div>
+</div>

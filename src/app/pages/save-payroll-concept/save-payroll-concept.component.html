@@ -1,81 +1,87 @@
 <div class="container-fluid">
-	<div class="row align-items-center">
-		<div class="col-6">
-			<h1 class="my-3">Conceptos de Nómina</h1>
-		</div>
-		<div class="col-6 text-end">
-			<button class="btn btn-primary mx-2" (click)="showEditPayrollConcept(null)">
-				<span>Agregar</span>
-			</button>
-		</div>
-	</div>
+  <div class="row align-items-center">
+    <div class="col-6">
+      <h1 class="my-3">Conceptos de Nómina</h1>
+    </div>
+    <div class="col-6 text-end">
+      <button class="btn btn-primary mx-2" (click)="showEditPayrollConcept(null)">
+        <span>Agregar</span>
+      </button>
+    </div>
+  </div>
 
-	<div class="card p-3">
-		<div class="row d-none d-sm-flex border-bottom">
-			<div class="col-3 fw-bold">Concepto</div>
-			<div class="col-3 fw-bold">Tipo</div>
-			<div class="col-3 fw-bold">Valor</div>
-			<div class="col-3 fw-bold text-end">Acciones</div>
-		</div>
-		<div class="row" *ngIf="payroll_concept_list.length <= 0">
-			<div class="col-12 text-center mt-3">
-				No hay conceptos de nómina registrados
-			</div>
-		</div>
-		<div class="row my-1 border-bottom align-items-center py-1" *ngFor="let pcl of payroll_concept_list;">
-			<div class="col-6 col-sm-3">
-				<div class="d-block d-sm-none fw-bold">Concepto</div>
-				<div>{{pcl.name}}</div>
-			</div>
-			<div class="col-6 col-sm-3">
-				<div class="d-block d-sm-none fw-bold">Tipo</div>
-				<div>{{pcl.type == "PERCEPTION" ? "Percepción" : "Deducción"}}</div>
-			</div>
-			<div class="col-12 col-sm-3">
-				<div class="d-block d-sm-none fw-bold">Valor</div>
-				<div>{{pcl.formula}}</div>
-			</div>
-			<div class="col-12 col-sm-3 text-end">
-				<button type="button" class="btn btn-primary mx-2" (click)="showEditPayrollConcept(pcl.id)">
-					<span>Editar</span>
-				</button>
-				<button type="button" class="btn btn-primary" (click)="deletePayrollConcept(pcl)">
-					<svg xmlns="http://www.w3.org/2000/svg" width="1.2em" height="1.2em" viewBox="0 0 256 256"><path fill="currentColor" d="M216 48h-40v-8a24 24 0 0 0-24-24h-48a24 24 0 0 0-24 24v8H40a8 8 0 0 0 0 16h8v144a16 16 0 0 0 16 16h128a16 16 0 0 0 16-16V64h8a8 8 0 0 0 0-16M112 168a8 8 0 0 1-16 0v-64a8 8 0 0 1 16 0Zm48 0a8 8 0 0 1-16 0v-64a8 8 0 0 1 16 0Zm0-120H96v-8a8 8 0 0 1 8-8h48a8 8 0 0 1 8 8Z"/></svg>
-				</button>
-			</div>
-		</div>
-	</div>
+  <div class="card p-3">
+    <div class="row d-none d-sm-flex border-bottom">
+      <div class="col-3 fw-bold">Concepto</div>
+      <div class="col-3 fw-bold">Tipo</div>
+      <div class="col-3 fw-bold">Valor</div>
+      <div class="col-3 fw-bold text-end">Acciones</div>
+    </div>
+    @if (payroll_concept_list.length <= 0) {
+      <div class="row">
+        <div class="col-12 text-center mt-3">
+          No hay conceptos de nómina registrados
+        </div>
+      </div>
+    }
+    @for (pcl of payroll_concept_list; track pcl) {
+      <div class="row my-1 border-bottom align-items-center py-1">
+        <div class="col-6 col-sm-3">
+          <div class="d-block d-sm-none fw-bold">Concepto</div>
+          <div>{{pcl.name}}</div>
+        </div>
+        <div class="col-6 col-sm-3">
+          <div class="d-block d-sm-none fw-bold">Tipo</div>
+          <div>{{pcl.type == "PERCEPTION" ? "Percepción" : "Deducción"}}</div>
+        </div>
+        <div class="col-12 col-sm-3">
+          <div class="d-block d-sm-none fw-bold">Valor</div>
+          <div>{{pcl.formula}}</div>
+        </div>
+        <div class="col-12 col-sm-3 text-end">
+          <button type="button" class="btn btn-primary mx-2" (click)="showEditPayrollConcept(pcl.id)">
+            <span>Editar</span>
+          </button>
+          <button type="button" class="btn btn-primary" (click)="deletePayrollConcept(pcl)">
+            <svg xmlns="http://www.w3.org/2000/svg" width="1.2em" height="1.2em" viewBox="0 0 256 256"><path fill="currentColor" d="M216 48h-40v-8a24 24 0 0 0-24-24h-48a24 24 0 0 0-24 24v8H40a8 8 0 0 0 0 16h8v144a16 16 0 0 0 16 16h128a16 16 0 0 0 16-16V64h8a8 8 0 0 0 0-16M112 168a8 8 0 0 1-16 0v-64a8 8 0 0 1 16 0Zm48 0a8 8 0 0 1-16 0v-64a8 8 0 0 1 16 0Zm0-120H96v-8a8 8 0 0 1 8-8h48a8 8 0 0 1 8 8Z"/></svg>
+          </button>
+        </div>
+      </div>
+    }
+  </div>
 </div>
 
 <app-modal [show]="showPayrollModal" [biggest_posible]="true" [closable]="false">
-<div class="card p-3" *ngIf="selected_payroll_concept">
-	<h2>{{ selected_payroll_concept.id != 0 ? 'Editar Concepto' : 'Agregar Concepto' }}</h2>
-	<form class="row" (submit)="savePayrollConcept($event)">
-		<div class="col-12 col-md-4">
-			<div class="form-group">
-				<label for="name">Nombre</label>
-				<input type="text" name="name" [(ngModel)]="selected_payroll_concept.name" class="form-control" required>
-			</div>
-		</div>
-		<div class="col-12 col-md-4">
-			<div class="form-group">
-				<label for="type">Tipo</label>
-				<select name="type" [(ngModel)]="selected_payroll_concept.type" class="form-control" required>
-					<option [value]="'PERCEPTION'">Percepción</option>
-					<option [value]="'DEDUCTION'">Deducción</option>
-				</select>
-			</div>
-		</div>
-		<div class="col-12 col-md-4">
-			<div class="form-group">
-				<label for="formula">Valor</label>
-				<input type="number" name="formula" [(ngModel)]="selected_payroll_concept.formula" class="form-control" required>
-			</div>
-		</div>
-		<div class="col-12 text-end mt-3">
-			<button type="button" (click)="showPayrollModal = false" class="btn btn-secondary">Cancelar</button>
-			<button type="submit" class="btn btn-primary mx-2">Guardar</button>
-		</div>
-	</form>
-</div>
+  @if (selected_payroll_concept) {
+    <div class="card p-3">
+      <h2>{{ selected_payroll_concept.id != 0 ? 'Editar Concepto' : 'Agregar Concepto' }}</h2>
+      <form class="row" (submit)="savePayrollConcept($event)">
+        <div class="col-12 col-md-4">
+          <div class="form-group">
+            <label for="name">Nombre</label>
+            <input type="text" name="name" [(ngModel)]="selected_payroll_concept.name" class="form-control" required>
+          </div>
+        </div>
+        <div class="col-12 col-md-4">
+          <div class="form-group">
+            <label for="type">Tipo</label>
+            <select name="type" [(ngModel)]="selected_payroll_concept.type" class="form-control" required>
+              <option [value]="'PERCEPTION'">Percepción</option>
+              <option [value]="'DEDUCTION'">Deducción</option>
+            </select>
+          </div>
+        </div>
+        <div class="col-12 col-md-4">
+          <div class="form-group">
+            <label for="formula">Valor</label>
+            <input type="number" name="formula" [(ngModel)]="selected_payroll_concept.formula" class="form-control" required>
+          </div>
+        </div>
+        <div class="col-12 text-end mt-3">
+          <button type="button" (click)="showPayrollModal = false" class="btn btn-secondary">Cancelar</button>
+          <button type="submit" class="btn btn-primary mx-2">Guardar</button>
+        </div>
+      </form>
+    </div>
+  }
 </app-modal>

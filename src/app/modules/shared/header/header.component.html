@@ -1,94 +1,120 @@
 <div class="navbar navbar-expand-md	bd-navbar py-1">
-<nav class="d-flex justify-content-between w-100 align-items-center" aria-label="Main navigation">
-	<div>
-		<!-- 'd-lg-none':true, Agregar para esconder en pantallas grandes -->
-		<div style="margin-top: 7px"	[ngClass]="{'ms-3':true, hamburger:true,'hamburger--vortex':true, 'is-active':rest.show_menu,'d-inline-block':true}" (click)="rest.toggleMenu()">
-			<span class="hamburger-box">
-				<span class="hamburger-inner"></span>
-			</span>
-		</div>
-		<!-- svg xmlns="http://www.w3.org/2000/svg" width="40px" height="32px" class="d-block my-1" viewBox="0 0 118 94" role="img"><title>Bootstrap</title><path fill-rule="evenodd" clip-rule="evenodd" d="M24.509 0c-6.733 0-11.715 5.893-11.492 12.284.214 6.14-.064 14.092-2.066 20.577C8.943 39.365 5.547 43.485 0 44.014v5.972c5.547.529 8.943 4.649 10.951 11.153 2.002 6.485 2.28 14.437 2.066 20.577C12.794 88.106 17.776 94 24.51 94H93.5c6.733 0 11.714-5.893 11.491-12.284-.214-6.14.064-14.092 2.066-20.577 2.009-6.504 5.396-10.624 10.943-11.153v-5.972c-5.547-.529-8.934-4.649-10.943-11.153-2.002-6.484-2.28-14.437-2.066-20.577C105.214 5.894 100.233 0 93.5 0H24.508zM80 57.863C80 66.663 73.436 72 62.543 72H44a2 2 0 01-2-2V24a2 2 0 012-2h18.437c9.083 0 15.044 4.92 15.044 12.474 0 5.302-4.01 10.049-9.119 10.88v.277C75.317 46.394 80 51.21 80 57.863zM60.521 28.34H49.948v14.934h8.905c6.884 0 10.68-2.772 10.68-7.727 0-4.643-3.264-7.207-9.012-7.207zM49.948 49.2v16.458H60.91c7.167 0 10.964-2.876 10.964-8.281 0-5.406-3.903-8.178-11.425-8.178H49.948z" fill="currentColor"></path></svg-->
-		<a href="#" href="/" class="d-none d-sm-inline">
-			<img [src]="rest.getImagePath(rest.preferences.logo_image_id)" class="company-logo ms-3" height="40" style="vertical-align:top">
-		</a>
-	</div>
-	<div class="flex-grow-1 align-self-center text-end">
-		<a class="d-none d-md-inline-block btn btn-secondary mx-1" href="/#/list-order" *ngIf="rest.user_permission.pos" title="Ordenes">
-			<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 1024 1024"><path fill="currentColor" d="M704 192h160v736H160V192h160v64h384v-64zM288 512h448v-64H288v64zm0 256h448v-64H288v64zm96-576V96h256v96H384z"/></svg>
-		</a>
-		<a class="btn btn-secondary d-xl-inline-block mx-1" href="/#/quote" *ngIf="rest.user_permission.quotes" title="Cotizaciones">
-			<span>
-				<svg xmlns="http://www.w3.org/2000/svg" width="0.88em" height="1em" viewBox="0 0 21 24"><path fill="currentColor" d="M19.502 0H1.498C.67 0 0 .671 0 1.498v21.004C0 23.33.671 24 1.498 24H19.5c.828 0 1.498-.671 1.498-1.498V1.498c0-.827-.67-1.497-1.497-1.498zM6 21H3v-3h3zm0-4.5H3v-2.998h3zM6 12H3V9.001h3zm6 9H9v-3h3zm0-4.5H9v-2.998h3zm0-4.5H9V9.001h3zm6 9h-3V9h3zm0-13.92H3V3h15z"/></svg>
-			</span>
-		</a>
-		<a class="btn btn-secondary d-xl-inline-block mx-1" href="/#/tables" *ngIf="rest.user_permission.show_tables" title="Mesas">
-			<span>
-				<svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" width="1em" height="1em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 24 24"><path fill="currentColor" d="m21.96 9.73l-1.43-5a.996.996 0 0 0-.96-.73H4.43c-.45 0-.84.3-.96.73l-1.43 5c-.18.63.3 1.27.96 1.27h2.2l-1.05 7.88a.989.989 0 1 0 1.96.26L6.67 15h10.67l.55 4.14a1 1 0 0 0 .98.86c.6 0 1.06-.53.98-1.12L18.8 11H21c.66 0 1.14-.64.96-1.27zM6.93 13l.27-2h9.6l.27 2H6.93z"/></svg>
-			</span>
-		</a>
-		<a class="btn btn-secondary d-xl-inline-block mx-1"	*ngIf="rest.user_permission.view_commandas" href="/#/list-order-waiter" title="Ordenes Listas">
-			<span>
-				<svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" width="1em" height="1em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 16 16"><g fill="currentColor"><path d="M6.5 0A1.5 1.5 0 0 0 5 1.5v1A1.5 1.5 0 0 0 6.5 4h3A1.5 1.5 0 0 0 11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3Zm3 1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1-.5-.5v-1a.5.5 0 0 1 .5-.5h3Z"/><path d="M4 1.5H3a2 2 0 0 0-2 2V14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V3.5a2 2 0 0 0-2-2h-1v1A2.5 2.5 0 0 1 9.5 5h-3A2.5 2.5 0 0 1 4 2.5v-1Zm6.854 7.354l-3 3a.5.5 0 0 1-.708 0l-1.5-1.5a.5.5 0 0 1 .708-.708L7.5 10.793l2.646-2.647a.5.5 0 0 1 .708.708Z"/></g></svg>
-			</span>
-		</a>
-		<button class="btn btn-secondary d-xl-inline-block mx-1" (click)="showConfirmCommanda()" *ngIf="rest.user_permission.view_commandas" title="Comandas">
-			<span>
-				<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" width="1em" height="1em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 20 20"><g fill="none"><path d="M7.085 3A1.5 1.5 0 0 1 8.5 2h3a1.5 1.5 0 0 1 1.415 1H14.5A1.5 1.5 0 0 1 16 4.5v12a1.5 1.5 0 0 1-1.5 1.5h-9A1.5 1.5 0 0 1 4 16.5v-12A1.5 1.5 0 0 1 5.5 3h1.585zM8.5 3a.5.5 0 0 0 0 1h3a.5.5 0 0 0 0-1h-3zm5.354 4.146a.5.5 0 0 0-.707 0l-1.413 1.412l-.397-.362a.5.5 0 0 0-.674.738l.75.685a.5.5 0 0 0 .69-.016l1.75-1.75a.5.5 0 0 0 0-.707zm0 5.708a.5.5 0 0 0-.707-.708l-1.413 1.412l-.397-.362a.5.5 0 0 0-.674.738l.75.685a.5.5 0 0 0 .69-.015l1.75-1.75zM6.5 8a.5.5 0 0 0 0 1H9a.5.5 0 0 0 0-1H6.5zM6 13.5a.5.5 0 0 0 .5.5H9a.5.5 0 0 0 0-1H6.5a.5.5 0 0 0-.5.5z" fill="currentColor"/></g></svg>
-			</span>
-		</button>
+  <nav class="d-flex justify-content-between w-100 align-items-center" aria-label="Main navigation">
+    <div>
+      <!-- 'd-lg-none':true, Agregar para esconder en pantallas grandes -->
+      <div style="margin-top: 7px"	[ngClass]="{'ms-3':true, hamburger:true,'hamburger--vortex':true, 'is-active':rest.show_menu,'d-inline-block':true}" (click)="rest.toggleMenu()">
+        <span class="hamburger-box">
+          <span class="hamburger-inner"></span>
+        </span>
+      </div>
+      <!-- svg xmlns="http://www.w3.org/2000/svg" width="40px" height="32px" class="d-block my-1" viewBox="0 0 118 94" role="img"><title>Bootstrap</title><path fill-rule="evenodd" clip-rule="evenodd" d="M24.509 0c-6.733 0-11.715 5.893-11.492 12.284.214 6.14-.064 14.092-2.066 20.577C8.943 39.365 5.547 43.485 0 44.014v5.972c5.547.529 8.943 4.649 10.951 11.153 2.002 6.485 2.28 14.437 2.066 20.577C12.794 88.106 17.776 94 24.51 94H93.5c6.733 0 11.714-5.893 11.491-12.284-.214-6.14.064-14.092 2.066-20.577 2.009-6.504 5.396-10.624 10.943-11.153v-5.972c-5.547-.529-8.934-4.649-10.943-11.153-2.002-6.484-2.28-14.437-2.066-20.577C105.214 5.894 100.233 0 93.5 0H24.508zM80 57.863C80 66.663 73.436 72 62.543 72H44a2 2 0 01-2-2V24a2 2 0 012-2h18.437c9.083 0 15.044 4.92 15.044 12.474 0 5.302-4.01 10.049-9.119 10.88v.277C75.317 46.394 80 51.21 80 57.863zM60.521 28.34H49.948v14.934h8.905c6.884 0 10.68-2.772 10.68-7.727 0-4.643-3.264-7.207-9.012-7.207zM49.948 49.2v16.458H60.91c7.167 0 10.964-2.876 10.964-8.281 0-5.406-3.903-8.178-11.425-8.178H49.948z" fill="currentColor"></path></svg-->
+      <a href="#" href="/" class="d-none d-sm-inline">
+        <img [src]="rest.getImagePath(rest.preferences.logo_image_id)" class="company-logo ms-3" height="40" style="vertical-align:top">
+      </a>
+    </div>
+    <div class="flex-grow-1 align-self-center text-end">
+      @if (rest.user_permission.pos) {
+        <a class="d-none d-md-inline-block btn btn-secondary mx-1" href="/#/list-order" title="Ordenes">
+          <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 1024 1024"><path fill="currentColor" d="M704 192h160v736H160V192h160v64h384v-64zM288 512h448v-64H288v64zm0 256h448v-64H288v64zm96-576V96h256v96H384z"/></svg>
+        </a>
+      }
+      @if (rest.user_permission.quotes) {
+        <a class="btn btn-secondary d-xl-inline-block mx-1" href="/#/quote" title="Cotizaciones">
+          <span>
+            <svg xmlns="http://www.w3.org/2000/svg" width="0.88em" height="1em" viewBox="0 0 21 24"><path fill="currentColor" d="M19.502 0H1.498C.67 0 0 .671 0 1.498v21.004C0 23.33.671 24 1.498 24H19.5c.828 0 1.498-.671 1.498-1.498V1.498c0-.827-.67-1.497-1.497-1.498zM6 21H3v-3h3zm0-4.5H3v-2.998h3zM6 12H3V9.001h3zm6 9H9v-3h3zm0-4.5H9v-2.998h3zm0-4.5H9V9.001h3zm6 9h-3V9h3zm0-13.92H3V3h15z"/></svg>
+          </span>
+        </a>
+      }
+      @if (rest.user_permission.show_tables) {
+        <a class="btn btn-secondary d-xl-inline-block mx-1" href="/#/tables" title="Mesas">
+          <span>
+            <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" width="1em" height="1em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 24 24"><path fill="currentColor" d="m21.96 9.73l-1.43-5a.996.996 0 0 0-.96-.73H4.43c-.45 0-.84.3-.96.73l-1.43 5c-.18.63.3 1.27.96 1.27h2.2l-1.05 7.88a.989.989 0 1 0 1.96.26L6.67 15h10.67l.55 4.14a1 1 0 0 0 .98.86c.6 0 1.06-.53.98-1.12L18.8 11H21c.66 0 1.14-.64.96-1.27zM6.93 13l.27-2h9.6l.27 2H6.93z"/></svg>
+          </span>
+        </a>
+      }
+      @if (rest.user_permission.view_commandas) {
+        <a class="btn btn-secondary d-xl-inline-block mx-1" href="/#/list-order-waiter" title="Ordenes Listas">
+          <span>
+            <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" width="1em" height="1em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 16 16"><g fill="currentColor"><path d="M6.5 0A1.5 1.5 0 0 0 5 1.5v1A1.5 1.5 0 0 0 6.5 4h3A1.5 1.5 0 0 0 11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3Zm3 1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1-.5-.5v-1a.5.5 0 0 1 .5-.5h3Z"/><path d="M4 1.5H3a2 2 0 0 0-2 2V14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V3.5a2 2 0 0 0-2-2h-1v1A2.5 2.5 0 0 1 9.5 5h-3A2.5 2.5 0 0 1 4 2.5v-1Zm6.854 7.354l-3 3a.5.5 0 0 1-.708 0l-1.5-1.5a.5.5 0 0 1 .708-.708L7.5 10.793l2.646-2.647a.5.5 0 0 1 .708.708Z"/></g></svg>
+          </span>
+        </a>
+      }
+      @if (rest.user_permission.view_commandas) {
+        <button class="btn btn-secondary d-xl-inline-block mx-1" (click)="showConfirmCommanda()" title="Comandas">
+          <span>
+            <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" width="1em" height="1em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 20 20"><g fill="none"><path d="M7.085 3A1.5 1.5 0 0 1 8.5 2h3a1.5 1.5 0 0 1 1.415 1H14.5A1.5 1.5 0 0 1 16 4.5v12a1.5 1.5 0 0 1-1.5 1.5h-9A1.5 1.5 0 0 1 4 16.5v-12A1.5 1.5 0 0 1 5.5 3h1.585zM8.5 3a.5.5 0 0 0 0 1h3a.5.5 0 0 0 0-1h-3zm5.354 4.146a.5.5 0 0 0-.707 0l-1.413 1.412l-.397-.362a.5.5 0 0 0-.674.738l.75.685a.5.5 0 0 0 .69-.016l1.75-1.75a.5.5 0 0 0 0-.707zm0 5.708a.5.5 0 0 0-.707-.708l-1.413 1.412l-.397-.362a.5.5 0 0 0-.674.738l.75.685a.5.5 0 0 0 .69-.015l1.75-1.75zM6.5 8a.5.5 0 0 0 0 1H9a.5.5 0 0 0 0-1H6.5zM6 13.5a.5.5 0 0 0 .5.5H9a.5.5 0 0 0 0-1H6.5a.5.5 0 0 0-.5.5z" fill="currentColor"/></g></svg>
+          </span>
+        </button>
+      }
 
-		<a class="btn btn-secondary d-xl-inline-block mx-1" href="/#/pos" *ngIf="rest.user_permission.pos" title="Punto de Venta">
-			<span>
-				<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" focusable="false" width="1em" height="1em" style="-ms-transform: rotate(360deg); -webkit-transform: rotate(360deg); transform: rotate(360deg);" preserveAspectRatio="xMidYMid meet" viewBox="0 0 24 24"><path d="M17 2H7c-1.1 0-2 .9-2 2v2c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 4H7V4h10v2zm3 16H4c-1.1 0-2-.9-2-2v-1h20v1c0 1.1-.9 2-2 2zm-1.47-11.81A2.008 2.008 0 0 0 16.7 9H7.3c-.79 0-1.51.47-1.83 1.19L2 18h20l-3.47-7.81zM9.5 16h-1c-.28 0-.5-.22-.5-.5s.22-.5.5-.5h1c.28 0 .5.22.5.5s-.22.5-.5.5zm0-2h-1c-.28 0-.5-.22-.5-.5s.22-.5.5-.5h1c.28 0 .5.22.5.5s-.22.5-.5.5zm0-2h-1c-.28 0-.5-.22-.5-.5s.22-.5.5-.5h1c.28 0 .5.22.5.5s-.22.5-.5.5zm3 4h-1c-.28 0-.5-.22-.5-.5s.22-.5.5-.5h1c.28 0 .5.22.5.5s-.22.5-.5.5zm0-2h-1c-.28 0-.5-.22-.5-.5s.22-.5.5-.5h1c.28 0 .5.22.5.5s-.22.5-.5.5zm0-2h-1c-.28 0-.5-.22-.5-.5s.22-.5.5-.5h1c.28 0 .5.22.5.5s-.22.5-.5.5zm3 4h-1c-.28 0-.5-.22-.5-.5s.22-.5.5-.5h1c.28 0 .5.22.5.5s-.22.5-.5.5zm0-2h-1c-.28 0-.5-.22-.5-.5s.22-.5.5-.5h1c.28 0 .5.22.5.5s-.22.5-.5.5zm0-2h-1c-.28 0-.5-.22-.5-.5s.22-.5.5-.5h1c.28 0 .5.22.5.5s-.22.5-.5.5z" fill="currentColor"/></svg>
-			</span>
-			<span class="d-none d-md-inline">PV</span>
-		</a>
-	</div>
-	<div class="px-3 pt-1 dropdown">
-		<a id="notification_link" class="dropdown-toggle" (click)="markAsRead($event)">
-			<div class="d-inline-block">
-				<div class="w-100 text-center">
-					<img [src]="rest.getImagePath(rest.user?.image_id, rest.preferences.default_user_logo_image_id)"	height="20">
-					<span class="badge rounded-pill bg-danger ms-3" *ngIf="unread_notifications">
-						{{unread_notifications}}
-					</span>
-				</div>
-				<div></div>
-				<div style="font-size: 9px;" class="header_user_name" [ngClass]="{'connected':rest.socket_is_connected}">{{rest.user?.name}}</div>
-			</div>
-		</a>
-		<ul class="dropdown-menu dropdown-menu-end me-1" [ngClass]="{show:show_dropdown}" style="right: 10px">
-			<li *ngIf="push_notification_list.length == 0" class="p-3">No hay notificaciones</li>
-			<li *ngFor="let push_notification of push_notification_list">
-				<a class="dropdown-item" href="#" *ngIf="push_notification.app_path" href="{{push_notification.app_path}}" (click)="show_dropdown=false">
-					<b>{{push_notification.title}}</b>
-					<br>
-					<span>{{push_notification.body}}</span>
-				</a>
-				<span class="dropdown-item" *ngIf="!push_notification?.app_path">
-					<b>{{push_notification?.title}}</b>
-					<br>
-					<span>{{push_notification?.body}}</span>
-				</span>
-			</li>
-			<li>
-				<a class="dropdown-item side-nav-link pointer" aria-expanded="false" (click)="rest.logout()" title="Cerrar Sesión">
-					<i class="svg-icon">
-						<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" focusable="false" width="1em" height="1em" style="-ms-transform: rotate(360deg); -webkit-transform: rotate(360deg); transform: rotate(360deg);" preserveAspectRatio="xMidYMid meet" viewBox="0 0 24 24"><path d="M5 22a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1h14a1 1 0 0 1 1 1v18a1 1 0 0 1-1 1H5zm10-6l5-4l-5-4v3H9v2h6v3z"/></svg>
-					</i>
-					<span>Cerrar Sesión</span>
-				</a>
-			</li>
-		</ul>
-	</div>
-</nav>
-</div>
-<app-modal [(show)]="show_commandas">
-	<div *ngIf="commanda_list">
-		<ul class="list-group">
-			<li class="list-group-item" *ngFor="let commanda of commanda_list" (click)="show_commandas=false">
-				<a href="/#/view-commanda/{{commanda.id}}">{{commanda.name}}</a>
-			</li>
-		</ul>
-	</div>
-</app-modal>
+      @if (rest.user_permission.pos) {
+        <a class="btn btn-secondary d-xl-inline-block mx-1" href="/#/pos" title="Punto de Venta">
+          <span>
+            <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" focusable="false" width="1em" height="1em" style="-ms-transform: rotate(360deg); -webkit-transform: rotate(360deg); transform: rotate(360deg);" preserveAspectRatio="xMidYMid meet" viewBox="0 0 24 24"><path d="M17 2H7c-1.1 0-2 .9-2 2v2c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 4H7V4h10v2zm3 16H4c-1.1 0-2-.9-2-2v-1h20v1c0 1.1-.9 2-2 2zm-1.47-11.81A2.008 2.008 0 0 0 16.7 9H7.3c-.79 0-1.51.47-1.83 1.19L2 18h20l-3.47-7.81zM9.5 16h-1c-.28 0-.5-.22-.5-.5s.22-.5.5-.5h1c.28 0 .5.22.5.5s-.22.5-.5.5zm0-2h-1c-.28 0-.5-.22-.5-.5s.22-.5.5-.5h1c.28 0 .5.22.5.5s-.22.5-.5.5zm0-2h-1c-.28 0-.5-.22-.5-.5s.22-.5.5-.5h1c.28 0 .5.22.5.5s-.22.5-.5.5zm3 4h-1c-.28 0-.5-.22-.5-.5s.22-.5.5-.5h1c.28 0 .5.22.5.5s-.22.5-.5.5zm0-2h-1c-.28 0-.5-.22-.5-.5s.22-.5.5-.5h1c.28 0 .5.22.5.5s-.22.5-.5.5zm0-2h-1c-.28 0-.5-.22-.5-.5s.22-.5.5-.5h1c.28 0 .5.22.5.5s-.22.5-.5.5zm3 4h-1c-.28 0-.5-.22-.5-.5s.22-.5.5-.5h1c.28 0 .5.22.5.5s-.22.5-.5.5zm0-2h-1c-.28 0-.5-.22-.5-.5s.22-.5.5-.5h1c.28 0 .5.22.5.5s-.22.5-.5.5zm0-2h-1c-.28 0-.5-.22-.5-.5s.22-.5.5-.5h1c.28 0 .5.22.5.5s-.22.5-.5.5z" fill="currentColor"/></svg>
+          </span>
+          <span class="d-none d-md-inline">PV</span>
+        </a>
+      }
+    </div>
+    <div class="px-3 pt-1 dropdown">
+      <a id="notification_link" class="dropdown-toggle" (click)="markAsRead($event)">
+        <div class="d-inline-block">
+          <div class="w-100 text-center">
+            <img [src]="rest.getImagePath(rest.user?.image_id, rest.preferences.default_user_logo_image_id)"	height="20">
+            @if (unread_notifications) {
+              <span class="badge rounded-pill bg-danger ms-3">
+                {{unread_notifications}}
+              </span>
+            }
+          </div>
+          <div></div>
+          <div style="font-size: 9px;" class="header_user_name" [ngClass]="{'connected':rest.socket_is_connected}">{{rest.user?.name}}</div>
+        </div>
+      </a>
+      <ul class="dropdown-menu dropdown-menu-end me-1" [ngClass]="{show:show_dropdown}" style="right: 10px">
+        @if (push_notification_list.length == 0) {
+          <li class="p-3">No hay notificaciones</li>
+        }
+        @for (push_notification of push_notification_list; track push_notification) {
+          <li>
+            @if (push_notification.app_path) {
+              <a class="dropdown-item" href="#" href="{{push_notification.app_path}}" (click)="show_dropdown=false">
+                <b>{{push_notification.title}}</b>
+                <br>
+                  <span>{{push_notification.body}}</span>
+                </a>
+              }
+              @if (!push_notification?.app_path) {
+                <span class="dropdown-item">
+                  <b>{{push_notification?.title}}</b>
+                  <br>
+                    <span>{{push_notification?.body}}</span>
+                  </span>
+                }
+              </li>
+            }
+            <li>
+              <a class="dropdown-item side-nav-link pointer" aria-expanded="false" (click)="rest.logout()" title="Cerrar Sesión">
+                <i class="svg-icon">
+                  <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" focusable="false" width="1em" height="1em" style="-ms-transform: rotate(360deg); -webkit-transform: rotate(360deg); transform: rotate(360deg);" preserveAspectRatio="xMidYMid meet" viewBox="0 0 24 24"><path d="M5 22a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1h14a1 1 0 0 1 1 1v18a1 1 0 0 1-1 1H5zm10-6l5-4l-5-4v3H9v2h6v3z"/></svg>
+                </i>
+                <span>Cerrar Sesión</span>
+              </a>
+            </li>
+          </ul>
+        </div>
+      </nav>
+    </div>
+    <app-modal [(show)]="show_commandas">
+      @if (commanda_list) {
+        <div>
+          <ul class="list-group">
+            @for (commanda of commanda_list; track commanda) {
+              <li class="list-group-item" (click)="show_commandas=false">
+                <a href="/#/view-commanda/{{commanda.id}}">{{commanda.name}}</a>
+              </li>
+            }
+          </ul>
+        </div>
+      }
+    </app-modal>

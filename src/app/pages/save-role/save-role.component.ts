@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { RestSimple, SearchObject } from '../../modules/shared/services/Rest';
 import { Role } from '../../modules/shared/RestModels';
 import { BaseComponent } from './../../modules/shared/base/base.component';
@@ -10,7 +10,7 @@ import { FormsModule } from '@angular/forms';
 
 @Component({
     selector: 'app-save-role',
-    imports: [CommonModule, LoadingComponent, FormsModule],
+    imports: [LoadingComponent, FormsModule],
     templateUrl: './save-role.component.html',
     styleUrl: './save-role.component.css'
 })

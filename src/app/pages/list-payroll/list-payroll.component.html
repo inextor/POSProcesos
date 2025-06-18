@@ -1,99 +1,109 @@
 <div class="container-fluid">
-	<div class="row align-items-center">
-		<div class="col-6 col-sm-6">
-			<h1 class="my-3">Nóminas</h1>
-		</div>
-		<div *ngIf="rest.user_permission.add_payroll" class="col-6 col-sm-6 text-end">
-			<a class="btn btn-primary mx-2" routerLink="/create-payroll">
-				<span class="d-none d-sm-inline">Agregar</span>
-				<svg class="" xmlns="http://www.w3.org/2000/svg" width="1.2em" height="1.2em" viewBox="0 0 24 24"><path fill="currentColor" d="M20 14h-6v6h-4v-6H4v-4h6V4h4v6h6z"/></svg>
-			</a>
-			<a class="btn btn-primary" routerLink="/save-payroll-concept">
-				<span class="d-none d-sm-inline"> Conceptos </span>
-				<svg class="" xmlns="http://www.w3.org/2000/svg" width="1.2em" height="1.2em" viewBox="0 0 24 24"><path fill="currentColor" d="M11 17h2v-6h-2zm1-8q.425 0 .713-.288T13 8t-.288-.712T12 7t-.712.288T11 8t.288.713T12 9m0 13q-2.075 0-3.9-.788t-3.175-2.137T2.788 15.9T2 12t.788-3.9t2.137-3.175T8.1 2.788T12 2t3.9.788t3.175 2.137T21.213 8.1T22 12t-.788 3.9t-2.137 3.175t-3.175 2.138T12 22"/></svg>
-			</a>
-		</div>
-	</div>
-	
-	<div class="card p-3">
-		<form class="row" (submit)="search(search_payroll)">
-			<div class="col-12 col-lg-3">
-				<div class="form-group">
-					<label for="search_start_date">Fecha período inicial</label>
-					<input type="date" name="start_date" class="form-control" (ngModelChange)="onDateChange($event,search_payroll.ge,'start_date')" [(ngModel)]="start_date" id="search_start_date" required>
-				</div>
-			</div>
-			<div class="col-12 col-lg-3">
-				<div class="form-group">
-					<label for="search_end_date">Fecha período final</label>
-					<input type="date" name="end_date" class="form-control" (ngModelChange)="onDateChange($event,search_payroll.le,'start_date')"  [(ngModel)]="end_date" id="search_end_date" required>
-				</div>
-			</div>
-			<div class="col-12 col-lg-2">
-				<div class="form-group">
-					<label>Usuario</label>
-					<select name="user_id" class="form-control" (ngModelChange)="onUserChange($event)" [(ngModel)]="user_id">
-						<option [value]="null">Todos</option>
-						<ng-container *ngFor="let user of users_list">
-							<option [value]="user.id">{{user.name}}</option>
-						</ng-container>
-					</select>
-				</div>
-			</div>
-			<div class="col-12 col-lg-2">
-				<div class="form-group">
-					<label for="search_end_date">Estatus</label>
-					<select name="paid_status" class="form-control" (ngModelChange)="onPaidStatusChange($event)" [(ngModel)]="paid_status" id="paid_status" required>
-						<option [value]="null">Todos</option>
-						<option [value]="'PENDING'">Pendiente</option>
-						<option [value]="'PAID'">Pagado</option>
-					</select>
-				</div>
-			</div>
-			<div class="col-12 col-lg-2">
-				<div class="form-group">
-					<label>&nbsp;</label>
-					<button class="btn btn-primary w-100" >Buscar</button>
-				</div>
-			</div>
-		</form>
-	</div>
+  <div class="row align-items-center">
+    <div class="col-6 col-sm-6">
+      <h1 class="my-3">Nóminas</h1>
+    </div>
+    @if (rest.user_permission.add_payroll) {
+      <div class="col-6 col-sm-6 text-end">
+        <a class="btn btn-primary mx-2" routerLink="/create-payroll">
+          <span class="d-none d-sm-inline">Agregar</span>
+          <svg class="" xmlns="http://www.w3.org/2000/svg" width="1.2em" height="1.2em" viewBox="0 0 24 24"><path fill="currentColor" d="M20 14h-6v6h-4v-6H4v-4h6V4h4v6h6z"/></svg>
+        </a>
+        <a class="btn btn-primary" routerLink="/save-payroll-concept">
+          <span class="d-none d-sm-inline"> Conceptos </span>
+          <svg class="" xmlns="http://www.w3.org/2000/svg" width="1.2em" height="1.2em" viewBox="0 0 24 24"><path fill="currentColor" d="M11 17h2v-6h-2zm1-8q.425 0 .713-.288T13 8t-.288-.712T12 7t-.712.288T11 8t.288.713T12 9m0 13q-2.075 0-3.9-.788t-3.175-2.137T2.788 15.9T2 12t.788-3.9t2.137-3.175T8.1 2.788T12 2t3.9.788t3.175 2.137T21.213 8.1T22 12t-.788 3.9t-2.137 3.175t-3.175 2.138T12 22"/></svg>
+        </a>
+      </div>
+    }
+  </div>
 
-	<div class="card p-3 my-3">
-		<div class="row d-none d-md-flex fw-bold border-bottom align-items-end">
-			<div class="col-1">#</div>
-			<div class="col-3">Usuario</div>
-			<div class="col-3">Período</div>
-			<div class="col-2">Estatus pago</div>
-			<div class="col-3 text-end">Acciones</div>
-		</div>
-		<app-loading [is_loading]="is_loading"></app-loading>
-		<div class="" *ngIf="!CPayroll_list || CPayroll_list.length <= 0">
-			No se encontraron registros de nómina
-		</div>
-		<div class="row my-1 border-bottom align-items-center py-1" *ngFor="let payroll of CPayroll_list">
-			<div class="col-12 col-md-1">
-				<div class="d-block d-sm-none fw-bold">#</div>
-				{{ payroll.id }}
-			</div>
-			<div class="col-12 col-md-3">
-				<div class="d-block d-sm-none fw-bold">Usuario</div>
-				{{ payroll.user_name }}
-			</div>
-			<div class="col-12 col-md-3">
-				<div class="d-block d-sm-none fw-bold">Período</div>
-				{{ payroll.start_date | shortDate: "date" }} - {{ payroll.end_date | shortDate: "date" }}
-			</div>
-			<div class="col-12 col-md-2">
-				<div class="d-block d-sm-none fw-bold">Estatus pago</div>
-				<b [ngClass]="{'text-danger': payroll.paid_status=='PENDING' ,'text-success': payroll.paid_status!='PENDING' }" >{{ payroll.paid_status == "PENDING" ? "PENDIENTE" : "PAGADO"}}</b>
-			</div>
-			<div class="col-12 col-md-3 text-end">
-				<a class="btn btn-primary mx-1" (click)="markAsPaid(payroll)" *ngIf="payroll.paid_status != 'PAID' && rest.user_permission.add_payroll">Pagar</a>
-				<a class="btn btn-primary mx-2" [routerLink]="['/edit-payroll', payroll.id]">{{ payroll.paid_status!="PAID" && rest.user_permission.add_payroll ? "Editar" : "Ver" }}</a>
-				<a class="btn btn-primary mx-1" (click)="deletePayroll(payroll)" *ngIf="payroll.paid_status != 'PAID' && rest.user_permission.add_payroll">Eliminar</a>
-			</div>	
-		</div>
-	</div>
-	<app-pagination [path]="'/list-payroll'" [pages]="pages" [total_pages]="total_pages" [current_page]="current_page"></app-pagination>
+  <div class="card p-3">
+    <form class="row" (submit)="search(search_payroll)">
+      <div class="col-12 col-lg-3">
+        <div class="form-group">
+          <label for="search_start_date">Fecha período inicial</label>
+          <input type="date" name="start_date" class="form-control" (ngModelChange)="onDateChange($event,search_payroll.ge,'start_date')" [(ngModel)]="start_date" id="search_start_date" required>
+        </div>
+      </div>
+      <div class="col-12 col-lg-3">
+        <div class="form-group">
+          <label for="search_end_date">Fecha período final</label>
+          <input type="date" name="end_date" class="form-control" (ngModelChange)="onDateChange($event,search_payroll.le,'start_date')"  [(ngModel)]="end_date" id="search_end_date" required>
+        </div>
+      </div>
+      <div class="col-12 col-lg-2">
+        <div class="form-group">
+          <label>Usuario</label>
+          <select name="user_id" class="form-control" (ngModelChange)="onUserChange($event)" [(ngModel)]="user_id">
+            <option [value]="null">Todos</option>
+            @for (user of users_list; track user) {
+              <option [value]="user.id">{{user.name}}</option>
+            }
+          </select>
+        </div>
+      </div>
+      <div class="col-12 col-lg-2">
+        <div class="form-group">
+          <label for="search_end_date">Estatus</label>
+          <select name="paid_status" class="form-control" (ngModelChange)="onPaidStatusChange($event)" [(ngModel)]="paid_status" id="paid_status" required>
+            <option [value]="null">Todos</option>
+            <option [value]="'PENDING'">Pendiente</option>
+            <option [value]="'PAID'">Pagado</option>
+          </select>
+        </div>
+      </div>
+      <div class="col-12 col-lg-2">
+        <div class="form-group">
+          <label>&nbsp;</label>
+          <button class="btn btn-primary w-100" >Buscar</button>
+        </div>
+      </div>
+    </form>
+  </div>
+
+  <div class="card p-3 my-3">
+    <div class="row d-none d-md-flex fw-bold border-bottom align-items-end">
+      <div class="col-1">#</div>
+      <div class="col-3">Usuario</div>
+      <div class="col-3">Período</div>
+      <div class="col-2">Estatus pago</div>
+      <div class="col-3 text-end">Acciones</div>
+    </div>
+    <app-loading [is_loading]="is_loading"></app-loading>
+    @if (!CPayroll_list || CPayroll_list.length <= 0) {
+      <div class="">
+        No se encontraron registros de nómina
+      </div>
+    }
+    @for (payroll of CPayroll_list; track payroll) {
+      <div class="row my-1 border-bottom align-items-center py-1">
+        <div class="col-12 col-md-1">
+          <div class="d-block d-sm-none fw-bold">#</div>
+          {{ payroll.id }}
+        </div>
+        <div class="col-12 col-md-3">
+          <div class="d-block d-sm-none fw-bold">Usuario</div>
+          {{ payroll.user_name }}
+        </div>
+        <div class="col-12 col-md-3">
+          <div class="d-block d-sm-none fw-bold">Período</div>
+          {{ payroll.start_date | shortDate: "date" }} - {{ payroll.end_date | shortDate: "date" }}
+        </div>
+        <div class="col-12 col-md-2">
+          <div class="d-block d-sm-none fw-bold">Estatus pago</div>
+          <b [ngClass]="{'text-danger': payroll.paid_status=='PENDING' ,'text-success': payroll.paid_status!='PENDING' }" >{{ payroll.paid_status == "PENDING" ? "PENDIENTE" : "PAGADO"}}</b>
+        </div>
+        <div class="col-12 col-md-3 text-end">
+          @if (payroll.paid_status != 'PAID' && rest.user_permission.add_payroll) {
+            <a class="btn btn-primary mx-1" (click)="markAsPaid(payroll)">Pagar</a>
+          }
+          <a class="btn btn-primary mx-2" [routerLink]="['/edit-payroll', payroll.id]">{{ payroll.paid_status!="PAID" && rest.user_permission.add_payroll ? "Editar" : "Ver" }}</a>
+          @if (payroll.paid_status != 'PAID' && rest.user_permission.add_payroll) {
+            <a class="btn btn-primary mx-1" (click)="deletePayroll(payroll)">Eliminar</a>
+          }
+        </div>
+      </div>
+    }
+  </div>
+  <app-pagination [path]="'/list-payroll'" [pages]="pages" [total_pages]="total_pages" [current_page]="current_page"></app-pagination>
 </div>

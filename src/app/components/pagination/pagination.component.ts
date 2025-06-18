@@ -1,11 +1,11 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
-import { CommonModule, Location } from '@angular/common';
+import { Location } from '@angular/common';
 import { RestService } from '../../modules/shared/services/rest.service';
 import { Router, ActivatedRoute } from '@angular/router';
 
 @Component({
     selector: 'app-pagination',
-    imports: [CommonModule],
+    imports: [],
     templateUrl: './pagination.component.html',
     styleUrl: './pagination.component.css'
 })

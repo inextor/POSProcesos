@@ -1,24 +1,26 @@
 <div class="container-fluid">
-	<h1 class="my-3 text-capitalize">{{production_area.id ? 'Actualizar':'Agregar'}} Área de Producción</h1>
-	<form ngNativeValidate (submit)="save($event)">
-		<div class="card p-3">
-			<div class="row p-3">
-				<div class="col-12 col-md-4">
-					<label class="">Nombre</label>
-					<input type="text" name="name" [(ngModel)]="production_area.name" class="form-control">
-				</div>
-				<div class="col-12 col-md-4">
-					<label class="">Sucursal</label>
-					<select class="form-control" name="store_id" [(ngModel)]="production_area.store_id">
-						<option *ngFor="let s of store_list" [value]="s.id">{{s.name}}</option>
-					</select>
-				</div>
-			</div>
-			<div class="row p-3">
-				<div class="col-12 text-right text-end">
-					<button type="submit" [disabled]="is_loading" class="btn btn-primary">Guardar</button>
-				</div>
-			</div>
-		</div>
-	</form>
+  <h1 class="my-3 text-capitalize">{{production_area.id ? 'Actualizar':'Agregar'}} Área de Producción</h1>
+  <form ngNativeValidate (submit)="save($event)">
+    <div class="card p-3">
+      <div class="row p-3">
+        <div class="col-12 col-md-4">
+          <label class="">Nombre</label>
+          <input type="text" name="name" [(ngModel)]="production_area.name" class="form-control">
+        </div>
+        <div class="col-12 col-md-4">
+          <label class="">Sucursal</label>
+          <select class="form-control" name="store_id" [(ngModel)]="production_area.store_id">
+            @for (s of store_list; track s) {
+              <option [value]="s.id">{{s.name}}</option>
+            }
+          </select>
+        </div>
+      </div>
+      <div class="row p-3">
+        <div class="col-12 text-right text-end">
+          <button type="submit" [disabled]="is_loading" class="btn btn-primary">Guardar</button>
+        </div>
+      </div>
+    </div>
+  </form>
 </div>

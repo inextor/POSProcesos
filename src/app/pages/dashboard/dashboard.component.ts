@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { BaseComponent } from '../../modules/shared/base/base.component';
 import { PageStructureComponent } from "../../modules/shared/page-structure/page-structure.component";
 import { CodeReaderComponent } from "../../modules/shared/code-reader/code-reader.component";
@@ -9,7 +9,7 @@ import { CodeReaderComponent } from "../../modules/shared/code-reader/code-reade
     selector: 'app-dashboard',
     templateUrl: './dashboard.component.html',
     styleUrl: './dashboard.component.css',
-    imports: [CommonModule, PageStructureComponent]
+    imports: [PageStructureComponent]
 })
 
 export class DashboardComponent extends BaseComponent

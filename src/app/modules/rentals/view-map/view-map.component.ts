@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { BaseComponent } from '../../shared/base/base.component';
 
 
@@ -9,7 +9,7 @@ declare function addMarker(lat:number,lng:number,title:string):Promise<any>;
 @Component
 ({
     selector: 'app-view-map',
-    imports: [CommonModule],
+    imports: [],
     templateUrl: './view-map.component.html',
     styleUrl: './view-map.component.css'
 })

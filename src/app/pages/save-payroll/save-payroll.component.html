@@ -1,174 +1,206 @@
 <div class="container-fluid d-print-none">
-	<h1 class="d-print-none my-3">{{ payroll_info.payroll.id == 0 ? 'Crear' : 'Editar' }} Reporte de Nómina {{ payroll_info.payroll.id != 0 ? payroll_info.payroll.id : '' }}</h1>
+  <h1 class="d-print-none my-3">{{ payroll_info.payroll.id == 0 ? 'Crear' : 'Editar' }} Reporte de Nómina {{ payroll_info.payroll.id != 0 ? payroll_info.payroll.id : '' }}</h1>
 
-	<div class="card p-3 ">
-		<form class="row" (submit)="searchWorkLogs()">
-			<div class="col-12 col-md-3">
-				<div class="form-group">
-					<label for="search_start_date">Fecha Inicial</label>
-					<input type="date" name="start_date" class="form-control" (ngModelChange)="onFechaInicialChange($event)" [(ngModel)]="start_date" id="search_start_date" required [disabled]="payroll_info.payroll.paid_status == 'PAID' || rest.user_permission.add_payroll !=1">
-				</div>
-			</div>
-			<div class="col-12 col-md-3">
-				<div class="form-group">
-					<label for="search_end_date">Fecha Final</label>
-					<input type="date" name="end_date" class="form-control" (ngModelChange)="onFechaFinalChange($event)" [(ngModel)]="end_date" id="search_end_date" required [disabled]="payroll_info.payroll.paid_status == 'PAID' || rest.user_permission.add_payroll !=1">
-				</div>
-			</div>
-			<div class="col-12 col-md-3">
-				<div class="form-group">
-					<label>Usuario</label>
-					<select name="user_id" class="form-control" [(ngModel)]="user_id" [disabled]="payroll_info.payroll.id != 0 || rest.user_permission.add_payroll !=1" required>
-						<option [value]="null">Seleccionar</option>
-						<ng-container *ngFor="let user of users_list">
-							<option [value]="user.id">{{user.name}}</option>
-						</ng-container>
-					</select>
-				</div>
-			</div>
-			<div class="col-12 col-md-3" *ngIf="rest.user_permission.add_payroll">
-				<div class="form-group">
-					<label>&nbsp;</label>
-					<button type="submit" class="btn btn-primary w-100" *ngIf="payroll_info.payroll.paid_status != 'PAID'">Buscar</button>
-				</div>
-			</div>
-		</form>
-	</div>
+  <div class="card p-3 ">
+    <form class="row" (submit)="searchWorkLogs()">
+      <div class="col-12 col-md-3">
+        <div class="form-group">
+          <label for="search_start_date">Fecha Inicial</label>
+          <input type="date" name="start_date" class="form-control" (ngModelChange)="onFechaInicialChange($event)" [(ngModel)]="start_date" id="search_start_date" required [disabled]="payroll_info.payroll.paid_status == 'PAID' || rest.user_permission.add_payroll !=1">
+        </div>
+      </div>
+      <div class="col-12 col-md-3">
+        <div class="form-group">
+          <label for="search_end_date">Fecha Final</label>
+          <input type="date" name="end_date" class="form-control" (ngModelChange)="onFechaFinalChange($event)" [(ngModel)]="end_date" id="search_end_date" required [disabled]="payroll_info.payroll.paid_status == 'PAID' || rest.user_permission.add_payroll !=1">
+        </div>
+      </div>
+      <div class="col-12 col-md-3">
+        <div class="form-group">
+          <label>Usuario</label>
+          <select name="user_id" class="form-control" [(ngModel)]="user_id" [disabled]="payroll_info.payroll.id != 0 || rest.user_permission.add_payroll !=1" required>
+            <option [value]="null">Seleccionar</option>
+            @for (user of users_list; track user) {
+              <option [value]="user.id">{{user.name}}</option>
+            }
+          </select>
+        </div>
+      </div>
+      @if (rest.user_permission.add_payroll) {
+        <div class="col-12 col-md-3">
+          <div class="form-group">
+            <label>&nbsp;</label>
+            @if (payroll_info.payroll.paid_status != 'PAID') {
+              <button type="submit" class="btn btn-primary w-100">Buscar</button>
+            }
+          </div>
+        </div>
+      }
+    </form>
+  </div>
 
-	<ng-container *ngIf="payroll_info.payroll.user_id && payroll_info.work_logs.length > 0 && payroll_info.payroll.paid_status != 'PAID' && rest.user_permission.add_payroll ==1">
-		<h3 class="my-3">Agregar Conceptos</h3>
-		<div class="card p-3 my-3">
-			<div class="row">
-				<div class="col-12 col-md-6">
-					<select name="payroll_concept_id" class="form-control" [(ngModel)]="selected_payroll_concept_id">
-						<option [value]="null">Seleccionar</option>
-						<ng-container *ngFor="let pc of payroll_concept_list">
-							<option *ngIf="pc.status == 'ACTIVE'" [value]="pc.id">{{pc.name}}</option>
-						</ng-container>
-					</select>
-				</div>
-				<div class="col-12 col-md-6">
-					<button type="button" (click)="addNewConceptValue($event)" class="btn btn-primary w-100">Agregar</button>
-				</div>
-			</div>
-		</div>
-	</ng-container>
+  @if (payroll_info.payroll.user_id && payroll_info.work_logs.length > 0 && payroll_info.payroll.paid_status != 'PAID' && rest.user_permission.add_payroll ==1) {
+    <h3 class="my-3">Agregar Conceptos</h3>
+    <div class="card p-3 my-3">
+      <div class="row">
+        <div class="col-12 col-md-6">
+          <select name="payroll_concept_id" class="form-control" [(ngModel)]="selected_payroll_concept_id">
+            <option [value]="null">Seleccionar</option>
+            @for (pc of payroll_concept_list; track pc) {
+              @if (pc.status == 'ACTIVE') {
+                <option [value]="pc.id">{{pc.name}}</option>
+              }
+            }
+          </select>
+        </div>
+        <div class="col-12 col-md-6">
+          <button type="button" (click)="addNewConceptValue($event)" class="btn btn-primary w-100">Agregar</button>
+        </div>
+      </div>
+    </div>
+  }
 
-	<h3 class="my-3">Detalle de nómina</h3>
-	<div class="card p-3 my-3 ">
+  <h3 class="my-3">Detalle de nómina</h3>
+  <div class="card p-3 my-3 ">
 
-		<div class="col-12" *ngIf="payroll_info.work_logs.length == 0">
-			No se encontraron registros de asistencia
-		</div>
+    @if (payroll_info.work_logs.length == 0) {
+      <div class="col-12">
+        No se encontraron registros de asistencia
+      </div>
+    }
 
-		<form class="col-12" (submit)="savePayroll($event)" *ngIf="payroll_info.work_logs.length > 0">
-			<div class="table-responsive">
-				<table class="table table-bordered" style="min-width: 350px;">
-					<thead>
-						<tr>
-							<th>Dia</th>
-							<th>Fecha</th>
-							<th>Monto</th>
-						</tr>
-					</thead>
-					<tbody>
-						<tr *ngFor="let wl of payroll_info.work_logs">
-							<td>{{ wl.day_name }}</td>
-							<td>{{ wl.date | shortDate: "date" }}</td>
-							<td class="text-end">{{ wl.total_payment | currency:"$" }}</td>
-						</tr>
-						<tr>
-							<td colspan="2" class="text-end"><b>Subtotal</b></td>
-							<td class="text-end fw-bold">{{ payroll_info.payroll.subtotal | currency: "$" }}</td>
-						</tr>
-						<ng-container *ngFor="let pcv of payroll_info.payroll_concept_values; let i=index">
-							<tr *ngIf="pcv.status=='ACTIVE'">
-								<td colspan="2">
-									<span class="float-start text-danger" style="cursor: pointer;" (click)="removePayrollConceptValue(pcv)" *ngIf="payroll_info.payroll.paid_status != 'PAID' && rest.user_permission.add_payroll ==1">
-										<svg xmlns="http://www.w3.org/2000/svg" width="0.8em" height="0.8em" viewBox="0 0 14 14"><path fill="currentColor" fill-rule="evenodd" d="M1.707.293A1 1 0 0 0 .293 1.707L5.586 7L.293 12.293a1 1 0 1 0 1.414 1.414L7 8.414l5.293 5.293a1 1 0 0 0 1.414-1.414L8.414 7l5.293-5.293A1 1 0 0 0 12.293.293L7 5.586z" clip-rule="evenodd"/></svg>
-									</span>
-									<span class="float-end">
-										{{pcv.type == "PERCEPTION" ? '(+)' : "(-)"}} {{ pcv.payroll_concept_name }}
-										<svg *ngIf="pcv.id!=0"  xmlns="http://www.w3.org/2000/svg" width="1.2em" height="1.2em" viewBox="0 0 20 20"><path fill="currentColor" d="m15.3 5.3l-6.8 6.8l-2.8-2.8l-1.4 1.4l4.2 4.2l8.2-8.2z"/></svg>
-										<svg class="text-danger" *ngIf="pcv.id==0" xmlns="http://www.w3.org/2000/svg" width="1.1em" height="1.1em" viewBox="0 0 12 12"><path fill="currentColor" d="M4.283 2.98a1.735 1.735 0 1 1 3.434 0l-.576 4.03a1.153 1.153 0 0 1-2.282 0zM7 10a1 1 0 1 1-2 0a1 1 0 0 1 2 0"/></svg>
-									</span>
-								</td>
-								<div class="input-group p-0">
-									<span class="input-group-text">$</span>
-									<input type="number" class="form-control text-end" (change)="calculatePayrollTotal()" name="payroll_concept_values[{{ i }}]" [(ngModel)]="pcv.value" [disabled]="payroll_info.payroll.paid_status == 'PAID' || rest.user_permission.add_payroll !=1">
-								</div>
-							</tr>
-						</ng-container>
-						<tr>
-							<td colspan="2" class="text-end fw-bold">Total</td>
-							<td class="text-end">
-								<b>{{ payroll_info.payroll.total | currency: "$" }}</b>
-							</td>
-						</tr>
-					</tbody>
-				</table>
-			</div>
-			<div class="col-12 text-end">
-				<button type="submit" class="btn mx-2 btn-primary" *ngIf="payroll_info.payroll.paid_status != 'PAID' && rest.user_permission.add_payroll ==1">Guardar</button>
-				<button type="button" class="btn btn-secondary" (click)="justPrint()" *ngIf="payroll_info.payroll.paid_status == 'PAID'" >Imprimir</button>
-			</div>
-		</form>
-	</div>
+    @if (payroll_info.work_logs.length > 0) {
+      <form class="col-12" (submit)="savePayroll($event)">
+        <div class="table-responsive">
+          <table class="table table-bordered" style="min-width: 350px;">
+            <thead>
+              <tr>
+                <th>Dia</th>
+                <th>Fecha</th>
+                <th>Monto</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (wl of payroll_info.work_logs; track wl) {
+                <tr>
+                  <td>{{ wl.day_name }}</td>
+                  <td>{{ wl.date | shortDate: "date" }}</td>
+                  <td class="text-end">{{ wl.total_payment | currency:"$" }}</td>
+                </tr>
+              }
+              <tr>
+                <td colspan="2" class="text-end"><b>Subtotal</b></td>
+                <td class="text-end fw-bold">{{ payroll_info.payroll.subtotal | currency: "$" }}</td>
+              </tr>
+              @for (pcv of payroll_info.payroll_concept_values; track pcv; let i = $index) {
+                @if (pcv.status=='ACTIVE') {
+                  <tr>
+                    <td colspan="2">
+                      @if (payroll_info.payroll.paid_status != 'PAID' && rest.user_permission.add_payroll ==1) {
+                        <span class="float-start text-danger" style="cursor: pointer;" (click)="removePayrollConceptValue(pcv)">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="0.8em" height="0.8em" viewBox="0 0 14 14"><path fill="currentColor" fill-rule="evenodd" d="M1.707.293A1 1 0 0 0 .293 1.707L5.586 7L.293 12.293a1 1 0 1 0 1.414 1.414L7 8.414l5.293 5.293a1 1 0 0 0 1.414-1.414L8.414 7l5.293-5.293A1 1 0 0 0 12.293.293L7 5.586z" clip-rule="evenodd"/></svg>
+                        </span>
+                      }
+                      <span class="float-end">
+                        {{pcv.type == "PERCEPTION" ? '(+)' : "(-)"}} {{ pcv.payroll_concept_name }}
+                        @if (pcv.id!=0) {
+                          <svg  xmlns="http://www.w3.org/2000/svg" width="1.2em" height="1.2em" viewBox="0 0 20 20"><path fill="currentColor" d="m15.3 5.3l-6.8 6.8l-2.8-2.8l-1.4 1.4l4.2 4.2l8.2-8.2z"/></svg>
+                        }
+                        @if (pcv.id==0) {
+                          <svg class="text-danger" xmlns="http://www.w3.org/2000/svg" width="1.1em" height="1.1em" viewBox="0 0 12 12"><path fill="currentColor" d="M4.283 2.98a1.735 1.735 0 1 1 3.434 0l-.576 4.03a1.153 1.153 0 0 1-2.282 0zM7 10a1 1 0 1 1-2 0a1 1 0 0 1 2 0"/></svg>
+                        }
+                      </span>
+                    </td>
+                    <div class="input-group p-0">
+                      <span class="input-group-text">$</span>
+                      <input type="number" class="form-control text-end" (change)="calculatePayrollTotal()" name="payroll_concept_values[{{ i }}]" [(ngModel)]="pcv.value" [disabled]="payroll_info.payroll.paid_status == 'PAID' || rest.user_permission.add_payroll !=1">
+                    </div>
+                  </tr>
+                }
+              }
+              <tr>
+                <td colspan="2" class="text-end fw-bold">Total</td>
+                <td class="text-end">
+                  <b>{{ payroll_info.payroll.total | currency: "$" }}</b>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="col-12 text-end">
+          @if (payroll_info.payroll.paid_status != 'PAID' && rest.user_permission.add_payroll ==1) {
+            <button type="submit" class="btn mx-2 btn-primary">Guardar</button>
+          }
+          @if (payroll_info.payroll.paid_status == 'PAID') {
+            <button type="button" class="btn btn-secondary" (click)="justPrint()" >Imprimir</button>
+          }
+        </div>
+      </form>
+    }
+  </div>
 </div>
 
 <div class="d-none d-print-flex row">
-	<div class="col-12 text-center">
-		<img [src]="rest.getImagePath(rest.preferences.default_ticket_image_id)" class="w-25">
-	</div>
-	<div class="col-12 mt-2">
-		<h2 class="text-center">Reporte de Nómina</h2>
-	</div>
-	<div class="col-12">
-		<b>Fecha creación:</b> {{ payroll_info.payroll.created| shortDate: "date" }}
-	</div>
-	<div class="col-12">
-		<b>Empleado:</b> {{ selected_user ? selected_user.name : ''}}
-	</div>
-	<div class="col-12 mb-2">
-		<b>Período:</b> {{ payroll_info.payroll.start_date | shortDate: "date" }} - {{ payroll_info.payroll.end_date| shortDate: "date" }}
-	</div>
+  <div class="col-12 text-center">
+    <img [src]="rest.getImagePath(rest.preferences.default_ticket_image_id)" class="w-25">
+  </div>
+  <div class="col-12 mt-2">
+    <h2 class="text-center">Reporte de Nómina</h2>
+  </div>
+  <div class="col-12">
+    <b>Fecha creación:</b> {{ payroll_info.payroll.created| shortDate: "date" }}
+  </div>
+  <div class="col-12">
+    <b>Empleado:</b> {{ selected_user ? selected_user.name : ''}}
+  </div>
+  <div class="col-12 mb-2">
+    <b>Período:</b> {{ payroll_info.payroll.start_date | shortDate: "date" }} - {{ payroll_info.payroll.end_date| shortDate: "date" }}
+  </div>
 
-	<div class="col-12">
-		<table class="table table-bordered">
-			<thead>
-				<tr>
-					<th>Dia</th>
-					<th>Fecha</th>
-					<th>Monto</th>
-				</tr>
-			</thead>
-			<tbody>
-				<tr *ngFor="let wl of payroll_info.work_logs">
-					<td>{{ wl.day_name }}</td>
-					<td>{{ wl.date | shortDate: "date" }}</td>
-					<td class="text-end">{{ wl.total_payment | currency:"$" }}</td>
-				</tr>
-				<tr>
-					<td colspan="2" class="text-end"><b>Subtotal</b></td>
-					<td class="text-end fw-bold">{{ payroll_info.payroll.subtotal | currency: "$" }}</td>
-				</tr>
-				<tr *ngFor="let pcv of payroll_info.payroll_concept_values">
-					<td colspan="2" class="text-end">{{pcv.type == "PERCEPTION" ? '(+)' : "(-)"}} {{ pcv.payroll_concept_name }}</td>
-					<td class="text-end">
-						{{ pcv.value | currency: "$" }}
-					</td>
-				<tr>
-					<td colspan="2" class="text-end fw-bold">Total</td>
-					<td class="text-end">
-						<b>{{ payroll_info.payroll.total | currency: "$" }}</b>
-					</td>
-				</tr>
-			</tbody>
-		</table>
-	</div>
+  <div class="col-12">
+    <table class="table table-bordered">
+      <thead>
+        <tr>
+          <th>Dia</th>
+          <th>Fecha</th>
+          <th>Monto</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (wl of payroll_info.work_logs; track wl) {
+          <tr>
+            <td>{{ wl.day_name }}</td>
+            <td>{{ wl.date | shortDate: "date" }}</td>
+            <td class="text-end">{{ wl.total_payment | currency:"$" }}</td>
+          </tr>
+        }
+        <tr>
+          <td colspan="2" class="text-end"><b>Subtotal</b></td>
+          <td class="text-end fw-bold">{{ payroll_info.payroll.subtotal | currency: "$" }}</td>
+        </tr>
+        @for (pcv of payroll_info.payroll_concept_values; track pcv) {
+          <tr>
+            <td colspan="2" class="text-end">{{pcv.type == "PERCEPTION" ? '(+)' : "(-)"}} {{ pcv.payroll_concept_name }}</td>
+            <td class="text-end">
+              {{ pcv.value | currency: "$" }}
+            </td>
+          }
+          <td colspan="2" class="text-end">{{pcv.type == "PERCEPTION" ? '(+)' : "(-)"}} {{ pcv.payroll_concept_name }}</td>
+          <td class="text-end">
+            {{ pcv.value | currency: "$" }}
+          </td>
+          <tr>
+            <td colspan="2" class="text-end fw-bold">Total</td>
+            <td class="text-end">
+              <b>{{ payroll_info.payroll.total | currency: "$" }}</b>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
 
-	<div class="col-12 text-center mt-5">
-		<p class="p-0 m-0">_______________________________</p>
-		<p class="p-0 m-0">{{selected_user ? selected_user.name : ''}}</p>
-	</div>
-</div>
+    <div class="col-12 text-center mt-5">
+      <p class="p-0 m-0">_______________________________</p>
+      <p class="p-0 m-0">{{selected_user ? selected_user.name : ''}}</p>
+    </div>
+  </div>

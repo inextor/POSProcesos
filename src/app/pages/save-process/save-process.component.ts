@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import {CommonModule, Location} from '@angular/common';
+import { Location } from '@angular/common';
 import { Category, Item, Process, Production_Area } from '../../modules/shared/RestModels';
 import { RestService } from '../../modules/shared/services/rest.service';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
@@ -16,7 +16,7 @@ interface CItem
 
 @Component({
     selector: 'app-save-process',
-    imports: [CommonModule, RouterModule, FormsModule],
+    imports: [RouterModule, FormsModule],
     templateUrl: './save-process.component.html',
     styleUrl: './save-process.component.css'
 })

@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { BaseComponent } from '../../modules/shared/base/base.component';
 import { Check_In, User, Work_Log, Workshift } from '../../modules/shared/RestModels';
 import { RestResponse } from '../../modules/shared/services/Rest';
@@ -18,7 +18,7 @@ interface UserCheckInfo
 
 @Component({
     selector: 'app-close-shift',
-    imports: [CommonModule, FormsModule, ShortDatePipe],
+    imports: [FormsModule, ShortDatePipe],
     templateUrl: './close-shift.component.html',
     styleUrl: './close-shift.component.css'
 })

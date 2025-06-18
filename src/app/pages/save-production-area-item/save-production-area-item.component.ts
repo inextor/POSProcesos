@@ -1,5 +1,5 @@
 import { Component, OnInit, Input } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { Item, Production_Area_Item } from '../../modules/shared/RestModels';
 import { BaseComponent } from '../../modules/shared/base/base.component';
 import { forkJoin } from 'rxjs';
@@ -8,7 +8,7 @@ import { FormsModule } from '@angular/forms';
 
 @Component({
     selector: 'app-save-production-area-item',
-    imports: [CommonModule, FormsModule, BaseComponent],
+    imports: [FormsModule, BaseComponent],
     templateUrl: './save-production-area-item.component.html',
     styleUrl: './save-production-area-item.component.css'
 })
