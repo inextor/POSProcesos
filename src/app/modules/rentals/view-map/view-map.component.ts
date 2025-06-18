@@ -8,11 +8,10 @@ declare function addMarker(lat:number,lng:number,title:string):Promise<any>;
 
 @Component
 ({
-	selector: 'app-view-map',
-	standalone: true,
-	imports: [CommonModule],
-	templateUrl: './view-map.component.html',
-	styleUrl: './view-map.component.css'
+    selector: 'app-view-map',
+    imports: [CommonModule],
+    templateUrl: './view-map.component.html',
+    styleUrl: './view-map.component.css'
 })
 export class ViewMapComponent extends BaseComponent
 {

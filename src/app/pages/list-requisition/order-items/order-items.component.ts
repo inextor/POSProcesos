@@ -13,11 +13,10 @@ interface COrder extends Order
 }
 @Component
 ({
-	selector: 'app-order-items',
-	standalone: true,
-	imports: [CommonModule],
-	templateUrl: './order-items.component.html',
-	styleUrl: './order-items.component.css'
+    selector: 'app-order-items',
+    imports: [CommonModule],
+    templateUrl: './order-items.component.html',
+    styleUrl: './order-items.component.css'
 })
 
 export class OrderItemsComponent extends BaseComponent implements OnChanges

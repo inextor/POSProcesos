@@ -8,11 +8,10 @@ import { KeyboardShortcutEvent, ShortcutsService } from '../../modules/shared/se
 import { FormsModule } from '@angular/forms';
 
 @Component({
-	selector: 'app-search-users',
-	standalone: true,
-	imports: [CommonModule, FormsModule],
-	templateUrl: './search-users.component.html',
-	styleUrl: './search-users.component.css'
+    selector: 'app-search-users',
+    imports: [CommonModule, FormsModule],
+    templateUrl: './search-users.component.html',
+    styleUrl: './search-users.component.css'
 })
 export class SearchUsersComponent implements OnInit, OnDestroy, OnChanges
 {

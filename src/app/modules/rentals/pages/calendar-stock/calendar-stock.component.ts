@@ -44,7 +44,6 @@ interface ReserveItemByDate
 @Component
 ({
     selector: 'app-calendar-stock',
-    standalone: true,
     templateUrl: './calendar-stock.component.html',
     styleUrl: './calendar-stock.component.css',
     imports: [CommonModule, ModalComponent, ItemNamePipe, FormsModule, LoadingComponent, PageStructureComponent]

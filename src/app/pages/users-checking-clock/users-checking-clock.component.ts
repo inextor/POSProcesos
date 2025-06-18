@@ -18,11 +18,10 @@ export interface UserCheckInfo
 }
 
 @Component({
-	selector: 'app-users-checking-clock',
-	standalone: true,
-	imports: [CommonModule, FormsModule, ShortDatePipe, RouterOutlet, RouterModule],
-	templateUrl: './users-checking-clock.component.html',
-	styleUrl: './users-checking-clock.component.css'
+    selector: 'app-users-checking-clock',
+    imports: [CommonModule, FormsModule, ShortDatePipe, RouterOutlet, RouterModule],
+    templateUrl: './users-checking-clock.component.html',
+    styleUrl: './users-checking-clock.component.css'
 })
 export class UsersCheckingClockComponent extends BaseComponent implements OnInit
 {

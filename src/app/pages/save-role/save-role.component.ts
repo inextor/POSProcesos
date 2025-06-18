@@ -9,11 +9,10 @@ import { LoadingComponent } from "../../components/loading/loading.component";
 import { FormsModule } from '@angular/forms';
 
 @Component({
-	selector: 'app-save-role',
-	standalone: true,
-	imports: [CommonModule, LoadingComponent,FormsModule],
-	templateUrl: './save-role.component.html',
-	styleUrl: './save-role.component.css'
+    selector: 'app-save-role',
+    imports: [CommonModule, LoadingComponent, FormsModule],
+    templateUrl: './save-role.component.html',
+    styleUrl: './save-role.component.css'
 })
 export class SaveRoleComponent extends BaseComponent implements OnInit
 {

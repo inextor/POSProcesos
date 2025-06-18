@@ -33,11 +33,10 @@ interface CUser extends User
 }
 
 @Component({
-	selector: 'app-view-production-area',
-	standalone: true,
-	imports: [CommonModule, RouterModule, FormsModule, ModalComponent, SaveProductionAreaItemComponent, SearchItemsComponent, ShortDatePipe, LoadingComponent, SearchUsersComponent, ModalComponent],
-	templateUrl: './view-production-area.component.html',
-	styleUrl: './view-production-area.component.css'
+    selector: 'app-view-production-area',
+    imports: [CommonModule, RouterModule, FormsModule, ModalComponent, SaveProductionAreaItemComponent, SearchItemsComponent, ShortDatePipe, LoadingComponent, SearchUsersComponent, ModalComponent],
+    templateUrl: './view-production-area.component.html',
+    styleUrl: './view-production-area.component.css'
 })
 export class ViewProductionAreaComponent extends BaseComponent implements OnInit
 {

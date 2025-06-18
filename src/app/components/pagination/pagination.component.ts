@@ -4,11 +4,10 @@ import { RestService } from '../../modules/shared/services/rest.service';
 import { Router, ActivatedRoute } from '@angular/router';
 
 @Component({
-  selector: 'app-pagination',
-  standalone: true,
-  imports: [CommonModule],
-  templateUrl: './pagination.component.html',
-  styleUrl: './pagination.component.css'
+    selector: 'app-pagination',
+    imports: [CommonModule],
+    templateUrl: './pagination.component.html',
+    styleUrl: './pagination.component.css'
 })
 export class PaginationComponent implements OnInit{
 

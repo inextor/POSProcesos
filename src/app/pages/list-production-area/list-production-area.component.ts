@@ -9,11 +9,10 @@ import { PageStructureComponent } from "../../modules/shared/page-structure/page
 
 @Component
 ({
-	selector: 'app-list-production-area',
-	standalone: true,
-	templateUrl: './list-production-area.component.html',
-	styleUrl: './list-production-area.component.css',
-	imports: [CommonModule, RouterModule, PageStructureComponent]
+    selector: 'app-list-production-area',
+    templateUrl: './list-production-area.component.html',
+    styleUrl: './list-production-area.component.css',
+    imports: [CommonModule, RouterModule, PageStructureComponent]
 })
 export class ListProductionAreaComponent extends BaseComponent implements OnInit
 {

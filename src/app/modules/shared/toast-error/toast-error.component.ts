@@ -4,11 +4,10 @@ import { ErrorMessage } from '../Utils';
 import { RestService } from '../services/rest.service';
 
 @Component({
-	selector: 'app-toast-error',
-	standalone: true,
-	imports: [CommonModule],
-	templateUrl: './toast-error.component.html',
-	styleUrl: './toast-error.component.css'
+    selector: 'app-toast-error',
+    imports: [CommonModule],
+    templateUrl: './toast-error.component.html',
+    styleUrl: './toast-error.component.css'
 })
 export class ToastErrorComponent
 {

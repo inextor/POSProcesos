@@ -30,11 +30,10 @@ interface CReservationInfo extends ReservationInfo
 
 @Component
 ({
-	selector: 'app-list-reservation',
-	standalone: true,
-	templateUrl: './list-reservation.component.html',
-	styleUrl: './list-reservation.component.css',
-	imports: [CommonModule, FormsModule, SearchUsersComponent, RouterModule, ModalComponent, ShortDatePipe, LoadingComponent]
+    selector: 'app-list-reservation',
+    templateUrl: './list-reservation.component.html',
+    styleUrl: './list-reservation.component.css',
+    imports: [CommonModule, FormsModule, SearchUsersComponent, RouterModule, ModalComponent, ShortDatePipe, LoadingComponent]
 })
 export class ListReservationComponent extends BaseComponent implements OnInit
 {

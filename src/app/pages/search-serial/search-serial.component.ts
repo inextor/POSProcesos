@@ -10,7 +10,6 @@ import { PageStructureComponent } from "../../modules/shared/page-structure/page
 
 @Component({
     selector: 'app-search-serial',
-    standalone: true,
     templateUrl: './search-serial.component.html',
     styleUrl: './search-serial.component.css',
     imports: [CommonModule, FormsModule, LoadingComponent, PageStructureComponent]

@@ -7,10 +7,9 @@ import { CodeReaderComponent } from "../../modules/shared/code-reader/code-reade
 @Component
 ({
     selector: 'app-dashboard',
-    standalone: true,
     templateUrl: './dashboard.component.html',
     styleUrl: './dashboard.component.css',
-	imports: [CommonModule, PageStructureComponent]
+    imports: [CommonModule, PageStructureComponent]
 })
 
 export class DashboardComponent extends BaseComponent

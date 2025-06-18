@@ -7,11 +7,10 @@ import { ModalComponent } from "../../../components/modal/modal.component";
 
 @Component
 ({
-	selector: 'app-header',
-	standalone: true,
-	templateUrl: './header.component.html',
-	styleUrl: './header.component.css',
-	imports: [CommonModule, ModalComponent]
+    selector: 'app-header',
+    templateUrl: './header.component.html',
+    styleUrl: './header.component.css',
+    imports: [CommonModule, ModalComponent]
 })
 export class HeaderComponent extends BaseComponent
 {

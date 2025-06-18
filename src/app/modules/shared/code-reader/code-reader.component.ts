@@ -18,11 +18,10 @@ export interface CodeValue
 }
 
 @Component({
-	selector: 'app-code-reader',
-	standalone: true,
-	imports: [CommonModule, FormsModule],
-	templateUrl: './code-reader.component.html',
-	styleUrl: './code-reader.component.css'
+    selector: 'app-code-reader',
+    imports: [CommonModule, FormsModule],
+    templateUrl: './code-reader.component.html',
+    styleUrl: './code-reader.component.css'
 })
 export class CodeReaderComponent implements OnInit
 {

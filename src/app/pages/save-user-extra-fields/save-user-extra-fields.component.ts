@@ -14,11 +14,10 @@ interface ExtraField {
 }
 
 @Component({
-  selector: 'app-save-user-extra-fields',
-  standalone: true,
-  imports: [CommonModule, BaseComponent, FormsModule, RouterModule],
-  templateUrl: './save-user-extra-fields.component.html',
-  styleUrl: './save-user-extra-fields.component.css'
+    selector: 'app-save-user-extra-fields',
+    imports: [CommonModule, BaseComponent, FormsModule, RouterModule],
+    templateUrl: './save-user-extra-fields.component.html',
+    styleUrl: './save-user-extra-fields.component.css'
 })
 export class SaveUserExtraFieldsComponent extends BaseComponent implements OnInit{
 

@@ -2,11 +2,10 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 @Component({
-  selector: 'app-save-process-status',
-  standalone: true,
-  imports: [CommonModule],
-  templateUrl: './save-process-status.component.html',
-  styleUrl: './save-process-status.component.css'
+    selector: 'app-save-process-status',
+    imports: [CommonModule],
+    templateUrl: './save-process-status.component.html',
+    styleUrl: './save-process-status.component.css'
 })
 export class SaveProcessStatusComponent {
 

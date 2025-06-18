@@ -8,11 +8,10 @@ import { forkJoin, mergeMap, of } from 'rxjs';
 import { BaseComponent } from '../../modules/shared/base/base.component';
 
 @Component({
-	selector: 'app-save-production-area',
-	standalone: true,
-	imports: [CommonModule,FormsModule, BaseComponent],
-	templateUrl: './save-production-area.component.html',
-	styleUrl: './save-production-area.component.css'
+    selector: 'app-save-production-area',
+    imports: [CommonModule, FormsModule, BaseComponent],
+    templateUrl: './save-production-area.component.html',
+    styleUrl: './save-production-area.component.css'
 })
 
 export class SaveProductionAreaComponent extends BaseComponent implements OnInit

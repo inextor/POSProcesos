@@ -31,11 +31,10 @@ interface CItem_production_report
 }
 
 @Component({
-  selector: 'app-save-production-payment',
-  standalone: true,
-  imports: [CommonModule, BaseComponent, FormsModule, CustomToTitlePipe, LoadingComponent],
-  templateUrl: './save-production-payment.component.html',
-  styleUrl: './save-production-payment.component.css'
+    selector: 'app-save-production-payment',
+    imports: [CommonModule, BaseComponent, FormsModule, CustomToTitlePipe, LoadingComponent],
+    templateUrl: './save-production-payment.component.html',
+    styleUrl: './save-production-payment.component.css'
 })
 export class SaveProductionPaymentComponent extends BaseComponent implements OnInit{
 	rest_work_log:RestSimple<Work_Log> = this.rest.initRestSimple<Work_Log>('work_log',['id','user_id','workshift_id'],['store_id','working_area_id','workshift_id']);

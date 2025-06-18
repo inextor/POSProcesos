@@ -8,11 +8,10 @@ import { forkJoin, mergeMap } from 'rxjs';
 import { ModalComponent } from '../../components/modal/modal.component';
 
 @Component({
-  selector: 'app-save-payroll-concept',
-  standalone: true,
-  imports: [CommonModule, BaseComponent, FormsModule, ModalComponent],
-  templateUrl: './save-payroll-concept.component.html',
-  styleUrl: './save-payroll-concept.component.css'
+    selector: 'app-save-payroll-concept',
+    imports: [CommonModule, BaseComponent, FormsModule, ModalComponent],
+    templateUrl: './save-payroll-concept.component.html',
+    styleUrl: './save-payroll-concept.component.css'
 })
 export class SavePayrollConceptComponent extends BaseComponent implements OnInit {
 

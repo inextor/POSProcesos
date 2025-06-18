@@ -30,11 +30,10 @@ interface CItem
 
 
 @Component({
-	selector: 'app-save-period',
-	standalone: true,
-	imports: [CommonModule,FormsModule,LoadingComponent ],
-	templateUrl: './save-period.component.html',
-	styleUrl: './save-period.component.css'
+    selector: 'app-save-period',
+    imports: [CommonModule, FormsModule, LoadingComponent],
+    templateUrl: './save-period.component.html',
+    styleUrl: './save-period.component.css'
 })
 export class SavePeriodComponent extends BaseComponent implements OnInit
 {

@@ -10,11 +10,10 @@ import { CustomToTitlePipe } from '../../modules/shared/pipes/custom-to-title.pi
 
 
 @Component({
-  selector: 'app-production-report',
-  standalone: true,
-  imports: [CommonModule, BaseComponent, FormsModule, CustomToTitlePipe],
-  templateUrl: './production-report.component.html',
-  styleUrl: './production-report.component.css'
+    selector: 'app-production-report',
+    imports: [CommonModule, BaseComponent, FormsModule, CustomToTitlePipe],
+    templateUrl: './production-report.component.html',
+    styleUrl: './production-report.component.css'
 })
 export class ProductionReportComponent extends BaseComponent{
 

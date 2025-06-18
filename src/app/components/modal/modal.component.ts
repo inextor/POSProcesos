@@ -3,11 +3,10 @@ import { CommonModule } from '@angular/common';
 import { ShortcutsService } from '../../modules/shared/services/shortcuts.service';
 
 @Component({
-	selector: 'app-modal',
-	standalone: true,
-	imports: [CommonModule],
-	templateUrl: './modal.component.html',
-	styleUrl: './modal.component.css'
+    selector: 'app-modal',
+    imports: [CommonModule],
+    templateUrl: './modal.component.html',
+    styleUrl: './modal.component.css'
 })
 //export class ModalComponent implements OnInit, OnChanges
 export class ModalComponent implements OnInit, OnChanges

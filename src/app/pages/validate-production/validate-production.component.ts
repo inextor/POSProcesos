@@ -33,7 +33,6 @@ interface CProduction
 
 @Component({
     selector: 'app-validate-production',
-    standalone: true,
     templateUrl: './validate-production.component.html',
     styleUrl: './validate-production.component.css',
     imports: [CommonModule, ShortDatePipe, FormsModule, ModalComponent, PageStructureComponent]

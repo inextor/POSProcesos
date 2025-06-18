@@ -7,11 +7,10 @@ import { RestSimple } from '../../modules/shared/services/Rest';
 import { FormsModule } from '@angular/forms';
 
 @Component({
-  selector: 'app-save-production-area-item',
-  standalone: true,
-  imports: [CommonModule, FormsModule, BaseComponent],
-  templateUrl: './save-production-area-item.component.html',
-  styleUrl: './save-production-area-item.component.css'
+    selector: 'app-save-production-area-item',
+    imports: [CommonModule, FormsModule, BaseComponent],
+    templateUrl: './save-production-area-item.component.html',
+    styleUrl: './save-production-area-item.component.css'
 })
 export class SaveProductionAreaItemComponent extends BaseComponent implements OnInit{
 

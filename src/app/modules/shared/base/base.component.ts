@@ -19,11 +19,10 @@ export interface ParamsAndQueriesMap
 
 
 @Component({
-	selector: 'app-base',
-	standalone: true,
-	imports: [CommonModule],
-	templateUrl: './base.component.html',
-	styleUrl: './base.component.css'
+    selector: 'app-base',
+    imports: [CommonModule],
+    templateUrl: './base.component.html',
+    styleUrl: './base.component.css'
 })
 export class BaseComponent	implements OnDestroy
 {

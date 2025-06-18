@@ -14,11 +14,10 @@ import { Utils } from '../../../shared/Utils';
 
 
 @Component({
-	selector: 'app-save-reservation',
-	standalone: true,
-	imports: [CommonModule, FormsModule, RouterModule, SearchUsersComponent, SearchItemsComponent],
-	templateUrl: './save-reservation.component.html',
-	styleUrl: './save-reservation.component.css'
+    selector: 'app-save-reservation',
+    imports: [CommonModule, FormsModule, RouterModule, SearchUsersComponent, SearchItemsComponent],
+    templateUrl: './save-reservation.component.html',
+    styleUrl: './save-reservation.component.css'
 })
 export class SaveReservationComponent extends BaseComponent implements OnInit
 {

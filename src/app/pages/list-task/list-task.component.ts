@@ -7,11 +7,10 @@ import { TaskInfo } from '../../modules/shared/Models';
 import { SearchObject } from '../../modules/shared/services/Rest';
 
 @Component({
-	selector: 'app-list-task',
-	standalone: true,
-	imports: [CommonModule],
-	templateUrl: './list-task.component.html',
-	styleUrl: './list-task.component.css'
+    selector: 'app-list-task',
+    imports: [CommonModule],
+    templateUrl: './list-task.component.html',
+    styleUrl: './list-task.component.css'
 })
 export class ListTaskComponent extends BaseComponent implements OnInit
 {

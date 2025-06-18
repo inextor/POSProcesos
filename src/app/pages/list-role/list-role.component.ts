@@ -8,11 +8,10 @@ import { RouterModule } from '@angular/router';
 import { ShortDatePipe } from "../../modules/shared/pipes/short-date.pipe";
 
 @Component({
-	selector: 'app-list-role',
-	standalone: true,
-	imports: [CommonModule, RouterModule, ShortDatePipe],
-	templateUrl: './list-role.component.html',
-	styleUrl: './list-role.component.css'
+    selector: 'app-list-role',
+    imports: [CommonModule, RouterModule, ShortDatePipe],
+    templateUrl: './list-role.component.html',
+    styleUrl: './list-role.component.css'
 })
 export class ListRoleComponent extends BaseComponent implements OnInit {
 	rest_role: RestSimple<Role> = this.rest.initRestSimple('role', ['name', 'id', 'created', 'updated']);

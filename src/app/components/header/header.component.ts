@@ -6,11 +6,10 @@ import { RestResponse, RestSimple } from '../../modules/shared/services/Rest';
 import { RouterLink } from '@angular/router';
 
 @Component({
-  selector: 'app-header',
-  standalone: true,
-  imports: [CommonModule, RouterLink],
-  templateUrl: './header.component.html',
-  styleUrl: './header.component.css'
+    selector: 'app-header',
+    imports: [CommonModule, RouterLink],
+    templateUrl: './header.component.html',
+    styleUrl: './header.component.css'
 })
 export class HeaderComponent extends BaseComponent {
 	push_notification_list:Push_Notification[] = [];

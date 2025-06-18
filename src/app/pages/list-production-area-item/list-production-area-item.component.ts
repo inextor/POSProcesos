@@ -19,11 +19,10 @@ interface CProduction_Area_Item extends Production_Area_Item
 }
 
 @Component({
-  selector: 'app-list-production-area-item',
-  standalone: true,
-  imports: [CommonModule, RouterModule, FormsModule, SearchItemsComponent, LoadingComponent],
-  templateUrl: './list-production-area-item.component.html',
-  styleUrl: './list-production-area-item.component.css'
+    selector: 'app-list-production-area-item',
+    imports: [CommonModule, RouterModule, FormsModule, SearchItemsComponent, LoadingComponent],
+    templateUrl: './list-production-area-item.component.html',
+    styleUrl: './list-production-area-item.component.css'
 })
 export class ListProductionAreaItemComponent extends BaseComponent implements OnInit
 {

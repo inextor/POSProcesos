@@ -17,11 +17,10 @@ interface UserCheckInfo
 }
 
 @Component({
-	selector: 'app-close-shift',
-	standalone: true,
-	imports: [CommonModule,FormsModule, ShortDatePipe],
-	templateUrl: './close-shift.component.html',
-	styleUrl: './close-shift.component.css'
+    selector: 'app-close-shift',
+    imports: [CommonModule, FormsModule, ShortDatePipe],
+    templateUrl: './close-shift.component.html',
+    styleUrl: './close-shift.component.css'
 })
 export class CloseShiftComponent extends BaseComponent implements OnInit
 {

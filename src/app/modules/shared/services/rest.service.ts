@@ -111,12 +111,12 @@ export class RestService
 			this.socket_is_connected = false;
 		});
 
-		this.socket.on('update',(mensage)=>{
+		this.socket.on('update',(mensage:any)=>{
 			console.log('Lleego mensaje de sockete',mensage);
 			this.updatesSubject.next(mensage);
 		});
 
-		this.socket.on('order',(mensage)=>{
+		this.socket.on('order',(mensage:any)=>{
 			console.log('Lleego mensaje de sockete',mensage);
 			this.updatesSubject.next(mensage);
 		});

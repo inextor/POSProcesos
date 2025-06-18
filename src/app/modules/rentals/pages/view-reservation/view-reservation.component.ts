@@ -24,11 +24,10 @@ interface CReservation_Item_Serial extends Reservation_Item_Serial
 
 @Component
 ({
-	selector: 'app-view-reservation',
-	standalone: true,
-	templateUrl: './view-reservation.component.html',
-	styleUrl: './view-reservation.component.css',
-	imports: [CommonModule, ShortDatePipe, FormsModule, ModalComponent, LoadingComponent, RouterModule, SearchItemsComponent, ItemNamePipe, SearchUsersComponent, CodeReaderComponent]
+    selector: 'app-view-reservation',
+    templateUrl: './view-reservation.component.html',
+    styleUrl: './view-reservation.component.css',
+    imports: [CommonModule, ShortDatePipe, FormsModule, ModalComponent, LoadingComponent, RouterModule, SearchItemsComponent, ItemNamePipe, SearchUsersComponent, CodeReaderComponent]
 })
 export class ViewReservationComponent extends BaseComponent
 {

@@ -15,11 +15,10 @@ interface CItem
 }
 
 @Component({
-	selector: 'app-save-process',
-	standalone: true,
-	imports: [CommonModule,RouterModule,FormsModule],
-	templateUrl: './save-process.component.html',
-	styleUrl: './save-process.component.css'
+    selector: 'app-save-process',
+    imports: [CommonModule, RouterModule, FormsModule],
+    templateUrl: './save-process.component.html',
+    styleUrl: './save-process.component.css'
 })
 export class SaveProcessComponent {
 

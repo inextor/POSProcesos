@@ -16,11 +16,10 @@ interface CItemInfo extends ItemInfo
 
 @Component
 ({
-	selector: 'app-search-items',
-	standalone: true,
-	imports: [CommonModule, FormsModule],
-	templateUrl: './search-items.component.html',
-	styleUrl: './search-items.component.css'
+    selector: 'app-search-items',
+    imports: [CommonModule, FormsModule],
+    templateUrl: './search-items.component.html',
+    styleUrl: './search-items.component.css'
 })
 export class SearchItemsComponent extends BaseComponent implements OnInit,OnDestroy,OnChanges
 {

@@ -5,11 +5,10 @@ import { RouterModule } from '@angular/router';
 import { Form } from '../../../RestModels';
 
 @Component({
-  selector: 'app-old-menu',
-  standalone: true,
-  imports: [CommonModule,RouterModule],
-  templateUrl: './old-menu.component.html',
-  styleUrl: './old-menu.component.css'
+    selector: 'app-old-menu',
+    imports: [CommonModule, RouterModule],
+    templateUrl: './old-menu.component.html',
+    styleUrl: './old-menu.component.css'
 })
 export class OldMenuComponent
 {

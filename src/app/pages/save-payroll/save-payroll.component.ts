@@ -29,11 +29,10 @@ interface CPayrollInfo
 }
 
 @Component({
-  selector: 'app-save-payroll',
-  standalone: true,
-  imports: [CommonModule, BaseComponent, RouterModule , FormsModule, ShortDatePipe],
-  templateUrl: './save-payroll.component.html',
-  styleUrl: './save-payroll.component.css'
+    selector: 'app-save-payroll',
+    imports: [CommonModule, BaseComponent, RouterModule, FormsModule, ShortDatePipe],
+    templateUrl: './save-payroll.component.html',
+    styleUrl: './save-payroll.component.css'
 })
 export class SavePayrollComponent extends BaseComponent implements OnInit {
 

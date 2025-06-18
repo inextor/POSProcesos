@@ -23,7 +23,6 @@ interface CRequisitionByStore
 
 @Component({
     selector: 'app-list-shipping',
-    standalone: true,
     templateUrl: './list-shipping.component.html',
     styleUrl: './list-shipping.component.css',
     imports: [CommonModule, RouterModule, FormsModule, BaseComponent, LoadingComponent, PageStructureComponent]

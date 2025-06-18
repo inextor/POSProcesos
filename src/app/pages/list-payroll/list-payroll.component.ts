@@ -17,11 +17,10 @@ interface CPayroll extends Payroll
 }
 
 @Component({
-  selector: 'app-list-payroll',
-  standalone: true,
-  imports: [CommonModule, FormsModule ,BaseComponent , RouterOutlet, RouterModule, ShortDatePipe, PaginationComponent, LoadingComponent],
-  templateUrl: './list-payroll.component.html',
-  styleUrl: './list-payroll.component.css'
+    selector: 'app-list-payroll',
+    imports: [CommonModule, FormsModule, BaseComponent, RouterOutlet, RouterModule, ShortDatePipe, PaginationComponent, LoadingComponent],
+    templateUrl: './list-payroll.component.html',
+    styleUrl: './list-payroll.component.css'
 })
 export class ListPayrollComponent extends BaseComponent implements OnInit {
 

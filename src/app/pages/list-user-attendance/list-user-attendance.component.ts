@@ -24,11 +24,10 @@ interface CUser
 const ci_fields = ['user_id','start_timestamp','end_timestamp'];
 
 @Component({
-	selector: 'app-list-user-attendance',
-	standalone: true,
-	imports: [CommonModule,FormsModule, LoadingComponent],
-	templateUrl: './list-user-attendance.component.html',
-	styleUrl: './list-user-attendance.component.css'
+    selector: 'app-list-user-attendance',
+    imports: [CommonModule, FormsModule, LoadingComponent],
+    templateUrl: './list-user-attendance.component.html',
+    styleUrl: './list-user-attendance.component.css'
 })
 export class ListUserAttendanceComponent extends BaseComponent
 {

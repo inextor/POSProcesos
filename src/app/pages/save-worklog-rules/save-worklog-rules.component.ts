@@ -14,11 +14,10 @@ interface Rule {
 }
 
 @Component({
-	selector: 'app-save-worklog-rules',
-	standalone: true,
-	imports: [CommonModule, BaseComponent, FormsModule],
-	templateUrl: './save-worklog-rules.component.html',
-	styleUrl: './save-worklog-rules.component.css'
+    selector: 'app-save-worklog-rules',
+    imports: [CommonModule, BaseComponent, FormsModule],
+    templateUrl: './save-worklog-rules.component.html',
+    styleUrl: './save-worklog-rules.component.css'
 })
 export class SaveWorklogRulesComponent extends BaseComponent implements OnInit {
 

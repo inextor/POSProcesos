@@ -23,11 +23,10 @@ interface RoleItemPriceInfo
 }
 
 @Component({
-	selector: 'app-list-role-item-price',
-	standalone: true,
-	imports: [CommonModule, SharedModule, PaginationComponent, LoadingComponent, ShortDatePipe, ItemNamePipe, ModalComponent, SearchItemsComponent,FormsModule],
-	templateUrl: './list-role-item-price.component.html',
-	styleUrl: './list-role-item-price.component.css'
+    selector: 'app-list-role-item-price',
+    imports: [CommonModule, SharedModule, PaginationComponent, LoadingComponent, ShortDatePipe, ItemNamePipe, ModalComponent, SearchItemsComponent, FormsModule],
+    templateUrl: './list-role-item-price.component.html',
+    styleUrl: './list-role-item-price.component.css'
 })
 export class ListRoleItemPriceComponent extends BaseComponent implements OnInit
 {

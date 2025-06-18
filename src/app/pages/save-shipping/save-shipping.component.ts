@@ -33,11 +33,10 @@ interface CRequisitionInfo extends RequisitionInfo
 }
 
 @Component({
-		selector: 'app-save-shipping',
-		standalone: true,
-		templateUrl: './save-shipping.component.html',
-		styleUrl: './save-shipping.component.css',
-		imports: [CommonModule, RouterModule, FormsModule, SearchItemsComponent, LoadingComponent]
+    selector: 'app-save-shipping',
+    templateUrl: './save-shipping.component.html',
+    styleUrl: './save-shipping.component.css',
+    imports: [CommonModule, RouterModule, FormsModule, SearchItemsComponent, LoadingComponent]
 })
 export class SaveShippingComponent extends BaseComponent
 {

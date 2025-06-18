@@ -29,11 +29,10 @@ interface CPayrollInfo
 }
 
 @Component({
-  selector: 'app-payroll-report',
-  standalone: true,
-  imports: [CommonModule, BaseComponent, RouterModule , FormsModule, ShortDatePipe],
-  templateUrl: './payroll-report.component.html',
-  styleUrl: './payroll-report.component.css'
+    selector: 'app-payroll-report',
+    imports: [CommonModule, BaseComponent, RouterModule, FormsModule, ShortDatePipe],
+    templateUrl: './payroll-report.component.html',
+    styleUrl: './payroll-report.component.css'
 })
 export class PayrollReportComponent extends BaseComponent {
 

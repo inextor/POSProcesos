@@ -14,7 +14,6 @@ import { PageStructureComponent } from "./modules/shared/page-structure/page-str
 
 @Component({
     selector: 'app-root',
-    standalone: true,
     templateUrl: './app.component.html',
     styleUrl: './app.component.css',
     imports: [CommonModule, RouterOutlet, RouterModule, SharedModule, ModalComponent, HeaderComponent, PageStructureComponent]
