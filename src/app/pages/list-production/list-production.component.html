@@ -11,9 +11,15 @@
 			<div class="col-12 col-md-3">Fecha</div>
 		</div>
 
-		@for(production_info of production_info_list; track production_info.production.id) {
+		@for(production_info of production_info_list; track production_info.production.id)
+		{
 			<div class="row">
-				<div class="col-12 col-md
+				<div class="col-12 col-md">{{production_info.item.name}}</div>
+				<div class="col-12 col-md">{{production_info.store.name}}</div>
+				<div class="col-12 col-md">{{production_info.production.created | shortDate}}</div>
+				<div class="col-12 col-md-auto">{{production_info.production.qty}}</div>
+				<div class="col-12 col-md-auto">{{production_info.production.alternate_qty}}</div>
+				<div></div>
 			</div>
 		}
 	</div>
