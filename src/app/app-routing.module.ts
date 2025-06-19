@@ -27,6 +27,7 @@ import { ListRoleComponent } from './pages/list-role/list-role.component';
 import { SaveRoleComponent } from './pages/save-role/save-role.component';
 import { ListRoleItemPriceComponent } from './pages/list-role-item-price/list-role-item-price.component';
 import { ListItemProductionComponent } from './pages/list-item-production/list-item-production.component';
+import { ListProductionComponent } from './pages/list-production/list-production.component';
 
 export const routes: Routes = [
 	{path: 'login', component: LoginComponent},
@@ -65,6 +66,7 @@ export const routes: Routes = [
 			{path: 'add-role', component: SaveRoleComponent, canActivate: [authGuard]},
 			{path: 'edit-role/:id', component: SaveRoleComponent, canActivate: [authGuard]},
 			{path: 'list-role-item-price', component: ListRoleItemPriceComponent, canActivate: [authGuard]},
+			{path: 'list-produccion', component: ListProductionComponent, canActivate: [authGuard]},
 		]
 	},
 ];
