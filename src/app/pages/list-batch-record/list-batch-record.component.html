@@ -1,0 +1,207 @@
+<div class="container-fluid">
+	<div class="row align-items-center mx-0">
+		<div class="col-10">
+			<h1 class="my-3 text-capitalize">Bitacora Movimientos</h1>
+		</div>
+		<!--div class="col-2 text-end px-0">
+			<button type="button" class="btn btn-secondary me-1" (click)="showModalReport()">
+				<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 24 24"><path fill="currentColor" d="M3 5.25A2.25 2.25 0 0 1 5.25 3h13.5A2.25 2.25 0 0 1 21 5.25v5.762a3.279 3.279 0 0 0-2.607.95L15.355 15H11.25a.75.75 0 1 0 0 1.5h2.605l-1.365 1.365a3.685 3.685 0 0 0-.97 1.712L11.166 21H5.25A2.25 2.25 0 0 1 3 18.75V5.25Zm4.75 4a1 1 0 1 0 0-2a1 1 0 0 0 0 2Zm3.5-1.75a.75.75 0 0 0 0 1.5h5.5a.75.75 0 0 0 0-1.5h-5.5Zm0 3.75a.75.75 0 1 0 0 1.5h5.5a.75.75 0 1 0 0-1.5h-5.5Zm-4.5.75a1 1 0 1 0 2 0a1 1 0 0 0-2 0Zm1 4.75a1 1 0 1 0 0-2a1 1 0 0 0 0 2Zm11.35-4.08l-5.903 5.902a2.686 2.686 0 0 0-.706 1.247l-.458 1.831a1.087 1.087 0 0 0 1.319 1.318l1.83-.457a2.685 2.685 0 0 0 1.248-.707l5.902-5.902A2.286 2.286 0 0 0 19.1 12.67Z"/></svg>
+				<span class="d-none d-lg-inline">Reporte</span>
+			</button>
+			<button type="button" class="btn btn-secondary"  (click)="exportXls()">
+				<svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" width="1em" height="1em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 512 512"><path fill="currentColor" d="M453.547 273.449H372.12v-40.714h81.427v40.714zm0 23.264H372.12v40.714h81.427v-40.714zm0-191.934H372.12v40.713h81.427V104.78zm0 63.978H372.12v40.713h81.427v-40.713zm0 191.934H372.12v40.714h81.427V360.69zm56.242 80.264c-2.326 12.098-16.867 12.388-26.58 12.796H302.326v52.345h-36.119L0 459.566V52.492L267.778 5.904h34.548v46.355h174.66c9.83.407 20.648-.291 29.197 5.583c5.991 8.608 5.41 19.543 5.817 29.43l-.233 302.791c-.29 16.925 1.57 34.2-1.978 50.892zm-296.51-91.256c-16.052-32.57-32.395-64.909-48.39-97.48c15.82-31.698 31.408-63.512 46.937-95.327c-13.203.64-26.406 1.454-39.55 2.385c-9.83 23.904-21.288 47.169-28.965 71.888c-7.154-23.323-16.634-45.774-25.3-68.515c-12.796.698-25.592 1.454-38.387 2.21c13.493 29.78 27.86 59.15 40.946 89.104c-15.413 29.081-29.837 58.57-44.785 87.825c12.737.523 25.475 1.047 38.212 1.221c9.074-23.148 20.357-45.424 28.267-69.038c7.096 25.359 19.135 48.798 29.023 73.051c14.017.99 27.976 1.862 41.993 2.676zM484.26 79.882H302.326v24.897h46.53v40.713h-46.53v23.265h46.53v40.713h-46.53v23.265h46.53v40.714h-46.53v23.264h46.53v40.714h-46.53v23.264h46.53v40.714h-46.53v26.897H484.26V79.882z"/></svg>
+				<span class="d-none d-lg-inline">Exportar</span>
+			</button>
+		</div-->
+	</div>
+	<div class="card py-3 p-sm-1 p-lg-3">
+		<form (submit)="search(batch_record_search)">
+			<div class="row mx-0">
+				<div class="col-6 col-md-3 form-group">
+					<label>Artículo</label>
+					<input type="text" name="item_name" [(ngModel)]="batch_record_search.search_extra.item_name" class="form-control">
+					<!--app-search-items (item_selected)="onItemSelected($event)" [search_str]="search_str" [reset_on_search]="false"></app-search-items-->
+					<!--label class="">Item</label>
+						<select name="item_id" [(ngModel)]="stock_record_search.eq.item_id" class="form-control">
+						<option [ngValue]="null">Select</option>
+						<option *ngFor="let c of item_list" [value]="c.id">{{c.code}}</option>
+						</select-->
+				</div>
+				<div class="col-6 col-md-3 form-group">
+					<label class="">Sucursal</label>
+					<select name="store_id" [(ngModel)]="batch_record_search.eq.store_id" class="form-control" [disabled]="!rest.current_permission.global_add_stock">
+						<option [ngValue]="null">Seleccionar</option>
+						<option *ngFor="let c of store_list" [value]="c.id">{{c.name}}</option>
+					</select>
+				</div>
+				<!--div class="col-6 col-md-3 form-group">
+					<label class="">Fecha Inicial</label>
+					<input type="date" name="ge_created" [ngModel]="fecha_inicial" (ngModelChange)="fecha_inicial($event)" class="form-control">
+				</div>
+
+				<div class="col-6 col-md-3 form-group">
+					<label class="">Fecha Final</label>
+					<input type="date" name="le_created" [ngModel]="fecha_inicial" (ngModelChange)="fechaFinalCambio($event)" class="form-control">
+				</div-->
+
+
+				<!--div class="col-6 col-md-3 form-group">
+					<label class="">Movement type</label>
+					<select name="movement_type" [(ngModel)]="stock_record_search.lk.movement_type" class="form-control">
+					<option [ngValue]="null">Select</option>
+					<option value="POSITIVE">POSITIVE</option>
+					<option value="NEGATIVE">NEGATIVE</option>
+					<option value="ADJUSTMENT">ADJUSTMENT</option>
+					</select>
+					</div>
+					<div class="col-6 col-md-3 form-group">
+					<label class="">Created by user</label>
+					<input type="number" name="created_by_user_id" [(ngModel)]="stock_record_search.eq.created_by_user_id" class="form-control">
+					</div>
+					<div class="col-6 col-md-3 form-group">
+					<label class="">Updated by user</label>
+					<input type="number" name="updated_by_user_id" [(ngModel)]="stock_record_search.eq.updated_by_user_id" class="form-control">
+					</div>
+					<div class="col-6 col-md-3 form-group">
+					<label class="">Created</label>
+					<input type="datetime-local" name="created" [(ngModel)]="stock_record_search.eq.created" class="form-control">
+					</div>
+					<div class="col-6 col-md-3 form-group">
+					<label class="">Updated</label>
+					<input type="datetime-local" name="updated" [(ngModel)]="stock_record_search.eq.updated" class="form-control">
+				</div-->
+
+				<!--
+x = Class carro getArray();
+let f = x.getArray().split(0,5).filter().getElement(2).toString().toUpperCase();
+let z = x.getArray().getElement(2);
+z.Metodo1();
+z.metodo2();
+let stringy = f.toStrin()
+unwrap();
+expect();
+z.send();
+				-->
+
+
+				<div class="col-6 col-md-3">
+					<label class="">Tipo</label>
+					<select name="movement_type" [(ngModel)]="batch_record_search.eq.movement_type" class="form-control">
+						<option [ngValue]="undefined" [selected]="batch_record_search.eq.movement_type == undefined">Todos</option>
+						<option value="ADJUSTMENT">Ajuste</option>
+						<option value="NEGATIVE">Descuento</option>
+						<option value="POSITIVE">Aumento</option>
+					</select>
+				</div>
+				<div class="col-6 col-md-3">
+					<label>&nbsp;</label>
+					<div class="text-end">
+						<button type="submit" class="w-100 btn btn-primary" (click)="search(this.batch_record_search)">Buscar</button>
+					</div>
+				</div>
+			</div>
+		</form>
+	</div>
+
+	<div  class="card p-3 mt-3">
+		<app-loading [is_loading]="is_loading"></app-loading>
+		<div class="table-responsive">
+			<table class="table table-sm table-nowrap mb-0">
+				<thead class="thead-light">
+					<tr>
+						<th>Id</th>
+						<th>Artículo</th>
+						<th></th>
+						<th>Sucursal</th>
+						<th>Usuario</th>
+						<th>Referencia</th>
+						<th>Previo</th>
+						<th>Moviento</th>
+						<th>Final</th>
+						<th>Description</th>
+						<th>Tipo</th>
+						<th>Fecha</th>
+					</tr>
+				</thead>
+				<tbody>
+					<!--tr *ngFor="let sri of batch_record_list">
+						<td>{{sri.stock_record.id}}</td>
+						<td>
+							<a *ngIf="sri.category" [routerLink]="['/list-item']" [queryParams]="{'eq.category_id':sri.category.id}" class="item_name">
+								{{sri.category.name}} -
+							</a>
+							<a [routerLink]="['/list-item/']" [queryParams]="{'csv.id':sri.item.id,'csv.status':'ACTIVE,DELETED'}" class="item_name">
+								<b>{{sri.item.name}}</b>
+								<span>&nbsp;&nbsp;{{sri.item.code}}</span>
+							</a>
+						</td>
+						<td>
+							<a *ngIf="sri.item.code" [routerLink]="['/list-stock-record']" [queryParams]="{'search_extra.item_name':sri.item.code}" class="item_name">
+								<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 1664 1664"><path fill="currentColor" d="M1152 704q0-185-131.5-316.5T704 256T387.5 387.5T256 704t131.5 316.5T704 1152t316.5-131.5T1152 704zm512 832q0 52-38 90t-90 38q-54 0-90-38l-343-342q-179 124-399 124q-143 0-273.5-55.5t-225-150t-150-225T0 704t55.5-273.5t150-225t225-150T704 0t273.5 55.5t225 150t150 225T1408 704q0 220-124 399l343 343q37 37 37 90z"/></svg>
+							</a>
+							<a *ngIf="!sri.item.code" [routerLink]="['/list-stock-record']" [queryParams]="{'search_extra.item_name':sri.item.name}" class="item_name">
+								<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 1664 1664"><path fill="currentColor" d="M1152 704q0-185-131.5-316.5T704 256T387.5 387.5T256 704t131.5 316.5T704 1152t316.5-131.5T1152 704zm512 832q0 52-38 90t-90 38q-54 0-90-38l-343-342q-179 124-399 124q-143 0-273.5-55.5t-225-150t-150-225T0 704t55.5-273.5t150-225t225-150T704 0t273.5 55.5t225 150t150 225T1408 704q0 220-124 399l343 343q37 37 37 90z"/></svg>
+							</a>
+						</td>
+						<td>{{sri.store.name}}</td>
+						<td>{{sri?.user?.name}}</td>
+						<td>
+							<a *ngIf="sri.purchase" [routerLink]="['/purchase/edit',sri.purchase.id]">Orden de Compra</a>
+							<a *ngIf="sri.shipping" [routerLink]="['/view-shipping/',sri.shipping.id]">Envío</a>
+							<a *ngIf="sri.order" [routerLink]="['/view-order/',sri.order.id]">Venta</a>
+						</td>
+						<td>{{sri.stock_record.previous_qty}}</td>
+						<td>{{sri.stock_record.movement_qty}}</td>
+						<td>{{sri.stock_record.qty}}</td>
+						<td>{{sri.stock_record.description}}</td>
+						<td>{{type_dic[sri.stock_record.movement_type]}}</td>
+						<td>
+							<abbr title="{{sri.stock_record.created | date: 'MMM d, y hh:mm a' }}">
+							{{sri.stock_record.created | date: 'MMM d' }}
+							</abbr>
+						</td>
+					</tr-->
+				</tbody>
+			</table>
+		</div>
+	</div>
+	<app-pagination [path]="path" [pages]="pages" [total_pages]="total_pages" [current_page]="current_page"></app-pagination>
+</div>
+<!--app-modal [(show)]="show_import">
+	<div class="card p-3">
+		<h2>Import excel</h2>
+		<div class="from-group mb-3">
+			<label>Excel data</label>
+			<input name="file" type="file" (change)="onFileChanged($event)" accept="*/*" class="form-control">
+		</div>
+		<div class="row mt-3">
+			<div class="col-6">
+				<button type="button" class="btn btn-secondary w-100" (click)="show_import=false">Cancel</button>
+			</div>
+			<div class="col-6">
+				<button type="button" class="btn btn-primary w-100" (click)="uploadFile()" [disabled]="file==null">Upload</button>
+			</div>
+		</div>
+	</div>
+</app-modal-->
+
+<app-modal [(show)]="show_modal_report">
+	<form (submit)="createReport()" ngNativeValidate>
+		<div class="p-3">
+			<h2>Reporte de ajustes</h2>
+			<div class="row">
+				<div class="col-6 form-group">
+					<label>Inicio</label>
+					<input type="datetime-local" name="start_time" [(ngModel)]="start_time" class="form-control" required>
+				</div>
+				<div class="col-6 form-group">
+				<label>Fin</label>
+					<input type="datetime-local" name="end_time" [(ngModel)]="end_time" class="form-control" required>
+				</div>
+				<div class="col-12 form-group mt-2 text-end">
+					<button type="submit" class="btn btn-primary">Generar</button>
+				</div>
+			</div>
+		</div>
+	</form>
+</app-modal>
