@@ -35,7 +35,7 @@ interface CProduction
     selector: 'app-validate-production',
     templateUrl: './validate-production.component.html',
     styleUrl: './validate-production.component.css',
-    imports: [CommonModule, ShortDatePipe, FormsModule, ModalComponent, PageStructureComponent]
+    imports: [CommonModule, FormsModule ]
 })
 
 export class ValidateProductionComponent extends BaseComponent

@@ -66,7 +66,7 @@ export const routes: Routes = [
 			{path: 'add-role', component: SaveRoleComponent, canActivate: [authGuard]},
 			{path: 'edit-role/:id', component: SaveRoleComponent, canActivate: [authGuard]},
 			{path: 'list-role-item-price', component: ListRoleItemPriceComponent, canActivate: [authGuard]},
-			{path: 'list-produccion', component: ListProductionComponent, canActivate: [authGuard]},
+			{path: 'list-production', component: ListProductionComponent, canActivate: [authGuard]},
 		]
 	},
 ];

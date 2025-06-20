@@ -560,8 +560,8 @@ export class Rest<U,T>
 
 	getSearchObject(param_map:ParamMap,f:string[] | null = null ,e:string[] | null = null):SearchObject<U>
 	{
-		let extra_keys = e === null ? [] : e;
-		let fields = f === null ? [] : f;
+		let extra_keys = e === null ? this.extra_keys : e;
+		let fields = f === null ? this.fields : f;
 
 		let keys = ['eq','le','lt','ge','gt','csv','lk','nn','start'];
 

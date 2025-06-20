@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router, RouterModule, RouterOutlet } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { RestService } from '../../services/rest.service';
 import { BuildInfo } from '../../BuildInfo';
 import { Form } from '../../RestModels';
@@ -13,7 +13,7 @@ type Falseable = boolean | number | null;
     selector: 'app-menu',
     templateUrl: './menu.component.html',
     styleUrl: './menu.component.css',
-    imports: [CommonModule, RouterOutlet, RouterModule, OldMenuComponent]
+    imports: [CommonModule, RouterModule, OldMenuComponent]
 })
 export class MenuComponent extends BaseComponent
 {

@@ -34,7 +34,7 @@ interface CUser extends User
 
 @Component({
     selector: 'app-view-production-area',
-    imports: [RouterModule, FormsModule, ModalComponent, SaveProductionAreaItemComponent, SearchItemsComponent, ShortDatePipe, LoadingComponent, SearchUsersComponent, ModalComponent],
+    imports: [RouterModule, FormsModule, ModalComponent, SearchItemsComponent, ShortDatePipe, LoadingComponent, SearchUsersComponent, ModalComponent],
     templateUrl: './view-production-area.component.html',
     styleUrl: './view-production-area.component.css'
 })

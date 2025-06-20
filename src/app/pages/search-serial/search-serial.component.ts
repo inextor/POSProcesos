@@ -12,7 +12,7 @@ import { PageStructureComponent } from "../../modules/shared/page-structure/page
     selector: 'app-search-serial',
     templateUrl: './search-serial.component.html',
     styleUrl: './search-serial.component.css',
-    imports: [FormsModule, LoadingComponent, PageStructureComponent]
+    imports: [FormsModule ]
 })
 export class SearchSerialComponent extends BaseComponent
 {

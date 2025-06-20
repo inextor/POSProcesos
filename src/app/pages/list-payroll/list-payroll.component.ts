@@ -18,7 +18,7 @@ interface CPayroll extends Payroll
 
 @Component({
     selector: 'app-list-payroll',
-    imports: [CommonModule, FormsModule, BaseComponent, RouterOutlet, RouterModule, ShortDatePipe, PaginationComponent, LoadingComponent],
+    imports: [CommonModule, FormsModule, RouterModule, ShortDatePipe, PaginationComponent, LoadingComponent],
     templateUrl: './list-payroll.component.html',
     styleUrl: './list-payroll.component.css'
 })
@@ -29,7 +29,7 @@ export class ListPayrollComponent extends BaseComponent implements OnInit {
 	rest_payroll:RestSimple<Payroll> = this.rest.initRestSimple<Payroll>('payroll');
 
 	search_payroll:SearchObject<Payroll> = this.getEmptySearch();
-	
+
 	users_list:User[] = [];
 	CPayroll_list:CPayroll[] = [];
 
@@ -43,12 +43,12 @@ export class ListPayrollComponent extends BaseComponent implements OnInit {
 	{
 		this.subs.sink = this.route.queryParamMap.pipe
 		(
-			mergeMap((param_map)=> 
+			mergeMap((param_map)=>
 			{
 				this.path = 'list-payroll';
 				this.is_loading = true;
 				let date = new Date();
-				
+
 				let fields = ['id', 'start_date', 'end_date', 'user_id', 'paid_status'];
 				this.search_payroll = this.getSearch(param_map,fields,[])
 
@@ -72,7 +72,7 @@ export class ListPayrollComponent extends BaseComponent implements OnInit {
 				});
 			}),
 		)
-		.subscribe((responses)=> 
+		.subscribe((responses)=>
 		{
 			this.setPages(this.search_payroll.page, responses.payrolls.total)
 			//console.log(responses);
@@ -83,7 +83,7 @@ export class ListPayrollComponent extends BaseComponent implements OnInit {
 				return {...payroll, user_name: user ? user.name : 'Loading...'};
 			});
 			this.is_loading = false;
-		}, (error)=> 
+		}, (error)=>
 		{
 			this.showError(error);
 		});

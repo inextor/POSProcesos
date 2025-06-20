@@ -5,6 +5,31 @@
 		</div>
 	</div>
 
+	<div class="card p-3 mt-3">
+		<div class="row">
+			<div class="col-12 col-md-3">
+				<label>Sucursal</label>
+				<select class="form-control" name="store_id" [(ngModel)]="production_search.eq.store_id">
+					<option [ngValue]="null">Seleccionar sucursal</option>
+					@for(store of store_list; track store.id)
+					{
+						<option [value]="store.id">{{store.name}}</option>
+					}
+				</select>
+			</div>
+			<div class="col-12 col-md-3 form-group">
+				<label>Fecha Inicial</label>
+				<input type="date" class="form-control" name="le.created" [ngModel]="production_search.le.created" (ngModelChange)="onDateChange($event,production_search.le,'created')">
+			</div>
+			<div class="col-12 col-md-3 form-group">
+				<label>&nbsp;</label>
+				<div>
+					<button type="button" class="btn btn-primary" (click)="search(production_search)">Buscar</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
 	<div class="card p-3">
 		<div class="row">
 			<div class="col-12 col-md-3">Sucursal</div>
@@ -16,7 +41,7 @@
 			<div class="row">
 				<div class="col-12 col-md">{{production_info.item.name}}</div>
 				<div class="col-12 col-md">{{production_info.store.name}}</div>
-				<div class="col-12 col-md">{{production_info.production.created | shortDate}}</div>
+				<div class="col-12 col-md">{{production_info.production.created | date:'dd/MM/yyyy'}}</div>
 				<div class="col-12 col-md-auto">{{production_info.production.qty}}</div>
 				<div class="col-12 col-md-auto">{{production_info.production.alternate_qty}}</div>
 				<div></div>

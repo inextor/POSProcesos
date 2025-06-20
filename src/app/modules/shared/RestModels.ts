@@ -993,6 +993,7 @@ export interface Product{
 	name:number
 }
 export interface Production{
+	alternate_qty: number;
 	created:Date;
 	created_by_user_id:number
 	id:number;

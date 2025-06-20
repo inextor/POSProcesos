@@ -6,7 +6,7 @@ import { RestResponse } from '../../modules/shared/services/Rest';
 import { BaseComponent } from '../../modules/shared/base/base.component';
 import { FormsModule } from '@angular/forms';
 import { ShortDatePipe } from '../../modules/shared/pipes/short-date.pipe';
-import { RouterModule, RouterOutlet } from '@angular/router';
+import { RouterModule } from '@angular/router';
 
 export interface UserCheckInfo
 {
@@ -19,7 +19,7 @@ export interface UserCheckInfo
 
 @Component({
     selector: 'app-users-checking-clock',
-    imports: [FormsModule, ShortDatePipe, RouterOutlet, RouterModule],
+    imports: [FormsModule, ShortDatePipe, RouterModule],
     templateUrl: './users-checking-clock.component.html',
     styleUrl: './users-checking-clock.component.css'
 })
