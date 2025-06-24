@@ -2,12 +2,12 @@ import { Component } from '@angular/core';
 import { Item, Production, Production_Area, Production_Area_Item } from '../../modules/shared/RestModels';
 import { ItemInfo, ProductionInfo } from '../../modules/shared/Models';
 import { BaseComponent } from '../../modules/shared/base/base.component';
-import { Utils } from '../../modules/shared/Utils';
-import { SearchObject } from '../../modules/shared/services/Rest';
 import { forkJoin, mergeMap } from 'rxjs';
-import { FormsModule } from '@angular/forms';
-import { DatePipe } from '@angular/common';
+import { SearchObject } from '../../modules/shared/services/Rest';
+import { Utils } from '../../modules/shared/Utils';
 import { LoadingComponent } from "../../components/loading/loading.component";
+import { DatePipe } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 
 
 interface ProductionByArea
@@ -58,13 +58,14 @@ interface ProductionArea {
 type ProductionData = ProductionArea[];
 
 
+
 @Component({
-	selector: 'app-resume-production',
-	imports: [FormsModule, DatePipe, LoadingComponent],
-	templateUrl: './resume-production.component.html',
-	styleUrl: './resume-production.component.css'
+	selector: 'app-resume-production-day',
+	imports: [LoadingComponent,DatePipe,FormsModule],
+	templateUrl: './resume-production-day.component.html',
+	styleUrl: './resume-production-day.component.css'
 })
-export class ResumeProductionComponent extends BaseComponent
+export class ResumeProductionDayComponent extends BaseComponent
 {
 	rest_production_info = this.rest.initRest<Production,ProductionInfo>("production_info",['created','id','item_id']);
 	rest_production_area = this.rest.initRestSimple<Production_Area>("production_area");
@@ -261,35 +262,11 @@ export class ResumeProductionComponent extends BaseComponent
 		this.is_loading = false;
 	}
 
-
-	csearch(_evt: Event)
+	csearch($event: MouseEvent)
 	{
-		this.router.navigate(['/resume-production'], { queryParams:{
+		this.router.navigate(['/resumen-production'], { queryParams:{
 			start_date: this.start_date,
 			end_date: this.end_date
 		}});
 	}
-
-	/*
-	let x = [
-		{
-			production_area:any;
-			category_production: [
-				{
-					category: any,
-					kgs:number,
-					pieces:number,
-					production_by_item:[
-						{
-							item:any,
-							total:number,
-							pieces:number
-							production_info_list:any[]
-						}
-					]
-				}
-			]
-		}
-	]
-	*/
 }

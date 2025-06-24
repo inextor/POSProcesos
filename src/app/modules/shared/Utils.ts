@@ -568,5 +568,16 @@ export class Utils
 			&& date1.getMonth() == date2.getMonth()
 			&& date1.getDate() == date2.getDate();
 	}
-}
 
+	/**
+	* Removes duplicate elements from an array.
+	*
+	* @param array The input array.
+	* @returns A new array containing only unique elements.
+	*/
+
+	public static cleanDuplicates<T>(array: T[]): T[]
+	{
+		return Array.from(new Set(array));
+	}
+}
