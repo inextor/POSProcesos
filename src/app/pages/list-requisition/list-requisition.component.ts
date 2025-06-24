@@ -52,7 +52,7 @@ interface CRequisitionItem
     selector: 'app-list-requisition',
     templateUrl: './list-requisition.component.html',
     styleUrl: './list-requisition.component.css',
-    imports: [CommonModule, RouterModule, FormsModule, SearchItemsComponent, ModalComponent, PageStructureComponent, OrderItemsComponent]
+    imports: [CommonModule, RouterModule, FormsModule, SearchItemsComponent, ModalComponent, OrderItemsComponent]
 })
 export class ListRequisitionComponent extends BaseComponent implements OnInit
 {

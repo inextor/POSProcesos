@@ -1,10 +1,10 @@
 import { Component, OnInit } from '@angular/core';
-
 import { Production_Area, Store } from '../../modules/shared/RestModels';
 import { RestSimple } from '../../modules/shared/services/Rest';
 import { GetEmpty } from '../../modules/shared/GetEmpty';
 import { FormsModule } from '@angular/forms';
 import { BaseComponent } from '../../modules/shared/base/base.component';
+import { forkJoin, mergeMap, of } from 'rxjs';
 
 @Component({
     selector: 'app-save-production-area',
@@ -13,7 +13,7 @@ import { BaseComponent } from '../../modules/shared/base/base.component';
     styleUrl: './save-production-area.component.css'
 })
 
-export class SaveProductionAreaComponent implements OnInit
+export class SaveProductionAreaComponent extends BaseComponent implements OnInit
 {
 	production_area_rest: RestSimple<Production_Area> = this.rest.initRestSimple('production_area');
 	rest_store: RestSimple<Store> = this.rest.initRestSimple('store');

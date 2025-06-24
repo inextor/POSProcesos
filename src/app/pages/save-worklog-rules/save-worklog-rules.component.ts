@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-
+import { BaseComponent } from '../../modules/shared/base/base.component';
 import { Work_log_rules } from '../../modules/shared/RestModels';
 import { RestSimple } from '../../modules/shared/services/Rest';
 import { mergeMap } from 'rxjs';
@@ -49,7 +49,7 @@ export class SaveWorklogRulesComponent extends BaseComponent implements OnInit {
 	}
 
 	buildRules()
-	{		
+	{
 		if (!this.work_log_rules.json_rules)
 		{
 			this.work_log_rules.json_rules = {};
@@ -76,7 +76,7 @@ export class SaveWorklogRulesComponent extends BaseComponent implements OnInit {
 	{
 		evt.preventDefault();
 		this.is_loading = true;
-		
+
 		//convert array to object
 		let rules:Record<string, string> = {};
 		this.array_rules.forEach((rule) => {
@@ -95,7 +95,7 @@ export class SaveWorklogRulesComponent extends BaseComponent implements OnInit {
 
 		//RULE PARA TECATE
 		// user.master ? production.total_prod * 0.2 : (production.total_prod * 0.1) / production.total_users
-		
+
 		this.subs.sink = this.rest_work_log_rules.update(this.work_log_rules)
 		.subscribe({
 			next: (result) => {

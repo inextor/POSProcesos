@@ -3,10 +3,12 @@ import { Component, OnInit, Input } from '@angular/core';
 import { Item, Production_Area_Item } from '../../modules/shared/RestModels';
 import { BaseComponent } from '../../modules/shared/base/base.component';
 import { FormsModule } from '@angular/forms';
+import { RestSimple } from '../../modules/shared/services/Rest';
+import { forkJoin } from 'rxjs';
 
 @Component({
     selector: 'app-save-production-area-item',
-    imports: [FormsModule, BaseComponent],
+    imports: [FormsModule],
     templateUrl: './save-production-area-item.component.html',
     styleUrl: './save-production-area-item.component.css'
 })
@@ -35,13 +37,17 @@ export class SaveProductionAreaItemComponent extends BaseComponent implements On
 						production_area_item : this.rest_production_area_item.search({ eq:{id:parseInt(params.get('id') as string )} }),
 						item : this.rest_item.search({limit:9999}),
 					})
-					.subscribe((responses)=>
-					{
-						this.production_area_item = responses.production_area_item.data[0];
-						this.item_list = responses.item.data;
-						this.production_area_item_list = responses.production_area_item.data;
-						this.is_loading = false;
-					},(error)=>this.showError(error));
+					.subscribe
+					({
+						next:(responses:any)=>
+						{
+							this.production_area_item = responses.production_area_item.data[0];
+							this.item_list = responses.item.data;
+							this.production_area_item_list = responses.production_area_item.data;
+							this.is_loading = false;
+						},
+						error:(error:any)=>this.showError(error)
+					});
 				}
 				else
 				{

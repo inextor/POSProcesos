@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-
+import { BaseComponent } from '../../modules/shared/base/base.component';
 import { FormsModule } from '@angular/forms';
 import { User, User_extra_fields } from '../../modules/shared/RestModels';
 import { GetEmpty } from '../../modules/shared/GetEmpty';
@@ -86,7 +86,7 @@ export class SaveUserExtraFieldsComponent extends BaseComponent implements OnIni
 
 		console.log(json_fields);
 		console.log(this.user_extra_fields);
-		
+
 		this.user_extra_fields.json_fields = json_fields;
 
 		this.subs.sink = this.rest_user_extra_fields.update(this.user_extra_fields)

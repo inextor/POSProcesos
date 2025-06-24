@@ -24,7 +24,7 @@ interface CRequisitionByStore
     selector: 'app-list-shipping',
     templateUrl: './list-shipping.component.html',
     styleUrl: './list-shipping.component.css',
-    imports: [CommonModule, RouterModule, FormsModule, BaseComponent, LoadingComponent, PageStructureComponent]
+    imports: [CommonModule, RouterModule, FormsModule, LoadingComponent]
 })
 
 export class ListShippingComponent extends BaseComponent

@@ -9,6 +9,8 @@ import { Item } from '../../../shared/RestModels';
 import { ModalComponent } from "../../../../components/modal/modal.component";
 import { ItemNamePipe } from "../../../shared/pipes/item-name.pipe";
 import { FormsModule } from '@angular/forms';
+import { LoadingComponent } from '../../../../components/loading/loading.component';
+import { SharedModule } from '../../../shared/SharedModule';
 
 interface StockDate
 {
@@ -42,6 +44,7 @@ interface ReserveItemByDate
 @Component
 ({
     selector: 'app-calendar-stock',
+	imports: [CommonModule,ModalComponent,LoadingComponent,ItemNamePipe,FormsModule],
     templateUrl: './calendar-stock.component.html',
     styleUrl: './calendar-stock.component.css'
     //imports: [CommonModule, ModalComponent, ItemNamePipe, FormsModule, PageStructureComponent]

@@ -3,6 +3,9 @@ import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Payroll_Concept } from '../../modules/shared/RestModels';
 import { ModalComponent } from '../../components/modal/modal.component';
+import { RestSimple } from '../../modules/shared/services/Rest';
+import { BaseComponent } from '../../modules/shared/base/base.component';
+import { forkJoin, mergeMap } from 'rxjs';
 
 @Component({
     selector: 'app-save-payroll-concept',standalone: true,
@@ -10,8 +13,8 @@ import { ModalComponent } from '../../components/modal/modal.component';
     templateUrl: './save-payroll-concept.component.html',
     styleUrl: './save-payroll-concept.component.css'
 })
-export class SavePayrollConceptComponent implements OnInit {
-
+export class SavePayrollConceptComponent extends BaseComponent implements OnInit
+{
 	rest_payroll_concept:RestSimple<Payroll_Concept> = this.rest.initRestSimple<Payroll_Concept>('payroll_concept');
 
 	payroll_concept_list:Payroll_Concept[] = [];
@@ -24,7 +27,6 @@ export class SavePayrollConceptComponent implements OnInit {
 		(
 			mergeMap((params)=>
 			{
-
 				return forkJoin
 				({
 					payroll_concept: this.rest_payroll_concept.search({ eq:{status: "ACTIVE"}, limit:99999})
@@ -50,7 +52,7 @@ export class SavePayrollConceptComponent implements OnInit {
 				status: 'ACTIVE'
 			};
 		}
-		else 
+		else
 		{
 			let payroll_concept = this.payroll_concept_list.find(payroll_concept => payroll_concept.id == payroll_concept_id);
 			if( payroll_concept )
@@ -115,7 +117,7 @@ export class SavePayrollConceptComponent implements OnInit {
 				}, (error)=>
 				{
 					this.showError('Error deleting payroll concept');
-				});				
+				});
 			}
 		});
 	}

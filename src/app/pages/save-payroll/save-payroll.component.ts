@@ -8,6 +8,7 @@ import { GetEmpty } from '../../modules/shared/GetEmpty';
 import { ShortDatePipe } from '../../modules/shared/pipes/short-date.pipe';
 import { Utils } from '../../modules/shared/Utils';
 import { RouterModule } from '@angular/router';
+import { BaseComponent } from '../../modules/shared/base/base.component';
 
 interface CPayroll_Concept_Value extends Payroll_Concept_Value
 {
@@ -28,11 +29,12 @@ interface CPayrollInfo
 }
 
 @Component({
-    selector: 'app-save-payroll', 
+    selector: 'app-save-payroll',
     imports: [CommonModule, RouterModule, FormsModule, ShortDatePipe],
     templateUrl: './save-payroll.component.html',
     styleUrl: './save-payroll.component.css'
 })
+
 export class SavePayrollComponent extends BaseComponent implements OnInit {
 
 	rest_work_log: RestSimple<Work_Log> = this.rest.initRestSimple<Work_Log>('work_log');
@@ -96,11 +98,11 @@ export class SavePayrollComponent extends BaseComponent implements OnInit {
 				let search_work_log_obj = {};
 				if(result.payroll != null)
 				{
-					search_work_log_obj = 
+					search_work_log_obj =
 					{
-						ge:{date: result.payroll.start_date}, 
-						le:{date: result.payroll.end_date}, 
-						eq:{user_id: result.payroll.user_id}, 
+						ge:{date: result.payroll.start_date},
+						le:{date: result.payroll.end_date},
+						eq:{user_id: result.payroll.user_id},
 						sort_order:['date_ASC']
 					}
 				}
@@ -111,12 +113,12 @@ export class SavePayrollComponent extends BaseComponent implements OnInit {
 					payroll: of(result.payroll),
 					work_log: result.payroll ? this.rest_work_log.search(search_work_log_obj) : of(null),
 					payroll_concept_values: result.payroll ? this.rest_payroll_concept_value.search({eq:{payroll_id: result.payroll.id, status:'ACTIVE'}}) : of(null)
-					
+
 				})
 			})
 		)
 		.subscribe((responses)=>
-		{	
+		{
 			let user = this.rest.user as User;
 
 			this.users_list = responses.users.data;
@@ -125,23 +127,23 @@ export class SavePayrollComponent extends BaseComponent implements OnInit {
 			let work_log_list = responses.work_log ? responses.work_log.data : null;
 			let payroll = responses.payroll ? responses.payroll : null;
 			let payroll_concept_values = responses.payroll_concept_values ? responses.payroll_concept_values.data : null;
-			
+
 			if( payroll && work_log_list && payroll_concept_values)
 			{
 				this.user_id = payroll.user_id;
 				this.start_date = payroll.start_date;
 				this.end_date = payroll.end_date;
-				this.payroll_info = 
+				this.payroll_info =
 				{
 					payroll: payroll,
 					work_logs: this.mapWorkLogs(work_log_list),
 					payroll_concept_values: this.mapPayrollConceptValues(payroll_concept_values)
 				}
 
-				//add the concept values that are not in the payroll_concept_values 
+				//add the concept values that are not in the payroll_concept_values
 				//(only those that are active & not in the payroll_concept_values & payroll.paid_status == 'PENDING')
 				if (payroll.paid_status != 'PAID')
-				{	
+				{
 					this.payroll_concept_list.forEach((payroll_concept)=>
 					{
 						let payroll_concept_value = this.payroll_info.payroll_concept_values.find((pcv)=>pcv.payroll_concept_id == payroll_concept.id);
@@ -228,7 +230,7 @@ export class SavePayrollComponent extends BaseComponent implements OnInit {
 			this.showError('Es necesario seleccionar un usuario y un rango de fechas');
 			return;
 		}
-		
+
 		this.selected_user = this.users_list.find((user)=>user.id == this.user_id) as User;
 		if (this.selected_user)
 		{
@@ -246,14 +248,14 @@ export class SavePayrollComponent extends BaseComponent implements OnInit {
 			return;
 		}
 
-		let search_work_log_obj = 
+		let search_work_log_obj =
 		{
 			ge:{date: this.start_date},
 			le:{date: this.end_date},
 			eq:{user_id: this.user_id},
 			sort_order:['date_ASC']
 		}
-		
+
 		this.subs.sink = forkJoin
 		({
 			work_logs: this.rest_work_log.search(search_work_log_obj)
@@ -291,9 +293,9 @@ export class SavePayrollComponent extends BaseComponent implements OnInit {
 			this.showError('Es necesario seleccionar un concepto');
 			return;
 		}
-		
+
 		let payroll_concept = this.payroll_concept_list.find((payroll_concept)=>payroll_concept.id == this.selected_payroll_concept_id);
-		
+
 		if (!payroll_concept)
 		{
 			this.showError('No se encontro el concepto seleccionado');
@@ -341,11 +343,11 @@ export class SavePayrollComponent extends BaseComponent implements OnInit {
 
 
 	calculatePayrollTotal()
-	{	
+	{
 		//calculate subtotal
 		this.payroll_info.payroll.subtotal = 0;
 
-		this.payroll_info.work_logs.forEach((work_log) => 
+		this.payroll_info.work_logs.forEach((work_log) =>
 		{
 			this.payroll_info.payroll.subtotal += work_log.total_payment;
 		});
@@ -353,10 +355,10 @@ export class SavePayrollComponent extends BaseComponent implements OnInit {
 		this.payroll_info.payroll.total = this.payroll_info.payroll.subtotal;
 
 		this.payroll_info.payroll_concept_values.forEach((payroll_concept_value)=>
-		{	
+		{
 			let payroll_concept = this.payroll_concept_list.find((payroll_concept)=>payroll_concept.id == payroll_concept_value.payroll_concept_id);
 
-			if (payroll_concept && payroll_concept_value.status == "ACTIVE") 
+			if (payroll_concept && payroll_concept_value.status == "ACTIVE")
 			{
 				if (payroll_concept.type == "DEDUCTION")
 				{
@@ -380,7 +382,7 @@ export class SavePayrollComponent extends BaseComponent implements OnInit {
 			this.showError('El total de la nómina debe ser mayor a 0');
 			return;
 		}
-		
+
 		if (this.payroll_info.payroll.id == 0)
 		{
 			this.subs.sink = this.rest_payroll.create(this.payroll_info.payroll).pipe
@@ -401,7 +403,7 @@ export class SavePayrollComponent extends BaseComponent implements OnInit {
 							})
 						}
 					});
-			
+
 					return forkJoin
 					({
 						payroll: of(response),
@@ -413,7 +415,7 @@ export class SavePayrollComponent extends BaseComponent implements OnInit {
 			{
 				this.showSuccess('Nómina creada correctamente');
 				this.router.navigate(['/edit-payroll/'+response.payroll.id]);
-				
+
 			}, (error)=>
 			{
 				this.showError('Error creando nómina ' + error);
@@ -453,7 +455,7 @@ export class SavePayrollComponent extends BaseComponent implements OnInit {
 							})
 						}
 					});
-			
+
 					return forkJoin
 					({
 						payroll: of(response),

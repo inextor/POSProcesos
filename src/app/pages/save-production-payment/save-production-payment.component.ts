@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { BaseComponent } from '../../modules/shared/base/base.component';
 import { CommonModule } from '@angular/common';
 import { Price, Production, User, User_extra_fields, Work_Log, Work_log_rules } from '../../modules/shared/RestModels';
 import { Utils } from '../../modules/shared/Utils';
