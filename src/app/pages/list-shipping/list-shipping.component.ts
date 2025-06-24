@@ -2,8 +2,6 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { BaseComponent } from '../../modules/shared/base/base.component';
 import { Rest, RestSimple, SearchObject } from '../../modules/shared/services/Rest';
-import { Production, Production_Area, Requisition, Requisition_Item, Shipping, Shipping_Item, Store } from '../../modules/shared/RestModels';
-import { RequisitionInfo, ShippingInfo } from '../../modules/shared/Models';
 import { forkJoin, mergeMap } from 'rxjs';
 import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
@@ -11,6 +9,7 @@ import { Utils } from '../../modules/shared/Utils';
 import { LoadingComponent } from '../../components/loading/loading.component';
 import { PageStructureComponent } from "../../modules/shared/page-structure/page-structure.component";
 
+import { Production, Production_Area, Requisition, Requisition_Item, Shipping, Shipping_Item, Store } from '../../modules/shared/RestModels';
 
 interface CRequisitionByStore
 {

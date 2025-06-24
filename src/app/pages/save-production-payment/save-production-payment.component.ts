@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { BaseComponent } from '../../modules/shared/base/base.component';
 import { Price, Production, User, User_extra_fields, Work_Log, Work_log_rules } from '../../modules/shared/RestModels';
 import { Utils } from '../../modules/shared/Utils';
 import { FormsModule } from '@angular/forms';
@@ -32,7 +31,7 @@ interface CItem_production_report
 
 @Component({
     selector: 'app-save-production-payment',
-    imports: [CommonModule, BaseComponent, FormsModule, CustomToTitlePipe, LoadingComponent],
+    imports: [CommonModule, FormsModule, CustomToTitlePipe, LoadingComponent],
     templateUrl: './save-production-payment.component.html',
     styleUrl: './save-production-payment.component.css'
 })

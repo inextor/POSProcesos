@@ -5,14 +5,13 @@ import { Production_Area } from '../../modules/shared/RestModels';
 import { RouterModule } from '@angular/router';
 import { mergeMap } from 'rxjs';
 import { BaseComponent } from '../../modules/shared/base/base.component';
-import { PageStructureComponent } from "../../modules/shared/page-structure/page-structure.component";
 
 @Component
 ({
     selector: 'app-list-production-area',
     templateUrl: './list-production-area.component.html',
     styleUrl: './list-production-area.component.css',
-    imports: [CommonModule, RouterModule, PageStructureComponent]
+    imports: [CommonModule, RouterModule]
 })
 export class ListProductionAreaComponent extends BaseComponent implements OnInit
 {

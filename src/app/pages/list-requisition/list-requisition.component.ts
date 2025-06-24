@@ -12,9 +12,8 @@ import { Utils } from '../../modules/shared/Utils';
 import { SearchItemsComponent } from '../../components/search-items/search-items.component';
 import { ModalComponent } from '../../components/modal/modal.component';
 import { ItemInfo, RequisitionInfo, SerialInfo, SerialItemInfo } from '../../modules/shared/Models';
-import { PageStructureComponent } from "../../modules/shared/page-structure/page-structure.component";
 import { OrderItemsComponent } from "./order-items/order-items.component";
-
+import { PageStructureComponent } from '../../modules/shared/page-structure/page-structure.component';
 interface CRequistionItem
 {
 	item_id:number,

@@ -2,8 +2,6 @@ import { Component, OnInit, Input } from '@angular/core';
 
 import { Item, Production_Area_Item } from '../../modules/shared/RestModels';
 import { BaseComponent } from '../../modules/shared/base/base.component';
-import { forkJoin } from 'rxjs';
-import { RestSimple } from '../../modules/shared/services/Rest';
 import { FormsModule } from '@angular/forms';
 
 @Component({
@@ -15,6 +13,7 @@ import { FormsModule } from '@angular/forms';
 export class SaveProductionAreaItemComponent extends BaseComponent implements OnInit{
 
 	//CURRENTLY NOT BEING USED
+
 	@Input() production_area_id:number = 0;
 	rest_production_area_item:RestSimple<Production_Area_Item> = this.rest.initRestSimple<Production_Area_Item>('production_area_item');
 	rest_item:RestSimple<Item> = this.rest.initRestSimple<Item>('item');

@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
 
-import { BaseComponent } from '../../modules/shared/base/base.component';
 import { FormsModule } from '@angular/forms';
 import { User, User_extra_fields } from '../../modules/shared/RestModels';
 import { GetEmpty } from '../../modules/shared/GetEmpty';
@@ -15,7 +14,7 @@ interface ExtraField {
 
 @Component({
     selector: 'app-save-user-extra-fields',
-    imports: [BaseComponent, FormsModule, RouterModule],
+    imports: [FormsModule, RouterModule],
     templateUrl: './save-user-extra-fields.component.html',
     styleUrl: './save-user-extra-fields.component.css'
 })

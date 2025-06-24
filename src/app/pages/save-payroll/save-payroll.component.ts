@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { BaseComponent } from '../../modules/shared/base/base.component';
 import { FormsModule } from '@angular/forms';
 import { RestSimple, SearchObject } from '../../modules/shared/services/Rest';
 import { Payroll, Payroll_Concept, Payroll_Concept_Value, User, Work_Log } from '../../modules/shared/RestModels';
@@ -29,8 +28,8 @@ interface CPayrollInfo
 }
 
 @Component({
-    selector: 'app-save-payroll',
-    imports: [CommonModule, BaseComponent, RouterModule, FormsModule, ShortDatePipe],
+    selector: 'app-save-payroll', 
+    imports: [CommonModule, RouterModule, FormsModule, ShortDatePipe],
     templateUrl: './save-payroll.component.html',
     styleUrl: './save-payroll.component.css'
 })

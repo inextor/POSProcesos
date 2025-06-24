@@ -2,16 +2,13 @@ import { Component } from '@angular/core';
 
 import { BaseComponent } from '../../modules/shared/base/base.component';
 import { PageStructureComponent } from "../../modules/shared/page-structure/page-structure.component";
-import { CodeReaderComponent } from "../../modules/shared/code-reader/code-reader.component";
-
 @Component
 ({
     selector: 'app-dashboard',
     templateUrl: './dashboard.component.html',
     styleUrl: './dashboard.component.css',
-    imports: [PageStructureComponent]
+    standalone: true, imports: []
 })
-
 export class DashboardComponent extends BaseComponent
 {
 /*
