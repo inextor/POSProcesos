@@ -29,6 +29,7 @@ import { ListRoleItemPriceComponent } from './pages/list-role-item-price/list-ro
 import { ListItemProductionComponent } from './pages/list-item-production/list-item-production.component';
 import { ListProductionComponent } from './pages/list-production/list-production.component';
 import { ResumeProductionComponent } from './pages/resume-production/resume-production.component';
+import { ResumeProductionDayComponent } from './pages/resume-production-day/resume-production-day.component';
 
 export const routes: Routes = [
 	{path: 'login', component: LoginComponent},
@@ -69,6 +70,7 @@ export const routes: Routes = [
 			{path: 'list-role-item-price', component: ListRoleItemPriceComponent, canActivate: [authGuard]},
 			{path: 'list-production', component: ListProductionComponent, canActivate: [authGuard]},
 			{path: 'resume-production', component: ResumeProductionComponent, canActivate: [authGuard]},
+			{path: 'resume-production-day', component: ResumeProductionDayComponent, canActivate: [authGuard]},
 		]
 	},
 ];
