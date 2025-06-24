@@ -161,7 +161,8 @@ export class Rest<U,T>
 				let tmp_val = searchObj.search_extra[i];
 				if( tmp_val instanceof Date )
 				{
-					params = params.set(i,Utils.getUTCMysqlStringFromDate( tmp_val ) );
+
+					params = params.set(i,tmp_val.toISOString().substring(0,19).replace('T',' '));
 				}
 				else
 				{
@@ -389,7 +390,7 @@ export class Rest<U,T>
 
 		if( value instanceof Date )
 		{
-			return Utils.getUTCMysqlStringFromDate( value );
+			return value.toISOString().substring(0,19).replace('T',' ');
 		}
 		return value;
 	}
