@@ -40,65 +40,36 @@
 			</table>
 
 			@for (area_data of production_by_area_list; track area_data.production_area.id)
-			{
+			{ }
 
+			@for (dayGroup of groupedProductionByDate; track dayGroup.date) {
+				<h2>{{ dayGroup.date | date:'mediumDate' }}</h2>
 				<table class="table table-bordered">
-					<tr>
-						<th>{{ area_data.production_area.name }}</th>
-						<th class="text-end">{{area_data.total_kgs}}</th>
-						<th class="text-end">{{area_data.total_pieces}}</th>
-						<th>
-							<button (click)="area_data.open = !area_data.open">Toggle</button>
-						</th>
-					</tr>
-					@if(area_data.open)
-					{
-						@for (category_data of area_data.production_by_category; track category_data.category_name)
-						{
-							<tr class="table-info">
-								<td class="text-end">
-									<strong>{{category_data.category_name}}</strong>
-								</td>
-								<td class="text-end">
-									<strong>{{ category_data.total_kgs  }}</strong>
-								</td>
-								<td class="text-end">
-									<strong>{{ category_data.total_pieces }}</strong>
-								</td>
-								<td>
-									<button (click)="category_data.open = !category_data.open">Toggle</button>
-								</td>
+					<thead>
+						<tr>
+							<th>Artículo</th>
+							<th class="text-end">Kgs</th>
+							<th class="text-end">Control</th>
+						</tr>
+					</thead>
+					<tbody>
+						@for (production of dayGroup.productions; track production.production.id) {
+							<tr>
+								<td>{{ production.item.name }}</td>
+								<td class="text-end">{{ production.production.qty }}</td>
+								<td class="text-end">{{ production.production.alternate_qty }}</td>
 							</tr>
-
-							@if(category_data.open)
-							{
-								@for (item_data of category_data.production_by_item; track item_data.item.id)
-								{
-									<tr>
-										<td class="text-end">{{ item_data.item.name }}</td>
-										<td class="text-end">{{ item_data.total_kgs}}</td>
-										<td class="text-end">{{ item_data.total_pieces }}</td>
-										<td>
-											<button (click)="item_data.open = !item_data.open"> Toggle </button>
-										</td>
-									</tr>
-									@if(item_data.open)
-									{
-										@for (production_info of item_data.production_info_list; track production_info.production.id)
-										{
-											<tr>
-												<td class="text-end">{{production_info.production.created | date:'mediumDate'}}</td>
-												<td class="text-end">{{production_info.production.qty}}</td>
-												<td class="text-end">{{production_info.production.alternate_qty}}</td>
-												<td></td>
-											</tr>
-										}
-									}
-								}
-							}
 						}
-					}
+					</tbody>
+					<tfoot>
+						<tr class="table-primary">
+							<td><strong>Total del día</strong></td>
+							<td class="text-end"><strong>{{ dayGroup.total_kgs }}</strong></td>
+							<td class="text-end"><strong>{{ dayGroup.total_pieces }}</strong></td>
+						</tr>
+					</tfoot>
 				</table>
+
 			}
 
 			<table class="table table-bordered">
