@@ -171,7 +171,7 @@ export class ResumeProductionDayComponent extends BaseComponent
 
 	groupProductionByDate(productionInfoList: ProductionInfo[]): GroupedProductionByDate[] {
 		const grouped: { [key: string]: ProductionInfo[] } = {};
-		for (const productionInfo of productionInfoList) {
+		for (const productionInfo of productionInfoList as any[]) { // Cast to any for now due to potential type mismatch with RestModels
 			const date = productionInfo.production.created.split(' ')[0]; // Extract date part
 			if (!grouped[date]) {
 				grouped[date] = [];
@@ -184,7 +184,7 @@ export class ResumeProductionDayComponent extends BaseComponent
 			if (grouped.hasOwnProperty(date)) {
 				let total_kgs = 0;
 				let total_pieces = 0;
-				for(const prod_info of grouped[date]){
+				for(const prod_info of grouped[date] as any[]){ // Cast to any
 					total_kgs += prod_info.production.qty;
 					total_pieces += prod_info.production.alternate_qty;
 				}
@@ -200,86 +200,30 @@ export class ResumeProductionDayComponent extends BaseComponent
 		console.log("this.production_area_list", this.production_area_list);
 		console.log("this.production_info_list", this.production_info_list);
 		console.log("this.groupedProductionByDate", this.groupedProductionByDate);
-
-		this.structured_production_data = []; // Clear previous data if any
-
-		for (const dailyProduction of this.groupedProductionByDate) {
-			const productionAreas: ProductionArea[] = [];
-
-			for (const productionArea of this.production_area_list) {
-				const categoryProduction: CategoryProduction[] = [];
-				const productionInfosForArea = dailyProduction.productions.filter(
-					(prodInfo) => prodInfo.production_area.id === productionArea.id
-				);
-
-				if (productionInfosForArea.length > 0) {
-					const groupedByCategory: { [key: string]: ProductionInfo[] } = {};
-					for (const prodInfo of productionInfosForArea) {
-						const categoryName = prodInfo?.category?.name || 'N/A';
-						if (!groupedByCategory[categoryName]) {
-							groupedByCategory[categoryName] = [];
-						}
-						groupedByCategory[categoryName].push(prodInfo);
-					}
-
-					for (const categoryName in groupedByCategory) {
-						if (groupedByCategory.hasOwnProperty(categoryName)) {
-							const productionByItem: CProductionInfo[] = [];
-							const groupedByItem: { [key: number]: ProductionInfo[] } = {};
-							let total_kgs = 0;
-							let total_pieces = 0;
-
-							for (const prodInfo of groupedByCategory[categoryName]) {
-								if (!groupedByItem[prodInfo.item.id]) {
-									groupedByItem[prodInfo.item.id] = [];
-								}
-								groupedByItem[prodInfo.item.id].push(prodInfo);
-								total_kgs += prodInfo.production.qty;
-								total_pieces += prodInfo.production.alternate_qty;
-							}
-
-							for (const itemId in groupedByItem) {
-								if (groupedByItem.hasOwnProperty(itemId)) {
-									let item_total_kgs = 0;
-									let item_total_pieces = 0;
-									for(const prod_info of groupedByItem[itemId]){
-										item_total_kgs += prod_info.production.qty;
-										item_total_pieces += prod_info.production.alternate_qty;
-									}
-									productionByItem.push({ item: groupedByItem[itemId][0].item, total_kgs: item_total_kgs, total_pieces: item_total_pieces, production_info_list: groupedByItem[itemId], open: false, string_id: 'p_item_' + itemId });
-								}
-							}
-
-							categoryProduction.push({ category_name: categoryName, total_kgs, total_pieces, production_by_item: productionByItem, open: false, string_id: 'p_cat_' + (groupedByCategory[categoryName][0]?.category?.id || 'NULL') });
-						}
-					}
-					productionAreas.push({ production_area: productionArea, category_production: categoryProduction });
-				}
-			}
-			// Now you have productionAreas structured for the current dailyProduction.
-			// You might want to store this structured data per day if needed for the template
-			// For simplicity here, I'll just log it, but you would typically add it to a list
-			// associated with the dailyProduction or a new top-level structure.
-			console.log("Structured data for date", dailyProduction.date, productionAreas);
-			// Example: this.structured_production_data.push({ date: dailyProduction.date, areas: productionAreas });
-		}
+		// The groupedProductionByDate already has the structure we need for displaying daily summaries
+		// We can calculate overall totals here if needed, but the daily totals are in groupedProductionByDate
 
 		// Recalculate total_kgs and total_pieces based on the grouped data
 		this.total_kgs = this.groupedProductionByDate.reduce((sum, day) => sum + day.total_kgs, 0);
 		this.total_pieces = this.groupedProductionByDate.reduce((sum, day) => sum + day.total_pieces, 0);
 
 		this.is_loading = false; // Set loading to false after all processing
+
+		// The original createStructures method was for grouping by production area,
+		// which is not needed for the daily summary view. I've commented out
+		// or removed the logic that was trying to rebuild that structure.
+		// The groupedProductionByDate property is what the template should use now.
 	}
 
 	// Helper to get item name (you might have a pipe for this)
 	getItemName(itemId: number): string {
-		const item = this.item_info_list.find(item => item.id === itemId);
+		const item = this.item_info_list.find((item:any) => item.id === itemId); // Cast to any
 		return item ? item.name : 'Unknown Item';
 	}
 
 	// Helper to get production area name
 	getProductionAreaName(areaId: number): string {
-		const area = this.production_area_list.find(area => area.id === areaId);
+		const area = this.production_area_list.find((area:any) => area.id === areaId); // Cast to any
 		return area ? area.name : 'Unknown Area';
 	}
 
@@ -304,87 +248,5 @@ export class ResumeProductionDayComponent extends BaseComponent
 				end_date: this.end_date
 			}
 		});
-	}
-}
-			{
-				production_by_area = {
-					production_area,
-					production_by_category: [],
-					total_kgs: 0,
-					total_pieces: 0,
-					open: false,
-					string_id: 'p_area_'+production_area.id
-				};
-				production_by_area_list.push(production_by_area);
-			}
-
-			for (const production_info of production_info_list)
-			{
-				let category_name = production_info?.category?.name || 'N/A';
-				let production_by_category = production_by_area.production_by_category.find(pbc => pbc.category_name === category_name);
-
-				if (!production_by_category)
-				{
-					production_by_category = {
-						category_name,
-						total_kgs: 0,
-						total_pieces: 0,
-						production_by_item: [],
-						open: false,
-						string_id: 'p_cat_'+( production_info?.category?.id || 'NULL')
-
-					};
-					production_by_area.production_by_category.push(production_by_category);
-				}
-
-				let find_lamnda = (pbi:any) =>{
-					return pbi.item.id === production_info.item.id;
-				};
-
-				let production_by_item = production_by_category.production_by_item.find(pbi => pbi.item.id === production_info.item.id);
-
-				if (!production_by_item)
-				{
-					production_by_item = {
-						item: production_info.item,
-						total_kgs: 0,
-						total_pieces: 0,
-						production_info_list: [],
-						open: false,
-						string_id: 'p_item_'+production_info.item.id
-					};
-					production_by_category.production_by_item.push(production_by_item);
-				}
-
-				production_by_item.production_info_list.push( production_info );
-
-				production_by_area.total_kgs += production_info.production.qty;
-				production_by_area.total_pieces += production_info.production.alternate_qty;
-
-				production_by_category.total_kgs += production_info.production.qty;
-				production_by_category.total_pieces += production_info.production.alternate_qty;
-
-				production_by_item.total_kgs += production_info.production.qty;
-				production_by_item.total_pieces += production_info.production.alternate_qty;
-
-				total_kgs += production_info.production.qty;
-				total_pieces += production_info.production.alternate_qty;
-			}
-		}
-
-		this.total_kgs = total_kgs;
-		this.total_pieces = total_pieces;
-
-		this.production_by_area_list = production_by_area_list;
-		console.log("this.production_by_area_list", this.production_by_area_list);
-		this.is_loading = false;
-	}
-
-	csearch($event: MouseEvent)
-	{
-		this.router.navigate(['/resumen-production'], { queryParams:{
-			start_date: this.start_date,
-			end_date: this.end_date
-		}});
 	}
 }
