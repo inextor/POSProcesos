@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { BaseComponent } from '../../modules/shared/base/base.component';
 import { Category, Item, Role, Role_Item_Price } from '../../modules/shared/RestModels';
 import { Rest, RestSimple, SearchObject } from '../../modules/shared/services/Rest';
-import { forkJoin, mergeMap, of } from 'rxjs';
+import { filter, forkJoin, mergeMap, of } from 'rxjs';
 import { ItemInfo } from '../../modules/shared/Models';
 import { SharedModule } from '../../modules/shared/SharedModule';
 import { PaginationComponent } from "../../components/pagination/pagination.component";
@@ -14,6 +14,7 @@ import { GetEmpty } from '../../modules/shared/GetEmpty';
 import { ModalComponent } from "../../components/modal/modal.component";
 import { SearchItemsComponent } from "../../components/search-items/search-items.component";
 import { FormsModule } from '@angular/forms';
+import { ConfirmationResult } from '../../modules/shared/services/confirmation.service';
 
 interface RoleItemPriceInfo
 {
@@ -22,11 +23,12 @@ interface RoleItemPriceInfo
 	category: Category | null;
 }
 
-@Component({
-    selector: 'app-list-role-item-price',
-    imports: [CommonModule, SharedModule, PaginationComponent, LoadingComponent, ShortDatePipe, ItemNamePipe, ModalComponent, SearchItemsComponent, FormsModule],
-    templateUrl: './list-role-item-price.component.html',
-    styleUrl: './list-role-item-price.component.css'
+@Component
+({
+	selector: 'app-list-role-item-price',
+	imports: [CommonModule, SharedModule, PaginationComponent, LoadingComponent, ShortDatePipe, ItemNamePipe, ModalComponent, SearchItemsComponent, FormsModule],
+	templateUrl: './list-role-item-price.component.html',
+	styleUrl: './list-role-item-price.component.css'
 })
 export class ListRoleItemPriceComponent extends BaseComponent implements OnInit
 {
@@ -133,5 +135,36 @@ export class ListRoleItemPriceComponent extends BaseComponent implements OnInit
 	reset()
 	{
 		this.item_info = GetEmpty.item_info();
+	}
+
+	removeRoleItemPrice(role_item_price:Role_Item_Price)
+	{
+		this.sink = this.confirmation.showConfirmAlert
+		(
+			role_item_price,
+			'Eliminar Precio',
+			'¿Está seguro que desea eliminar este precio?',
+			'Eliminar',
+			'Cancelar'
+		)
+		.pipe
+		(
+			filter((response:ConfirmationResult)=>response.accepted),
+			mergeMap(()=>
+			{
+				this.is_loading = true;
+				return this.rest_role_item_price.delete(role_item_price)
+			})
+		)
+		.subscribe
+		({
+			complete:()=>this.is_loading = false,
+			error:(error:any)=>this.rest.showError(error),
+			next:(role_item_price:Role_Item_Price)=>
+			{
+				this.is_loading = false;
+				this.role_item_price_info_list = this.role_item_price_info_list.filter((i:any)=>i.role_item_price.id != role_item_price.id);
+			}
+		});
 	}
 }
