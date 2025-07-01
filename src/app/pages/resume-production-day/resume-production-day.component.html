@@ -29,55 +29,155 @@
 	}
 	@else
 	{
-		<div class="card p-3">
+		<div class="card p-3 mb-3">
 			<table class="table table-bordered">
 				<tr>
 					<th>Equipos/Categorias/Articulos/Parciales</th>
 					<th class="text-end">Kgs</th>
-					<th class="text-end">Control</th>
+					<th class="text-end">Piezas</th>
 					<th></th>
 				</tr>
 			</table>
+		</div>
 
-			@for (area_data of production_by_area_list; track area_data.production_area.id)
-			{ }
 
-			@for (dayGroup of groupedProductionByDate; track dayGroup.date) {
-				<h2>{{ dayGroup.date | date:'mediumDate' }}</h2>
+		@for (production_by_day of production_by_day_list; track production_by_day.date)
+		{
+			<div class="card p-3 mb-3">
 				<table class="table table-bordered">
 					<thead>
 						<tr>
-							<th>Artículo</th>
-							<th class="text-end">Kgs</th>
-							<th class="text-end">Control</th>
+							<th>{{ production_by_day.date | date:'mediumDate' }}</th>
+							<th class="text-end">{{production_by_day.total_kgs}}</th>
+							<th class="text-end">{{production_by_day.total_pieces}}</th>
+							<th>
+								@if(production_by_day.open)
+								{
+									<button (click)="production_by_day.open = !production_by_day.open" class="btn btn-small btn-primary">
+										<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 48 48"><path fill="#2196f3" d="M43 17.1L39.9 14L24 29.9L8.1 14L5 17.1L24 36z"/></svg>
+									</button>
+								}
+								@else
+								{
+									<button (click)="production_by_day.open = !production_by_day.open" class="btn btn-small btn-primary">
+										<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" d="m9 6l6 6l-6 6"/></svg>
+									</button>
+								}
+							</th>
 						</tr>
 					</thead>
-					<tbody>
-						@for (production of dayGroup.productions; track production.production.id) {
-							<tr>
-								<td>{{ production.item.name }}</td>
-								<td class="text-end">{{ production.production.qty }}</td>
-								<td class="text-end">{{ production.production.alternate_qty }}</td>
-							</tr>
-						}
-					</tbody>
+					@if (production_by_day.open)
+					{
+						<tbody>
+							@for (production_by_category of production_by_day.production_by_category; track production_by_category.category_name)
+							{
+								<tr>
+									<td>{{ production_by_category.category_name }}</td>
+									<td class="text-end">{{ production_by_category.total_kgs}}</td>
+									<td class="text-end">{{ production_by_category.total_pieces}}</td>
+									<td>
+										@if(production_by_category.open)
+										{
+											<button (click)="production_by_category.open = !production_by_category.open" class="btn btn-small btn-primary">
+												<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 48 48"><path fill="#2196f3" d="M43 17.1L39.9 14L24 29.9L8.1 14L5 17.1L24 36z"/></svg>
+											</button>
+										}
+										@else
+										{
+											<button (click)="production_by_category.open = !production_by_category.open" class="btn btn-small btn-primary">
+												<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" d="m9 6l6 6l-6 6"/></svg>
+											</button>
+										}
+									</td>
+								</tr>
+								@if(production_by_category.open)
+								{
+									@for (production_by_area of production_by_category.production_by_area; track production_by_area.production_area.id)
+									{
+										<tr>
+											<td>{{ production_by_area.production_area.name}}</td>
+											<td class="text-end">{{ production_by_area.total_kgs }}</td>
+											<td class="text-end">{{ production_by_area.total_pieces}}</td>
+											<td>
+												@if(production_by_area.open)
+												{
+													<button (click)="production_by_area.open = !production_by_area.open" class="btn btn-small btn-primary">
+														<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 48 48"><path fill="#2196f3" d="M43 17.1L39.9 14L24 29.9L8.1 14L5 17.1L24 36z"/></svg>
+													</button>
+												}
+												@else
+												{
+													<button (click)="production_by_area.open = !production_by_area.open" class="btn btn-small btn-primary">
+														<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" d="m9 6l6 6l-6 6"/></svg>
+													</button>
+												}
+											</td>
+										</tr>
+
+										@if(production_by_area.open)
+										{
+											@for (production_by_item of production_by_area.items; track production_by_item.item.id)
+											{
+												<tr>
+													<td>{{ production_by_item.item.name}}</td>
+													<td class="text-end">{{ production_by_item.total_kgs }}</td>
+													<td class="text-end">{{ production_by_item.total_pieces }}</td>
+													<td>
+														@if(production_by_item.open)
+														{
+															<button (click)="production_by_item.open = !production_by_item.open" class="btn btn-small btn-primary">
+																<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 48 48"><path fill="#2196f3" d="M43 17.1L39.9 14L24 29.9L8.1 14L5 17.1L24 36z"/></svg>
+															</button>
+														}
+														@else
+														{
+															<button (click)="production_by_item.open = !production_by_item.open" class="btn btn-small btn-primary">
+																<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" d="m9 6l6 6l-6 6"/></svg>
+															</button>
+														}
+													</td>
+												</tr>
+												@if( production_by_item.open )
+												{
+													@for (production_info of production_by_item.items; track production_info.production.id)
+													{
+														<tr>
+
+															<td>
+																{{production_info.production.control}} -
+																{{ production_info.item.name}}
+															</td>
+															<td class="text-end">{{ production_info.production.qty }}</td>
+															<td class="text-end">{{ production_info.production.alternate_qty}}</td>
+															<td></td>
+														</tr>
+													}
+												}
+											}
+										}
+									}
+								}
+							}
+						</tbody>
+					}
 					<tfoot>
 						<tr class="table-primary">
 							<td><strong>Total del día</strong></td>
-							<td class="text-end"><strong>{{ dayGroup.total_kgs }}</strong></td>
-							<td class="text-end"><strong>{{ dayGroup.total_pieces }}</strong></td>
+							<td class="text-end"><strong>{{ production_by_day.total_kgs }}</strong></td>
+							<td class="text-end"><strong>{{ production_by_day.total_pieces }}</strong></td>
 						</tr>
 					</tfoot>
 				</table>
+			</div>
+		}
 
-			}
-
+		<div class="card p-3 mb-3">
 			<table class="table table-bordered">
 				<thead>
 					<tr>
 						<th></th>
 						<th class="text-end">Total Kgs</th>
-						<th class="text-end">Total Control</th>
+						<th class="text-end">Total Piezas</th>
 						<th></th>
 					</tr>
 				</thead>
@@ -85,8 +185,8 @@
 				<tfoot>
 					<tr class="table-primary">
 						<td><strong>Total Área</strong></td>
-						<td class="text-end"><strong>{{ total_kgs  }}</strong></td>
-						<td class="text-end"><strong>{{ total_pieces  }}</strong></td>
+						<td class="text-end"><strong>{{ total_kgs }}</strong></td>
+						<td class="text-end"><strong>{{ total_pieces }}</strong></td>
 						<td></td>
 					</tr>
 				</tfoot>
