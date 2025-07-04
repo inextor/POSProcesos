@@ -626,7 +626,7 @@ export interface Order{
 	version_updated:string | null;
 }
 export interface Order_Item{
-    reservation_item_id: number | null;
+	reservation_item_id: number | null;
 	commanda_id:number | null;
 	commanda_status:'NOT_DISPLAYED'|'PENDING'|'DISMISSED';
 	created:Date;
@@ -994,6 +994,7 @@ export interface Product{
 }
 export interface Production{
 	alternate_qty: number;
+	control: string | null;
 	created:Date;
 	created_by_user_id:number
 	id:number;

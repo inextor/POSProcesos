@@ -6,7 +6,7 @@ import { Utils } from '../../modules/shared/Utils';
 import { SearchObject } from '../../modules/shared/services/Rest';
 import { forkJoin, mergeMap } from 'rxjs';
 import { FormsModule } from '@angular/forms';
-import { DatePipe } from '@angular/common';
+import { DatePipe, CommonModule } from '@angular/common';
 import { LoadingComponent } from "../../components/loading/loading.component";
 
 
@@ -60,7 +60,7 @@ type ProductionData = ProductionArea[];
 
 @Component({
 	selector: 'app-resume-production',
-	imports: [FormsModule, DatePipe, LoadingComponent],
+	imports: [FormsModule, DatePipe, LoadingComponent, CommonModule],
 	templateUrl: './resume-production.component.html',
 	styleUrl: './resume-production.component.css'
 })
@@ -68,7 +68,7 @@ export class ResumeProductionComponent extends BaseComponent
 {
 	rest_production_info = this.rest.initRest<Production,ProductionInfo>("production_info",['created','id','item_id']);
 	rest_production_area = this.rest.initRestSimple<Production_Area>("production_area");
-    rest_production_area_item = this.rest.initRestSimple<Production_Area_Item>("production_area_item");
+	rest_production_area_item = this.rest.initRestSimple<Production_Area_Item>("production_area_item");
 	rest_item_info = this.rest.initRest<Item,ItemInfo>("item_info",['id','name']);
 
 	production_area_list:any[] = [];

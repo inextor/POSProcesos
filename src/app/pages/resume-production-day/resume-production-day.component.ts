@@ -6,7 +6,7 @@ import { Utils } from '../../modules/shared/Utils';
 import { SearchObject } from '../../modules/shared/services/Rest';
 import { forkJoin, mergeMap } from 'rxjs';
 import { FormsModule } from '@angular/forms';
-import { DatePipe } from '@angular/common';
+import { DatePipe, CommonModule } from '@angular/common';
 import { LoadingComponent } from "../../components/loading/loading.component";
 
 // New Interfaces for the desired structure
@@ -44,7 +44,7 @@ interface ProductionByItem {
 
 @Component({
     selector: 'app-resume-production-day', // Corrected selector
-    imports: [FormsModule, DatePipe, LoadingComponent],
+    imports: [FormsModule, DatePipe, LoadingComponent, CommonModule],
     templateUrl: './resume-production-day.component.html',
     styleUrl: './resume-production-day.component.css'
 })
@@ -64,12 +64,16 @@ export class ResumeProductionDayComponent extends BaseComponent {
 
     ngOnInit() {
         this.sink = this.getQueryParamObservable().pipe(
-            mergeMap(([query_params, param_map]) => {
+            mergeMap(([query_params, param_map]) =>
+			{
                 let obj: SearchObject<Production> = this.rest_production_info.getEmptySearch();
 
-                if (query_params.has('start_date')) {
+                if (query_params.has('start_date'))
+				{
                     this.start_date = query_params.get('start_date') as string;
-                } else {
+                }
+				else
+				{
                     let d = new Date();
                     d.setHours(0, 0, 0, 0);
                     this.start_date = Utils.getLocalMysqlStringFromDate(d).substring(0, 10);
@@ -79,9 +83,12 @@ export class ResumeProductionDayComponent extends BaseComponent {
                 sd.setHours(0, 0, 0, 0);
                 obj.ge.created = sd;
 
-                if (query_params.has('end_date')) {
+                if (query_params.has('end_date'))
+				{
                     this.end_date = query_params.get('end_date') as string;
-                } else {
+                }
+				else
+				{
                     let d = new Date();
                     d.setHours(23, 59, 59, 999);
                     this.end_date = Utils.getLocalMysqlStringFromDate(d).substring(0, 10);
@@ -93,15 +100,19 @@ export class ResumeProductionDayComponent extends BaseComponent {
                 obj.limit = 999999;
 
                 this.is_loading = true;
-                return forkJoin({
+                return forkJoin
+				({
                     production_info: this.rest_production_info.search(obj),
                     production_area: this.rest_production_area.search({ limit: 999999 }),
                 });
             })
-        ).subscribe({
+        )
+		.subscribe
+		({
             error: error => this.rest.showError(error),
             complete: () => this.is_loading = false,
-            next: (response: any) => {
+            next: (response: any) =>
+			{
                 this.production_area_list = response.production_area.data;
                 this.production_info_list = response.production_info.data as ProductionInfo[];
                 this.createStructures();

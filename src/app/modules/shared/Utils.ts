@@ -59,6 +59,7 @@ function isIso8601(value:any):boolean
 
 export class Utils
 {
+
 	static getLocalDateFromMysqlString(str:string):Date | null
 	{
 		if (str == null)
@@ -580,4 +581,9 @@ export class Utils
 	{
 		return Array.from(new Set(array));
 	}
+
+	public static getUnique(category_ids: number[])
+	{
+		return Utils.cleanDuplicates(category_ids);
+    }
 }

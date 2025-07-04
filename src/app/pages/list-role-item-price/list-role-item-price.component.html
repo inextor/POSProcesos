@@ -1,69 +1,77 @@
 <div class="container-fluid">
-  <div class="row align-items-center mx-0">
-    <div class="col-8">
-      <h1 class="my-3 text-capitalize">Precios Para Rol {{role.name}}</h1>
-    </div>
-    <div class="col-4 text-right">
-      <button class="btn btn-primary" (click)="show_dialog=true">Agregar</button>
-    </div>
-  </div>
-  <div  class="card p-3 mt-3">
-    <app-loading [is_loading]="is_loading"></app-loading>
-    <div>
-      <table class="table table-sm table-nowrap mb-0">
-        <thead class="thead-light">
-          <tr>
-            <th>Nombre</th>
-            <th>Actualizacíon</th>
-          </tr>
-        </thead>
-        <tbody>
-          @for (prpi_info of role_item_price_info_list; track prpi_info) {
-            <tr>
-              <td>{{prpi_info | itemName }}</td>
-              <td>{{prpi_info.role_item_price.price | currency}}</td>
-              <td>{{prpi_info.role_item_price.updated | shortDate: 'relative' }}</td>
-            </tr>
-          }
-        </tbody>
-      </table>
-    </div>
-    @if (role_item_price_info_list.length == 0) {
-      <div class="card">
-        <div class="card-body">
-          No hay registros para mostrar
-        </div>
-      </div>
-    }
-  </div>
-  <app-pagination [path]="'/list-table'" [pages]="pages" [total_pages]="total_pages" [current_page]="current_page"></app-pagination>
+	<div class="row align-items-center mx-0">
+		<div class="col-8">
+			<h1 class="my-3 text-capitalize">Precios Para Rol {{role.name}}</h1>
+		</div>
+		<div class="col-4 text-right">
+			<button class="btn btn-primary" (click)="show_dialog=true">Agregar</button>
+		</div>
+	</div>
+	<div	class="card p-3 mt-3">
+		<app-loading [is_loading]="is_loading"></app-loading>
+		<div>
+			<table class="table table-sm table-nowrap mb-0">
+				<thead class="thead-light">
+					<tr>
+						<th>Nombre</th>
+						<th>Actualizacíon</th>
+						<th></th>
+					</tr>
+				</thead>
+				<tbody>
+					@for (prpi_info of role_item_price_info_list; track prpi_info) {
+						<tr>
+							<td>{{prpi_info | itemName }}</td>
+							<td>{{prpi_info.role_item_price.price | currency}}</td>
+							<td>{{prpi_info.role_item_price.updated | shortDate: 'relative' }}</td>
+							<td>
+								<button type="button" class="btn btn-danger btn-sm" (click)="removeRoleItemPrice(prpi_info.role_item_price)">
+									<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" width="1em" height="1em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 24 24"><g fill="none"><path d="M21.5 6a1 1 0 0 1-.883.993L20.5 7h-.845l-1.231 12.52A2.75 2.75 0 0 1 15.687 22H8.313a2.75 2.75 0 0 1-2.737-2.48L4.345 7H3.5a1 1 0 0 1 0-2h5a3.5 3.5 0 1 1 7 0h5a1 1 0 0 1 1 1zm-7.25 3.25a.75.75 0 0 0-.743.648L13.5 10v7l.007.102a.75.75 0 0 0 1.486 0L15 17v-7l-.007-.102a.75.75 0 0 0-.743-.648zm-4.5 0a.75.75 0 0 0-.743.648L9 10v7l.007.102a.75.75 0 0 0 1.486 0L10.5 17v-7l-.007-.102a.75.75 0 0 0-.743-.648zM12 3.5A1.5 1.5 0 0 0 10.5 5h3A1.5 1.5 0 0 0 12 3.5z" fill="currentColor"/></g></svg>
+								</button>
+							</td>
+						</tr>
+					}
+				</tbody>
+			</table>
+		</div>
+		@if (role_item_price_info_list.length == 0) {
+			<div class="card">
+				<div class="card-body">
+					No hay registros para mostrar
+				</div>
+			</div>
+		}
+	</div>
+	<app-pagination [path]="'/list-table'" [pages]="pages" [total_pages]="total_pages" [current_page]="current_page"></app-pagination>
 </div>
 
 <app-modal [(show)]="show_dialog">
-  <div class="m-3" style="min-height: 300px;">
-    <form (submit)="onSubmit($event)" ngnativevalidate>
-      <div class="form-group">
-        <label>{{role.name}}</label>
-      </div>
-      <div class="form-group">
-        <label>Articulo</label>
-        @if (!item_info.item.id) {
-          <app-search-items (item_selected)="onItemSelected($event)"></app-search-items>
-        }
-        @if (item_info.item.id) {
-          <div>
-            {{item_info | itemName}}
-            <button class="btn btn-primary btn-small" (click)="reset()">✗</button>
-          </div>
-        }
-      </div>
-      <div class="form-group">
-        <label>precio</label>
-        <input type="number" class="form-control" name="price" [(ngModel)]="price" required>
-      </div>
-      <div class="form-group">
-        <button type="submit" class="btn btn-primary">Agregar</button>
-      </div>
-    </form>
-  </div>
+	<div class="m-3" style="min-height: 300px;">
+		<form (submit)="onSubmit($event)" ngnativevalidate>
+			<div class="form-group">
+				<label>{{role.name}}</label>
+			</div>
+			<div class="form-group">
+				<label>Articulo</label>
+				@if (!item_info.item.id)
+				{
+					<app-search-items (item_selected)="onItemSelected($event)"></app-search-items>
+				}
+				@if (item_info.item.id)
+				{
+					<div>
+						{{item_info | itemName}}
+						<button class="btn btn-primary btn-small" (click)="reset()">✗</button>
+					</div>
+				}
+			</div>
+			<div class="form-group">
+				<label>precio</label>
+				<input type="number" class="form-control" name="price" [(ngModel)]="price" required>
+			</div>
+			<div class="form-group">
+				<button type="submit" class="btn btn-primary">Agregar</button>
+			</div>
+		</form>
+	</div>
 </app-modal>

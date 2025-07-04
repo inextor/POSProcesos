@@ -678,6 +678,7 @@ export class GetEmpty
 	static production():Production
 	{
 		return {
+			control: '',
 			alternate_qty: 0,
 			created: new Date(),
 			created_by_user_id: 0,
