@@ -48,8 +48,8 @@
 					<thead>
 						<tr>
 							<th>{{ production_by_day.date | date:'mediumDate' }}</th>
-							<th class="text-end">{{production_by_day.total_kgs | number:'1.3-3'}}</th>
-							<th class="text-end">{{production_by_day.total_pieces}}</th>
+							<th class="text-end">{{production_by_day.total_kgs | number:'1.2-2'}}</th>
+							<th class="text-end">{{production_by_day.total_pieces | number}}</th>
 							<th>
 								@if(production_by_day.open)
 								{
@@ -73,8 +73,8 @@
 							{
 								<tr>
 									<td>{{ production_by_category.category_name }}</td>
-									<td class="text-end">{{ production_by_category.total_kgs | number:'1.3-3'}}</td>
-									<td class="text-end">{{ production_by_category.total_pieces}}</td>
+									<td class="text-end">{{ production_by_category.total_kgs | number:'1.2-2'}}</td>
+									<td class="text-end">{{ production_by_category.total_pieces | number}}</td>
 									<td>
 										@if(production_by_category.open)
 										{
@@ -96,8 +96,8 @@
 									{
 										<tr>
 											<td>{{ production_by_area.production_area.name}}</td>
-											<td class="text-end">{{ production_by_area.total_kgs | number:'1.3-3' }}</td>
-											<td class="text-end">{{ production_by_area.total_pieces}}</td>
+											<td class="text-end">{{ production_by_area.total_kgs | number:'1.2-2' }}</td>
+											<td class="text-end">{{ production_by_area.total_pieces | number}}</td>
 											<td>
 												@if(production_by_area.open)
 												{
@@ -120,8 +120,8 @@
 											{
 												<tr>
 													<td>{{ production_by_item.item.name}}</td>
-													<td class="text-end">{{ production_by_item.total_kgs | number:'1.3-3' }}</td>
-													<td class="text-end">{{ production_by_item.total_pieces }}</td>
+													<td class="text-end">{{ production_by_item.total_kgs | number:'1.2-2' }}</td>
+													<td class="text-end">{{ production_by_item.total_pieces | number }}</td>
 													<td>
 														@if(production_by_item.open)
 														{
@@ -147,7 +147,7 @@
 																{{production_info.production.control}} -
 																{{ production_info.item.name}}
 															</td>
-															<td class="text-end">{{ production_info.production.qty | number:'1.3-3' }}</td>
+															<td class="text-end">{{ production_info.production.qty | number:'1.2-2' }}</td>
 															<td class="text-end">{{ production_info.production.alternate_qty}}</td>
 															<td></td>
 														</tr>
@@ -163,8 +163,8 @@
 					<tfoot>
 						<tr class="table-primary">
 							<td><strong>Total del día</strong></td>
-							<td class="text-end"><strong>{{ production_by_day.total_kgs | number:'1.3-3' }}</strong></td>
-							<td class="text-end"><strong>{{ production_by_day.total_pieces }}</strong></td>
+							<td class="text-end"><strong>{{ production_by_day.total_kgs | number:'1.2-2' }}</strong></td>
+							<td class="text-end"><strong>{{ production_by_day.total_pieces | number }}</strong></td>
 						</tr>
 					</tfoot>
 				</table>
@@ -181,12 +181,11 @@
 						<th></th>
 					</tr>
 				</thead>
-
 				<tfoot>
 					<tr class="table-primary">
 						<td><strong>Total Área</strong></td>
-						<td class="text-end"><strong>{{ total_kgs | number:'1.3-3' }}</strong></td>
-						<td class="text-end"><strong>{{ total_pieces }}</strong></td>
+						<td class="text-end"><strong>{{ total_kgs | number:'1.2-2' }}</strong></td>
+						<td class="text-end"><strong>{{ total_pieces | number }}</strong></td>
 						<td></td>
 					</tr>
 				</tfoot>
