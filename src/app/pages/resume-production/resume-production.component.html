@@ -119,12 +119,12 @@
 									{
 										@for (production_info of item_data.production_info_list; track production_info.production.id)
 										{
-																										<tr>
-																<td class="text-end">{{production_info.production.control}} - {{production_info.production.created | date:'mediumDate'}}</td>
-																<td class="text-end">{{production_info.production.qty | number:'1.2-2'}}</td>
-																<td class="text-end">{{production_info.production.alternate_qty}}</td>
-																<td></td>
-															</tr>
+											<tr>
+												<td class="text-end">{{production_info.production.control}} - {{production_info.production.created | date:'mediumDate'}}</td>
+												<td class="text-end">{{production_info.production.qty | number:'1.2-2'}}</td>
+												<td class="text-end">{{production_info.production.alternate_qty}}</td>
+												<td></td>
+											</tr>
 										}
 									}
 								}
