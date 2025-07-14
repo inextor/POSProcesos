@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy} from '@angular/core';
+import { Component, OnInit, OnDestroy, Injector} from '@angular/core';
 
 import { RestService } from '../services/rest.service';
 import { ActivatedRoute, ParamMap, Router } from '@angular/router';
@@ -24,7 +24,8 @@ export interface ParamsAndQueriesMap
     templateUrl: './base.component.html',
     styleUrl: './base.component.css'
 })
-export class BaseComponent	implements OnDestroy
+export class BaseComponent
+	implements OnDestroy
 {
 	public subs = new SubSink();
 	public is_loading = false;
@@ -35,9 +36,23 @@ export class BaseComponent	implements OnDestroy
 	public pages:number[] = [];
 	public page_size:number = 50;
 
-	constructor(public rest:RestService, public route:ActivatedRoute,public router:Router, public location:Location,public title_service:Title,public confirmation:ConfirmationService, public titleService: Title)
-	{
+	public rest:RestService;
+	public route:ActivatedRoute;
+	public router:Router;
+	public location:Location;
+	public title_service:Title;
+	public confirmation:ConfirmationService;
+	public titleService: Title;
 
+	constructor(public injector: Injector)
+	{
+		this.rest = injector.get(RestService);
+		this.route = injector.get(ActivatedRoute);
+		this.router = injector.get(Router);
+		this.location = injector.get(Location);
+		this.title_service = injector.get(Title);
+		this.confirmation = injector.get(ConfirmationService);
+		this.titleService = injector.get(Title);
 	}
 
 	ngOnDestroy()

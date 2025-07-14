@@ -1,0 +1,72 @@
+<app-header [title]="'Listado de Ordenes de Ecommerce'"></app-header>
+<app-loading [is_loading]="is_loading"></app-loading>
+
+<div class="container-fluid">
+  <form (ngSubmit)="search(search_object)" ngNativeValidate>
+    <div class="row">
+      <div class="col-md-3">
+        <div class="form-group">
+          <label for="orderId">ID de Orden</label>
+          <input type="number" class="form-control" id="orderId" name="eq.id" [(ngModel)]="search_object.eq.id">
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="form-group">
+          <label for="clientName">Nombre del Cliente</label>
+          <input type="text" class="form-control" id="clientName" name="lk.client_name" [(ngModel)]="search_object.lk.client_name">
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="form-group">
+          <label for="status">Estado</label>
+          <select class="form-control" id="status" name="eq.status" [(ngModel)]="search_object.eq.status">
+            <option [ngValue]="null">Todos</option>
+            <option value="PENDING">Pendiente</option>
+            <option value="CANCELLED">Cancelada</option>
+            <option value="ACTIVE">Activa</option>
+            <option value="CLOSED">Cerrada</option>
+          </select>
+        </div>
+      </div>
+      <div class="col-md-3 d-flex align-items-end">
+        <button type="submit" class="btn btn-primary">Buscar</button>
+      </div>
+    </div>
+  </form>
+
+  <div class="table-responsive mt-3">
+    <table class="table table-striped table-hover">
+      <thead>
+        <tr>
+          <th (click)="sort('id', search_object)">ID</th>
+          <th (click)="sort('client_name', search_object)">Cliente</th>
+          <th (click)="sort('total', search_object)">Total</th>
+          <th (click)="sort('status', search_object)">Estado</th>
+          <th (click)="sort('created', search_object)">Fecha de Creación</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let order of ecommerce_orders">
+          <td>{{ order.order.id }}</td>
+          <td>{{ order.client?.name || 'N/A' }}</td>
+          <td>{{ order.order.total | currency }}</td>
+          <td>{{ order.order.status }}</td>
+          <td>{{ order.order.created | date:'short' }}</td>
+          <td>
+            <button class="btn btn-info btn-sm me-2" [routerLink]="['/save-ecommerce-order', order.order.id]">Ver/Editar</button>
+            <button class="btn btn-danger btn-sm" (click)="delete(order.order.id)">Eliminar</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <app-pagination
+    [current_page]="current_page"
+    [total_pages]="total_pages"
+    [pages]="pages"
+    [path]="path"
+    [search_object]="search_object">
+  </app-pagination>
+</div>

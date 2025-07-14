@@ -30,6 +30,7 @@ import { ListItemProductionComponent } from './pages/list-item-production/list-i
 import { ListProductionComponent } from './pages/list-production/list-production.component';
 import { ResumeProductionComponent } from './pages/resume-production/resume-production.component';
 import { ResumeProductionDayComponent } from './pages/resume-production-day/resume-production-day.component';
+import { ListEcommerceOrderComponent } from './pages/list-ecommerce-order/list-ecommerce-order.component';
 
 export const routes: Routes = [
 	{path: 'login', component: LoginComponent},
@@ -71,6 +72,7 @@ export const routes: Routes = [
 			{path: 'list-production', component: ListProductionComponent, canActivate: [authGuard]},
 			{path: 'resume-production', component: ResumeProductionComponent, canActivate: [authGuard]},
 			{path: 'resume-production-day', component: ResumeProductionDayComponent, canActivate: [authGuard]},
+			{path: 'list-ecommerce-order', component: ListEcommerceOrderComponent, canActivate: [authGuard]},
 		]
 	},
 ];
