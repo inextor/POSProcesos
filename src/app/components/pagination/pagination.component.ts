@@ -15,6 +15,7 @@ export class PaginationComponent implements OnInit{
 	@Input() total_pages:number = 1;
 	@Input() current_page:number = 0;
 	@Input() pages:number[] = [];
+	@Input() search_object:any;
 	@Output() selectedPage = new EventEmitter<number>();
 
 	constructor( public rest:RestService, public router:Router, public route:ActivatedRoute, public location: Location)

@@ -210,6 +210,20 @@ export class RestService
 		return 'api';
 	}
 
+	public getExternalAppUrl(): string
+	{
+		const protocol = window.location.protocol;
+		const hostname = window.location.hostname;
+
+		if (environment.production) {
+			return `${protocol}//${hostname}/`;
+		}
+		else
+		{
+			return `${protocol}//${hostname}:4000`; // Assuming 4001 is the dev port for the other project
+		}
+	}
+
 	public initRestPlatform<T,U>(path:string)
 	{
 		return new Rest<T,U>(this.platform_domain_configuration,`${this.url_platform}/${path}.php`, this.http);

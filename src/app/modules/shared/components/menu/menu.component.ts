@@ -19,6 +19,7 @@ export class MenuComponent extends BaseComponent
 {
 
 	build_info = BuildInfo;
+	external_base_url: string = this.rest.getExternalAppUrl();
 
     show_users_menu: Falseable = false;
     show_menu_users: Falseable = false;
