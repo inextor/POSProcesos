@@ -1731,3 +1731,230 @@ export interface User_extra_fields
 	user_id:number;
 	json_fields:Record<string, string>;
 }
+
+export interface Account{
+	id:number;
+	balance:number;
+	created:Date;
+	created_by_user_id:number;
+	currency_id:string;
+	updated:Date;
+	updated_by_user_id:number;
+	user_id:number;
+}
+
+export interface Answer{
+	id:number;
+	answer_choice_id:number | null;
+	answer_number:number | null;
+	answer_text:string | null;
+	question_id:number;
+	response_id:number;
+}
+
+export interface Attribute{
+	id:number;
+	created_by_user_id:number;
+	created:Date;
+	name:string;
+	updated_by_user_id:number;
+	updated:Date;
+}
+
+export interface Ecommerce{
+	id:number;
+	created:Date;
+	font_color:string | null;
+	name:string;
+	color:string;
+	store_id:number | null;
+	price_list_id:number;
+	price_type_id:number;
+	updated:Date;
+	logo_image_id:number | null;
+	preferences_id:number;
+}
+
+export interface Ecommerce_Item{
+	id:number;
+	item_id:number;
+	ecommerce_id:number;
+	created:Date;
+	updated:Date;
+	created_by_user_id:number;
+	updated_by_user_id:number;
+}
+
+export interface Ecommerce_User{
+	id:number;
+	ecommerce_id:number;
+	user_id:number;
+	created:Date;
+	updated:Date;
+	created_by_user_id:number | null;
+	updated_by_user_id:number | null;
+}
+
+export interface Labels{
+	id:number;
+	store:string;
+	production_area:string;
+	ingredients:string;
+	created:Date;
+	updated:Date;
+}
+
+export interface Ledger{
+	id:number;
+	account_id:number;
+	amount:number;
+	created:Date;
+	created_by_user_id:number;
+	currency_id:string;
+	description:string | null;
+	final_balance:number;
+	ledger_category_id:number;
+	order_id:number | null;
+	payment_id:number | null;
+	previous_balance:number;
+	source_document_id:string | null;
+	source_document_type:string | null;
+	transaction_type:'DEBIT'|'CREDIT';
+	updated:Date;
+	updated_by_user_id:number;
+}
+
+export interface Ledger_Category{
+	id:number;
+	created:Date;
+	created_by_user_id:number;
+	description:string | null;
+	name:string;
+	updated:Date;
+	updated_by_user_id:number;
+}
+
+export interface Pharos_Credentials{
+	id:number;
+	created_by_user_id:number;
+	created:Date;
+	endpoint:string;
+	name:string;
+	password:string;
+	merchant_code:string;
+	terminal_code:string;
+	updated_by_user_id:number;
+	updated:Date;
+	user:string;
+}
+
+export interface Pharos_Payment_Request{
+	id:number;
+	pharos_credentials_id:number;
+	created_by_user_id:number;
+	amount:number;
+	created:Date;
+	currency_id:string;
+	merchant_code:string;
+	order_id:number | null;
+	terminal_code:string;
+	transaction_uuid:string;
+	response:string | null;
+	updated_by_user_id:number;
+	updated:Date;
+}
+
+export interface Production_User{
+	id:number;
+	production_id:number;
+	user_id:number;
+	price:number;
+	currency_id:string;
+	created:Date;
+	updated:Date;
+	created_by_user_id:number;
+	updated_by_user_id:number;
+}
+
+export interface Question{
+	id:number;
+	created:Date;
+	form_id:number;
+	help:string | null;
+	priority:number;
+	question:string;
+	type:'text'|'textarea'|'multiple_choice'|'rating'|'ranking'|'date'|'number'|'tel';
+	required:number | null;
+	updated:Date;
+}
+
+export interface Question_Choice{
+	id:number;
+	question_id:number;
+	choice_text:string | null;
+	choice_value:number | null;
+}
+
+export interface Quote_Request{
+	id:number;
+	quote_id:number | null;
+	user_id:number;
+	email:string;
+}
+
+export interface Response{
+	id:number;
+	created:Date;
+	created_by_user_id:number;
+	form_id:number;
+	respondent_identifier:string | null;
+	title:string | null;
+	updated:Date;
+	updated_by_user_id:number;
+	user_id:number | null;
+}
+
+export interface Storage_Serial{
+	id:number;
+	created_by_user_id:number;
+	created:Date;
+	serial_id:number;
+	sort_weight:number;
+	storage_id:number;
+	updated_by_user_id:number;
+	updated:Date;
+}
+
+export interface Storage_Type{
+	id:number;
+	created_by_user_id:number;
+	created:Date;
+	name:string | null;
+	sort_weight:number;
+	updated_by_user_id:number;
+	updated:Date;
+}
+
+export interface User_Attachment{
+	id:number;
+	alias:string;
+	attachment_id:number;
+	created_by_user_id:number;
+	created:Date;
+	status:'ACTIVE'|'DELETED';
+	updated_by_user_id:number;
+	updated:Date;
+	user_id:number;
+}
+
+export interface Withdrawal{
+	id:number;
+	amount:number;
+	created_by_user_id:number;
+	created:Date;
+	currency:string;
+	device_time:Date;
+	note:string;
+	updated:Date;
+}
+""
