@@ -1,15 +1,15 @@
 <div class="container-fluid">
   <h1 class="my-3">Consumption List</h1>
-
-  <div *ngIf="is_loading" class="text-center">
-    <p>Loading consumption data...</p>
-  </div>
-
-  <div *ngIf="!is_loading && consumption_list.length === 0" class="alert alert-info">
-    No consumption records found.
-  </div>
-
-  <div *ngIf="!is_loading && consumption_list.length > 0">
+  @if (is_loading) {
+    <div class="text-center">
+      <p>Loading consumption data...</p>
+    </div>
+  } @else if (!is_loading && consumption_list.length === 0) {
+    <div class="alert alert-info">
+      No consumption records found.
+    </div>
+  } @else if (!is_loading && consumption_list.length > 0) {
+    <div class="card my-3 p-3">
     <table class="table table-striped">
       <thead>
         <tr>
