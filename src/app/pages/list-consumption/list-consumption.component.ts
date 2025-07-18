@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
 import { BaseComponent } from '../../modules/shared/base/base.component';
 import { Consumption } from '../../modules/shared/RestModels';
-import { Rest, RestResponse, RestSimple } from '../../modules/shared/services/Rest';
+import { RestService } from '../../modules/shared/services/rest.service';
 
 @Component({
 	selector: 'app-list-consumption',
@@ -13,17 +13,18 @@ import { Rest, RestResponse, RestSimple } from '../../modules/shared/services/Re
 })
 export class ListConsumptionComponent extends BaseComponent implements OnInit
 {
-	public consumption_list: Consumption[] = [];
-	rest_consumption:RestSimple<Consumption> = this.rest.initRestSimple<Consumption>('consumption');
+	public consumptionList: Consumption[] = [];
+
+	constructor(private rest: RestService) {
+		super();
+	}
 
 	ngOnInit(): void
 	{
 		this.is_loading = true;
-		this.rest_consumption.search({}).subscribe
-		({
-			next: (response:RestResponse<Consumption>) =>
-			{
-				this.consumption_list = response.data;
+		this.rest.initRestSimple('consumption').search({}).subscribe({
+			next: response => {
+				this.consumptionList = response.data;
 				this.is_loading = false;
 			},
 			error: error => {
