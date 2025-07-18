@@ -631,7 +631,7 @@
 			@if (show_menu_production)
 			{
 				<li class="side-nav-item">
-					<span class="side-nav-link d-flex justify-content-between align-items-center pointer" data-bs-toggle="collapse" data-bs-target="#show_reservations">
+					<span class="side-nav-link d-flex justify-content-between align-items-center pointer" data-bs-toggle="collapse" data-bs-target="#show_production">
 						<span>
 							<i class="svg-icon">
 								<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" focusable="false" width="1em" height="1em" style="-ms-transform: rotate(360deg); -webkit-transform: rotate(360deg); transform: rotate(360deg);" preserveAspectRatio="xMidYMid meet" viewBox="0 0 16 16"><path d="M5 3a3 3 0 1 1 6 0a3 3 0 0 1-6 0zm7.001 4h-.553l-3.111 6.316L9.5 7.5L8 6L6.5 7.5l1.163 5.816L4.552 7h-.554c-1.999 0-1.999 1.344-1.999 3v5h12v-5c0-1.656 0-3-1.999-3z" fill="currentColor" /></svg>
@@ -642,7 +642,7 @@
 							<svg aria-hidden="true" width="1em" height="1em" focusable="false" data-prefix="fas" data-icon="chevron-right" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><path fill="currentColor" d="M285.476 272.971L91.132 467.314c-9.373 9.373-24.569 9.373-33.941 0l-22.667-22.667c-9.357-9.357-9.375-24.522-.04-33.901L188.505 256 34.484 101.255c-9.335-9.379-9.317-24.544.04-33.901l22.667-22.667c9.373-9.373 24.569-9.373 33.941 0L285.475 239.03c9.373 9.372 9.373 24.568.001 33.941z" fill="currentColor"></path></svg>
 						</span>
 					</span>
-					<div id="show_reservations" class="collapse ps-3"	data-bs-parent="#collapse_parent">
+					<div id="show_production" class="collapse ps-3"	data-bs-parent="#collapse_parent">
 						<ul class="flex-column nav">
 							@if (rest.user_permission.production )
 							{
@@ -699,6 +699,14 @@
 									</a>
 								</li>
 							}
+							<li class="side-nav-item">
+								<a class="side-nav-link" routerLink="/list-consumption" aria-expanded="false" routerLinkActive="active">
+									<i class="svg-icon">
+										<svg xmlns="http://www.w3.org/2000/svg" width="1.2em" height="1.2em" viewBox="0 0 24 24"><path fill="currentColor" d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10s10-4.477 10-10S17.523 2 12 2zm0 18c-4.411 0-8-3.589-8-8s3.589-8 8-8s8 3.589 8 8s-3.589 8-8 8zm-1-13h2v6h-2zm0 8h2v2h-2z"/></svg>
+									</i>
+									<span>Consumo</span>
+								</a>
+							</li>
 						</ul>
 					</div>
 				</li>
