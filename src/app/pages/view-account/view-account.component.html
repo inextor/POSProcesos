@@ -1,0 +1,28 @@
+<div class="container">
+  <h2>Accounts for User ID: {{ user_id }}</h2>
+
+  <h3>Accounts</h3>
+  <div *ngIf="accounts.length > 0; else noAccounts">
+    <ul class="list-group">
+      <li *ngFor="let account of accounts" class="list-group-item">
+        Account ID: {{ account.id }} - Balance: {{ account.balance | currency }} {{ account.currency_id }}
+        <a [routerLink]="['/view-ledger']" [queryParams]="{ account_id: account.id }" class="btn btn-info btn-sm float-end">View Ledger</a>
+      </li>
+    </ul>
+  </div>
+  <ng-template #noAccounts>
+    <p>No accounts found for this user.</p>
+  </ng-template>
+
+  <h3 class="mt-4">Ledger Entries (Last Month)</h3>
+  <div *ngIf="ledgerEntries.length > 0; else noLedgerEntries">
+    <ul class="list-group">
+      <li *ngFor="let entry of ledgerEntries" class="list-group-item">
+        {{ entry.created | date:'short' }}: {{ entry.description }} - {{ entry.amount | currency }} ({{ entry.transaction_type }})
+      </li>
+    </ul>
+  </div>
+  <ng-template #noLedgerEntries>
+    <p>No ledger entries found for the last month.</p>
+  </ng-template>
+</div>

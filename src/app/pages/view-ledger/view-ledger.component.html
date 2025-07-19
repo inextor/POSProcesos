@@ -1,0 +1,22 @@
+<div class="container">
+  <h2>Ledger Entries for Account ID: {{ account_id }}</h2>
+
+  <div *ngIf="ledgerEntries.length > 0; else noLedgerEntries">
+    <ul class="list-group">
+      <li *ngFor="let entry of ledgerEntries" class="list-group-item">
+        {{ entry.created | date:'short' }}: {{ entry.description }} - {{ entry.amount | currency }} ({{ entry.transaction_type }})
+      </li>
+    </ul>
+
+    <app-pagination
+      [current_page]="current_page"
+      [total_pages]="total_pages"
+      [pages]="pages"
+      [path]="path"
+      [search_object]="search_ledger">
+    </app-pagination>
+  </div>
+  <ng-template #noLedgerEntries>
+    <p>No ledger entries found for this account.</p>
+  </ng-template>
+</div>
