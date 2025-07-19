@@ -3,6 +3,7 @@ import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Utils} from '../Utils';
 import {mergeMap, retry} from 'rxjs/operators';
 import { ParamMap } from '@angular/router';
+import { DataRelation} from './RelationResponse';
 //import { HttpErrorResponse } from '@angular/common/http';
 
 
@@ -13,6 +14,9 @@ export interface CsvNumberArray
 {
 	[key: string]: number[];
 }
+
+
+
 
 /*
 * From perl operators except lk = LIKE
@@ -85,7 +89,7 @@ export class Rest<U,T>
 	private domain_configuration:DomainConfiguration;
 	public page_size:number = 50;
 
-	constructor(domain_configuration:DomainConfiguration,url_base:string,http:HttpClient,public fields:string[]=[],public extra_keys:string[]=[])
+	constructor(domain_configuration:DomainConfiguration,url_base:string,http:HttpClient,public fields:string[],public extra_keys:string[],protected name:string)
 	{
 		this.url_base = url_base;
 		this.http = http;
@@ -695,6 +699,113 @@ export class Rest<U,T>
 			limit: this.page_size
 		};
 		return item_search;
+	}
+
+	protected getFmap(respone:any[],data_relation:DataRelation<any>):(response:any[])=>Observable<RestResponse<any>>
+	{
+		let f_map = (response:any[])=>
+		{
+			let csv:(string|number)[] = response.reduce((p:any[],c:any)=>
+			{
+				let data:number | string = c[ data_relation.source_field ];
+
+				if( data == null )
+					return p;
+
+				if( p.includes( data ) )
+					return p;
+
+				p.push( data );
+
+				return p;
+			},[]);
+
+
+			if( csv.length == 0 )
+			{
+				return  of({total:0,data:[]} as RestResponse<any>);
+			}
+
+			let csv_obj = {} as any;
+
+			csv_obj[ data_relation.target_field ] = csv;
+
+			if( data_relation?.relations?.length )
+			{
+				return data_relation.rest.searchWithRelations({csv:csv_obj,limit:999999},data_relation.relations||[])
+			}
+
+			return data_relation.rest.search({csv:csv_obj,limit:999999});
+		};
+
+		return f_map;
+	}
+
+	searchWithRelations(searchObject:Partial<SearchObject<U>>,relations:DataRelation<any>[]):Observable<RestResponse<any>>
+	{
+		return this.searchAsPost(searchObject).pipe
+		(
+			mergeMap((response:RestResponse<any>)=>
+			{
+				let r:Record<string,Observable<RestResponse<any>>> = {};
+
+				for(let data_relation of relations)
+				{
+					let name = data_relation.name || data_relation.rest.name;
+
+					let d = data_relation?.source_obj
+						? response.data.map(i=>i[data_relation.source_obj as string])
+						: response.data;
+
+					let f_map = this.getFmap(d,data_relation);
+					r[ name ] = f_map(d);
+				}
+
+				return forkJoin
+				({
+					main: of(response),
+					relations: of( relations ),
+					responses: forkJoin(r)
+				});
+			})
+			,mergeMap((responses)=>
+			{
+				let rest_response:RestResponse<any> = {
+					total: responses.main.total,
+					data: []
+				};
+
+				let gfind = (data:any[],field:any, value:any)=>
+				{
+					return ()=>
+					{
+						return data.find((z)=>z[field] == value) || null;
+					};
+				};
+
+				for( let i of responses.main.data )
+				{
+					let value = i as any;
+					let x = {} as any;
+					x[ this.name ] = i;
+
+					for(let j of relations )
+					{
+						let name = j.name || j.rest.name;
+						let find_from_array = responses.responses[ name ].data;
+
+						let find = find_from_array.find((z)=>{
+							let object_to_compare = j.target_obj ? z[j.target_obj][j.target_field] : z[j.target_field];
+							return object_to_compare == value[ j.source_field ];
+						}) || null;
+
+						x[ name ] = find;
+					}
+					rest_response.data.push(x);
+				}
+				return of(rest_response);
+			})
+		);
 	}
 }
 
