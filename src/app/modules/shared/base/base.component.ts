@@ -37,7 +37,7 @@ export class BaseComponent
 	public page_size:number = 50;
 
 	public rest:RestService;
-	public route:ActivatedRoute;
+	protected route:ActivatedRoute;
 	public router:Router;
 	public location:Location;
 	public title_service:Title;

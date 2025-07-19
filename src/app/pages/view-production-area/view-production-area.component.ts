@@ -40,6 +40,10 @@ interface CUser extends User
 })
 export class ViewProductionAreaComponent extends BaseComponent implements OnInit
 {
+	onConsumptionItemSelected($event: ItemInfo)
+	{
+
+	}
 	rest_production_area: RestSimple<Production_Area> = this.rest.initRestSimple<Production_Area>('production_area');
 	rest_production_area_item: RestSimple<Production_Area_Item> = this.rest.initRestSimple<Production_Area_Item>('production_area_item');
 	rest_user_extra_fields:RestSimple<User_extra_fields> = this.rest.initRestSimple('user_extra_fields');

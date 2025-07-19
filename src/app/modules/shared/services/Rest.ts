@@ -732,7 +732,14 @@ export class Rest<U,T>
 
 			if( data_relation?.relations?.length )
 			{
-				return data_relation.rest.searchWithRelations({csv:csv_obj,limit:999999},data_relation.relations||[])
+				return data_relation.rest.searchWithRelations({csv:csv_obj,limit:999999},data_relation.relations||[]).pipe
+				(
+					mergeMap((response)=>
+					{
+						console.log('Todo bien Response',response);
+						return of(response);
+					})
+				);
 			}
 
 			return data_relation.rest.search({csv:csv_obj,limit:999999});
@@ -795,7 +802,18 @@ export class Rest<U,T>
 						let find_from_array = responses.responses[ name ].data;
 
 						let find = find_from_array.find((z)=>{
-							let object_to_compare = j.target_obj ? z[j.target_obj][j.target_field] : z[j.target_field];
+							//let object_to_compare = j.target_obj ? z[j.target_obj][j.target_field] : z[j.target_field];
+							// With:
+							let base = z;
+							if (j.target_obj) {
+								// Handle dot notation paths (e.g., 'item.category')
+								const pathParts = j.target_obj.split('.');
+								for (const part of pathParts) {
+									base = base[part];
+									if (!base) break;
+								}
+							}
+							let object_to_compare = base ? base[j.target_field] : undefined;
 							return object_to_compare == value[ j.source_field ];
 						}) || null;
 

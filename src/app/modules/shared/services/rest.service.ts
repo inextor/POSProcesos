@@ -224,15 +224,15 @@ export class RestService
 		}
 	}
 
-	public initRestPlatform<T,U>(path:string)
+	public initRestPlatform<T,U>(path:string,fields:string[] = [], extra_keys:string[] = [])
 	{
-		return new Rest<T,U>(this.platform_domain_configuration,`${this.url_platform}/${path}.php`, this.http);
+		return new Rest<T,U>(this.platform_domain_configuration,`${this.url_platform}/${path}.php`, this.http,fields,extra_keys,path);
 	}
 
 	public initRest<T, U>(path: string, fields:string[] = [], extra_keys:string[] = []):Rest<T,U>
 	{
 		//constructor(domain_configuration:DomainConfiguration,url_base:string,http:HttpClient,public fields:string[]=[],public extra_keys=[])
-		return new Rest<T, U>(this.domain_configuration,`${this.url_base}/${path}.php`, this.http, fields, extra_keys);
+		return new Rest<T, U>(this.domain_configuration,`${this.url_base}/${path}.php`, this.http, fields, extra_keys,path);
 	}
 
 	public initRestSimple<T>(path: string, fields:string[] = [], extra_keys:string[] = [])

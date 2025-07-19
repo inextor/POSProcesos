@@ -46,110 +46,111 @@
 	</div>
 </div> -->
 
-<div class="row my-2">
-	<div class="col-12 col-md-6">
-		<h3>Usuarios</h3>
-	</div>
-	<div class="col-12 col-md-6">
-		<div class="row">
-			<div class="col-4 text-end">
-				<span class="fw-bold">Asignar usuario:</span>
-			</div>
-			<div class="col-8">
-				<app-search-users (user_selected)="addProductionAreaUser($event)" [type]="'USER'" [reset_on_search]="true"></app-search-users>
+	<div class="row my-2">
+		<div class="col-12 col-md-6">
+			<h3>Usuarios</h3>
+		</div>
+		<div class="col-12 col-md-6">
+			<div class="row">
+				<div class="col-4 text-end">
+					<span class="fw-bold">Asignar usuario:</span>
+				</div>
+				<div class="col-8">
+					<app-search-users (user_selected)="addProductionAreaUser($event)" [type]="'USER'" [reset_on_search]="true"></app-search-users>
+				</div>
 			</div>
 		</div>
 	</div>
-</div>
 
-<div class="card p-3 mt-3 mb-3">
-	<div class="table-responsive">
-		<app-loading [is_loading]="is_loading"></app-loading>
-		<table class="table table-sm table-nowrap mb-0">
-			<thead class="thead-light">
-				<tr>
-					<th class="d-none d-md-block">ID</th>
-					<th>Nombre</th>
-					<th class="text-end">Acciones</th>
-				</tr>
-			</thead>
-			<tbody>
-				@for (user of user_list; track user) {
+	<div class="card p-3 mt-3 mb-3">
+		<div class="table-responsive">
+			<app-loading [is_loading]="is_loading"></app-loading>
+			<table class="table table-sm table-nowrap mb-0">
+				<thead class="thead-light">
 					<tr>
-						<td class="d-none d-md-table-cell">{{user.id}}</td>
-						<td>{{user.name}}</td>
-						<td class="text-end">
-							<button type="button" class="btn p-2 p-sm-2 btn-secondary me-sm-1" (click)="showUserExtraFields(user)">
-								<svg aria-hidden="true" width="1em" height="1em" focusable="false" data-prefix="fas" data-icon="pencil" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="currentColor" d="M497.9 142.1l-46.1 46.1c-4.7 4.7-12.3 4.7-17 0l-111-111c-4.7-4.7-4.7-12.3 0-17l46.1-46.1c18.7-18.7 49.1-18.7 67.9 0l60.1 60.1c18.8 18.7 18.8 49.1 0 67.9zM284.2 99.8L21.6 362.4.4 483.9c-2.9 16.4 11.4 30.6 27.8 27.8l121.5-21.3 262.6-262.6c4.7-4.7 4.7-12.3 0-17l-111-111c-4.8-4.7-12.4-4.7-17.1 0zM88 424h48v36.3l-64.5 11.3-31.1-31.1L51.7 376H88v48z" class=""></path></svg>
-								<span class="d-none d-sm-inline">Editar</span>
-							</button>
-							<button type="button" class="btn p-2 p-sm-2 btn-danger" (click)="deleteProductionAreaUser(user)">
-								<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 14 14"><path fill="currentColor" fill-rule="evenodd" d="M1.707.293A1 1 0 0 0 .293 1.707L5.586 7L.293 12.293a1 1 0 1 0 1.414 1.414L7 8.414l5.293 5.293a1 1 0 0 0 1.414-1.414L8.414 7l5.293-5.293A1 1 0 0 0 12.293.293L7 5.586z" clip-rule="evenodd"/></svg>
-								<span class="d-none d-sm-inline">Eliminar</span>
-							</button>
-						</td>
+						<th class="d-none d-md-block">ID</th>
+						<th>Nombre</th>
+						<th class="text-end">Acciones</th>
 					</tr>
-				}
-				@if (user_list.length == 0 && !is_loading) {
-					<tr colspan="4">
-						<div class="alert alert-light m-3" role="alert">No se encontraron usuarios asignados</div>
-					</tr>
-				}
-			</tbody>
-		</table>
+				</thead>
+				<tbody>
+					@for (user of user_list; track user) {
+						<tr>
+							<td class="d-none d-md-table-cell">{{user.id}}</td>
+							<td>{{user.name}}</td>
+							<td class="text-end">
+								<button type="button" class="btn p-2 p-sm-2 btn-secondary me-sm-1" (click)="showUserExtraFields(user)">
+									<svg aria-hidden="true" width="1em" height="1em" focusable="false" data-prefix="fas" data-icon="pencil" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="currentColor" d="M497.9 142.1l-46.1 46.1c-4.7 4.7-12.3 4.7-17 0l-111-111c-4.7-4.7-4.7-12.3 0-17l46.1-46.1c18.7-18.7 49.1-18.7 67.9 0l60.1 60.1c18.8 18.7 18.8 49.1 0 67.9zM284.2 99.8L21.6 362.4.4 483.9c-2.9 16.4 11.4 30.6 27.8 27.8l121.5-21.3 262.6-262.6c4.7-4.7 4.7-12.3 0-17l-111-111c-4.8-4.7-12.4-4.7-17.1 0zM88 424h48v36.3l-64.5 11.3-31.1-31.1L51.7 376H88v48z" class=""></path></svg>
+									<span class="d-none d-sm-inline">Editar</span>
+								</button>
+								<button type="button" class="btn p-2 p-sm-2 btn-danger" (click)="deleteProductionAreaUser(user)">
+									<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 14 14"><path fill="currentColor" fill-rule="evenodd" d="M1.707.293A1 1 0 0 0 .293 1.707L5.586 7L.293 12.293a1 1 0 1 0 1.414 1.414L7 8.414l5.293 5.293a1 1 0 0 0 1.414-1.414L8.414 7l5.293-5.293A1 1 0 0 0 12.293.293L7 5.586z" clip-rule="evenodd"/></svg>
+									<span class="d-none d-sm-inline">Eliminar</span>
+								</button>
+							</td>
+						</tr>
+					}
+					@if (user_list.length == 0 && !is_loading) {
+						<tr colspan="4">
+							<div class="alert alert-light m-3" role="alert">No se encontraron usuarios asignados</div>
+						</tr>
+					}
+				</tbody>
+			</table>
+		</div>
 	</div>
-</div>
 
-<div class="row my-2">
-	<div class="col-12 col-md-6">
-		<h3>Artículos de producción</h3>
-	</div>
-	<div class="col-12 col-md-6">
-		<div class="row">
-			<div class="col-4 text-end">
-				<span class="fw-bold">Agregar artículo:</span>
-			</div>
-			<div class="col-8">
-				<app-search-items (item_selected)="onItemSelected($event)" [reset_on_search]="true"></app-search-items>
+	<div class="row my-2">
+		<div class="col-12 col-md-6">
+			<h3>Artículos de producción</h3>
+		</div>
+		<div class="col-12 col-md-6">
+			<div class="row">
+				<div class="col-4 text-end">
+					<span class="fw-bold">Agregar artículo:</span>
+				</div>
+				<div class="col-8">
+					<app-search-items (item_selected)="onItemSelected($event)" [reset_on_search]="true"></app-search-items>
+				</div>
 			</div>
 		</div>
 	</div>
-</div>
-<div class="card p-3 mt-3">
-	<div class="table-responsive">
-		<app-loading [is_loading]="is_loading"></app-loading>
-		<table class="table table-sm table-nowrap mb-0">
-			<thead class="thead-light">
-				<tr>
-					<th>Nombre</th>
-					<th class="d-none d-md-table-cell">Creacion</th>
-					<th class="d-none d-md-table-cell text-end">Actualización</th>
-					<th class="text-end">Acciones</th>
-				</tr>
-			</thead>
-			<tbody>
-				@for (cpai of cproduction_area_item_list; track cpai) {
+	<div class="card p-3 mt-3">
+		<div class="table-responsive">
+			<app-loading [is_loading]="is_loading"></app-loading>
+			<table class="table table-sm table-nowrap mb-0">
+				<thead class="thead-light">
 					<tr>
-						<td>
-							{{cpai.name}}
-						</td>
-						<td class="d-none d-md-table-cell">{{cpai.created | shortDate: 'date' }}</td>
-						<td class="d-none d-md-table-cell text-end">{{cpai.updated | shortDate: 'full' }}</td>
-						<td class="text-end">
-							<button type="button" class="btn btn-danger" (click)="deleteProductionAreaItem(cpai)">
-								<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 14 14"><path fill="currentColor" fill-rule="evenodd" d="M1.707.293A1 1 0 0 0 .293 1.707L5.586 7L.293 12.293a1 1 0 1 0 1.414 1.414L7 8.414l5.293 5.293a1 1 0 0 0 1.414-1.414L8.414 7l5.293-5.293A1 1 0 0 0 12.293.293L7 5.586z" clip-rule="evenodd"/></svg>
-								<span class="d-none d-sm-inline">Eliminar</span>
-							</button>
-						</td>
+						<th>Nombre</th>
+						<th class="d-none d-md-table-cell">Creacion</th>
+						<th class="d-none d-md-table-cell text-end">Actualización</th>
+						<th class="text-end">Acciones</th>
 					</tr>
-				}
-				@if (cproduction_area_item_list.length == 0 && !is_loading) {
-					<tr colspan="4">
-						<div class="alert alert-light m-3" role="alert">No se encontraron elementos</div>
-					</tr>
-				}
-			</tbody>
-		</table>
+				</thead>
+				<tbody>
+					@for (cpai of cproduction_area_item_list; track cpai) {
+						<tr>
+							<td>
+								{{cpai.name}}
+							</td>
+							<td class="d-none d-md-table-cell">{{cpai.created | shortDate: 'date' }}</td>
+							<td class="d-none d-md-table-cell text-end">{{cpai.updated | shortDate: 'full' }}</td>
+							<td class="text-end">
+								<button type="button" class="btn btn-danger" (click)="deleteProductionAreaItem(cpai)">
+									<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 14 14"><path fill="currentColor" fill-rule="evenodd" d="M1.707.293A1 1 0 0 0 .293 1.707L5.586 7L.293 12.293a1 1 0 1 0 1.414 1.414L7 8.414l5.293 5.293a1 1 0 0 0 1.414-1.414L8.414 7l5.293-5.293A1 1 0 0 0 12.293.293L7 5.586z" clip-rule="evenodd"/></svg>
+									<span class="d-none d-sm-inline">Eliminar</span>
+								</button>
+							</td>
+						</tr>
+					}
+					@if (cproduction_area_item_list.length == 0 && !is_loading) {
+						<tr colspan="4">
+							<div class="alert alert-light m-3" role="alert">No se encontraron elementos</div>
+						</tr>
+					}
+				</tbody>
+			</table>
+		</div>
 	</div>
 </div>
 

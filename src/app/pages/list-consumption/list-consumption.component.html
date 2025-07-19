@@ -1,48 +1,51 @@
 <div class="container-fluid">
-  <h1 class="my-3">Consumption List</h1>
-  @if (is_loading) {
-    <div class="text-center">
-      <p>Loading consumption data...</p>
-    </div>
-  } @else if (!is_loading && consumption_list.length === 0) {
-    <div class="alert alert-info">
-      No consumption records found.
-    </div>
-  } @else if (!is_loading && consumption_list.length > 0) {
-    <div class="card my-3 p-3">
-    <table class="table table-striped">
-      <thead>
-        <tr>
-          <th>ID</th>
-          <th>Item ID</th>
-          <th>Quantity</th>
-          <th>Price</th>
-          <th>Production Area ID</th>
-          <th>Consumed By</th>
-          <th>Store ID</th>
-          <th>Description</th>
-          <th>Status</th>
-          <th>Created</th>
-          <th>Updated</th>
-        </tr>
-      </thead>
-      <tbody>
-        @for (consumption of consumption_list; track consumption.id) {
-          <tr>
-            <td>{{ consumption.id }}</td>
-            <td>{{ consumption.item_id }}</td>
-            <td>{{ consumption.qty }}</td>
-            <td>{{ consumption.price }}</td>
-            <td>{{ consumption.production_area_id }}</td>
-            <td>{{ consumption.consumed_by_user_id }}</td>
-            <td>{{ consumption.store_id }}</td>
-            <td>{{ consumption.description }}</td>
-            <td>{{ consumption.status }}</td>
-            <td>{{ consumption.created | date:'short' }}</td>
-            <td>{{ consumption.updated | date:'short' }}</td>
-          </tr>
-        }
-      </tbody>
-    </table>
-  </div>
+	<h1 class="my-3">Consumption List</h1>
+	@if (is_loading) {
+		<div class="text-center">
+			<p>Loading consumption data...</p>
+		</div>
+	}
+
+	@if (!is_loading && consumption_info_list.length > 0)
+	{
+		<div class="card my-3 p-3">
+			<table class="table table-striped">
+				<thead>
+					<tr>
+						<th>ID</th>
+						<th>Item ID</th>
+						<th>Quantity</th>
+						<th>Price</th>
+						<th>Production Area ID</th>
+						<th>Consumed By</th>
+						<th>Store ID</th>
+						<th>Description</th>
+						<th>Status</th>
+						<th>Created</th>
+						<th>Updated</th>
+					</tr>
+				</thead>
+				<tbody>
+					{{consumption_info_list|json}}
+					<!--
+					@for (c of consumption_info_list; track c.consumption.id) {
+						<tr>
+							<td>{{ c.consumption.id }}</td>
+							<td>{{c?.item?.category?.name}} - {{ c.item.item.name}}</td>
+							<td>{{ c.consumption.qty }}</td>
+							<td>{{ c.consumption.price }}</td>
+							<td>{{ c.production_area?.name}}</td>
+							<td>{{ c.consumption.consumed_by_user_id }}</td>
+							<td>{{ c.store?.name }}</td>
+							<td>{{ c.consumption.description }}</td>
+							<td>{{ c.consumption.status }}</td>
+							<td>{{ c.consumption.created | date:'short' }}</td>
+							<td>{{ c.consumption.updated | date:'short' }}</td>
+						</tr>
+					}
+					-->
+				</tbody>
+			</table>
+		</div>
+	}
 </div>
