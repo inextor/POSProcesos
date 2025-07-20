@@ -1,4 +1,4 @@
-<div class="container-fluid">
+<!--div class="container-fluid">
 	<h1 class="my-3">Consumption List</h1>
 	@if (is_loading) {
 		<div class="text-center">
@@ -27,7 +27,6 @@
 				</thead>
 				<tbody>
 					{{consumption_info_list|json}}
-					<!--
 					@for (c of consumption_info_list; track c.consumption.id) {
 						<tr>
 							<td>{{ c.consumption.id }}</td>
@@ -43,9 +42,9 @@
 							<td>{{ c.consumption.updated | date:'short' }}</td>
 						</tr>
 					}
-					-->
 				</tbody>
 			</table>
 		</div>
 	}
 </div>
+					-->
