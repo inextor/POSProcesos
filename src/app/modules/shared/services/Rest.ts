@@ -701,6 +701,21 @@ export class Rest<U,T>
 		return item_search;
 	}
 
+
+	getRelation(source_field:string,target_field:keyof T | '' = '',target_obj:string | undefined = undefined ):DataRelation<T>
+	{
+		let t_f = target_field == '' ? 'id' as keyof T : target_field;
+
+		let relation:DataRelation<T> = {
+			rest: (this as unknown as Rest<T,any>),
+			source_field,
+			target_field: t_f,
+			relations: []
+		};
+
+		return relation;
+	}
+
 	protected getFmap(respone:any[],data_relation:DataRelation<any>):(response:any[])=>Observable<RestResponse<any>>
 	{
 		let f_map = (response:any[])=>
@@ -742,7 +757,7 @@ export class Rest<U,T>
 				);
 			}
 
-			return data_relation.rest.search({csv:csv_obj,limit:999999});
+			return data_relation.rest.searchAsPost({csv:csv_obj,limit:999999});
 		};
 
 		return f_map;
