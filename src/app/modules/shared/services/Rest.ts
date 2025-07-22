@@ -797,14 +797,6 @@ export class Rest<U,T>
 					data: []
 				};
 
-				let gfind = (data:any[],field:any, value:any)=>
-				{
-					return ()=>
-					{
-						return data.find((z)=>z[field] == value) || null;
-					};
-				};
-
 				for( let i of responses.main.data )
 				{
 					let value = i as any;
@@ -816,19 +808,27 @@ export class Rest<U,T>
 						let name = j.name || j.rest.name;
 						let find_from_array = responses.responses[ name ].data;
 
-						let find = find_from_array.find((z)=>{
-							//let object_to_compare = j.target_obj ? z[j.target_obj][j.target_field] : z[j.target_field];
-							// With:
-							let base = z;
-							if (j.target_obj)
-							{
-								return z[j.target_obj][j.target_field] == value[ j.source_field ];
-							}
-							let object_to_compare = base ? base[j.target_field] : undefined;
-							return object_to_compare == value[ j.source_field ];
-						}) || null;
+						if( j.is_multiple )
+						{
 
-						x[ name ] = find;
+						}
+						else
+						{
+
+							let find = find_from_array.find((z)=>{
+								//let object_to_compare = j.target_obj ? z[j.target_obj][j.target_field] : z[j.target_field];
+								// With:
+								let base = z;
+								if (j.target_obj)
+								{
+									return z[j.target_obj][j.target_field] == value[ j.source_field ];
+								}
+								let object_to_compare = base ? base[j.target_field] : undefined;
+								return object_to_compare == value[ j.source_field ];
+							}) || null;
+
+							x[ name ] = find;
+						}
 					}
 					rest_response.data.push(x);
 				}
