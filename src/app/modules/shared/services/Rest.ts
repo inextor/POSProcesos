@@ -701,6 +701,21 @@ export class Rest<U,T>
 		return item_search;
 	}
 
+
+	getRelation(source_field:string,target_field:keyof T | '' = '',target_obj:string | undefined = undefined ):DataRelation<T>
+	{
+		let t_f = target_field == '' ? 'id' as keyof T : target_field;
+
+		let relation:DataRelation<T> = {
+			rest: (this as unknown as Rest<T,any>),
+			source_field,
+			target_field: t_f,
+			relations: []
+		};
+
+		return relation;
+	}
+
 	protected getFmap(respone:any[],data_relation:DataRelation<any>):(response:any[])=>Observable<RestResponse<any>>
 	{
 		let f_map = (response:any[])=>
@@ -742,7 +757,7 @@ export class Rest<U,T>
 				);
 			}
 
-			return data_relation.rest.search({csv:csv_obj,limit:999999});
+			return data_relation.rest.searchAsPost({csv:csv_obj,limit:999999});
 		};
 
 		return f_map;
@@ -782,14 +797,6 @@ export class Rest<U,T>
 					data: []
 				};
 
-				let gfind = (data:any[],field:any, value:any)=>
-				{
-					return ()=>
-					{
-						return data.find((z)=>z[field] == value) || null;
-					};
-				};
-
 				for( let i of responses.main.data )
 				{
 					let value = i as any;
@@ -801,23 +808,27 @@ export class Rest<U,T>
 						let name = j.name || j.rest.name;
 						let find_from_array = responses.responses[ name ].data;
 
-						let find = find_from_array.find((z)=>{
-							//let object_to_compare = j.target_obj ? z[j.target_obj][j.target_field] : z[j.target_field];
-							// With:
-							let base = z;
-							if (j.target_obj) {
-								// Handle dot notation paths (e.g., 'item.category')
-								const pathParts = j.target_obj.split('.');
-								for (const part of pathParts) {
-									base = base[part];
-									if (!base) break;
-								}
-							}
-							let object_to_compare = base ? base[j.target_field] : undefined;
-							return object_to_compare == value[ j.source_field ];
-						}) || null;
+						if( j.is_multiple )
+						{
 
-						x[ name ] = find;
+						}
+						else
+						{
+
+							let find = find_from_array.find((z)=>{
+								//let object_to_compare = j.target_obj ? z[j.target_obj][j.target_field] : z[j.target_field];
+								// With:
+								let base = z;
+								if (j.target_obj)
+								{
+									return z[j.target_obj][j.target_field] == value[ j.source_field ];
+								}
+								let object_to_compare = base ? base[j.target_field] : undefined;
+								return object_to_compare == value[ j.source_field ];
+							}) || null;
+
+							x[ name ] = find;
+						}
 					}
 					rest_response.data.push(x);
 				}
