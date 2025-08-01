@@ -7,9 +7,10 @@ import { DataRelation} from './RelationResponse';
 //import { HttpErrorResponse } from '@angular/common/http';
 
 
-export interface CsvArray{
-	[key: string]: any[];
+export type CsvArray<T> = {
+	[K in keyof T]?: any[];
 }
+
 export interface CsvNumberArray
 {
 	[key: string]: number[];
@@ -43,7 +44,7 @@ export interface SearchObject<T>
 	nn:string[]; //Not nulls
 	is_null:string[];
 	sort_order:string[]; //Sort order like 'updated_ASC','name_DESC' //Etc
-	csv:CsvArray; //Posiblemente String tambien
+	csv:CsvArray<T>; //Posiblemente String tambien
 	//range:CsvNumberArray; //Posiblemente
 	start:Partial<T>;
 	ends:Partial<T>;
