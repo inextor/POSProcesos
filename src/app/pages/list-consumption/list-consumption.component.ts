@@ -1,59 +1,47 @@
 import { Component, OnInit } from '@angular/core';
-import { CommonModule, DatePipe } from '@angular/common';
+import { CommonModule } from '@angular/common';
 import { BaseComponent } from '../../modules/shared/base/base.component';
-import { Category, Consumption, Item } from '../../modules/shared/RestModels';
+import { Category, Consumption, Item, Production_Area, Store } from '../../modules/shared/RestModels';
 import { RestResponse, RestSimple } from '../../modules/shared/services/Rest';
-import { DataRelation } from '../../modules/shared/services/RelationResponse';
 import { forkJoin, mergeMap, of } from 'rxjs';
 
 @Component({
 	selector: 'app-list-consumption',
 	standalone: true,
-	imports: [CommonModule, DatePipe],
+	imports: [CommonModule ],
 	templateUrl: './list-consumption.component.html',
 	styleUrls: ['./list-consumption.component.css']
 })
 export class ListConsumptionComponent extends BaseComponent implements OnInit
 {
 	public consumption_list: Consumption[] = [];
+	consumption_info_list: any[] = [];
+
 	rest_consumption:RestSimple<Consumption> = this.rest.initRestSimple<Consumption>('consumption');
+	rest_category:RestSimple<Category> = this.rest.initRestSimple<Category>('category');
 	rest_item:RestSimple<Item> = this.rest.initRestSimple<Item>('item');
-    consumption_info_list: any[] = [];
+	rest_production_area:RestSimple<Production_Area> = this.rest.initRestSimple<Production_Area>('production_area');
+	rest_store:RestSimple<Store> = this.rest.initRestSimple<Store>('store');
 
 	ngOnInit(): void
 	{
 		this.is_loading = true;
 
-		let relations:DataRelation<Item>[] = [
-			{
-				rest: this.rest.initRestSimple<Item>('item'),
-				source_field: 'item_id',
-				target_field: 'id',
-				is_multiple: true,
-				name: 'item_info',
-				relations:
-				[
-					{
-						rest: this.rest.initRestSimple<Category>('category'),
-						source_field: 'category_id',
-						target_field: 'id',
-						target_obj: 'category'
-					}
-				]
-			},
-			{
-				rest: this.rest.initRestSimple<Item>('production_area'),
-				source_field: 'production_area_id',
-				target_field: 'id'
-			},
-			{
-				rest: this.rest.initRestSimple<Item>('store'),
-				source_field: 'store_id',
-				target_field: 'id'
-			}
-		];
+		let item_relation = this.rest_item.getRelation('item_id');
+		item_relation.name = 'item_info';
+		item_relation.target_obj = 'item';
+		item_relation.relations = [this.rest_category.getRelation('category_id')];
 
-		this.sink = this.rest_consumption.searchWithRelations({},relations).subscribe
+		this.sink = this.rest_consumption.searchWithRelations
+		(
+			{},
+			[
+				item_relation,
+				this.rest_production_area.getRelation('production_area_id'),
+				this.rest_store.getRelation('store_id'),
+			]
+		)
+		.subscribe
 		({
 			next: (response:RestResponse<any>) =>
 			{
