@@ -686,6 +686,7 @@ export class GetEmpty
 			item_id: 0,
 			merma_qty: 0,
 			merma_reason: '',
+			produced: '',
 			produced_by_user_id: null,
 			production_area_id: 0,
 			qty: 0,
