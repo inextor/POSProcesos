@@ -29,6 +29,7 @@ export class MenuComponent extends BaseComponent
     show_menu_prices: Falseable = false;
     show_menu_accountant: Falseable = false;
     show_menu_production: Falseable  = false;
+    show_menu_ecommerce: Falseable = false;
     show_menu_reservations: Falseable = false;
     show_menu_settings: Falseable = false;
 	show_old_menu: Falseable = false;
@@ -63,6 +64,8 @@ export class MenuComponent extends BaseComponent
 
 				this.show_menu_accountant = false;
 				this.show_menu_production = this.rest.user_permission.production || this.rest.user_permission.add_roles;
+
+				this.show_menu_ecommerce = this.rest.preferences.ecommerce_enabled && this.rest.user_permission.add_user;
 
 				this.show_menu_reservations = false;
 				this.show_menu_reports = this.rest.user_permission.reports;

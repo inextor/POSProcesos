@@ -856,6 +856,7 @@ export interface Preferences{
 	ask_for_guests_number:number;
 	background_image_id:number | null;
 	background_image_size:'repeat'|'cover';
+	ecommerce_enabled:number;
 	btn_primary_bg_color:string | null;
 	btn_primary_bg_color_hover:string | null;
 	btn_primary_border_color:string | null;
@@ -1806,10 +1807,22 @@ export interface Ecommerce_User{
 	ecommerce_id:number;
 	user_id:number;
 	created:Date;
+	type:'ECOMMERCE_ADMIN'|'ROLE_ADMIN'|'ROLE_USER';
 	updated:Date;
 	created_by_user_id:number | null;
 	updated_by_user_id:number | null;
 }
+
+export interface Ecommerce_Item_Role{
+	id:number;
+	created_by_user_id:number;
+	created:Date;
+	ecommerce_item_id:number;
+	role_id:number;
+	updated:Date;
+	updated_by_user_id:number;
+}
+
 
 export interface Labels{
 	id:number;

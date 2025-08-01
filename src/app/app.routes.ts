@@ -31,6 +31,7 @@ import { ListProductionComponent } from './pages/list-production/list-production
 import { ResumeProductionComponent } from './pages/resume-production/resume-production.component';
 import { ResumeProductionDayComponent } from './pages/resume-production-day/resume-production-day.component';
 import { ListEcommerceOrderComponent } from './pages/list-ecommerce-order/list-ecommerce-order.component';
+
 import { ViewAccountComponent } from './pages/view-account/view-account.component';
 import { ViewLedgerComponent } from './pages/view-ledger/view-ledger.component';
 import { ListConsumptionComponent } from './pages/list-consumption/list-consumption.component';
@@ -43,6 +44,7 @@ export const routes: Routes = [
 		children:
 		[
 			{path:'', component: DashboardComponent},
+			
 			{path: 'view-account', component: ViewAccountComponent, canActivate: [authGuard]},
 			{path: 'view-ledger', component: ViewLedgerComponent, canActivate: [authGuard]},
 			{path: 'dashboard', component: DashboardComponent, canActivate: [authGuard]},
