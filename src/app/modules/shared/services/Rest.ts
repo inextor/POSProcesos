@@ -3,7 +3,7 @@ import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Utils} from '../Utils';
 import {mergeMap, retry} from 'rxjs/operators';
 import { ParamMap } from '@angular/router';
-import { DataRelation} from './RelationResponse';
+import { DataRelation } from './DataRelation';
 //import { HttpErrorResponse } from '@angular/common/http';
 
 
