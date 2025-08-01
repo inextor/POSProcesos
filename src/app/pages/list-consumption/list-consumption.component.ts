@@ -3,7 +3,6 @@ import { CommonModule } from '@angular/common';
 import { BaseComponent } from '../../modules/shared/base/base.component';
 import { Category, Consumption, Item, Production_Area, Store } from '../../modules/shared/RestModels';
 import { RestResponse, RestSimple } from '../../modules/shared/services/Rest';
-import { DataRelation } from '../../modules/shared/services/RelationResponse';
 import { forkJoin, mergeMap, of } from 'rxjs';
 
 @Component({
@@ -56,5 +55,4 @@ export class ListConsumptionComponent extends BaseComponent implements OnInit
 			}
 		});
 	}
-
 }
