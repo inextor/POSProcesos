@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { BaseComponent } from '../../modules/shared/base/base.component';
 import { CommonModule } from '@angular/common';
-import { Price, Production, User, User_extra_fields, Work_Log, Work_log_rules } from '../../modules/shared/RestModels';
+import { Item, Price, Production, User, User_extra_fields, Work_Log, Work_log_rules } from '../../modules/shared/RestModels';
 import { Utils } from '../../modules/shared/Utils';
 import { FormsModule } from '@angular/forms';
 import { forkJoin, mergeMap, of } from 'rxjs';
@@ -39,7 +39,7 @@ interface CItem_production_report
 export class SaveProductionPaymentComponent extends BaseComponent implements OnInit{
 	rest_work_log:RestSimple<Work_Log> = this.rest.initRestSimple<Work_Log>('work_log',['id','user_id','workshift_id'],['store_id','working_area_id','workshift_id']);
 	rest_production:RestSimple<Production> = this.rest.initRestSimple<Production>('production',['id','item_id','qty','merma_qty','date']);
-	rest_item_info:Rest<ItemInfo, ItemInfo> = this.rest.initRestSimple('item_info');
+	rest_item_info:Rest<Item, ItemInfo> = this.rest.initRest('item_info');
 	rest_item_prices:RestSimple<Price> = this.rest.initRestSimple('price');
 	rest_user:RestSimple<User> = this.rest.initRestSimple('user');
 	rest_work_log_rules:RestSimple<Work_log_rules> = this.rest.initRestSimple('work_log_rules');

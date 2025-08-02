@@ -106,7 +106,7 @@ export class ResumeProductionComponent extends BaseComponent
 
 				let sd = Utils.getLocalDateFromMysqlString(this.start_date) as Date;
 				sd.setHours(0,0,0,0);
-				obj.ge.created = sd;//sd.toISOString().substring(0,19).replace('T',' ');
+				obj.ge.produced = this.start_date;
 
 				if( query_params.has('end_date') )
 				{
@@ -124,10 +124,7 @@ export class ResumeProductionComponent extends BaseComponent
 				console.log("this.end_date", this.end_date);
 
 
-				let ed = Utils.getLocalDateFromMysqlString(this.end_date) as Date;
-				ed.setHours(23,59,59,0);
-				obj.le.created =ed;// ed.toISOString().substring(0,19).replace('T',' ');
-				obj.limit = 999999;
+				obj.le.produced = this.end_date+' 23:59:59';
 
 				this.is_loading = true;
 				return forkJoin
@@ -143,7 +140,18 @@ export class ResumeProductionComponent extends BaseComponent
 				{
 					console.log("a.production.created", a.production.created);
 					console.log("b.production.created", b.production.created);
-					return a.production.created > b.production.created ? 1 : -1;
+					if( a.production.produced === b.production.produced )
+					{
+						let a_control = parseInt(a.production.control);
+						let b_control = parseInt(b.production.control);
+
+						console.log("a_control"+a_control+" b_control"+b_control);
+						return a_control > b_control ? 1 : -1;
+					}
+
+					console.log("a.production.produced"+a.production.produced+" b.production.produced"+b.production.produced);
+
+					return a.production.produced > b.production.produced ? 1 : -1;
 				});
 
 				return this.rest_production_area_item.search({ csv:{ id: this.production_area_list.map((area:any) => area.id) }, limit: 999999 });

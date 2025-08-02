@@ -1,0 +1,85 @@
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <h1>Reporte de Estado de Cuenta de Cliente</h1>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-4">
+            <div class="form-group">
+                <label>Fecha de inicio</label>
+                <input type="date" class="form-control" [(ngModel)]="startDate">
+            </div>
+        </div>
+        <div class="col-4">
+            <div class="form-group">
+                <label>Fecha de fin</label>
+                <input type="date" class="form-control" [(ngModel)]="endDate">
+            </div>
+        </div>
+        <div class="col-4">
+            <div class="form-group">
+                <label>Cliente</label>
+                <app-search-users [(ngModel)]="selectedClient"></app-search-users>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-12">
+            <button class="btn btn-primary" (click)="doSearch()">Generar</button>
+        </div>
+    </div>
+
+    <div *ngIf="is_loading" class="row">
+        <div class="col-12">
+            <app-loading></app-loading>
+        </div>
+    </div>
+
+    <div *ngIf="!is_loading" class="row">
+        <div class="col-12">
+            <h2>Ordenes</h2>
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Fecha</th>
+                        <th>Total</th>
+                        <th>Pagado</th>
+                        <th>Saldo</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let order of uniqueOrders">
+                        <td>{{order.order.id}}</td>
+                        <td>{{order.order.created | date:'short'}}</td>
+                        <td>{{order.order.total | currency}}</td>
+                        <td>{{order.order.amount_paid | currency}}</td>
+                        <td>{{order.order.total - order.order.amount_paid | currency}}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div *ngIf="!is_loading" class="row">
+        <div class="col-12">
+            <h2>Pagos Recibidos</h2>
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Fecha</th>
+                        <th>Monto</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let payment of paymentsReceived">
+                        <td>{{payment.id}}</td>
+                        <td>{{payment.created | date:'short'}}</td>
+                        <td>{{payment.payment_amount | currency}}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
