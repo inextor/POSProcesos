@@ -82,28 +82,28 @@ export class ReporteEstadoCuentaClienteComponent extends BaseComponent implement
 		});
 	}
 
-	fetchData(user_id: number | null, startDate: Date | null, endDate: Date | null) {
+	fetchData(user_id: number | null, start_date: Date | null, end_date: Date | null) {
 		return forkJoin
 		({
-			closed_orders: this.getClosedOrders(user_id, startDate, endDate),
-			payments_received: this.getPaymentsReceived(user_id, startDate, endDate),
+			closed_orders: this.getClosedOrders(user_id, start_date, end_date),
+			payments_received: this.getPaymentsReceived(user_id, start_date, end_date),
 			pending_orders: this.getPendingOrders(user_id)
 		});
 	}
 
-	getClosedOrders(user_id: number | null, startDate: Date | null, endDate: Date | null): Observable<RestResponse<OrderInfo>> {
+	getClosedOrders(user_id: number | null, start_date: Date | null, end_date: Date | null): Observable<RestResponse<OrderInfo>> {
 		return this.rest_order.search({
 			eq: { client_user_id: user_id, status: 'CLOSED' },
-			ge: { created: startDate || undefined },
-			le: { created: endDate || undefined }
+			ge: { closed_timestamp: start_date },
+			le: { closed_timestamp: end_date }
 		});
 	}
 
-	getPaymentsReceived(user_id: number | null, startDate: Date | null, endDate: Date | null): Observable<RestResponse<PaymentInfo>> {
+	getPaymentsReceived(user_id: number | null, start_date: Date | null, end_date: Date | null): Observable<RestResponse<PaymentInfo>> {
 		return this.rest_payment_info.search({
 			eq: { paid_by_user_id: user_id, type: 'income' },
-			ge: { created: startDate || undefined },
-			le: { created: endDate || undefined }
+			ge: { created: start_date || undefined },
+			le: { created: end_date || undefined }
 		});
 	}
 
