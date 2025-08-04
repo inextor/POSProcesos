@@ -1,9 +1,19 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Injector } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { BaseComponent } from '../../modules/shared/base/base.component';
 import { Category, Consumption, Item, Production_Area, Store } from '../../modules/shared/RestModels';
 import { RestResponse, RestSimple } from '../../modules/shared/services/Rest';
-import { forkJoin, mergeMap, of } from 'rxjs';
+import { filter, forkJoin, mergeMap, of } from 'rxjs';
+import { ItemInfo } from '../../modules/shared/Models';
+
+
+interface ConsumptionInfo
+{
+	consumption: Consumption;
+	production_area: Production_Area;
+	store: Store;
+	item: ItemInfo;
+}
 
 @Component({
 	selector: 'app-list-consumption',
@@ -14,7 +24,7 @@ import { forkJoin, mergeMap, of } from 'rxjs';
 })
 export class ListConsumptionComponent extends BaseComponent implements OnInit
 {
-	public consumption_list: Consumption[] = [];
+	public consumption_list: ConsumptionInfo[] = [];
 	consumption_info_list: any[] = [];
 
 	rest_consumption:RestSimple<Consumption> = this.rest.initRestSimple<Consumption>('consumption');
@@ -54,5 +64,32 @@ export class ListConsumptionComponent extends BaseComponent implements OnInit
 				this.is_loading = false;
 			}
 		});
+	}
+
+	deleteConsumption(consumption_info:ConsumptionInfo)
+	{
+		this.sink = this.confirmation.showConfirmAlert(consumption_info, 'Eliminar Consumo','¿Está seguro de que desea eliminar este consumo?')
+		.pipe
+		(
+			filter(result => result.accepted ),
+			mergeMap((_r) =>
+			{
+				this.is_loading = true;
+				return this.rest_consumption.delete({id:consumption_info.consumption.id});
+			})
+		)
+		.subscribe
+		({
+			error:(error:any)=> {
+				this.showError(error);
+				this.is_loading = false;
+			},
+			next: () =>
+			{
+				this.is_loading = false;
+				this.showSuccess('Consumo eliminado');
+				this.consumption_info_list = this.consumption_info_list.filter( c => c.consumption.id != consumption_info.consumption.id);
+			}
+		})
 	}
 }

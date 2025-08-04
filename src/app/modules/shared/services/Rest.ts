@@ -528,7 +528,7 @@ export class Rest<U,T>
 			);
 	}
 
-	delete(obj:U):Observable<T>
+	delete(obj:Partial<U>):Observable<T>
 	{
 		let params = new HttpParams();
 

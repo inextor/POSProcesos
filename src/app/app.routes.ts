@@ -36,6 +36,7 @@ import { ViewAccountComponent } from './pages/view-account/view-account.componen
 import { ViewLedgerComponent } from './pages/view-ledger/view-ledger.component';
 import { ListConsumptionComponent } from './pages/list-consumption/list-consumption.component';
 import { ReporteEstadoCuentaClienteComponent } from './pages/reporte-estado-cuenta-cliente/reporte-estado-cuenta-cliente.component';
+import { TestComponent } from './pages/test/test.component';
 
 export const routes: Routes = [
 	{path: 'login', component: LoginComponent},
@@ -83,6 +84,7 @@ export const routes: Routes = [
 			{path: 'list-ecommerce-order', component: ListEcommerceOrderComponent, canActivate: [authGuard]},
 			{path: 'list-consumption', component: ListConsumptionComponent, canActivate: [authGuard]},
 			{path: 'reporte-estado-cuenta-cliente', component: ReporteEstadoCuentaClienteComponent, canActivate: [authGuard]},
+			{path: 'test', component: TestComponent, canActivate: [authGuard]},
 		]
 	},
 ];
