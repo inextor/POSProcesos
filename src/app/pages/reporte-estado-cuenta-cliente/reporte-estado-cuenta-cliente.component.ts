@@ -12,6 +12,14 @@ import { mergeMap } from 'rxjs/operators';
 import { GetEmpty } from '../../modules/shared/GetEmpty';
 import { OrderInfo, PaymentInfo } from '../../modules/shared/Models';
 
+interface RecordSaldo
+{
+	order_id: number;
+	payment_id: number;
+}
+
+
+
 @Component({
 	selector: 'app-reporte-estado-cuenta-cliente',
 	standalone: true,

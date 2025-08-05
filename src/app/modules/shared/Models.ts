@@ -1,4 +1,4 @@
-import { Address, Category, Delivery_Assignment, Item, Item_Exception, Item_Option, Item_Option_Value, Offer, Order, Order_Item, Order_Item_Exception, Order_Item_Serial, Period, Price, Price_Type, Process, Production, Production_Area, Purchase, Requisition, Requisition_Item, Reservation, Reservation_Item, Reservation_Item_Serial, Return_Assignment, Serial, Serial_Image, Shipping, Shipping_Item, Stock_Record, Store, Task, User } from "./RestModels";
+import { Address, Bank_Movement, Bank_Movement_Order, Category, Delivery_Assignment, Item, Item_Exception, Item_Option, Item_Option_Value, Offer, Order, Order_Item, Order_Item_Exception, Order_Item_Serial, Payment, Period, Price, Price_Type, Process, Production, Production_Area, Purchase, Requisition, Requisition_Item, Reservation, Reservation_Item, Reservation_Item_Serial, Return_Assignment, Serial, Serial_Image, Shipping, Shipping_Item, Stock_Record, Store, Task, User } from "./RestModels";
 
 interface CSerial extends Serial
 {
@@ -241,4 +241,16 @@ export interface ReservationInfo
 	items:ReservationItemInfo[]
 	user:User | null;
 	address:Address | null;
+}
+
+export interface MovementInfo
+{
+	bank_movement:Bank_Movement;
+	bank_movement_orders:Bank_Movement_Order[];
+}
+
+export interface PaymentInfo
+{
+	payment:Payment;
+	movements:MovementInfo[];
 }

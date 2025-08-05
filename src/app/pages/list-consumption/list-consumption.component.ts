@@ -24,7 +24,6 @@ interface ConsumptionInfo
 })
 export class ListConsumptionComponent extends BaseComponent implements OnInit
 {
-	public consumption_list: ConsumptionInfo[] = [];
 	consumption_info_list: any[] = [];
 
 	rest_consumption:RestSimple<Consumption> = this.rest.initRestSimple<Consumption>('consumption');

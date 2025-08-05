@@ -42,8 +42,9 @@
 							<td>{{ c.consumption.status }}</td>
 							<td>{{ c.consumption.created | date:'short' }}</td>
 							<td>{{ c.consumption.updated | date:'short' }}</td>
-							<td>{{ c.production_area | json }}</td>
-							<td><button class="btn btn-danger" (click)="deleteConsumption(c)">Eliminar</button></td>
+							<td>
+								<button class="btn btn-danger" (click)="deleteConsumption(c)">Eliminar</button>
+							</td>
 						</tr>
 					}
 				</tbody>

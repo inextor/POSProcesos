@@ -8,13 +8,13 @@
         <div class="col-4">
             <div class="form-group">
                 <label>Fecha de inicio</label>
-                <input type="date" class="form-control" [(ngModel)]="startDate">
+                <input type="date" class="form-control" [(ngModel)]="start_date">
             </div>
         </div>
         <div class="col-4">
             <div class="form-group">
                 <label>Fecha de fin</label>
-                <input type="date" class="form-control" [(ngModel)]="endDate">
+                <input type="date" class="form-control" [(ngModel)]="end_date">
             </div>
         </div>
         <div class="col-4">
@@ -30,56 +30,69 @@
         </div>
     </div>
 
-    <div *ngIf="is_loading" class="row">
-        <div class="col-12">
-            <app-loading></app-loading>
-        </div>
-    </div>
-
-    <div *ngIf="!is_loading" class="row">
-        <div class="col-12">
-            <h2>Ordenes</h2>
-            <table class="table table-striped">
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Fecha</th>
-                        <th>Total</th>
-                        <th>Pagado</th>
-                        <th>Saldo</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr *ngFor="let order of uniqueOrders">
-                        <td>{{order.order.id}}</td>
-                        <td>{{order.order.created | date:'short'}}</td>
-                        <td>{{order.order.total | currency}}</td>
-                        <td>{{order.order.amount_paid | currency}}</td>
-                        <td>{{order.order.total - order.order.amount_paid | currency}}</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-    </div>
-    <div *ngIf="!is_loading" class="row">
-        <div class="col-12">
-            <h2>Pagos Recibidos</h2>
-            <table class="table table-striped">
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Fecha</th>
-                        <th>Monto</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr *ngFor="let payment of paymentsReceived">
-                        <td>{{payment.id}}</td>
-                        <td>{{payment.created | date:'short'}}</td>
-                        <td>{{payment.payment_amount | currency}}</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-    </div>
+    @if (is_loading) {
+		<div class="row">
+    	    <div class="col-12">
+    	        <app-loading></app-loading>
+    	    </div>
+    	</div>
+    } @else {
+		<div class="row">
+    	    <div class="col-12">
+    	        <h2>Ordenes</h2>
+    	        <table class="table table-striped">
+    	            <thead>
+    	                <tr>
+    	                    <th>ID</th>
+    	                    <th>Fecha</th>
+    	                    <th>Total</th>
+    	                    <th>Pagado</th>
+    	                    <th>Saldo</th>
+    	                </tr>
+    	            </thead>
+    	            <tbody>
+    	                @for (order of unique_orders; track order.order.id) {
+							<tr>
+    	                	    <td>{{order.order.id}}</td>
+    	                	    <td>{{order.order.created | date:'short'}}</td>
+    	                	    <td>{{order.order.total | currency}}</td>
+    	                	    <td>{{order.order.amount_paid | currency}}</td>
+    	                	    <td>{{order.order.total - order.order.amount_paid | currency}}</td>
+    	                	</tr>
+    	                }
+    	            </tbody>
+    	        </table>
+    	    </div>
+    	</div>
+    	<div class="row">
+    	    <div class="col-12">
+    	        <h2>Pagos Recibidos</h2>
+    	        <table class="table table-striped">
+    	            <thead>
+    	                <tr>
+    	                    <th>ID</th>
+    	                    <th>Fecha</th>
+    	                    <th>Monto</th>
+    	                    <th>Order ID</th>
+    	                </tr>
+    	            </thead>
+    	            <tbody>
+    	                @for (pi of payments_received; track pi.payment.id) {
+							@for (m of pi.movements; track m.bank_movement.id) {
+								@for (mo of m.bank_movement_orders; track mo.id) {
+									<tr>
+    	                			    <td>{{pi.payment.id}}</td>
+    	                			    <td>{{pi.payment.created | date:'short'}}</td>
+    	                			    <td>{{pi.payment.payment_amount | currency}}</td>
+    	                			    <td>{{mo.order_id}}</td>
+    	                			    <td>{{mo.amount}}</td>
+    	                			</tr>
+								}
+							}
+    	                }
+    	            </tbody>
+    	        </table>
+    	    </div>
+    	</div>
+    }
 </div>
