@@ -1,6 +1,6 @@
 import { Component, Injector, OnInit } from '@angular/core';
 import { RestService } from '../../modules/shared/services/rest.service';
-import { Address, Order, Payment, User } from '../../modules/shared/RestModels';
+import { Address, Billing_Data, Order, Payment, Preferences, Store, User } from '../../modules/shared/RestModels';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Rest, RestResponse } from '../../modules/shared/services/Rest';
@@ -42,15 +42,21 @@ export class ReporteEstadoCuentaClienteComponent extends BaseComponent implement
 
 	selectedClient: User | null = null;
 	billing_address: Address | null = null;
+	store: Store | null = null;
+	billing_data: Billing_Data | null = null;
+	preferences: Preferences | null = null;
 
 	report_items: ReporteItem[] = [];
 	unique_orders: OrderInfo[] = [];
 
 	rest_order: Rest<Order, OrderInfo> = this.rest.initRest<Order, OrderInfo>('order_info');
 	rest_payment: Rest<Payment, Payment> = this.rest.initRest<Payment, Payment>('payment');
-	user_info: Rest<User, User> = this.rest.initRest<User, User>('user');
+	rest_user: Rest<User, User> = this.rest.initRest<User, User>('user');
 	rest_address: Rest<Address, Address> = this.rest.initRest<Address, Address>('address');
 	rest_payment_info: Rest<Payment, PaymentInfo> = this.rest.initRest<Payment, PaymentInfo>('payment_info');
+	rest_store: Rest<Store, Store> = this.rest.initRest<Store, Store>('store');
+	rest_billing_data: Rest<Billing_Data, Billing_Data> = this.rest.initRest<Billing_Data, Billing_Data>('billing_data');
+	rest_preferences: Rest<Preferences, Preferences> = this.rest.initRest<Preferences, Preferences>('preferences');
 
 	constructor(private http: HttpClient, injector: Injector) { super(injector); }
 
@@ -87,14 +93,37 @@ export class ReporteEstadoCuentaClienteComponent extends BaseComponent implement
 				end = Utils.getDateFromLocalMysqlString(this.end_date+' 23:59:59');
 
 
+				if( this.rest?.user?.store_id == null )
+				{
+					this.showError('No tienes configurado una sucursal, por favor habla con tu administrador');
+
+				}
+
 				this.is_loading = true;
-				return this.fetchData(client_user_id, start, end);
+				return forkJoin({
+					data: this.fetchData(client_user_id, start, end),
+					store: this.rest_store.get(this.rest?.user?.store_id as number),
+					preferences: this.rest_preferences.get(1)
+				});
 			}),
-			mergeMap(response =>
+			mergeMap((response: any) => {
+				this.store = response.store;
+				this.preferences = response.preferences;
+
+
+				const billing_data_id = this.store?.default_billing_data_id;
+
+				return forkJoin({
+					data: of(response.data),
+					billing_data: billing_data_id ? this.rest_billing_data.get(billing_data_id) : of(null)
+				});
+			}),
+			mergeMap((response: any) =>
 			{
+				this.billing_data = response.billing_data;
 				let orders_ids: number[] = [];
 
-				for(let pi of response.payments_received.data)
+				for(let pi of response.data.payments_received.data)
 				{
 					for(let m of pi.movements)
 					{
@@ -107,15 +136,15 @@ export class ReporteEstadoCuentaClienteComponent extends BaseComponent implement
 
 				return forkJoin
 				({
-					client_user: of( response.client_user ),
-					closed_orders: of( response.closed_orders ),
-					payments_received: of( response.payments_received ),
+					client_user: of( response.data.client_user ),
+					closed_orders: of( response.data.closed_orders ),
+					payments_received: of( response.data.payments_received ),
 					order_info_with_payments: this.rest_order.search
 					({
 						csv:{ id: orders_ids },
 						limit: 99999
 					}),
-					billing_address: response.client_user.default_billing_address_id ? this.rest_address.get(response.client_user.default_billing_address_id) : of(null)
+					billing_address: response.data.client_user.default_billing_address_id ? this.rest_address.get(response.data.client_user.default_billing_address_id) : of(null)
 				});
 			})
 		)
@@ -137,7 +166,7 @@ export class ReporteEstadoCuentaClienteComponent extends BaseComponent implement
 	{
 		return forkJoin
 		({
-			client_user: this.user_info.get(user_id),
+			client_user: this.rest_user.get(user_id),
 			closed_orders: this.getClosedOrders(user_id, start_date, end_date),
 			payments_received: this.getPaymentsReceived(user_id, start_date, end_date),
 		});
