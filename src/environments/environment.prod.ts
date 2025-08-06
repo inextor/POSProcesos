@@ -4,5 +4,6 @@ export const environment = {
 		socket_io_url: 'https://notifications.integranet.xyz:5000',
 		test_url: '',
 		path_api: '/api',
+		pdf_service_url: 'https://pdf.integranet.xyz'
 	}
 };
