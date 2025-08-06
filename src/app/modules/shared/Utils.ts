@@ -479,7 +479,7 @@ export class Utils
 		{
 			d =Utils.getDateFromLocalMysqlString( value.trim() );
 			let months = 'Ene,Feb,Mar,Abr,May,Jun,Jul,Ago,Sep,Oct,Nov,Dic'.split(',');
-			return d.getDate()+'/'+months[ d.getMonth() ]+'/'+d.getFullYear();
+			return this.zero(d.getDate())+'/'+months[ d.getMonth() ]+'/'+d.getFullYear();
 		}
 
 		if( d )
@@ -488,7 +488,7 @@ export class Utils
 
 			if( !include_time )
 			{
-				return d.getDate()+'/'+months[ d.getMonth() ]+'/'+d.getFullYear();
+				return this.zero(d.getDate())+'/'+months[ d.getMonth() ]+'/'+d.getFullYear();
 			}
 
 			let hours = d.getHours();
@@ -504,7 +504,7 @@ export class Utils
 				hours = 12;
 			}
 
-			return d.getDate()+'/'+months[ d.getMonth() ]+'/'+d.getFullYear()+' '+hours+':'+Utils.zero(d.getMinutes())+ampm;
+			return this.zero(d.getDate())+'/'+months[ d.getMonth() ]+'/'+d.getFullYear()+' '+hours+':'+Utils.zero(d.getMinutes())+ampm;
 		}
 		return '';
 	}
@@ -585,5 +585,5 @@ export class Utils
 	public static getUnique(category_ids: number[])
 	{
 		return Utils.cleanDuplicates(category_ids);
-    }
+	}
 }
