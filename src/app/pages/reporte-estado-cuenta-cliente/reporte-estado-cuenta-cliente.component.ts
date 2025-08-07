@@ -30,7 +30,7 @@ interface ReporteItem {
 @Component({
 	selector: 'app-reporte-estado-cuenta-cliente',
 	standalone: true,
-	imports: [CommonModule, FormsModule, LoadingComponent, ShortDatePipe],
+	imports: [CommonModule, FormsModule, LoadingComponent ],
 	templateUrl: './reporte-estado-cuenta-cliente.component.html',
 	styleUrl: './reporte-estado-cuenta-cliente.component.css'
 })
@@ -45,6 +45,8 @@ export class ReporteEstadoCuentaClienteComponent extends BaseComponent implement
 	store: Store | null = null;
 	billing_data: Billing_Data | null = null;
 	preferences: Preferences | null = null;
+	total_cargos: number = 0;
+	total_abonos: number = 0;
 
 	report_items: ReporteItem[] = [];
 	unique_orders: OrderInfo[] = [];
@@ -157,6 +159,7 @@ export class ReporteEstadoCuentaClienteComponent extends BaseComponent implement
 				this.billing_address = response.billing_address;
 				this.unique_orders = this.createUniqueOrderList(response.closed_orders.data, response.order_info_with_payments.data);
 				this.report_items = this.generateReport(this.unique_orders, response.payments_received.data);
+				this.calculateTotals();
 				this.is_loading = false;
 			}
 		});
@@ -324,6 +327,11 @@ export class ReporteEstadoCuentaClienteComponent extends BaseComponent implement
 			case 'PAYPAL': return 'Transferencia';
 		}
 		return transaction_type;
+	}
+
+	calculateTotals() {
+		this.total_cargos = this.report_items.reduce((acc, item) => acc + item.cargo, 0);
+		this.total_abonos = this.report_items.reduce((acc, item) => acc + item.abono, 0);
 	}
 
 	doSearch() {
