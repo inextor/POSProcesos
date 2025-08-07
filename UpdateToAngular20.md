@@ -1,13 +1,11 @@
 # Updating component from Angular 11 to 20
 
-
-Use the new flow control syntax instead of the old one like *ngIf must use @if
+Use the new flow control syntax instead of the deprecated old one like *ngIf must use @if,@for,etc
 for the rest declared on rest service use the initRest from the rest service
 
 the variables of type Rest,RestSimple declared on the rest.service are not in the angular 20 version.
 instead you must declare them in the component where will be used.
 
-old one angular 11 on the rest.service
 
 ```typescript
 //Old Angular 11 on the rest.service
@@ -23,5 +21,4 @@ this.rest.order_info.search(order_serch)
 this.rest_order_info.search(order_serch)
 
 ```
-
 
