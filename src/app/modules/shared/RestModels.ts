@@ -316,19 +316,19 @@ export interface Commanda_Type{
 	updated:Date;
 }
 export interface Consumption {
-  id: number;
-  item_id: number;
-  price: number;
-  qty: number;
-  production_area_id: number | null;
-  consumed_by_user_id: number | null;
-  store_id: number;
-  description: string | null;
-  status: 'ACTIVE' | 'DELETED';
-  created: Date;
-  created_by_user_id: number;
-  updated: Date;
-  updated_by_user_id: number;
+	id: number;
+	item_id: number;
+	price: number;
+	qty: number;
+	production_area_id: number | null;
+	consumed_by_user_id: number | null;
+	store_id: number;
+	description: string | null;
+	status: 'ACTIVE' | 'DELETED';
+	created: Date;
+	created_by_user_id: number;
+	updated: Date;
+	updated_by_user_id: number;
 }
 export interface Currency{
 	id:string;
@@ -619,6 +619,7 @@ export interface Order{
 	quote_id:number | null;
 	sat_codigo_postal:string | null;
 	sat_domicilio_fiscal_receptor:string | null;
+	sat_factura_id:number | null;
 	sat_forma_pago:string | null;
 	sat_ieps:number;
 	sat_isr:number;
@@ -776,6 +777,7 @@ export interface Payment{
 	id:number;
 	paid_by_user_id:number | null;
 	payment_amount:number;
+	sat_factura_id:number | null;
 	received_amount:number;
 	sat_pdf_attachment_id:number | null;
 	sat_uuid:string | null;
@@ -869,6 +871,7 @@ export interface Preferences{
 	ask_for_guests_number:number;
 	background_image_id:number | null;
 	background_image_size:'repeat'|'cover';
+	ecommerce_enabled:number;
 	btn_primary_bg_color:string | null;
 	btn_primary_bg_color_hover:string | null;
 	btn_primary_border_color:string | null;
@@ -1030,6 +1033,7 @@ export interface Production{
 	item_id:number
 	merma_qty:number;
 	merma_reason:string | null;
+	produced: string;
 	produced_by_user_id: number | null;
 	production_area_id: number | null;
 	qty:number
@@ -1275,6 +1279,7 @@ export interface Sat_Factura{
 	created_by_user_id:number | null;
 	id:number;
 	order_id:number | null;
+	payment_id:number | null;
 	pdf_attachment_id:number
 	updated:Date;
 	updated_by_user_id:number | null;
@@ -1824,6 +1829,17 @@ export interface Ecommerce_User{
 	created_by_user_id:number | null;
 	updated_by_user_id:number | null;
 }
+
+export interface Ecommerce_Item_Role{
+	id:number;
+	created_by_user_id:number;
+	created:Date;
+	ecommerce_item_id:number;
+	role_id:number;
+	updated:Date;
+	updated_by_user_id:number;
+}
+
 
 export interface Labels{
 	id:number;

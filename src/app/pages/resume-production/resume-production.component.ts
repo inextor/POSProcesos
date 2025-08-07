@@ -101,12 +101,10 @@ export class ResumeProductionComponent extends BaseComponent
 				{
 					let d = new Date();
 					d.setHours(0,0,0,0);
-					this.start_date = Utils.getLocalMysqlStringFromDate(d).substring(0,10);
+					this.start_date = this.getLocalStringDate(d);
 				}
 
-				let sd = Utils.getLocalDateFromMysqlString(this.start_date) as Date;
-				sd.setHours(0,0,0,0);
-				obj.ge.created = sd;//sd.toISOString().substring(0,19).replace('T',' ');
+				obj.ge.produced = this.start_date+' 00:00:00';
 
 				if( query_params.has('end_date') )
 				{
@@ -117,17 +115,14 @@ export class ResumeProductionComponent extends BaseComponent
 					let d = new Date();
 					d.setHours(0,0,0,0);
 					d.setDate(d.getDate() + 1);
-					this.end_date = Utils.getLocalMysqlStringFromDate(d).substring(0,10);
+					this.end_date = this.getLocalStringDate(d);
 				}
 
 				console.log("this.start_date", this.start_date);
 				console.log("this.end_date", this.end_date);
 
 
-				let ed = Utils.getLocalDateFromMysqlString(this.end_date) as Date;
-				ed.setHours(23,59,59,0);
-				obj.le.created =ed;// ed.toISOString().substring(0,19).replace('T',' ');
-				obj.limit = 999999;
+				obj.le.produced = this.end_date+' 23:59:59';
 
 				this.is_loading = true;
 				return forkJoin
@@ -143,7 +138,18 @@ export class ResumeProductionComponent extends BaseComponent
 				{
 					console.log("a.production.created", a.production.created);
 					console.log("b.production.created", b.production.created);
-					return a.production.created > b.production.created ? 1 : -1;
+					if( a.production.produced === b.production.produced )
+					{
+						let a_control = parseInt(a.production.control);
+						let b_control = parseInt(b.production.control);
+
+						console.log("a_control"+a_control+" b_control"+b_control);
+						return a_control > b_control ? 1 : -1;
+					}
+
+					console.log("a.production.produced"+a.production.produced+" b.production.produced"+b.production.produced);
+
+					return a.production.produced > b.production.produced ? 1 : -1;
 				});
 
 				return this.rest_production_area_item.search({ csv:{ id: this.production_area_list.map((area:any) => area.id) }, limit: 999999 });
@@ -269,6 +275,23 @@ export class ResumeProductionComponent extends BaseComponent
 			end_date: this.end_date
 		}});
 	}
+
+
+	getLocalStringDate(date: Date): string
+	{
+		const timezoneOffsetInMinutes = date.getTimezoneOffset();
+		// Convert the offset to milliseconds.
+		const timezoneOffsetInMilliseconds = timezoneOffsetInMinutes * 60000;
+		// Subtract the offset from the current time to get the correct local time.
+		const correctedTime = date.getTime() - timezoneOffsetInMilliseconds;
+		// Create a new Date object with the corrected time.
+		const correctedDate = new Date(correctedTime);
+		console.log('Corrected date:',correctedDate.toISOString());
+		// Return the date in YYYY-MM-DD format.
+		return correctedDate.toISOString().split('T')[0];
+
+	}
+
 
 	/*
 	let x = [

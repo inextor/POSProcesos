@@ -1,36 +1,38 @@
-<!--div class="container-fluid">
-	<h1 class="my-3">Consumption List</h1>
+<div class="container-fluid">
+	<h1 class="my-3">Lista de Consumos</h1>
 	@if (is_loading) {
 		<div class="text-center">
-			<p>Loading consumption data...</p>
+			<p>Cargando datos de consumo...</p>
 		</div>
 	}
 
 	@if (!is_loading && consumption_info_list.length > 0)
 	{
+
 		<div class="card my-3 p-3">
 			<table class="table table-striped">
 				<thead>
 					<tr>
 						<th>ID</th>
-						<th>Item ID</th>
-						<th>Quantity</th>
-						<th>Price</th>
-						<th>Production Area ID</th>
-						<th>Consumed By</th>
-						<th>Store ID</th>
-						<th>Description</th>
-						<th>Status</th>
-						<th>Created</th>
-						<th>Updated</th>
+						<th>Artículo</th>
+						<th>Cantidad</th>
+						<th>Precio</th>
+						<th>Área de Producción</th>
+						<th>Consumido por</th>
+						<th>Tienda</th>
+						<th>Descripción</th>
+						<th>Estado</th>
+						<th>Creado</th>
+						<th>Actualizado</th>
+						<th>Acciones</th>
 					</tr>
 				</thead>
 				<tbody>
-					{{consumption_info_list|json}}
 					@for (c of consumption_info_list; track c.consumption.id) {
+
 						<tr>
 							<td>{{ c.consumption.id }}</td>
-							<td>{{c?.item?.category?.name}} - {{ c.item.item.name}}</td>
+							<td>{{ c.item_info?.category?.name}} - {{ c.item_info.item.name}}</td>
 							<td>{{ c.consumption.qty }}</td>
 							<td>{{ c.consumption.price }}</td>
 							<td>{{ c.production_area?.name}}</td>
@@ -40,6 +42,9 @@
 							<td>{{ c.consumption.status }}</td>
 							<td>{{ c.consumption.created | date:'short' }}</td>
 							<td>{{ c.consumption.updated | date:'short' }}</td>
+							<td>
+								<button class="btn btn-danger" (click)="deleteConsumption(c)">Eliminar</button>
+							</td>
 						</tr>
 					}
 				</tbody>
@@ -47,4 +52,3 @@
 		</div>
 	}
 </div>
-					-->

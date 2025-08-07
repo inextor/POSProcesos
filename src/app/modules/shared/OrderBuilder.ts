@@ -130,6 +130,7 @@ export class OrderBuilder
 			subtotal: 0,
 			sync_id: this.rest.getSyncId(),
 			system_activated: null,
+			sat_factura_id: null,
 			table_id: null,
 			tag: '',
 			tax: 0,

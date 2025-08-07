@@ -144,6 +144,7 @@ export class RestService
 		return this.user.id + '-' + Date.now();
 	}
 
+
 	getSessionStart():Date
 	{
 		let session = localStorage.getItem('session');

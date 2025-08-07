@@ -1,0 +1,155 @@
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <h1>Reporte de Estado de Cuenta de Cliente</h1>
+			<p>Del {{start_date | date:'shortDate'}} al {{end_date | date:'shortDate'}}</p>
+        </div>
+    </div>
+	<div class="card p-3">
+		<form (submit)="doSearch()" ngNativeValidate>
+			<div class="row">
+    		    <div class="col-4">
+    		        <div class="form-group">
+    		            <label>Fecha inicio</label>
+    		            <input type="date" class="form-control" name="start_date" [(ngModel)]="start_date" required>
+    		        </div>
+    		    </div>
+    		    <div class="col-4">
+    		        <div class="form-group">
+    		            <label>Fecha fin</label>
+    		            <input type="date" class="form-control" name="end_date" [(ngModel)]="end_date" required>
+    		        </div>
+    		    </div>
+				<div class="col-2">
+					<label>&nbsp;</label>
+					<div>
+						<button class="btn btn-primary w-100" (click)="doSearch()">buscar</button>
+					</div>
+				</div>
+				<div class="col-2">
+					<label>&nbsp;</label>
+					<div>
+						<button class="btn btn-secondary w-100" (click)="downloadPdf()">Descargar PDF</button>
+					</div>
+				</div>
+    		</div>
+		</form>
+	</div>
+	<div class="card p-3 mt-3">
+		<div id="to_pdf">
+			<div class="row">
+				<div class="col-6">
+					@if(preferences && preferences.logo_image_id){
+						<img [src]="rest.getImagePath(preferences.logo_image_id)" style="max-width: 150px; max-height: 150px;">
+					}
+				</div>
+				<div class="col-6 text-end">
+					@if(store){
+						<p><strong>{{store.name}}</strong></p>
+						<p>{{store.address}}, {{store.city}}, {{store.state}}, {{store.zipcode}}</p>
+					}
+					@if(billing_data){
+						<p>RFC: {{billing_data.rfc}}</p>
+						<p>{{billing_data.razon_social}}</p>
+					}
+				</div>
+			</div>
+			@if (selectedClient) {
+    		    <div class="row mt-4">
+    		        <div class="col-6">
+    		            <h3>Datos del Cliente</h3>
+    		            <p><strong>Nombre:</strong> {{selectedClient.name}}</p>
+    		            @if(billing_address && billing_address.email){
+    		            <p><strong>Email:</strong> {{billing_address.email}}</p>
+    		            }
+    		            @if(selectedClient.phone){
+    		            <p><strong>Teléfono:</strong> {{selectedClient.phone}}</p>
+    		            }
+    		        </div>
+					@if (billing_address && billing_address.rfc && billing_address.address && billing_address.city && billing_address.state && billing_address.zipcode) {
+						<div class="col-6">
+							<h3>Datos de Facturación</h3>
+							<p><strong>RFC:</strong> {{billing_address.rfc}}</p>
+							<p><strong>Dirección:</strong> {{billing_address.address}}, {{billing_address.city}}, {{billing_address.state}}, {{billing_address.zipcode}}</p>
+						</div>
+					}
+    		    </div>
+    		}
+
+    		@if (is_loading) {
+				<div class="row">
+    			    <div class="col-12">
+    			        <app-loading></app-loading>
+    			    </div>
+    			</div>
+    		} @else {
+				<div class="row">
+					<div class="col-12">
+						<table class="table table-striped" style="width: 100%; border-collapse: collapse;">
+							<thead>
+								<tr style="border: 1px solid black;">
+									<th style="border: 1px solid black; padding: 8px;">Fecha</th>
+									<th style="border: 1px solid black; padding: 8px;">Folio</th>
+									<th style="border: 1px solid black; padding: 8px;">Concepto</th>
+									<th style="border: 1px solid black; padding: 8px;">Forma de Pago</th>
+									<th style="border: 1px solid black; padding: 8px;">Metodo de Pago</th>
+									<th style="border: 1px solid black; padding: 8px; text-align: right;">Cargo</th>
+									<th style="border: 1px solid black; padding: 8px; text-align: right;">Abono</th>
+									<th style="border: 1px solid black; padding: 8px; text-align: right;">Saldo</th>
+									<th style="border: 1px solid black; padding: 8px; text-align: right;">Dias Vencimiento</th>
+								</tr>
+							</thead>
+							<tbody>
+								@for (item of report_items; track item) {
+									<tr style="border: 1px solid black;">
+										<td style="border: 1px solid black; padding: 8px;">{{item.fecha | date:'shortDate'}}</td>
+										<td style="border: 1px solid black; padding: 8px;">{{item.folio}}</td>
+										<td style="border: 1px solid black; padding: 8px;">{{item.concepto}}</td>
+										<td style="border: 1px solid black; padding: 8px;">{{item.forma_pago}}</td>
+										<td style="border: 1px solid black; padding: 8px;">{{item.metodo_pago}}</td>
+										<td style="border: 1px solid black; padding: 8px; text-align: right;">{{item.cargo | currency}}</td>
+										<td style="border: 1px solid black; padding: 8px; text-align: right;">{{item.abono | currency}}</td>
+										<td style="border: 1px solid black; padding: 8px; text-align: right;">{{item.saldo | currency}}</td>
+										<td style="border: 1px solid black; padding: 8px; text-align: right;">{{item.dias_vencimiento}}</td>
+									</tr>
+								}
+							</tbody>
+							<tfoot>
+								<tr style="border: 1px solid black;">
+									<td colspan="5" style="border: 1px solid black; padding: 8px; text-align: right;"><strong>Totales:</strong></td>
+									<td style="border: 1px solid black; padding: 8px; text-align: right;"><strong>{{total_cargos | currency}}</strong></td>
+									<td style="border: 1px solid black; padding: 8px; text-align: right;"><strong>{{total_abonos | currency}}</strong></td>
+									<td style="border: 1px solid black; padding: 8px; text-align: right;"><strong>{{total_cargos - total_abonos | currency}}</strong></td>
+									<td style="border: 1px solid black; padding: 8px;"></td>
+								</tr>
+							</tfoot>
+						</table>
+
+						<div style="margin-top: 40px; width: 50%; margin-left: 50%;">
+							<table class="table table-striped" style="width: 100%; border-collapse: collapse;">
+								<tbody>
+									<tr style="border: 1px solid black;">
+										<td style="border: 1px solid black; padding: 8px;"><strong>Saldo Inicial:</strong></td>
+										<td style="border: 1px solid black; padding: 8px; text-align: right;">{{0 | currency}}</td>
+									</tr>
+									<tr style="border: 1px solid black;">
+										<td style="border: 1px solid black; padding: 8px;"><strong>Total de Cargos:</strong></td>
+										<td style="border: 1px solid black; padding: 8px; text-align: right;">{{total_cargos | currency}}</td>
+									</tr>
+									<tr style="border: 1px solid black;">
+										<td style="border: 1px solid black; padding: 8px;"><strong>Total de Abonos:</strong></td>
+										<td style="border: 1px solid black; padding: 8px; text-align: right;">{{total_abonos | currency}}</td>
+									</tr>
+									<tr style="border: 1px solid black;">
+										<td style="border: 1px solid black; padding: 8px;"><strong>Saldo Final:</strong></td>
+										<td style="border: 1px solid black; padding: 8px; text-align: right;">{{total_cargos - total_abonos | currency}}</td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+					</div>
+				</div>
+    		}
+		</div>
+	</div>
+</div>

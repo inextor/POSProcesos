@@ -1,5 +1,5 @@
 import { ExtendedReservation, ItemInfo, OrderInfo, OrderItemInfo, ReservationInfo, ReservationItemInfo, ShippingInfo } from "./Models";
-import { User_Permission,Preferences,Production_Area,Process, Production, Shipping, Store, Payroll, Payroll_Concept_Value, Work_log_rules, User_extra_fields, User, Production_Area_Item, Item, Category, Reservation, Reservation_Item, Period, Order, Price_Type, Order_Item, Price, Item_Exception, Role, Role_Item_Price } from "./RestModels";
+import { User_Permission,Preferences,Production_Area,Process, Production, Shipping, Store, Payroll, Payroll_Concept_Value, Work_log_rules, User_extra_fields, User, Production_Area_Item, Item, Category, Reservation, Reservation_Item, Period, Order, Price_Type, Order_Item, Price, Item_Exception, Role, Role_Item_Price, Ecommerce_Item_Role } from "./RestModels";
 import { RestService } from "./services/rest.service";
 
 export class GetEmpty
@@ -294,6 +294,7 @@ export class GetEmpty
 			price_type_id: price_type.id,
 			sat_forma_pago: '99',
 			sat_serie: 'A',
+			sat_factura_id: null,
 			sat_exchange_rate: 1,
 			sat_domicilio_fiscal_receptor: '',
 			sat_regimen_fiscal_receptor: '',
@@ -659,6 +660,7 @@ export class GetEmpty
 			default_return_action: 'RETURN_TO_STOCK',
 			link_hover:'#000000',
 			stock_negative_values_allowed: 0,
+			ecommerce_enabled: 0,
 			updated:new Date()
 		};
 	}
@@ -686,6 +688,7 @@ export class GetEmpty
 			item_id: 0,
 			merma_qty: 0,
 			merma_reason: '',
+			produced: '',
 			produced_by_user_id: null,
 			production_area_id: 0,
 			qty: 0,
