@@ -294,6 +294,7 @@ export class GetEmpty
 			price_type_id: price_type.id,
 			sat_forma_pago: '99',
 			sat_serie: 'A',
+			sat_factura_id: null,
 			sat_exchange_rate: 1,
 			sat_domicilio_fiscal_receptor: '',
 			sat_regimen_fiscal_receptor: '',

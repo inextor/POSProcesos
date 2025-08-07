@@ -606,6 +606,7 @@ export interface Order{
 	quote_id:number | null;
 	sat_codigo_postal:string | null;
 	sat_domicilio_fiscal_receptor:string | null;
+	sat_factura_id:number | null;
 	sat_forma_pago:string | null;
 	sat_ieps:number;
 	sat_isr:number;
@@ -763,6 +764,7 @@ export interface Payment{
 	id:number;
 	paid_by_user_id:number | null;
 	payment_amount:number;
+	sat_factura_id:number | null;
 	received_amount:number;
 	sat_pdf_attachment_id:number | null;
 	sat_uuid:string | null;
@@ -1263,6 +1265,7 @@ export interface Sat_Factura{
 	created_by_user_id:number | null;
 	id:number;
 	order_id:number | null;
+	payment_id:number | null;
 	pdf_attachment_id:number
 	updated:Date;
 	updated_by_user_id:number | null;

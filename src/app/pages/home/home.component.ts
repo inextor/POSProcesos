@@ -17,7 +17,7 @@ export class HomeComponent extends BaseComponent implements OnInit
 	{
 		if( !this.rest.user?.id )
 		{
-			this.router.navigate(['/login']);
+			//this.router.navigate(['/login']);
 		}
 	}
 }

@@ -38,6 +38,7 @@ import { ListConsumptionComponent } from './pages/list-consumption/list-consumpt
 import { ReporteEstadoCuentaClienteComponent } from './pages/reporte-estado-cuenta-cliente/reporte-estado-cuenta-cliente.component';
 import { TestComponent } from './pages/test/test.component';
 import { ListSatFacturaComponent } from './pages/list-sat-factura/list-sat-factura.component';
+import { ListObjectSatFacturaComponent } from './pages/list-object-sat-factura/list-object-sat-factura.component';
 
 export const routes: Routes = [
 	{path: 'login', component: LoginComponent},
@@ -87,6 +88,8 @@ export const routes: Routes = [
 			{path: 'reporte-estado-cuenta-cliente', component: ReporteEstadoCuentaClienteComponent, canActivate: [authGuard]},
 			{path: 'test', component: TestComponent, canActivate: [authGuard]},
 			{path: 'list-sat-factura', component: ListSatFacturaComponent, canActivate: [authGuard]},
+			{path: 'list-order-sat-factura/:order_id', component: ListObjectSatFacturaComponent},
+			{path: 'list-payment-sat-factura/:payment_id', component: ListObjectSatFacturaComponent},
 		]
 	},
 ];
