@@ -27,7 +27,7 @@ for example for the model role the routes must be:
 ```
 /add-role	 //To add new role
 /edit-role/1  //To edit role with id 1
-/save-role	//To save role
+/save-role	//To update the role
 /list-role	//To list all roles
 /list-role?eq.name=admin //To search all roles with name admin
 ```
