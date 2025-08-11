@@ -37,44 +37,43 @@
 	</div>
 	<div class="card p-3 mt-3">
 		<div id="to_pdf">
-			<div class="row">
-				<div class="col-6">
-					@if(preferences && preferences.logo_image_id){
-						<img [src]="rest.getImagePath(preferences.logo_image_id)" style="max-width: 150px; max-height: 150px;">
-					}
-				</div>
-				<div class="col-6 text-end">
-					@if(store){
-						<p><strong>{{store.name}}</strong></p>
-						<p>{{store.address}}, {{store.city}}, {{store.state}}, {{store.zipcode}}</p>
-					}
-					@if(billing_data){
-						<p>RFC: {{billing_data.rfc}}</p>
-						<p>{{billing_data.razon_social}}</p>
-					}
-				</div>
-			</div>
-			@if (selectedClient) {
-    		    <div class="row mt-4">
-    		        <div class="col-6">
-    		            <h3>Datos del Cliente</h3>
-    		            <p><strong>Nombre:</strong> {{selectedClient.name}}</p>
-    		            @if(billing_address && billing_address.email){
-    		            <p><strong>Email:</strong> {{billing_address.email}}</p>
-    		            }
-    		            @if(selectedClient.phone){
-    		            <p><strong>Teléfono:</strong> {{selectedClient.phone}}</p>
-    		            }
-    		        </div>
-					@if (billing_address && billing_address.rfc && billing_address.address && billing_address.city && billing_address.state && billing_address.zipcode) {
-						<div class="col-6">
-							<h3>Datos de Facturación</h3>
-							<p><strong>RFC:</strong> {{billing_address.rfc}}</p>
-							<p><strong>Dirección:</strong> {{billing_address.address}}, {{billing_address.city}}, {{billing_address.state}}, {{billing_address.zipcode}}</p>
-						</div>
-					}
-    		    </div>
-    		}
+			<table style="width: 100%;">
+				<tr>
+					<td style="width: 20%; text-align: left; vertical-align: top;">
+						@if(preferences && preferences.logo_image_id){
+							<img [src]="rest.getImagePath(preferences.logo_image_id)" style="max-width: 150px; max-height: 150px;">
+						}
+					</td>
+					<td style="width: 40%; text-align: left; vertical-align: top;">
+						@if(store){
+							<h3>{{preferences?.name}}</h3>
+							<p><strong>{{store.name}}</strong></p>
+							<p>{{formatStoreAddress(store)}}</p>
+						}
+						@if(billing_data){
+							<p>RFC: {{billing_data.rfc}}</p>
+							<p>{{billing_data.razon_social}}</p>
+						}
+					</td>
+					<td style="width: 40%; text-align: right; vertical-align: top;">
+						@if (selectedClient) {
+							<h3>Datos del Cliente</h3>
+							<p><strong>Nombre:</strong> {{selectedClient.name}}</p>
+							@if(billing_address && billing_address.email){
+							<p><strong>Email:</strong> {{billing_address.email}}</p>
+							}
+							@if(selectedClient.phone){
+							<p><strong>Teléfono:</strong> {{selectedClient.phone}}</p>
+							}
+							@if (billing_address && billing_address.rfc && billing_address.address && billing_address.city && billing_address.state && billing_address.zipcode) {
+								<h3 style="margin-top: 1rem;">Datos de Facturación</h3>
+								<p><strong>RFC:</strong> {{billing_address.rfc}}</p>
+								<p><strong>Dirección:</strong> {{billing_address.address}}, {{billing_address.city}}, {{billing_address.state}}, {{billing_address.zipcode}}</p>
+							}
+						}
+					</td>
+				</tr>
+			</table>
 
     		@if (is_loading) {
 				<div class="row">

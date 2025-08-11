@@ -373,4 +373,12 @@ export class ReporteEstadoCuentaClienteComponent extends BaseComponent implement
 			});
 		}
 	}
+
+	formatStoreAddress(store: Store | null): string {
+		if (!store) {
+			return '';
+		}
+		const addressParts = [store.address, store.city, store.state, store.zipcode];
+		return addressParts.filter(part => part).join(', ');
+	}
 }
