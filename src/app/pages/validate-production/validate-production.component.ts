@@ -10,6 +10,7 @@ import { FormsModule } from '@angular/forms';
 import { Utils } from '../../modules/shared/Utils';
 import { ModalComponent } from '../../components/modal/modal.component';
 import { GetEmpty } from '../../modules/shared/GetEmpty';
+import { LoadingComponent } from '../../components/loading/loading.component';
 import { PageStructureComponent } from "../../modules/shared/page-structure/page-structure.component";
 
 interface CProductionInfo extends ProductionInfo
@@ -35,7 +36,7 @@ interface CProduction
     selector: 'app-validate-production',
     templateUrl: './validate-production.component.html',
     styleUrl: './validate-production.component.css',
-    imports: [CommonModule, FormsModule ]
+    imports: [CommonModule, FormsModule, LoadingComponent ]
 })
 
 export class ValidateProductionComponent extends BaseComponent
@@ -257,7 +258,8 @@ export class ValidateProductionComponent extends BaseComponent
 						newProduction.produced_by_user_id = pi.production_list[0].production.produced_by_user_id; //se toma el usuario de la primera produccion
 						newProduction.merma_reason = pi.merma_reason ? pi.merma_reason : null;
 						newProduction.qty_reported = pi.validated + pi.merma;
-						newProduction.store_id = pi.production_list[0].production.store_id; //se toma la tienda de la primera produccion
+						let production_area = this.production_area_list.find(pa => pa.id == this.search_production.eq.production_area_id);
+						newProduction.store_id = production_area?.store_id || pi.production_list[0].production.store_id; //se toma la tienda de la primera produccion
 						newProduction.verified_by_user_id = this.rest.user?.id as number;
 						newProduction.production_area_id = pi.production_list[0].production.production_area_id; //se toma el area de produccion de la primera produccion
 
