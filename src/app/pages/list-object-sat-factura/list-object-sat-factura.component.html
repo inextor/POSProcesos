@@ -20,6 +20,8 @@
 							<th class="text-start">ID</th>
 							<th class="text-center">Actual</th>
 							<th class="text-center">Detalle</th>
+							<th class="text-center">Serie</th>
+							<th class="text-center">Folio</th>
 							<th class="text-center">Cliente</th>
 							<th class="text-center">UUID</th>
 							<th class="text-center">Fecha</th>
@@ -45,6 +47,8 @@
 										</a>
 									}
 								</td>
+								<td class="text-center">{{sat_factura.serie}}</td>
+								<td class="text-center">{{sat_factura.folio}}</td>
 								<td class="text-center">{{sat_factura.client_name}}</td>
 								<td class="text-center">{{sat_factura.uuid}}</td>
 								<td class="text-start">{{sat_factura.created | date: 'short' }}</td>

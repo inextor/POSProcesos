@@ -52,6 +52,8 @@
 							<tr>
 								<th class="text-start">ID</th>
 								<th class="text-center">Detalle</th>
+								<th class="text-center">Serie</th>
+								<th class="text-center">Folio</th>
 								<th class="text-center">Cliente</th>
 								<th class="text-center">UUID</th>
 								<th class="text-center">Fecha</th>
@@ -74,6 +76,8 @@
 											<ng-container *ngIf="sat_factura.payment_id">- Pago {{sat_factura.payment_id}}</ng-container>
 										</a>
 									</td>
+									<td class="text-center">{{sat_factura.serie}}</td>
+									<td class="text-center">{{sat_factura.folio}}</td>
 									<td class="text-center">{{sat_factura.client_name}}</td>
 									<td class="text-center">{{sat_factura.uuid}}</td>
 									<td class="text-start">{{sat_factura.created | date: 'short' }}</td>
@@ -129,13 +133,13 @@
 												</svg>
 											</abbr>
 										</a>
-										<a class="mx-1 btn btn-primary" (click)="checarFactura(sat_factura)" *ngIf="sat_factura.cancelado_por_sat != 'YES'">
+										<button type="button" class="mx-1 btn btn-primary" (click)="checarFactura(sat_factura)" *ngIf="sat_factura.cancelado_por_sat != 'YES'">
 											<abbr title="Revisar estatus de factura">
 												<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24">
 													<path fill="currentColor" d="M9 13a3 3 0 0 0 3 3a3 3 0 0 0 3-3a3 3 0 0 0-3-3a3 3 0 0 0-3 3m11 6.59V8l-6-6H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12c.45 0 .85-.15 1.19-.4l-4.43-4.43c-.8.52-1.76.83-2.76.83a5 5 0 0 1-5-5a5 5 0 0 1 5-5a5 5 0 0 1 5 5c0 1-.31 1.96-.83 2.75z"/>
 												</svg>
 											</abbr>
-										</a>
+										</button>
 									</td>
 								</tr>
 							</ng-container>

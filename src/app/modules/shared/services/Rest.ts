@@ -16,9 +16,6 @@ export interface CsvNumberArray
 	[key: string]: number[];
 }
 
-
-
-
 /*
 * From perl operators except lk = LIKE
 * Several comparison operators impose string contexts upon their operands.
@@ -255,6 +252,40 @@ export class Rest<U,T>
 		return params;
 	}
 
+	getCsvRangeString(arr:any[]):string
+	{
+		let result = '';
+
+		let digits = /^\d\+$/
+
+		let number_array:number[] = [];
+		let only_numbers = true;
+
+
+		for(let x of arr)
+		{
+			let type = typeof x;
+
+			if(type == 'string')
+			{
+				if( digits.test( x ) )
+				{
+					number_array.push( parseInt( x ) );
+					continue;
+				}
+				break;
+			}
+		}
+
+		if( only_numbers )
+		{
+			number_array.sort();
+			return Utils.generateRangeString( number_array );
+		}
+
+		return arr.join(',');
+	}
+
 	searchAsPost(searchObj:Partial<SearchObject<U>>):Observable<RestResponse<T>>
 	{
 		let params	= this.getParamsFromSearch(searchObj);
@@ -284,11 +315,10 @@ export class Rest<U,T>
 		}
 
 		let params = this.getParamsFromSearch(search_object);
-		return this.http.get<RestResponse<T>>
-		(
-			`${this.domain_configuration.domain}/${this.url_base}`,
-			{params,headers:this.getSessionHeaders(),withCredentials:true}
-		)
+		let url = `${this.domain_configuration.domain}/${this.url_base}`;
+		let options = {params,headers:this.getSessionHeaders(),withCredentials:true};
+
+		return this.http.get<RestResponse<T>>( url, options )
 		.pipe
 		(
 			retry(2),
@@ -562,7 +592,6 @@ export class Rest<U,T>
 				mergeMap((r)=> of( Utils.convertToDate( r ) as T ) )
 			);
 	}
-
 
 	getSearchObject(param_map:ParamMap,f:string[] | null = null ,e:string[] | null = null):SearchObject<U>
 	{
