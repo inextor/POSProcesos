@@ -92,6 +92,7 @@
 									<th style="border: 1px solid black; padding: 8px;">Concepto</th>
 									<th style="border: 1px solid black; padding: 8px;">Forma de Pago</th>
 									<th style="border: 1px solid black; padding: 8px;">Metodo de Pago</th>
+									<th style="border: 1px solid black; padding: 8px; text-align: right;">S. Incial</th>
 									<th style="border: 1px solid black; padding: 8px; text-align: right;">Cargo</th>
 									<th style="border: 1px solid black; padding: 8px; text-align: right;">Abono</th>
 									<th style="border: 1px solid black; padding: 8px; text-align: right;">Saldo</th>
@@ -106,9 +107,10 @@
 										<td style="border: 1px solid black; padding: 8px;">{{item.concepto}}</td>
 										<td style="border: 1px solid black; padding: 8px;">{{item.forma_pago}}</td>
 										<td style="border: 1px solid black; padding: 8px;">{{item.metodo_pago}}</td>
+										<td style="border: 1px solid black; padding: 8px; text-align: right;">{{balance.balance + item.saldo - item.cargo + item.abono | currency}}</td>
 										<td style="border: 1px solid black; padding: 8px; text-align: right;">{{item.cargo | currency}}</td>
 										<td style="border: 1px solid black; padding: 8px; text-align: right;">{{item.abono | currency}}</td>
-										<td style="border: 1px solid black; padding: 8px; text-align: right;">{{item.saldo | currency}}</td>
+										<td style="border: 1px solid black; padding: 8px; text-align: right;">{{balance.balance + item.saldo | currency}}</td>
 										<td style="border: 1px solid black; padding: 8px; text-align: right;">{{item.dias_vencimiento}}</td>
 									</tr>
 								}
@@ -116,9 +118,10 @@
 							<tfoot>
 								<tr style="border: 1px solid black;">
 									<td colspan="5" style="border: 1px solid black; padding: 8px; text-align: right;"><strong>Totales:</strong></td>
-									<td style="border: 1px solid black; padding: 8px; text-align: right;"><strong>{{total_cargos | currency}}</strong></td>
-									<td style="border: 1px solid black; padding: 8px; text-align: right;"><strong>{{total_abonos | currency}}</strong></td>
-									<td style="border: 1px solid black; padding: 8px; text-align: right;"><strong>{{total_cargos - total_abonos | currency}}</strong></td>
+									<td style="border: 1px solid black; padding: 8px; text-align: right;"></td>
+									<td style="border: 1px solid black; padding: 8px; text-align: right;"><strong>{{total_cargos| currency}}</strong></td>
+									<td style="border: 1px solid black; padding: 8px; text-align: right;"><strong>{{total_abonos| currency}}</strong></td>
+									<td style="border: 1px solid black; padding: 8px; text-align: right;"><strong>{{balance.balance + total_cargos - total_abonos | currency}}</strong></td>
 									<td style="border: 1px solid black; padding: 8px;"></td>
 								</tr>
 							</tfoot>

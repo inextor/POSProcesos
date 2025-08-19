@@ -98,7 +98,6 @@ export class ReporteEstadoCuentaClienteComponent extends BaseComponent implement
 				start = Utils.getDateFromLocalMysqlString( this.start_date+' 00:00:00' );
 				end = Utils.getDateFromLocalMysqlString( this.end_date+' 23:59:59' );
 
-
 				if( this.rest?.user?.store_id == null )
 				{
 					this.showError('No tienes configurado una sucursal, por favor habla con tu administrador');
@@ -110,7 +109,7 @@ export class ReporteEstadoCuentaClienteComponent extends BaseComponent implement
 					data: this.fetchData(client_user_id, start, end),
 					store: this.rest_store.get(this.rest?.user?.store_id as number),
 					preferences: this.rest_preferences.get(1),
-					balance: this.rest.getReportByPath('getBalance', { to_date: Utils.getLocalMysqlStringFromDate(start) })
+					balance: this.rest.getReportByPath('getBalance', { to_date: Utils.getLocalMysqlStringFromDate(start), client_user_id: client_user_id })
 				});
 			}),
 			mergeMap((response: any) => {
