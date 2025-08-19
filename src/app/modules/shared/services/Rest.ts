@@ -280,7 +280,7 @@ export class Rest<U,T>
 		if( only_numbers )
 		{
 			number_array.sort();
-			return Utils.generateRangeString( number_array );
+			return number_array.join(',');
 		}
 
 		return arr.join(',');
@@ -730,7 +730,6 @@ export class Rest<U,T>
 		};
 		return item_search;
 	}
-
 
 	getRelation(source_field:string,target_field:keyof T | '' = '',target_obj:string | undefined = undefined ):DataRelation<T>
 	{

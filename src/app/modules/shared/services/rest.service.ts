@@ -836,8 +836,6 @@ export class RestService
 		return final_list;
 	}
 
-
-
 	createStructuredItems(oi:OrderInfo):StructuredOrderInfo
 	{
 		let order_info:StructuredOrderInfo = {...oi, structured_items: []};
