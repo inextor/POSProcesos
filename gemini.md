@@ -9,7 +9,7 @@ Use the deprecated old flow control syntax *ngIf,*ngFor,etc
 
 # Things to do
 
-Use the new flow control syntax  @if,@for,etc
+Use the new flow control syntax
 
 # About components organization
 
