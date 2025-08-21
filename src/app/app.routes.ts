@@ -41,6 +41,7 @@ import { ReporteEstadoCuentaClienteComponent } from './pages/reporte-estado-cuen
 import { TestComponent } from './pages/test/test.component';
 import { ListSatFacturaComponent } from './pages/list-sat-factura/list-sat-factura.component';
 import { ListObjectSatFacturaComponent } from './pages/list-object-sat-factura/list-object-sat-factura.component';
+import { ListMermaTotalsComponent } from './pages/list-merma-totals/list-merma-totals.component';
 
 
 export const routes: Routes = [
@@ -93,7 +94,8 @@ export const routes: Routes = [
 			{path: 'test', component: TestComponent, canActivate: [authGuard]},
 			{path: 'list-sat-factura', component: ListSatFacturaComponent, canActivate: [authGuard]},
 			{path: 'list-order-sat-factura/:order_id', component: ListObjectSatFacturaComponent},
-			{path: 'list-payment-sat-factura/:payment_id', component: ListObjectSatFacturaComponent}
+			{path: 'list-payment-sat-factura/:payment_id', component: ListObjectSatFacturaComponent},
+			{path: 'list-merma-totals', component: ListMermaTotalsComponent, canActivate: [authGuard]},
 		]
 	},
 ];
