@@ -1826,6 +1826,15 @@ export interface Ecommerce_Item_Role{
 	updated_by_user_id:number;
 }
 
+export interface Ecommerce_Profile {
+  id: number;
+  ecommerce_id: number;
+  name: string;
+  created: Date;
+  updated: Date;
+  created_by_user_id: number;
+  updated_by_user_id: number;
+}
 
 export interface Labels{
 	id:number;
