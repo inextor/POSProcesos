@@ -39,6 +39,8 @@ import { ReporteEstadoCuentaClienteComponent } from './pages/reporte-estado-cuen
 import { TestComponent } from './pages/test/test.component';
 import { ListSatFacturaComponent } from './pages/list-sat-factura/list-sat-factura.component';
 import { ListObjectSatFacturaComponent } from './pages/list-object-sat-factura/list-object-sat-factura.component';
+import { SaveEcommerceProfileComponent } from './pages/save-ecommerce-profile/save-ecommerce-profile.component';
+import { ListEcommerceProfileComponent } from './pages/list-ecommerce-profile/list-ecommerce-profile.component';
 
 export const routes: Routes = [
 	{path: 'login', component: LoginComponent},
@@ -79,6 +81,9 @@ export const routes: Routes = [
 			{path: 'list-role', component: ListRoleComponent, canActivate: [authGuard]},
 			{path: 'add-role', component: SaveRoleComponent, canActivate: [authGuard]},
 			{path: 'edit-role/:id', component: SaveRoleComponent, canActivate: [authGuard]},
+			{path: 'add-ecommerce-profile/:ecommerce_id', component: SaveEcommerceProfileComponent, canActivate: [authGuard]},
+			{path: 'edit-ecommerce-profile/:id', component: SaveEcommerceProfileComponent, canActivate: [authGuard]},
+			{path: 'list-ecommerce-profile', component: ListEcommerceProfileComponent, canActivate: [authGuard]},
 			{path: 'list-role-item-price', component: ListRoleItemPriceComponent, canActivate: [authGuard]},
 			{path: 'list-production', component: ListProductionComponent, canActivate: [authGuard]},
 			{path: 'resume-production', component: ResumeProductionComponent, canActivate: [authGuard]},
