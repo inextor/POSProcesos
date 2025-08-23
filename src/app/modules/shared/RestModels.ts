@@ -1826,7 +1826,7 @@ export interface Ecommerce_Item_Role{
 	updated_by_user_id:number;
 }
 
-export interface Ecommerce_Profile {
+export interface Profile {
   id: number;
   ecommerce_id: number;
   name: string;

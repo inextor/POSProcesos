@@ -1,5 +1,5 @@
 import { ExtendedReservation, ItemInfo, OrderInfo, OrderItemInfo, ReservationInfo, ReservationItemInfo, ShippingInfo } from "./Models";
-import { User_Permission,Preferences,Production_Area,Process, Production, Shipping, Store, Payroll, Payroll_Concept_Value, Work_log_rules, User_extra_fields, User, Production_Area_Item, Item, Category, Reservation, Reservation_Item, Period, Order, Price_Type, Order_Item, Price, Item_Exception, Role, Role_Item_Price, Ecommerce_Item_Role, Ecommerce_Profile, Ecommerce } from "./RestModels";
+import { User_Permission,Preferences,Production_Area,Process, Production, Shipping, Store, Payroll, Payroll_Concept_Value, Work_log_rules, User_extra_fields, User, Production_Area_Item, Item, Category, Reservation, Reservation_Item, Period, Order, Price_Type, Order_Item, Price, Item_Exception, Role, Role_Item_Price, Ecommerce_Item_Role, Profile, Ecommerce } from "./RestModels";
 import { RestService } from "./services/rest.service";
 
 export class GetEmpty
@@ -49,7 +49,7 @@ export class GetEmpty
 		};
 	}
 
-	static ecommerce_profile(): Ecommerce_Profile
+	static ecommerce_profile(): Profile
 	{
 		return {
 			id: 0,
