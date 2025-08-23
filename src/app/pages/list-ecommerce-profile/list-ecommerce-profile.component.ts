@@ -19,6 +19,7 @@ import { GetEmpty } from '../../modules/shared/GetEmpty';
 })
 export class ListEcommerceProfileComponent extends BaseComponent implements OnInit {
 
+
 	ecommerce_profiles: Ecommerce_Profile[] = [];
 	rest_ecommerce_profile: RestSimple<Ecommerce_Profile> = this.rest.initRestSimple('ecommerce_profile');
 	search_ecommerce_profile: SearchObject<Ecommerce_Profile> = this.rest_ecommerce_profile.getEmptySearch();
@@ -29,12 +30,16 @@ export class ListEcommerceProfileComponent extends BaseComponent implements OnIn
 	ngOnInit() {
 		this.search_ecommerce_profile.limit = this.page_size;
 		this.search_ecommerce_profile.sort_order = ['name_ASC'];
+		this.path = '/list-ecommerce-profile';
 
 		this.subs.sink = this.route.paramMap.pipe
 		(
 			mergeMap((param_map) => {
 				this.is_loading = true;
 				const ecommerceId = param_map.get('ecommerce_id');
+
+				this.path = '/list-ecommerce-profile/'+ecommerceId;
+
 
 				if (!ecommerceId) {
 					this.showError('Ecommerce ID not found in route');
