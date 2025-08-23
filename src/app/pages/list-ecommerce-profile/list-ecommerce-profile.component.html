@@ -1,0 +1,32 @@
+<div class="container-fluid">
+	<div class="row">
+		<div class="col-6">
+			<h1 class="my-3">Perfiles de Ecommerce {{ecommerce.name}}</h1>
+		</div>
+		<div class="col-6 text-end">
+			<button class="btn btn-primary" [routerLink]="['/add-ecommerce-profile', ecommerce.id]">Agregar Perfil</button>
+		</div>
+	</div>
+	<app-loading [is_loading]="is_loading"></app-loading>
+	<app-pagination [path]="path" [current_page]="current_page" [total_pages]="total_pages"></app-pagination>
+	<div class="card p-3 mt-3" *ngIf="!is_loading">
+		<div class="table-responsive">
+			<table class="table table-striped">
+				<thead>
+					<tr>
+						<th>ID</th>
+						<th>Nombre</th>
+						<th>Acciones</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr *ngFor="let ecommerce_profile of ecommerce_profiles">
+						<td>{{ecommerce_profile.id}}</td>
+						<td>{{ecommerce_profile.name}}</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+		<app-pagination [path]="path" [current_page]="current_page" [total_pages]="total_pages"></app-pagination>
+	</div>
+</div>
