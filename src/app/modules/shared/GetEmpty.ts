@@ -1,9 +1,10 @@
 import { ExtendedReservation, ItemInfo, OrderInfo, OrderItemInfo, ReservationInfo, ReservationItemInfo, ShippingInfo } from "./Models";
-import { User_Permission,Preferences,Production_Area,Process, Production, Shipping, Store, Payroll, Payroll_Concept_Value, Work_log_rules, User_extra_fields, User, Production_Area_Item, Item, Category, Reservation, Reservation_Item, Period, Order, Price_Type, Order_Item, Price, Item_Exception, Role, Role_Item_Price, Ecommerce_Item_Role } from "./RestModels";
+import { User_Permission,Preferences,Production_Area,Process, Production, Shipping, Store, Payroll, Payroll_Concept_Value, Work_log_rules, User_extra_fields, User, Production_Area_Item, Item, Category, Reservation, Reservation_Item, Period, Order, Price_Type, Order_Item, Price, Item_Exception, Role, Role_Item_Price, Ecommerce_Item_Role, Ecommerce_Profile, Ecommerce } from "./RestModels";
 import { RestService } from "./services/rest.service";
 
 export class GetEmpty
 {
+
 	static item_info(): ItemInfo
 	{
 		return {
@@ -30,6 +31,37 @@ export class GetEmpty
 			updated_by_user_id: 0
 		}
 	}
+
+	static ecommerce(): Ecommerce
+	{
+		return {
+			id: 0,
+			name: '',
+			created: new Date(),
+			updated: new Date(),
+			font_color: null,
+			color: "",
+			store_id: null,
+			price_list_id: 0,
+			price_type_id: 0,
+			logo_image_id: null,
+			preferences_id: 0
+		};
+	}
+
+	static ecommerce_profile(): Ecommerce_Profile
+	{
+		return {
+			id: 0,
+			ecommerce_id: 0,
+			name: '',
+			created: new Date(),
+			updated: new Date(),
+			created_by_user_id: 0,
+			updated_by_user_id: 0
+		};
+	}
+
 	static production_role_price(): Role_Item_Price {
 		let p: Role_Item_Price = {
 			id: 0,
