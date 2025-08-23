@@ -143,18 +143,18 @@ export class ReporteEstadoCuentaClienteComponent extends BaseComponent implement
 
 				console.log('orders_ids',orders_ids);
 
-				let order_payments_obs = orders_ids.length > 0 ? this.rest_order.search
-				({
-					csv:{ id: orders_ids },
-					limit: 99999
-				}) : of({total: 0, data: []}) as Observable<RestResponse<OrderInfo>>;
+				//let order_payments_obs = orders_ids.length > 0 ? this.rest_order.search
+				//({
+				//	csv:{ id: orders_ids },
+				//	limit: 99999
+				//}) : of({total: 0, data: []}) as Observable<RestResponse<OrderInfo>>;
 
 				return forkJoin
 				({
 					client_user: of( response.data.client_user ),
 					closed_orders: of( response.data.closed_orders ),
 					payments_received: of( response.data.payments_received ),
-					order_info_with_payments: order_payments_obs,
+					//order_info_with_payments: order_payments_obs,
 					billing_address: response.data.client_user.default_billing_address_id ? this.rest_address.get(response.data.client_user.default_billing_address_id) : of(null)
 				});
 			})
@@ -166,7 +166,8 @@ export class ReporteEstadoCuentaClienteComponent extends BaseComponent implement
 			{
 				this.selectedClient = response.client_user;
 				this.billing_address = response.billing_address;
-				this.unique_orders = this.createUniqueOrderList(response.closed_orders.data, response.order_info_with_payments.data);
+				this.unique_orders = response.closed_orders.data;
+						//this.createUniqueOrderList(response.closed_orders.data, response.order_info_with_payments.data);
 				this.report_items = this.generateReport(this.unique_orders, response.payments_received.data);
 				this.calculateTotals();
 				this.is_loading = false;
