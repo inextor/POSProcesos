@@ -84,6 +84,7 @@ export const routes: Routes = [
 			{path: 'add-ecommerce-profile/:ecommerce_id', component: SaveEcommerceProfileComponent, canActivate: [authGuard]},
 			{path: 'edit-ecommerce-profile/:id', component: SaveEcommerceProfileComponent, canActivate: [authGuard]},
 			{path: 'list-ecommerce-profile', component: ListEcommerceProfileComponent, canActivate: [authGuard]},
+			{path: 'list-ecommerce-profile/:ecommerce_id', component: ListEcommerceProfileComponent, canActivate: [authGuard]},
 			{path: 'list-role-item-price', component: ListRoleItemPriceComponent, canActivate: [authGuard]},
 			{path: 'list-production', component: ListProductionComponent, canActivate: [authGuard]},
 			{path: 'resume-production', component: ResumeProductionComponent, canActivate: [authGuard]},
