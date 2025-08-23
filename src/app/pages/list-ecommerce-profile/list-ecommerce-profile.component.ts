@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { RestSimple, SearchObject } from '../../modules/shared/services/Rest';
-import { Ecommerce, Ecommerce_Profile } from '../../modules/shared/RestModels';
+import { Ecommerce, Profile } from '../../modules/shared/RestModels';
 import { BaseComponent } from '../../modules/shared/base/base.component';
 import { forkJoin, mergeMap, of } from 'rxjs';
 import { LoadingComponent } from "../../components/loading/loading.component";
@@ -19,9 +19,9 @@ import { GetEmpty } from '../../modules/shared/GetEmpty';
 })
 export class ListEcommerceProfileComponent extends BaseComponent implements OnInit {
 
-	ecommerce_profiles: Ecommerce_Profile[] = [];
-	rest_ecommerce_profile: RestSimple<Ecommerce_Profile> = this.rest.initRestSimple('ecommerce_profile');
-	search_ecommerce_profile: SearchObject<Ecommerce_Profile> = this.rest_ecommerce_profile.getEmptySearch();
+	ecommerce_profiles: Profile[] = [];
+	rest_ecommerce_profile: RestSimple<Profile> = this.rest.initRestSimple('ecommerce_profile');
+	search_ecommerce_profile: SearchObject<Profile> = this.rest_ecommerce_profile.getEmptySearch();
 
 	ecommerce: Ecommerce = GetEmpty.ecommerce();
 	rest_ecommerce: RestSimple<Ecommerce> = this.rest.initRestSimple('ecommerce');
