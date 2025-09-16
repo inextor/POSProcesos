@@ -9,16 +9,16 @@ import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 
 @Component({
-	selector: 'app-save-ecommerce-profile',
-	templateUrl: './save-ecommerce-profile.component.html',
-	styleUrls: ['./save-ecommerce-profile.component.css'],
+	selector: 'app-save-profile',
+	templateUrl: './save-profile.component.html',
+	styleUrls: ['./save-profile.component.css'],
 	standalone: true,
 	imports: [LoadingComponent, FormsModule, CommonModule]
 })
-export class SaveEcommerceProfileComponent extends BaseComponent implements OnInit {
+export class SaveProfileComponent extends BaseComponent implements OnInit {
 
 	ecommerce_profile: Profile = GetEmpty.ecommerce_profile();
-	rest_ecommerce_profile: RestSimple<Profile> = this.rest.initRestSimple('ecommerce_profile');
+	rest_ecommerce_profile: RestSimple<Profile> = this.rest.initRestSimple('profile');
 	ecommerce: Ecommerce = GetEmpty.ecommerce();
 	rest_ecommerce: RestSimple<Ecommerce> = this.rest.initRestSimple('ecommerce');
 

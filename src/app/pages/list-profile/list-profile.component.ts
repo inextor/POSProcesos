@@ -11,16 +11,16 @@ import { RouterLink } from '@angular/router';
 import { GetEmpty } from '../../modules/shared/GetEmpty';
 
 @Component({
-	selector: 'app-list-ecommerce-profile',
-	templateUrl: './list-ecommerce-profile.component.html',
-	styleUrls: ['./list-ecommerce-profile.component.css'],
+	selector: 'app-list-profile',
+	templateUrl: './list-profile.component.html',
+	styleUrls: ['./list-profile.component.css'],
 	standalone: true,
 	imports: [LoadingComponent, FormsModule, CommonModule, PaginationComponent, RouterLink]
 })
-export class ListEcommerceProfileComponent extends BaseComponent implements OnInit {
+export class ListProfileComponent extends BaseComponent implements OnInit {
 
 	ecommerce_profiles: Profile[] = [];
-	rest_ecommerce_profile: RestSimple<Profile> = this.rest.initRestSimple('ecommerce_profile');
+	rest_ecommerce_profile: RestSimple<Profile> = this.rest.initRestSimple('profile');
 	search_ecommerce_profile: SearchObject<Profile> = this.rest_ecommerce_profile.getEmptySearch();
 
 	ecommerce: Ecommerce = GetEmpty.ecommerce();
