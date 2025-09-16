@@ -35,12 +35,15 @@ import { ListEcommerceOrderComponent } from './pages/list-ecommerce-order/list-e
 import { ViewAccountComponent } from './pages/view-account/view-account.component';
 import { ViewLedgerComponent } from './pages/view-ledger/view-ledger.component';
 import { ListConsumptionComponent } from './pages/list-consumption/list-consumption.component';
+
+import { ReportCashCountTotalsComponent } from './pages/report-cash-count-totals/report-cash-count-totals.component';
 import { ReporteEstadoCuentaClienteComponent } from './pages/reporte-estado-cuenta-cliente/reporte-estado-cuenta-cliente.component';
 import { TestComponent } from './pages/test/test.component';
 import { ListSatFacturaComponent } from './pages/list-sat-factura/list-sat-factura.component';
 import { ListObjectSatFacturaComponent } from './pages/list-object-sat-factura/list-object-sat-factura.component';
 import { SaveProfileComponent } from './pages/save-profile/save-profile.component';
 import { ListProfileComponent } from './pages/list-profile/list-profile.component';
+
 
 export const routes: Routes = [
 	{path: 'login', component: LoginComponent},
@@ -91,11 +94,12 @@ export const routes: Routes = [
 			{path: 'resume-production-day', component: ResumeProductionDayComponent, canActivate: [authGuard]},
 			{path: 'list-ecommerce-order', component: ListEcommerceOrderComponent, canActivate: [authGuard]},
 			{path: 'list-consumption', component: ListConsumptionComponent, canActivate: [authGuard]},
+			{path: 'report-cash-count-totals', component: ReportCashCountTotalsComponent, canActivate: [authGuard]},
 			{path: 'reporte-estado-cuenta-cliente', component: ReporteEstadoCuentaClienteComponent, canActivate: [authGuard]},
 			{path: 'test', component: TestComponent, canActivate: [authGuard]},
 			{path: 'list-sat-factura', component: ListSatFacturaComponent, canActivate: [authGuard]},
 			{path: 'list-order-sat-factura/:order_id', component: ListObjectSatFacturaComponent},
-			{path: 'list-payment-sat-factura/:payment_id', component: ListObjectSatFacturaComponent},
+			{path: 'list-payment-sat-factura/:payment_id', component: ListObjectSatFacturaComponent}
 		]
 	},
 ];

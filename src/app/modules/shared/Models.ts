@@ -1,4 +1,4 @@
-import { Address, Bank_Movement, Bank_Movement_Order, Category, Delivery_Assignment, Item, Item_Exception, Item_Option, Item_Option_Value, Offer, Order, Order_Item, Order_Item_Exception, Order_Item_Serial, Payment, Period, Price, Price_Type, Process, Production, Production_Area, Purchase, Requisition, Requisition_Item, Reservation, Reservation_Item, Reservation_Item_Serial, Return_Assignment, Serial, Serial_Image, Shipping, Shipping_Item, Stock_Record, Store, Task, User } from "./RestModels";
+import { Address, Cash_Close, Cash_Count, Bank_Movement, Bank_Movement_Order, Category, Delivery_Assignment, Item, Item_Exception, Item_Option, Item_Option_Value, Offer, Order, Order_Item, Order_Item_Exception, Order_Item_Serial, Payment, Period, Price, Price_Type, Process, Production, Production_Area, Purchase, Requisition, Requisition_Item, Reservation, Reservation_Item, Reservation_Item_Serial, Return_Assignment, Serial, Serial_Image, Shipping, Shipping_Item, Stock_Record, Store, Task, User } from "./RestModels";
 
 interface CSerial extends Serial
 {
@@ -243,6 +243,18 @@ export interface ReservationInfo
 	address:Address | null;
 }
 
+
+export interface CashCountInfo
+{
+	currency_id: string;
+	denomination: number;
+	type: string;
+	total_quantity: number;
+	total_amount: number;
+	total_cash_closes: number;
+	first_date: string;
+	last_date: string;
+}
 export interface MovementInfo
 {
 	bank_movement:Bank_Movement;

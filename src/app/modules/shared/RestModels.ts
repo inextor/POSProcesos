@@ -218,6 +218,19 @@ export interface Cash_Close{
 	start:string;	// 'Hora de la dispositivo del cajero, No es una hora fiable, para hacer las cuentas solo sirve para imprimir',
 	updated:Date;
 }
+
+export interface Cash_Count{
+	cash_close_id:number;
+	created:Date;
+	currency_id:string;
+	denomination:number;
+	id:number;
+	quantity:number;
+	type: 'COIN' | 'BILL' | 'CREDIT_CARD' | 'DEBIT_CARD' | 'CHECK' | 'TRANSFER';
+	only_reference:number;
+	updated:Date;
+ }
+
 export interface Cashier_Withdrawal{
 	amount:number;
 	created:Date;
@@ -886,6 +899,7 @@ export interface Preferences{
 	created:Date;
 	currency_price_preference:'ONLY_DEFAULT_CURRENCY'|'MULTIPLE_CURRENCY';
 	default_cash_close_receipt:number | null;
+	default_cash_close_type?:'SIMPLE'|'DETAILED';
 	default_file_logo_image_id:number | null;
 	default_input_type:'TACTILE'|'KEYBOARD';
 	default_pos_availability_type:'ALWAYS'|'ON_STOCK';
@@ -1261,13 +1275,19 @@ export interface Role{
 	updated_by_user_id:number | null;
 }
 export interface Sat_Factura{
+	folio: string | null;
+	serie: string | null;
 	created:Date;
 	created_by_user_id:number | null;
+	cancelado_por_sat: 'NO'|'YES';
 	id:number;
 	order_id:number | null;
 	payment_id:number | null;
 	pdf_attachment_id:number
+	solicitud_cancelacion_sat_timestamp:Date | null;
+	system_cancelled_timestamp:Date | null;
 	updated:Date;
+	type:'NORMAL'|'COMPLEMENTO_PAGO' | 'POR_PERIODO'| 'DESCONOCIDO';
 	updated_by_user_id:number | null;
 	uuid:string;
 	xml_attachment_id:number | null;

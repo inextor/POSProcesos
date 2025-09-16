@@ -836,8 +836,6 @@ export class RestService
 		return final_list;
 	}
 
-
-
 	createStructuredItems(oi:OrderInfo):StructuredOrderInfo
 	{
 		let order_info:StructuredOrderInfo = {...oi, structured_items: []};
@@ -850,10 +848,7 @@ export class RestService
 			.map((oii)=>oii.serial.serial_number+'\n'+(oii.serial.description? '-'+oii.serial.description : ''))
 			.join('\n--------------------\n');
 
-			if( ois.length == 0 ||
-				order_info.items[index-1].order_item.item_group != oii.order_item.item_group ||
-				order_info.items[index-1].order_item.item_group != oii.order_item.item_group
-			)
+			if( ois.length == 0 || order_info.items[index-1].order_item.item_group != oii.order_item.item_group )
 			{
 				ois.push({...oii,childs:[], total_options: 0,total_cost:oii.order_item.total})
 			}
@@ -867,6 +862,11 @@ export class RestService
 
 		order_info.structured_items = ois;
 		return order_info;
+	}
+
+	callPostApi(url:string,payload:any,options:any):Observable<any>
+	{
+		return this.http.post(url, payload, { responseType: 'blob' })
 	}
 }
 

@@ -52,45 +52,49 @@
 						<tr>
 							<th class="text-start">ID</th>
 							<th class="text-center">Detalle</th>
-							<th class="text-center">Cliente</th>
-							<th class="text-center">UUID</th>
-							<th class="text-center">Fecha</th>
-							<th class="text-center">Estatus</th>
-							<th class="text-center">Estatus CFDI</th>
-							<th class="text-end d-print-none">Acciones</th>
-						</tr>
-					</thead>
-					<tbody>
-						<ng-container *ngFor="let sat_factura of sat_factura_info_list">
-							<tr>
-								<td class="text-start">{{sat_factura.id}}</td>
-								<td class="text-center">
-									<span *ngIf="sat_factura.type == 'POR_PERIODO'">
-										{{sat_factura.name_type}}
-									</span>
-									<a *ngIf="sat_factura.link.length" [routerLink]="sat_factura.link">
-										{{sat_factura.name_type}}
-										<ng-container *ngIf="sat_factura.order_id">- Orden {{sat_factura.order_id}}</ng-container>
-										<ng-container *ngIf="sat_factura.payment_id">- Pago {{sat_factura.payment_id}}</ng-container>
-									</a>
-								</td>
-								<td class="text-center">{{sat_factura.client_name}}</td>
-								<td class="text-center">{{sat_factura.uuid}}</td>
-								<td class="text-start">{{sat_factura.created | date: 'short' }}</td>
-								<td class="text-center text-danger" *ngIf="sat_factura.system_cancelled_timestamp">
-										Cancelado
-										<br>
-										{{sat_factura.system_cancelled_timestamp | date: 'dd/MM/yyyy HH:mm:ss'}}
-								</td>
-								<td class="text-center text-success" *ngIf="sat_factura.system_cancelled_timestamp == null">
-									Activo
-								</td>
-								<td class="text-center text-danger"  *ngIf="sat_factura.cancelado_por_sat == 'YES'">
-									Cancelado por SAT<br>
-									{{sat_factura.solicitud_cancelacion_sat_timestamp | date: 'dd/MM/yyyy HH:mm:ss'}}
-								</td>
-								<td class="text-center text-success"  *ngIf="sat_factura.cancelado_por_sat == 'NO' && sat_factura.solicitud_cancelacion_sat_timestamp != null">
-									ACTIVO
+								<th class="text-center">Serie</th>
+								<th class="text-center">Folio</th>
+								<th class="text-center">Cliente</th>
+								<th class="text-center">UUID</th>
+								<th class="text-center">Fecha</th>
+								<th class="text-center">Estatus</th>
+								<th class="text-center">Estatus CFDI</th>
+								<th class="text-end d-print-none">Acciones</th>
+							</tr>
+						</thead>
+						<tbody>
+							<ng-container *ngFor="let sat_factura of sat_factura_info_list">
+								<tr>
+									<td class="text-start">{{sat_factura.id}}</td>
+									<td class="text-center">
+										<span *ngIf="sat_factura.type == 'POR_PERIODO'">
+											{{sat_factura.name_type}}
+										</span>
+										<a *ngIf="sat_factura.link.length" [routerLink]="sat_factura.link">
+											{{sat_factura.name_type}}
+											<ng-container *ngIf="sat_factura.order_id">- Orden {{sat_factura.order_id}}</ng-container>
+											<ng-container *ngIf="sat_factura.payment_id">- Pago {{sat_factura.payment_id}}</ng-container>
+										</a>
+									</td>
+									<td class="text-center">{{sat_factura.serie}}</td>
+									<td class="text-center">{{sat_factura.folio}}</td>
+									<td class="text-center">{{sat_factura.client_name}}</td>
+									<td class="text-center">{{sat_factura.uuid}}</td>
+									<td class="text-start">{{sat_factura.created | date: 'short' }}</td>
+									<td class="text-center text-danger" *ngIf="sat_factura.system_cancelled_timestamp">
+											Cancelado
+											<br>
+											{{sat_factura.system_cancelled_timestamp | date: 'dd/MM/yyyy HH:mm:ss'}}
+									</td>
+									<td class="text-center text-success" *ngIf="sat_factura.system_cancelled_timestamp == null">
+										Activo
+									</td>
+									<td class="text-center text-danger"  *ngIf="sat_factura.cancelado_por_sat == 'YES'">
+										Cancelado por SAT<br>
+										{{sat_factura.solicitud_cancelacion_sat_timestamp | date: 'dd/MM/yyyy HH:mm:ss'}}
+									</td>
+									<td class="text-center text-success"  *ngIf="sat_factura.cancelado_por_sat == 'NO' && sat_factura.solicitud_cancelacion_sat_timestamp != null">
+										ACTIVO
 									<br>
 									Solicitado {{sat_factura.solicitud_cancelacion_sat_timestamp | date: 'dd/MM/yyyy HH:mm:ss'}}
 								</td>
@@ -103,44 +107,44 @@
 										<svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" width="1.1em" height="1.1em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 24 24">
 											<path fill="currentColor" d="M12 4c-4.411 0-8 3.589-8 8s3.589 8 8 8s8-3.589 8-8s-3.589-8-8-8zm-5 8c0-.832.224-1.604.584-2.295l6.711 6.711A4.943 4.943 0 0 1 12 17c-2.757 0-5-2.243-5-5zm9.416 2.295L9.705 7.584A4.943 4.943 0 0 1 12 7c2.757 0 5 2.243 5 5c0 .832-.224 1.604-.584 2.295z"/>
 										</svg>
-									</button>
-									<a class="mx-1 btn btn-primary" *ngIf="sat_factura.uuid" [href]="getPdfUrl(sat_factura)">
-										<abbr title="Descargar PDF">
-											<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" width="0.75em" height="1em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 384 512">
-												<path d="M181.9 256.1c-5-16-4.9-46.9-2-46.9c8.4 0 7.6 36.9 2 46.9zm-1.7 47.2c-7.7 20.2-17.3 43.3-28.4 62.7c18.3-7 39-17.2 62.9-21.9c-12.7-9.6-24.9-23.4-34.5-40.8zM86.1 428.1c0 .8 13.2-5.4 34.9-40.2c-6.7 6.3-29.1 24.5-34.9 40.2zM248 160h136v328c0 13.3-10.7 24-24 24H24c-13.3 0-24-10.7-24-24V24C0 10.7 10.7 0 24 0h200v136c0 13.2 10.8 24 24 24zm-8 171.8c-20-12.2-33.3-29-42.7-53.8c4.5-18.5 11.6-46.6 6.2-64.2c-4.7-29.4-42.4-26.5-47.8-6.8c-5 18.3-.4 44.1 8.1 77c-11.6 27.6-28.7 64.6-40.8 85.8c-.1 0-.1.1-.2.1c-27.1 13.9-73.6 44.5-54.5 68c5.6 6.9 16 10 21.5 10c17.9 0 35.7-18 61.1-61.8c25.8-8.5 54.1-19.1 79-23.2c21.7 11.8 47.1 19.5 64 19.5c29.2 0 31.2-32 19.7-43.4c-13.9-13.6-54.3-9.7-73.6-7.2zM377 105L279 7c-4.5-4.5-10.6-7-17-7h-6v128h128v-6.1c0-6.3-2.5-12.4-7-16.9zm-74.1 255.3c4.1-2.7-2.5-11.9-42.8-9c37.1 15.8 42.8 9 42.8 9z" fill="currentColor"/>
-											</svg>
-										</abbr>
-									</a>
-									<button type="button" class="mx-1 btn btn-primary" *ngIf="!sat_factura.uuid" (click)="replayFactura(sat_factura)">
-										Reintentar Factura
-										<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="currentColor" d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10s10-4.48 10-10S17.52 2 12 2m6 10.74c-.12 3.09-2.67 5.64-5.76 5.76a5.995 5.995 0 0 1-6.12-4.82c-.13-.61.36-1.18.98-1.18c.47 0 .88.33.98.8a3.997 3.997 0 0 0 4.72 3.12c1.56-.3 2.82-1.56 3.12-3.12A4 4 0 0 0 12 8.5v1.79c0 .45-.54.67-.85.35l-2.8-2.79c-.2-.2-.2-.51 0-.71l2.79-2.79c.32-.31.86-.09.86.36V6.5a6.01 6.01 0 0 1 6 6.24"/></svg>
-									</button>
-									<a class="mx-1 btn btn-primary" *ngIf="sat_factura.xml_attachment_id" [href]="rest.getFilePath(sat_factura.xml_attachment_id,true)">
-										<abbr title="Descargar XML">
-											<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-file-earmark-code-fill" viewBox="0 0 16 16">
-												<path d="M9.293 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V4.707A1 1 0 0 0 13.707 4L10 .293A1 1 0 0 0 9.293 0M9.5 3.5v-2l3 3h-2a1 1 0 0 1-1-1M6.646 7.646a.5.5 0 1 1 .708.708L5.707 10l1.647 1.646a.5.5 0 0 1-.708.708l-2-2a.5.5 0 0 1 0-.708zm2.708 0 2 2a.5.5 0 0 1 0 .708l-2 2a.5.5 0 0 1-.708-.708L10.293 10 8.646 8.354a.5.5 0 1 1 .708-.708"/>
-											</svg>
-										</abbr>
-									</a>
-									<a class="mx-1 btn btn-primary" *ngIf="sat_factura.pdf_attachment_id" (click)="show_reenviar_factura=true">
-										<abbr title="Reenviar Factura">
-											<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24">
-												<path fill="currentColor" d="M20.04 2.323c1.016-.355 1.992.621 1.637 1.637l-5.925 16.93c-.385 1.098-1.915 1.16-2.387.097l-2.859-6.432l4.024-4.025a.75.75 0 0 0-1.06-1.06l-4.025 4.024l-6.432-2.859c-1.063-.473-1-2.002.097-2.387z"/>
-											</svg>
-										</abbr>
-									</a>
-									<a class="mx-1 btn btn-primary" (click)="checarFactura(sat_factura)" *ngIf="sat_factura.cancelado_por_sat != 'YES'">
-										<abbr title="Revisar estatus de factura">
-											<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24">
-												<path fill="currentColor" d="M9 13a3 3 0 0 0 3 3a3 3 0 0 0 3-3a3 3 0 0 0-3-3a3 3 0 0 0-3 3m11 6.59V8l-6-6H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12c.45 0 .85-.15 1.19-.4l-4.43-4.43c-.8.52-1.76.83-2.76.83a5 5 0 0 1-5-5a5 5 0 0 1 5-5a5 5 0 0 1 5 5c0 1-.31 1.96-.83 2.75z"/>
-											</svg>
-										</abbr>
-									</a>
-								</td>
-							</tr>
-						</ng-container>
-					</tbody>
-				</table>
+										</button>
+										<a class="mx-1 btn btn-primary" *ngIf="sat_factura.uuid" [href]="getPdfUrl(sat_factura)">
+											<abbr title="Descargar PDF">
+												<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" width="0.75em" height="1em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 384 512">
+													<path d="M181.9 256.1c-5-16-4.9-46.9-2-46.9c8.4 0 7.6 36.9 2 46.9zm-1.7 47.2c-7.7 20.2-17.3 43.3-28.4 62.7c18.3-7 39-17.2 62.9-21.9c-12.7-9.6-24.9-23.4-34.5-40.8zM86.1 428.1c0 .8 13.2-5.4 34.9-40.2c-6.7 6.3-29.1 24.5-34.9 40.2zM248 160h136v328c0 13.3-10.7 24-24 24H24c-13.3 0-24-10.7-24-24V24C0 10.7 10.7 0 24 0h200v136c0 13.2 10.8 24 24 24zm-8 171.8c-20-12.2-33.3-29-42.7-53.8c4.5-18.5 11.6-46.6 6.2-64.2c-4.7-29.4-42.4-26.5-47.8-6.8c-5 18.3-.4 44.1 8.1 77c-11.6 27.6-28.7 64.6-40.8 85.8c-.1 0-.1.1-.2.1c-27.1 13.9-73.6 44.5-54.5 68c5.6 6.9 16 10 21.5 10c17.9 0 35.7-18 61.1-61.8c25.8-8.5 54.1-19.1 79-23.2c21.7 11.8 47.1 19.5 64 19.5c29.2 0 31.2-32 19.7-43.4c-13.9-13.6-54.3-9.7-73.6-7.2zM377 105L279 7c-4.5-4.5-10.6-7-17-7h-6v128h128v-6.1c0-6.3-2.5-12.4-7-16.9zm-74.1 255.3c4.1-2.7-2.5-11.9-42.8-9c37.1 15.8 42.8 9 42.8 9z" fill="currentColor"/>
+												</svg>
+											</abbr>
+										</a>
+										<button type="button" class="mx-1 btn btn-primary" *ngIf="!sat_factura.uuid" (click)="replayFactura(sat_factura)">
+											Reintentar Factura
+											<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="currentColor" d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10s10-4.48 10-10S17.52 2 12 2m6 10.74c-.12 3.09-2.67 5.64-5.76 5.76a5.995 5.995 0 0 1-6.12-4.82c-.13-.61.36-1.18.98-1.18c.47 0 .88.33.98.8a3.997 3.997 0 0 0 4.72 3.12c1.56-.3 2.82-1.56 3.12-3.12A4 4 0 0 0 12 8.5v1.79c0 .45-.54.67-.85.35l-2.8-2.79c-.2-.2-.2-.51 0-.71l2.79-2.79c.32-.31.86-.09.86.36V6.5a6.01 6.01 0 0 1 6 6.24"/></svg>
+										</button>
+										<a class="mx-1 btn btn-primary" *ngIf="sat_factura.xml_attachment_id" [href]="rest.getFilePath(sat_factura.xml_attachment_id,true)">
+											<abbr title="Descargar XML">
+												<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-file-earmark-code-fill" viewBox="0 0 16 16">
+													<path d="M9.293 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V4.707A1 1 0 0 0 13.707 4L10 .293A1 1 0 0 0 9.293 0M9.5 3.5v-2l3 3h-2a1 1 0 0 1-1-1M6.646 7.646a.5.5 0 1 1 .708.708L5.707 10l1.647 1.646a.5.5 0 0 1-.708.708l-2-2a.5.5 0 0 1 0-.708zm2.708 0 2 2a.5.5 0 0 1 0 .708l-2 2a.5.5 0 0 1-.708-.708L10.293 10 8.646 8.354a.5.5 0 1 1 .708-.708"/>
+												</svg>
+											</abbr>
+										</a>
+										<a class="mx-1 btn btn-primary" *ngIf="sat_factura.pdf_attachment_id" (click)="show_reenviar_factura=true">
+											<abbr title="Reenviar Factura">
+												<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24">
+													<path fill="currentColor" d="M20.04 2.323c1.016-.355 1.992.621 1.637 1.637l-5.925 16.93c-.385 1.098-1.915 1.16-2.387.097l-2.859-6.432l4.024-4.025a.75.75 0 0 0-1.06-1.06l-4.025 4.024l-6.432-2.859c-1.063-.473-1-2.002.097-2.387z"/>
+												</svg>
+											</abbr>
+										</a>
+										<button type="button" class="mx-1 btn btn-primary" (click)="checarFactura(sat_factura)" *ngIf="sat_factura.cancelado_por_sat != 'YES'">
+											<abbr title="Revisar estatus de factura">
+												<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24">
+													<path fill="currentColor" d="M9 13a3 3 0 0 0 3 3a3 3 0 0 0 3-3a3 3 0 0 0-3-3a3 3 0 0 0-3 3m11 6.59V8l-6-6H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12c.45 0 .85-.15 1.19-.4l-4.43-4.43c-.8.52-1.76.83-2.76.83a5 5 0 0 1-5-5a5 5 0 0 1 5-5a5 5 0 0 1 5 5c0 1-.31 1.96-.83 2.75z"/>
+												</svg>
+											</abbr>
+										</button>
+									</td>
+								</tr>
+							</ng-container>
+						</tbody>
+					</table>
 			</div>
 		</div>
 	</div>

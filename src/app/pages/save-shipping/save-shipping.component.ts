@@ -228,6 +228,7 @@ export class SaveShippingComponent extends BaseComponent
 
 				let search_requisition:SearchObject<Requisition> = this.getEmptySearch();
 				search_requisition.eq.required_by_store_id = to_store_id;
+				search_requisition.eq.requested_to_store_id = this.from_store_id;
 				search_requisition.eq.approved_status = 'APPROVED';
 				search_requisition.ge.required_by_timestamp = Utils.getUTCMysqlStringFromDate(start);
 				search_requisition.le.required_by_timestamp = Utils.getUTCMysqlStringFromDate(end);
@@ -294,9 +295,9 @@ export class SaveShippingComponent extends BaseComponent
 	{
 		if ( store_id )
 		{
-			//solo se actualiza la tienda de origen de envio
+			//Se actualiza la tienda de origen para la busqueda y para el envio
+			this.from_store_id = store_id;
 			this.shipping_info.shipping.from_store_id = store_id;
-			//las requisiciones se buscan por la tienda de destino
 			this.requisitionSearch(new Event(''), this.fecha_requisitions, this.to_store_id);
 		}
 	}

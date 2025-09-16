@@ -27,16 +27,21 @@ interface ReporteItem {
 	dias_vencimiento: number;
 }
 
+interface Balance {
+	total_orders: number;
+	total_paid: number;
+	balance: number;
+}
+
 @Component({
 	selector: 'app-reporte-estado-cuenta-cliente',
 	standalone: true,
-	imports: [CommonModule, FormsModule, LoadingComponent ],
+	imports: [CommonModule, FormsModule, LoadingComponent, ShortDatePipe],
 	templateUrl: './reporte-estado-cuenta-cliente.component.html',
 	styleUrl: './reporte-estado-cuenta-cliente.component.css'
 })
-export class ReporteEstadoCuentaClienteComponent extends BaseComponent implements OnInit {
-
-
+export class ReporteEstadoCuentaClienteComponent extends BaseComponent implements OnInit
+{
 	start_date: string = '';
 	end_date: string = '';
 
@@ -59,8 +64,11 @@ export class ReporteEstadoCuentaClienteComponent extends BaseComponent implement
 	rest_store: Rest<Store, Store> = this.rest.initRest<Store, Store>('store');
 	rest_billing_data: Rest<Billing_Data, Billing_Data> = this.rest.initRest<Billing_Data, Billing_Data>('billing_data');
 	rest_preferences: Rest<Preferences, Preferences> = this.rest.initRest<Preferences, Preferences>('preferences');
-
-	constructor(private http: HttpClient, injector: Injector) { super(injector); }
+	balance:Balance = {
+		total_orders: 0,
+		total_paid: 0,
+		balance: 0
+	};
 
 	ngOnInit(): void {
 		this.path = '/reporte-estado-cuenta-cliente';
@@ -78,22 +86,17 @@ export class ReporteEstadoCuentaClienteComponent extends BaseComponent implement
 
 				let end = Utils.getEndOfMonth(start);
 
-
-
 				console.log('start'+params.query.get('start_date')+' FOOOOOOOOO');
 				console.log('end'+params.query.get('end_date')+' FOOOOOOOOO');
-
 				console.log('start'+Utils.getLocalMysqlStringFromDate(start)+' FOOOOOOOOO');
 
 				this.start_date = (params.query.get('start_date') || Utils.getLocalMysqlStringFromDate(start)).substring(0,10);
 				this.end_date = (params.query.get('end_date') || Utils.getLocalMysqlStringFromDate(end)).substring(0,10);
 
-
 				const client_user_id = parseInt( params.query.get('client_user_id') as string) as number;
 
-				start = Utils.getDateFromLocalMysqlString(this.start_date+' 00:00:00');
-				end = Utils.getDateFromLocalMysqlString(this.end_date+' 23:59:59');
-
+				start = Utils.getDateFromLocalMysqlString( this.start_date+' 00:00:00' );
+				end = Utils.getDateFromLocalMysqlString( this.end_date+' 23:59:59' );
 
 				if( this.rest?.user?.store_id == null )
 				{
@@ -105,17 +108,19 @@ export class ReporteEstadoCuentaClienteComponent extends BaseComponent implement
 				return forkJoin({
 					data: this.fetchData(client_user_id, start, end),
 					store: this.rest_store.get(this.rest?.user?.store_id as number),
-					preferences: this.rest_preferences.get(1)
+					preferences: this.rest_preferences.get(1),
+					balance: this.rest.getReportByPath('getBalance', { to_date: Utils.getLocalMysqlStringFromDate(start), client_user_id: client_user_id })
 				});
 			}),
 			mergeMap((response: any) => {
 				this.store = response.store;
 				this.preferences = response.preferences;
-
+				this.balance = response.balance;
 
 				const billing_data_id = this.store?.default_billing_data_id;
 
-				return forkJoin({
+				return forkJoin
+				({
 					data: of(response.data),
 					billing_data: billing_data_id ? this.rest_billing_data.get(billing_data_id) : of(null)
 				});
@@ -136,16 +141,20 @@ export class ReporteEstadoCuentaClienteComponent extends BaseComponent implement
 					}
 				}
 
+				console.log('orders_ids',orders_ids);
+
+				//let order_payments_obs = orders_ids.length > 0 ? this.rest_order.search
+				//({
+				//	csv:{ id: orders_ids },
+				//	limit: 99999
+				//}) : of({total: 0, data: []}) as Observable<RestResponse<OrderInfo>>;
+
 				return forkJoin
 				({
 					client_user: of( response.data.client_user ),
 					closed_orders: of( response.data.closed_orders ),
 					payments_received: of( response.data.payments_received ),
-					order_info_with_payments: this.rest_order.search
-					({
-						csv:{ id: orders_ids },
-						limit: 99999
-					}),
+					//order_info_with_payments: order_payments_obs,
 					billing_address: response.data.client_user.default_billing_address_id ? this.rest_address.get(response.data.client_user.default_billing_address_id) : of(null)
 				});
 			})
@@ -157,7 +166,8 @@ export class ReporteEstadoCuentaClienteComponent extends BaseComponent implement
 			{
 				this.selectedClient = response.client_user;
 				this.billing_address = response.billing_address;
-				this.unique_orders = this.createUniqueOrderList(response.closed_orders.data, response.order_info_with_payments.data);
+				this.unique_orders = response.closed_orders.data;
+						//this.createUniqueOrderList(response.closed_orders.data, response.order_info_with_payments.data);
 				this.report_items = this.generateReport(this.unique_orders, response.payments_received.data);
 				this.calculateTotals();
 				this.is_loading = false;
@@ -360,17 +370,36 @@ export class ReporteEstadoCuentaClienteComponent extends BaseComponent implement
 				download_name: `estado-de-cuenta-${this.selectedClient?.name}.pdf`
 			};
 
-			this.http.post(environment.app_settings.pdf_service_url + '/index.php', payload, { responseType: 'blob' }).subscribe(response => {
-				const blob = new Blob([response], { type: 'application/pdf' });
-				const url = window.URL.createObjectURL(blob);
-				const a = document.createElement('a');
-				a.href = url;
-				a.download = `estado-de-cuenta-${this.selectedClient?.name}.pdf`;
-				document.body.appendChild(a);
-				a.click();
-				window.URL.revokeObjectURL(url);
-				document.body.removeChild(a);
+			let url = `${environment.app_settings.pdf_service_url}/index.php`;
+
+			let headers
+			this.rest.callPostApi(url,payload,headers);
+
+			let options = { responseType: 'blob' };
+			this.sink = this.rest.callPostApi(url,payload,options).subscribe
+			({
+				error:(error:any)=>this.showError(error),
+				next:(response:any) =>
+				{
+					const blob = new Blob([response], { type: 'application/pdf' });
+					const url = window.URL.createObjectURL(blob);
+					const a = document.createElement('a');
+					a.href = url;
+					a.download = `estado-de-cuenta-${this.selectedClient?.name}.pdf`;
+					document.body.appendChild(a);
+					a.click();
+					window.URL.revokeObjectURL(url);
+					document.body.removeChild(a);
+				}
 			});
 		}
+	}
+
+	formatStoreAddress(store: Store | null): string {
+		if (!store) {
+			return '';
+		}
+		const addressParts = [store.address, store.city, store.state, store.zipcode];
+		return addressParts.filter(part => part).join(', ');
 	}
 }

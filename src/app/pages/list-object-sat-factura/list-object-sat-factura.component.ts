@@ -20,12 +20,12 @@ export interface CSatFacturaInfo extends Sat_Factura
 	link: Array<any>;
 	system_status: string;
 	client_name?: string;
-	folio?: number;
+	folio: string | null;
 	total?: number;
-	type:string;
+	type:'NORMAL'|'COMPLEMENTO_PAGO' | 'POR_PERIODO'| 'DESCONOCIDO';
 	payment_id:number;
 	system_cancelled_timestamp:Date;
-	cancelado_por_sat:string;
+	cancelado_por_sat:'NO'|'YES';
 	solicitud_cancelacion_sat_timestamp:Date;
 	xml_attachment_id:number;
 	pdf_attachment_id:number;
@@ -169,7 +169,7 @@ export class ListObjectSatFacturaComponent extends BaseComponent implements OnIn
 
 		let client_name = order?.client_name || '';
 
-		let folio = order?.store_consecutive as number;
+		let folio = order?.store_consecutive?.toString() || null;
 		let total = extended_sat_factura.type == 'POR_PERIODO' ? 0
 		: ((order?.total || 0) - (order?.discount || 0)) || (payment_info?.payment.payment_amount || 0);
 

@@ -1,17 +1,71 @@
+# Project Overview
+
+This is an Angular-based Point of Sale (POS) and reservation system. It appears to be a complex, feature-rich application with a large number of components and services. The application includes functionalities for managing production areas, processes, requisitions, user attendance, tasks, shipping, payroll, roles, inventory, and e-commerce orders. It also has features for reporting, authentication, and real-time updates using Socket.io.
+
+## Key Technologies
+
+*   **Frontend:** Angular
+*   **Backend Communication:** RESTful API, Socket.io
+*   **Styling:** Bootstrap
+
+## Architecture
+
+The application follows a standard Angular project structure.
+
+*   `src/app/components`: Contains reusable UI components.
+*   `src/app/pages`: Contains the main pages of the application.
+*   `src/app/modules`: Contains feature modules, including a `shared` module for common services and components.
+*   `src/app/services`: The `RestService` in `src/app/modules/shared/services/rest.service.ts` is the central point for backend communication.
+
+# Building and Running
+
+## Development Server
+
+To start the development server, run the following command:
+
+```bash
+npm start
+```
+
+This will start the server on `http://localhost:4001/`.
+
+## Building the Project
+
+To build the project for production, run the following command:
+
+```bash
+npm run build
+```
+
+The build artifacts will be stored in the `dist/` directory.
+
+## Running Tests
+
+To run the unit tests, use the following command:
+
+```bash
+npm test
+```
+
+# Development Conventions
+
+*   **API Interaction:** All backend communication is handled through the `RestService`. To add a new API endpoint, you should add a new method to this service.
+*   **Authentication:** Most routes are protected by an `authGuard`. The authentication logic is likely handled within the `RestService` and the `authGuard`.
+*   **Styling:** The project uses Bootstrap for styling. Custom styles are located in `src/styles.css` and component-specific CSS files.
+*   **Real-time Updates:** The application uses Socket.io for real-time updates. The Socket.io logic is handled in the `RestService`.
+
 # Gemini
 
-
-## thinks to never do
+## Things to never do
 
 Never run linter again this breaks the code and do not compile again.
 Use the deprecated old flow control syntax *ngIf,*ngFor,etc
 
+## Things to do
 
-# Things to do
+Use the new flow control syntax  @if,@for,etc
 
-Use the new flow control syntax
-
-# About components organization
+## About components organization
 
 almost all components extends from the base component, the base component is the component that contains the common methods,
 all components that had routes muste be stored in src/app/pages there are exception because of a bad design,
@@ -27,10 +81,11 @@ for example for the model role the routes must be:
 ```
 /add-role	 //To add new role
 /edit-role/1  //To edit role with id 1
-/save-role	//To save role
+/save-role	//To update the role
 /list-role	//To list all roles
 /list-role?eq.name=admin //To search all roles with name admin
 ```
+
 # calls to backend
 
 to call to the backen it's necessary to use a rest object this rest object must be intialized
@@ -42,7 +97,6 @@ initRest is used when the response is a complex object and all the search enable
 but the response has the model defined in the response as a property and other related model properties. initRest must be
 initialized with initRest('{{rest_model}}_info');
 
-
 example:
 
 ```typescript
@@ -52,16 +106,16 @@ let rest_item = this.rest.initRestSimple<Item>('Item',[list_of_propeerties_to_be
 let rest_item_info = this.rest.initRest<Item,ItemInfo>('Item_info',[list_of_propeerties_to_be_enable_to_search_defined_in_item]);
 ```
 
-```
-a get by id example:
+```typescript  
+//a get by id example:
 
 this.rest.getItem(id).subscribe((response)=>{
 	this.item = response.data;
 });
 ```
 
-```
-a get by search example:
+```typescript
+//a get by search example:
 
 //lt less than, gt greater than, eq equal, ne not equal,
 
@@ -73,12 +127,13 @@ let serach_object<Item> = {
 };
 
 
-this.rest_item.search({}).subscribe((response:RestResponse<Item>)=>
-{
+this.rest_item.search({}).subscribe((response:RestResponse<Item>)=>{
 	this.items = response.data;
 });
 ```
+
 The search object can be obtained from the rest object
+
 ```typescript
 let s:SearchObject<Item> = this.rest_item.getEmptySearch();
 
@@ -93,8 +148,7 @@ the search can be made also with the params object, not recommended only for tem
 ```typescript
 import { ParamMap } from '@angular/router';
 
-this.rest_item.search(ParamMap).subscribe((response:RestResponse<Item>)=>
-{
+this.rest_item.search(ParamMap).subscribe((response:RestResponse<Item>)=>{
 	this.items = response.data;
 });
 ```
@@ -120,30 +174,28 @@ can be used to add form controls to filter the search, the search methods is def
 normally the comfirmation service is already injected on the BaseComponent
 showError and showSuccess, warging they disable is_loading on BaseComponent
 
-
 ```typescript
 
-		this.sink = this.confirmation.showConfirmAlert
-		(
-			offer,
-			'Desactivar Oferta',
-			'¿Estás seguro de que quieres desactivar esta oferta?'
-		)
-		.pipe
-		(
-			filter(response=>response.accepted),
-			mergeMap((response)=>
-			{
-				this.is_loading = true;
-				//Do something with response.obj
-				return return_obs_somthing_with_response_obj_like_delete( reponse.obj );
-			})
+	this.sink = this.confirmation.showConfirmAlert
+	(
+		offer,
+		'Desactivar Oferta',
+		'¿Estás seguro de que quieres desactivar esta oferta?'
+	)
+	.pipe
+	(
+		filter(response=>response.accepted),
+		mergeMap((response)=>{
+			this.is_loading = true;
+			//Do something with response.obj
+			return return_obs_somthing_with_response_obj_like_delete( reponse.obj );
 		})
-		.subscribe
-		({
-			next:(response)=>{ this.},
-			error:(error)=>this.showError(error)
-		});
+	)
+	.subscribe
+	({
+		next:(response)=>{ this.},
+		error:(error)=>this.showError(error)
+	});
 ```
 
 ## Subscriptions to observables
