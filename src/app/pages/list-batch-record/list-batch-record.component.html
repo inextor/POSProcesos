@@ -148,7 +148,7 @@ z.send();
 						<td>
 							<a *ngIf="sri.purchase" [routerLink]="['/purchase/edit',sri.purchase.id]">Orden de Compra</a>
 							<a *ngIf="sri.shipping" [routerLink]="['/view-shipping/',sri.shipping.id]">Envío</a>
-							<a *ngIf="sri.order" [routerLink]="['/view-order/',sri.order.id]">Venta</a>
+							<a *ngIf="sri.order" [routerLink]="['/view-order',sri.order.id]">Venta</a>
 						</td>
 						<td>{{sri.stock_record.previous_qty}}</td>
 						<td>{{sri.stock_record.movement_qty}}</td>

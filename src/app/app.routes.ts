@@ -41,6 +41,10 @@ import { ReporteEstadoCuentaClienteComponent } from './pages/reporte-estado-cuen
 import { TestComponent } from './pages/test/test.component';
 import { ListSatFacturaComponent } from './pages/list-sat-factura/list-sat-factura.component';
 import { ListObjectSatFacturaComponent } from './pages/list-object-sat-factura/list-object-sat-factura.component';
+//import { ViewOrderComponent } from './pages/view-order/view-order.component';
+/*
+import { SavePurchaseComponent } from './pages/save-purchase/save-purchase.component';
+*/
 
 
 export const routes: Routes = [
@@ -50,7 +54,7 @@ export const routes: Routes = [
 		children:
 		[
 			{path:'', component: DashboardComponent},
-			
+
 			{path: 'view-account', component: ViewAccountComponent, canActivate: [authGuard]},
 			{path: 'view-ledger', component: ViewLedgerComponent, canActivate: [authGuard]},
 			{path: 'dashboard', component: DashboardComponent, canActivate: [authGuard]},
@@ -93,7 +97,10 @@ export const routes: Routes = [
 			{path: 'test', component: TestComponent, canActivate: [authGuard]},
 			{path: 'list-sat-factura', component: ListSatFacturaComponent, canActivate: [authGuard]},
 			{path: 'list-order-sat-factura/:order_id', component: ListObjectSatFacturaComponent},
-			{path: 'list-payment-sat-factura/:payment_id', component: ListObjectSatFacturaComponent}
+			{path: 'list-payment-sat-factura/:payment_id', component: ListObjectSatFacturaComponent},
+			//{path: 'view-order/:id', component: ViewOrderComponent, canActivate: [authGuard]},
+			//{path: 'add-purchase', component: SavePurchaseComponent, canActivate: [authGuard]},
+			//{path: 'edit-purchase/:id', component: SavePurchaseComponent, canActivate: [authGuard]}
 		]
 	},
 ];

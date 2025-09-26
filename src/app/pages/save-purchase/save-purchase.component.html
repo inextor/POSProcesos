@@ -1,0 +1,193 @@
+<div class="container-fluid">
+	<div class="row align-items-center">
+		<div class="col-10">
+			<h1 class="text-capitalize my-3">
+				{{purchase_info.purchase.id ? 'Actualizar':'Agregar'}} Orden de Compra
+				<b>{{ purchase_info.purchase.id ? '#'+purchase_info.purchase.id : ''}}</b>
+			</h1>
+		</div>
+		<div class="col-2">
+			<button type="button" class="btn btn-secondary" (click)="print($event)" *ngIf="purchase_info.purchase.id">
+				<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 24 24"><path fill="currentColor" d="M18 7H6V4q0-.425.287-.713Q6.575 3 7 3h10q.425 0 .712.287Q18 3.575 18 4Zm0 5.5q.425 0 .712-.288q.288-.287.288-.712t-.288-.713Q18.425 10.5 18 10.5t-.712.287Q17 11.075 17 11.5t.288.712q.287.288.712.288ZM8 19h8v-4H8v4Zm0 2q-.825 0-1.412-.587Q6 19.825 6 19v-2H3q-.425 0-.712-.288Q2 16.425 2 16v-5q0-1.275.875-2.137Q3.75 8 5 8h14q1.275 0 2.138.863Q22 9.725 22 11v5q0 .425-.288.712Q21.425 17 21 17h-3v2q0 .825-.587 1.413Q16.825 21 16 21Z"/></svg>
+			</button>
+		</div>
+	</div>
+	<form (submit)="save()" ngNativeValidate>
+		<div class="card p-3" *ngIf="purchase_info">
+			<div class="row">
+				<div class="col-12 col-md-6 col-lg-3 dropdown">
+					<label class="">Proveedor</label>
+					<input type="text" name="provider_name" [ngModel]="purchase_info.purchase.provider_name" (ngModelChange)="searchProvider($event)" class="form-control" [disabled]="purchase_info.purchase.stock_status!='PENDING' || purchase_info.bank_movements_info.length > 0" required>
+					<ul *ngIf="show_provider_list" class="dropdown-menu show">
+						<li *ngIf="purchase_info.purchase.provider_name" (click)="addNewProvider(purchase_info.purchase.provider_name)">
+							<button type="button" class="dropdown-item">Registrar Proveedor</button>
+						</li>
+						<li *ngFor="let user of provider_user_list" (click)="userProviderSelected(user)">
+							<span class="dropdown-item">{{user.id}} - {{user.name | titlecase}}</span>
+						</li>
+					</ul>
+				</div>
+				<div class="col-12 col-md-6 col-lg-3">
+					<label>Sucursal</label>
+					<select name="store_id" [(ngModel)]="purchase_info.purchase.store_id" class="form-control" [disabled]="purchase_info.purchase.stock_status!='PENDING' || purchase_info.bank_movements_info.length > 0" *ngIf="rest.current_permission.global_purchases">
+						<option [ngValue]="null">Seleccione una opción</option>
+						<option *ngFor="let store of store_list" [ngValue]="store.id">
+							{{store.name | titlecase}}
+						</option>
+					</select>
+					<div class="form-control" *ngIf="!rest.current_permission.global_purchases">
+						{{purchase_info.store.name | titlecase }}
+					</div>
+				</div>
+				<div class="col-12 col-md-6 col-lg-2 form-group">
+					<label>Total</label>
+					<div>{{purchase_info.bill.total}}</div>
+				</div>
+				<div class="col-12 col-md-6 col-lg-2 form-group">
+					<label>Artículos</label>
+					<div>{{total_items | number}}</div>
+				</div>
+				<div class="col-12 col-md-2">
+					<label class="">Folio</label>
+					<input name="folio" [(ngModel)]="purchase_info.bill.folio" class="form-control" type="text">
+				</div>
+				<div class="col-12 col-md-2">
+					<label class="">Moneda</label>
+					<select name="currency_id" [(ngModel)]="purchase_info.bill.currency_id"
+						class="form-control"
+						[disabled]="purchase_info.details.length > 0" required>
+						<option *ngFor="let currency of currency_list" [value]="currency.id">{{currency.id}}</option>
+					</select>
+				</div>
+				
+
+				<div class="col col-md-4 form-check form-switch mt-3" *ngIf="purchase_info.bank_movements_info.length == 0 && purchase_info.purchase.stock_status == 'PENDING'">
+					<label class="form-check-label">
+						<input type="checkbox" (click)="toggleMarkAsPaid()" class="form-check-input" [checked]="purchase_info.bill.paid_status == 'PAID'"> Marcar como Pagado
+					</label>
+				</div>
+				<!-- solo para introducir una vez los campos de pago (liquidacion) -->
+				<ng-container *ngIf="purchase_info.bill.paid_status == 'PAID' && purchase_info.bank_movements_info.length == 0">
+					<div class="row">
+						<div class="col-12 col-md-3">
+							<label class="">Fecha de Pago</label>
+							<input type="date" name="paid_date" [(ngModel)]="paid_date" class="form-control" [disabled]="purchase_info.bank_movements_info.length > 0" required>
+						</div>
+						<div class="col-12 col-md-3">
+							<label class="">Referencia</label>
+							<input type="text" name="reference" [(ngModel)]="reference"
+								class="form-control" [disabled]="purchase_info.bank_movements_info.length > 0">
+						</div>
+						<div class="col-12 col-md-3">
+							<label class="">Método de Pago</label>
+							<select name="transaction_type" [(ngModel)]="transaction_type"
+								class="form-control" [disabled]="purchase_info.bank_movements_info.length > 0">
+								<option [ngValue]="null">Seleccionar</option>
+								<option value="CASH">Efectivo</option>
+								<option value="TRANSFER">Transferencia</option>
+								<option value="CHECK">Cheque</option>
+								<option value="CREDIT_CARD">Tarjeta de crédito</option>
+								<option value="DEBIT_CARD">Tarjeta de débito</option>
+							</select>
+						</div>
+						<div class="col-12 col-md-3">
+							<label for="">Nota</label>
+							<textarea name="note" [(ngModel)]="note" cols="1" rows="1" class="form-control" [disabled]="purchase_info.bank_movements_info.length > 0"></textarea>
+						</div>
+						<!-- <div class="col-12 col-md-3">
+							<label for="">Cuenta de banco</label>
+							<select name="bank_account_id" [(ngModel)]="bank_account_id"
+								class="form-control" [disabled]="purchase_info.bank_movements_info.length > 0">
+								<option [ngValue]="null">Seleccionar</option>
+								<option *ngFor="let bank_account of bank_account_list" [ngValue]="bank_account.id">{{bank_account.name}}</option>
+							</select>
+						</div> -->
+					</div>
+				</ng-container>
+			</div>
+		</div>
+		<div class="card p-3 mt-3">
+			
+			<div class="row fw-bold d-none d-md-flex pb-3 border-bottom mb-3">
+				<div class="col-7">Artículo</div>
+				<div class="col-3"></div>
+				<div class="col-2"></div>
+			</div>
+			<ng-container *ngFor="let pdi of purchase_info.details;let i=index">
+				<div class="row my-1 border-bottom border-md-none pb-3 pb-md-1 mb-3 mb-md-1 align-items-center"
+					*ngIf="pdi.purchase_detail.status != 'DELETED'">
+					<div class="col-10 col-md-4 fw-bold">
+						{{i+1}} -
+						<img [src]="rest.getImagePath(pdi.item.image_id,pdi?.category?.image_id,rest.local_preferences.default_product_image_id)"
+							style="height:44px;width:44px;">
+						<span *ngIf="pdi?.category">{{pdi.category.name}} - </span>
+						{{pdi.item.name}}
+					</div>
+					<div class="col-2 col-md-1 fw-bold flex-order-1 order-md-last text-end ms-auto">
+						<button type="button" class="btn btn-primary" (click)="removeItem(pdi)" *ngIf="purchase_info.purchase.stock_status=='PENDING' && purchase_info.bank_movements_info.length == 0">
+							<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" width="1em" height="1em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 24 24"><g fill="none"><path d="M21.5 6a1 1 0 0 1-.883.993L20.5 7h-.845l-1.231 12.52A2.75 2.75 0 0 1 15.687 22H8.313a2.75 2.75 0 0 1-2.737-2.48L4.345 7H3.5a1 1 0 0 1 0-2h5a3.5 3.5 0 1 1 7 0h5a1 1 0 0 1 1 1zm-7.25 3.25a.75.75 0 0 0-.743.648L13.5 10v7l.007.102a.75.75 0 0 0 1.486 0L15 17v-7l-.007-.102a.75.75 0 0 0-.743-.648zm-4.5 0a.75.75 0 0 0-.743.648L9 10v7l.007.102a.75.75 0 0 0 1.486 0L10.5 17v-7l-.007-.102a.75.75 0 0 0-.743-.648zM12 3.5A1.5 1.5 0 0 0 10.5 5h3A1.5 1.5 0 0 0 12 3.5z" fill="currentColor"/></g></svg>
+						</button>
+						<button type="button" class="btn btn-primary" (click)="clone(pdi)" *ngIf="pdi.item.has_serial_number=='YES'">
+							<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 512 512"><path fill="currentColor" d="M464 0c26.51 0 48 21.49 48 48v288c0 26.51-21.49 48-48 48H176c-26.51 0-48-21.49-48-48V48c0-26.51 21.49-48 48-48h288M176 416c-44.112 0-80-35.888-80-80V128H48c-26.51 0-48 21.49-48 48v288c0 26.51 21.49 48 48 48h288c26.51 0 48-21.49 48-48v-48H176z"/></svg>
+						</button>
+					</div>
+					<div class="col-12 col-md-3">
+						<label class="">Precio Unitario</label>
+						<input type="number" [name]="'subtotal'+pdi.item.id+'-'+i"
+							[(ngModel)]="pdi.purchase_detail.unitary_price" step="any" min="0"
+							(ngModelChange)="updateTotal()" class="form-control"
+							[disabled]="purchase_info.purchase.stock_status!='PENDING' || purchase_info.bank_movements_info.length > 0" required>
+					</div>
+					<div class="col-12 col-md-3" *ngIf="pdi.item.has_serial_number != 'YES'">
+						<label class="">
+							Cantidad
+							<span>{{pdi.item.measurement_unit}}</span>
+						</label>
+						<input type="number" [name]="'qty'+pdi.item.id+'-'+i" min="0" [step]="pdi.item.partial_sale == 'NO'?'1':'any'"
+							[(ngModel)]="pdi.purchase_detail.qty" class="form-control" (ngModelChange)="updateTotal()"
+							[disabled]="purchase_info.purchase.stock_status!='PENDING' || purchase_info.bank_movements_info.length > 0" required>
+					</div>
+					<div class="col-12 col-md-2" *ngIf="pdi.item.has_serial_number == 'YES'">
+						<label class="">Número de Serie</label>
+						<input type="text" [name]="'serial_number'+pdi.item.id+'-'+i"
+							[(ngModel)]="pdi.purchase_detail.serial_number" class="form-control"
+							(ngModelChange)="updateTotal()" [disabled]="purchase_info.purchase.stock_status!='PENDING' || purchase_info.bank_movements_info.length > 0"
+							required>
+					</div>
+				</div>
+			</ng-container>
+			<div class="row" *ngIf="purchase_info.purchase.stock_status=='PENDING'">
+				<div class="col-8 col-lg-10">
+					<div class="mb-3 w-100">
+						<!--div class="dropdown">
+							<input type="text" name="input_search" [(ngModel)]="input_search" (input)="onInput($event)" class="form-control" placeholder="Buscar Artículo" autocomplete="off">
+							<ul class="dropdown-menu show w-100" *ngIf="item_info_list.length">
+								<li *ngFor="let item_info of item_info_list" class="border-bottom">
+									<button class="dropdown-item" (click)="onItemInfoSelect(item_info)">
+										<img [src]="rest.getImagePath(item_info.item.image_id,item_info?.category?.image_id,rest.local_preferences.default_product_image_id)" style="height:44px;width:44px;">
+										{{item_info?.category?.name}} {{item_info.item.name}}
+									</button>
+								</li>
+							</ul>
+						</div-->
+						<!-- <app-search-items [(search_str)]="search_str" (item_selected)="onItemInfoSelect($event)"></app-search-items> -->
+					</div>
+				</div>
+				<div class="col-4 col-lg-2 text-end">
+					<button type="button" [disabled]="is_loading" class="btn btn-primary" (click)="showAddNewItem()" *ngIf="purchase_info.purchase.stock_status == 'PENDING' && purchase_info.bank_movements_info.length == 0">
+						<svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" width="1em" height="1em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 16 16"><g fill="currentColor"><path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8.5 4.5a.5.5 0 0 0-1 0v3h-3a.5.5 0 0 0 0 1h3v3a.5.5 0 0 0 1 0v-3h3a.5.5 0 0 0 0-1h-3v-3z"/></g></svg>
+						Nuevo Artículo
+					</button>
+				</div>
+			</div>
+
+			<div class="text-end my-3" *ngIf="purchase_info.purchase.stock_status=='PENDING'">
+				<button type="submit" [disabled]="is_loading || purchase_info.purchase.stock_status != 'PENDING' || purchase_info.bank_movements_info.length > 0" class="btn btn-primary">
+					<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" width="1.3em" height="1.3em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 20 20"><path d="M15.173 2H4c-1.101 0-2 .9-2 2v12c0 1.1.899 2 2 2h12c1.101 0 2-.9 2-2V5.127L15.173 2zM14 8c0 .549-.45 1-1 1H7c-.55 0-1-.451-1-1V3h8v5zm-1-4h-2v4h2V4z" fill="currentColor"/></svg>
+					Guardar
+				</button>
+			</div>
+		</div>
+	</form>
+</div>
+

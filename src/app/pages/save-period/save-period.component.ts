@@ -389,7 +389,7 @@ export class SavePeriodComponent extends BaseComponent implements OnInit
 				this.showSuccess('Reservación cerrada con exito');
 				let f = ()=>
 				{
-					console.log('Redirecting to ', window.location.protocol+window.location.hostname+'/#/view-order/'+order_info.order.id);
+					console.log('Redirecting to ', window.location.protocol+window.location.hostname+'/view-order/'+order_info.order.id);
 					window.location.href = window.location.protocol+"//"+window.location.hostname+'/#/view-order/'+order_info.order.id;
 				};
 

@@ -1,0 +1,7 @@
+tr.bg-danger td {
+	background-color: inherit;
+}
+
+tr.text-white td {
+	color: inherit;
+}

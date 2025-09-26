@@ -2,19 +2,13 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RestSimple, SearchObject } from '../../modules/shared/services/Rest';
-import { Payroll, Payroll_Concept, Payroll_Concept_Value, User, Work_Log } from '../../modules/shared/RestModels';
+import { Payroll, Payroll_Concept, Payroll_Value, User, Work_Log } from '../../modules/shared/RestModels';
 import { forkJoin, mergeMap, of } from 'rxjs';
 import { GetEmpty } from '../../modules/shared/GetEmpty';
 import { ShortDatePipe } from '../../modules/shared/pipes/short-date.pipe';
 import { Utils } from '../../modules/shared/Utils';
 import { RouterModule } from '@angular/router';
 import { BaseComponent } from '../../modules/shared/base/base.component';
-
-interface CPayroll_Concept_Value extends Payroll_Concept_Value
-{
-	payroll_concept_name:string;
-	type:string;
-}
 
 interface CWork_Log extends Work_Log
 {
@@ -25,7 +19,7 @@ interface CPayrollInfo
 {
 	payroll:Payroll;
 	work_logs:CWork_Log[];
-	payroll_concept_values:CPayroll_Concept_Value[];
+	payroll_values:Payroll_Value[];
 }
 
 @Component({
@@ -41,7 +35,7 @@ export class SavePayrollComponent extends BaseComponent implements OnInit {
 	rest_user: RestSimple<User> = this.rest.initRestSimple<User>('user');
 	rest_payroll_concept:RestSimple<Payroll_Concept> = this.rest.initRestSimple<Payroll_Concept>('payroll_concept');
 	rest_payroll:RestSimple<Payroll> = this.rest.initRestSimple<Payroll>('payroll');
-	rest_payroll_concept_value:RestSimple<Payroll_Concept_Value> = this.rest.initRestSimple<Payroll_Concept_Value>('payroll_concept_value');
+	rest_payroll_value:RestSimple<Payroll_Value> = this.rest.initRestSimple<Payroll_Value>('payroll_value');
 
 	search_work_log_obj:SearchObject<Work_Log> = this.getEmptySearch();
 	start_date:string = '';
@@ -64,8 +58,11 @@ export class SavePayrollComponent extends BaseComponent implements OnInit {
 		'Domingo'
 	];
 
+    rest_payroll_info = Rest<Payroll,PayrollInfo> = this.rest.initRest('payroll_info');
+
 	ngOnInit()
 	{
+		/*
 		this.subs.sink = this.route.paramMap.pipe
 		(
 			mergeMap((param_map)=>
@@ -112,7 +109,7 @@ export class SavePayrollComponent extends BaseComponent implements OnInit {
 					payroll_concepts: of(result.payroll_concepts),
 					payroll: of(result.payroll),
 					work_log: result.payroll ? this.rest_work_log.search(search_work_log_obj) : of(null),
-					payroll_concept_values: result.payroll ? this.rest_payroll_concept_value.search({eq:{payroll_id: result.payroll.id, status:'ACTIVE'}}) : of(null)
+					payroll_values: result.payroll ? this.rest_payroll_value.search({eq:{payroll_id: result.payroll.id, status:'ACTIVE'}}) : of(null)
 
 				})
 			})
@@ -126,9 +123,9 @@ export class SavePayrollComponent extends BaseComponent implements OnInit {
 
 			let work_log_list = responses.work_log ? responses.work_log.data : null;
 			let payroll = responses.payroll ? responses.payroll : null;
-			let payroll_concept_values = responses.payroll_concept_values ? responses.payroll_concept_values.data : null;
+			let payroll_values = responses.payroll_values ? responses.payroll_values.data : null;
 
-			if( payroll && work_log_list && payroll_concept_values)
+			if( payroll && work_log_list && payroll_values)
 			{
 				this.user_id = payroll.user_id;
 				this.start_date = payroll.start_date;
@@ -136,24 +133,25 @@ export class SavePayrollComponent extends BaseComponent implements OnInit {
 				this.payroll_info =
 				{
 					payroll: payroll,
-					work_logs: this.mapWorkLogs(work_log_list),
-					payroll_concept_values: this.mapPayrollConceptValues(payroll_concept_values)
+					//work_logs: this.mapWorkLogs(work_log_list),
+					payroll_values: this.mapPayrollValues(payroll_values)
 				}
 
-				//add the concept values that are not in the payroll_concept_values
-				//(only those that are active & not in the payroll_concept_values & payroll.paid_status == 'PENDING')
+				//add the concept values that are not in the payroll_values
+				//(only those that are active & not in the payroll_values & payroll.paid_status == 'PENDING')
 				if (payroll.paid_status != 'PAID')
 				{
 					this.payroll_concept_list.forEach((payroll_concept)=>
 					{
-						let payroll_concept_value = this.payroll_info.payroll_concept_values.find((pcv)=>pcv.payroll_concept_id == payroll_concept.id);
-						if (!payroll_concept_value && payroll_concept.status == "ACTIVE")
+						let payroll_value = this.payroll_info.payroll_values.find((pcv)=>pcv.payroll_concept_id == payroll_concept.id);
+						if (!payroll_value && payroll_concept.status == "ACTIVE")
 						{
-							this.payroll_info.payroll_concept_values.push
+							this.payroll_info.payroll_values.push
 							({
 								id:0,
 								payroll_id: this.payroll_info.payroll.id,
 								payroll_concept_id: payroll_concept.id,
+								description: payroll_concept.name,
 								value: parseInt(payroll_concept.formula) ?? 0, //esto se debe cambiar para cuando se empiecen a usar formulas ,
 								status: 'ACTIVE',
 								payroll_concept_name: payroll_concept.name,
@@ -172,16 +170,18 @@ export class SavePayrollComponent extends BaseComponent implements OnInit {
 				this.start_date = Utils.getMysqlStringFromDate(new Date()).split(' ')[0];
 				this.end_date = Utils.getMysqlStringFromDate(new Date()).split(' ')[0];
 
-				//build the payroll_concept_values
-				let tmp_payroll_concept_values:Payroll_Concept_Value[] = [];
+				//build the payroll_values
+				let tmp_payroll_values:Payroll_Value[] = [];
 				this.payroll_concept_list.forEach((payroll_concept)=>
 				{
 					if(payroll_concept.status == "ACTIVE")
 					{
-						tmp_payroll_concept_values.push
+						tmp_payroll_values.push
 						({
 							id:0,
 							payroll_id: 0,
+							type: 'PERCEPTION',
+							description: 'desc',
 							payroll_concept_id: payroll_concept.id,
 							value: parseInt(payroll_concept.formula) ?? 0, //esto se debe cambiar para cuando se empiecen a usar formulas ,
 							status: 'ACTIVE'
@@ -207,10 +207,11 @@ export class SavePayrollComponent extends BaseComponent implements OnInit {
 						updated: new Date()
 					},
 					work_logs: [],
-					payroll_concept_values: this.mapPayrollConceptValues(tmp_payroll_concept_values)
+					payroll_values: this.mapPayrollValues(tmp_payroll_values)
 				}
 			}
 		});
+		*/
 	}
 
 	onFechaInicialChange(fecha:string)
@@ -276,7 +277,7 @@ export class SavePayrollComponent extends BaseComponent implements OnInit {
 					total:0,
 				}
 				this.payroll_info.work_logs = [];
-				this.payroll_info.payroll_concept_values = [];
+				this.payroll_info.payroll_values = [];
 				this.showError('No se encontraron registros de asistencia');
 				return;
 			}
@@ -302,12 +303,13 @@ export class SavePayrollComponent extends BaseComponent implements OnInit {
 			return;
 		}
 
-		this.payroll_info.payroll_concept_values.push
+		this.payroll_info.payroll_values.push
 		({
 			id:0,
 			payroll_id: this.payroll_info.payroll.id,
 			payroll_concept_id: payroll_concept.id,
 			value: parseInt(payroll_concept.formula) ?? 0, //esto se debe cambiar para cuando se empiecen a usar formulas ,
+			description:'',
 			status: 'ACTIVE',
 			payroll_concept_name: payroll_concept.name,
 			type: payroll_concept.type
@@ -328,13 +330,13 @@ export class SavePayrollComponent extends BaseComponent implements OnInit {
 		});
 	}
 
-	mapPayrollConceptValues(payroll_concept_values:Payroll_Concept_Value[])
+	mapPayrollValues(payroll_values:Payroll_Value[])
 	{
-		return payroll_concept_values.map((payroll_concept_value)=>
+		return payroll_values.map((payroll_value)=>
 		{
-			let payroll_concept = this.payroll_concept_list.find((payroll_concept)=>payroll_concept.id == payroll_concept_value.payroll_concept_id);
+			let payroll_concept = this.payroll_concept_list.find((payroll_concept)=>payroll_concept.id == payroll_value.payroll_concept_id);
 			return {
-				...payroll_concept_value,
+				...payroll_value,
 				payroll_concept_name: payroll_concept?.name ?? '',
 				type: payroll_concept?.type ?? ''
 			}
@@ -354,19 +356,19 @@ export class SavePayrollComponent extends BaseComponent implements OnInit {
 
 		this.payroll_info.payroll.total = this.payroll_info.payroll.subtotal;
 
-		this.payroll_info.payroll_concept_values.forEach((payroll_concept_value)=>
+		this.payroll_info.payroll_values.forEach((payroll_value)=>
 		{
-			let payroll_concept = this.payroll_concept_list.find((payroll_concept)=>payroll_concept.id == payroll_concept_value.payroll_concept_id);
+			let payroll_concept = this.payroll_concept_list.find((payroll_concept)=>payroll_concept.id == payroll_value.payroll_concept_id);
 
-			if (payroll_concept && payroll_concept_value.status == "ACTIVE")
+			if (payroll_concept && payroll_value.status == "ACTIVE")
 			{
 				if (payroll_concept.type == "DEDUCTION")
 				{
-					this.payroll_info.payroll.total -= payroll_concept_value.value;
+					this.payroll_info.payroll.total -= payroll_value.value;
 				}
 				else
 				{
-					this.payroll_info.payroll.total += payroll_concept_value.value;
+					this.payroll_info.payroll.total += payroll_value.value;
 				}
 			}
 		});
@@ -391,12 +393,12 @@ export class SavePayrollComponent extends BaseComponent implements OnInit {
 				{
 					this.payroll_info.payroll = response;
 
-					let payroll_concept_values:Partial<Payroll_Concept_Value>[] = [];
-					this.payroll_info.payroll_concept_values.forEach((pcv)=>
+					let payroll_values:Partial<Payroll_Value>[] = [];
+					this.payroll_info.payroll_values.forEach((pcv)=>
 					{
 						if(pcv.status == 'ACTIVE')
 						{
-							payroll_concept_values.push({
+							payroll_values.push({
 								payroll_id: response.id,
 								payroll_concept_id: pcv.payroll_concept_id,
 								value: pcv.value,
@@ -407,7 +409,7 @@ export class SavePayrollComponent extends BaseComponent implements OnInit {
 					return forkJoin
 					({
 						payroll: of(response),
-						payroll_concept_values: this.rest_payroll_concept_value.batchCreate(payroll_concept_values)
+						payroll_values: this.rest_payroll_value.batchCreate(payroll_values)
 					})
 				})
 			)
@@ -424,50 +426,12 @@ export class SavePayrollComponent extends BaseComponent implements OnInit {
 		else
 		{
 			//updating the payroll
-			this.subs.sink = this.rest_payroll.update(this.payroll_info.payroll).pipe
-			(
-				mergeMap((response)=>
-				{
-					let payroll_concept_values:Payroll_Concept_Value[] = []
-					this.payroll_info.payroll_concept_values.forEach((pcv)=>
-					{
-						//conceptos nuevos
-						if(pcv.status=='ACTIVE' && pcv.id == 0)
-						{
-							payroll_concept_values.push({
-								id: pcv.id,
-								payroll_id: this.payroll_info.payroll.id,
-								payroll_concept_id: pcv.payroll_concept_id,
-								value: pcv.value,
-								status: pcv.status
-							})
-						}
-
-						//conceptos a actualizar
-						if(pcv.id != 0)
-						{
-							payroll_concept_values.push({
-								id: pcv.id,
-								payroll_id: this.payroll_info.payroll.id,
-								payroll_concept_id: pcv.payroll_concept_id,
-								value: pcv.value,
-								status: pcv.status
-							})
-						}
-					});
-
-					return forkJoin
-					({
-						payroll: of(response),
-						payroll_concept_values: payroll_concept_values.length > 0 ? this.rest_payroll_concept_value.batchUpdate(payroll_concept_values) : of(null)
-					})
-				})
-			)
+			this.subs.sink = this.rest_payroll_info.update(this.payroll_info).pipe
 			.subscribe((response)=>
 			{
-				if (response.payroll_concept_values)
+				if (response.payroll_values)
 				{
-					this.payroll_info.payroll_concept_values = response.payroll_concept_values.map((pcv)=>
+					this.payroll_info.payroll_values = response.payroll_values.map((pcv)=>
 					{
 						let payroll_concept = this.payroll_concept_list.find((payroll_concept)=>payroll_concept.id == pcv.payroll_concept_id);
 						return {
@@ -486,10 +450,10 @@ export class SavePayrollComponent extends BaseComponent implements OnInit {
 		}
 	}
 
-	removePayrollConceptValue(payroll_concept_value:CPayroll_Concept_Value)
+	removePayrollValue(payroll_value:CPayroll_Value)
 	{
-		//this.payroll_info.payroll_concept_values = this.payroll_info.payroll_concept_values.filter((pcv)=>pcv.payroll_concept_id != payroll_concept_value.payroll_concept_id);
-		payroll_concept_value.status = 'DELETED'
+		//this.payroll_info.payroll_values = this.payroll_info.payroll_values.filter((pcv)=>pcv.payroll_concept_id != payroll_value.payroll_concept_id);
+		payroll_value.status = 'DELETED'
 		this.calculatePayrollTotal();
 	}
 

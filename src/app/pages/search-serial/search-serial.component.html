@@ -14,7 +14,7 @@
           Ver Orden {{serial_info?.order_item_serial?.order_item_id}}
         </a-->
         @if (serial_info.serial.last_order_id) {
-          <a href="/#/view-order/{{serial_info.serial.last_order_id}}">
+          <a href="/view-order/{{serial_info.serial.last_order_id}}">
             Ver Orden #{{serial_info.serial.last_order_id}}
           </a>
         }

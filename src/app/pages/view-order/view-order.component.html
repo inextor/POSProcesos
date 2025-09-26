@@ -1,0 +1,781 @@
+<div class="container-fluid">
+	<div class="row my-3">
+		<div class="col-12 col-lg-6 col-xl-8">
+			<h1 class="my-3">Datos de la orden #{{order_info?.order?.id}}</h1>
+			<div class="card p-3">
+				@if(order_info){
+					<div class="row" >
+						<div class="col-6 col-md-4">
+							<label class="">Cliente:</label>
+							<div>
+								<img [src]="rest.getImagePath(order_info?.client?.image_id, rest.local_preferences?.default_user_logo_image_id)" style="max-width:30px;max-height:30px;margin-right:10px;">
+								@if(order_info?.client){
+									<a  [routerLink]="['/view-client',order_info.order.client_user_id]">{{order_info.client.name}}</a>
+								}
+								@if(!(order_info?.order?.client_user_id)){
+									<b>{{order_info.order.client_name}}</b>
+								}
+							</div>
+						</div>
+						<div class="col-6 col-md-4 py-2" >
+							<label class="">Estatus:</label>
+							<div class="fw-bold">
+								@if(order_info.order.status=='PENDING'){
+									<span >SIN CONFIRMAR</span>
+								}
+								@if(order_info.order.status=='ACTIVE'){
+									<span >EN CURSO</span>
+								}
+								@if(order_info.order.status=='CLOSED'){
+									<span >CERRADA</span>
+								}
+								@if(order_info.order.status=='CANCELLED'){
+									<span >CANCELADA</span>
+								}
+							</div>
+						</div>
+						<div class="col-6 col-md-4 py-2">
+							<label>Atendió</label>
+							<div class="fw-bold">
+								<img [src]="rest.getImagePath(order_info?.cashier?.image_id, rest.local_preferences?.default_user_logo_image_id)" style="max-width:30px;max-height:30px;margin-right:10px;">
+								{{order_info.cashier?.name}}
+							</div>
+						</div>
+						<div class="col-6 col-md-4 py-2">
+							<label class="">Almacén</label>
+							<div class="fw-bold">{{order_info.store?.name | titlecase}}</div>
+						</div>
+						<div class="col-6 col-md-4 py-2">
+							<label class="">Fecha Creación</label>
+							<div class="fw-bold">{{order_info.order.created | shortDate:'full'}}</div>
+						</div>
+						@if(order_info.order.closed_timestamp){
+							<div class="col-6 col-md-4 py-2"	>
+								<label class="">Cerrada</label>
+								<div class="fw-bold">{{order_info.order.closed_timestamp | shortDate:'full'}}</div>
+							</div>
+						}
+						<div class="col-6 col-md-4 py-2">
+							<label class="">Fecha Activación</label>
+							<div class="fw-bold">{{order_info.order.system_activated| shortDate:'full'}}</div>
+						</div>
+						<div class="col-6 col-md-4 py-2">
+							<label class="">Código Facturación</label>
+							<div class="fw-bold"> {{order_info.order.facturacion_code }}</div>
+						</div>
+						@if(order_info?.price_type){
+							<div class="col-6 col-md-4 py-2" >
+								<label class="">Tipo de Consumo:</label>
+								<div class="fw-bold">{{order_info.price_type.name | uppercase}}</div>
+							</div>
+						}
+						@if(cancel_user){
+							<div class="col-6 col-md-4 py-2" >
+								<label class="">Cancelado por:</label>
+								<div class="fw-bold">{{ cancel_user.name }}</div>
+							</div>
+						}
+						@if(order_info.order.cancellation_reason){
+							<div class="col-6 col-md-4 py-2" >
+								<label class="">Motivo de Cancelación:</label>
+								<div class="fw-bold">{{ order_info.order.cancellation_reason }}</div>
+							</div>
+						}
+						@if(rest.current_permission.cancel_closed_orders && order_info.order.status == 'CLOSED' || order_info.order.status == 'PENDING'){
+							<div class="col-6 col-md-3 py-2" >
+								<div>
+									<button class="btn btn-primary w-100" type="button" (click)="show_confirm_cancel=true">Cancelar Orden</button>
+								</div>
+							</div>
+						}
+						@if(rest.local_preferences.comex_enabled && !order_info.order.external_id){
+							<div class="col-6 col-md-3 py-2" >
+								<button class="btn btn-primary w-100" type="button" (click)="acumulaVentaComex($event)">Acumular Venta</button>
+							</div>
+						}
+						@if(rest.local_preferences.comex_enabled && order_info.order.external_id){
+							<div class="col-6 col-md-3 py-2" >
+								<button class="btn btn-primary w-100" type="button" (click)="cancelarComex($event)">Cancelar Comex</button>
+							</div>
+						}
+						@if(rest.local_preferences.comex_enabled){
+							<div class="col-6 col-md-3 py-2" >
+								<button class="btn btn-primary w-100" type="button" (click)="duplicateOrder($event)">Duplicar</button>
+							</div>
+						}
+					</div>
+				}
+			</div>
+		</div>
+		<div class="col-12 col-lg-6 col-xl-4">
+			<h2 class="my-3">Facturación</h2>
+			<div class="card py-3 px-0">
+				<div class="row m-0">
+					<div class="col-12 col-sm-6 mb-1">
+						<!--button (click)="testPrint($event)">
+							Test
+						</button-->
+						@if(order_info.order.id){
+							<a  class="btn btn-primary w-100" [routerLink]="['/print-receipt',this.store.print_receipt || rest.local_preferences.default_print_receipt,order_info.order.id]">
+								Ver Ticket
+							</a>
+						}
+						@if(!order_info.order.id){
+							<a  class="btn btn-primary w-100 " [routerLink]="['/print-receipt-offline',this.store.print_receipt || rest.local_preferences.default_print_receipt,order_info.order.sync_id]">
+								Ver Ticket
+							</a>
+						}
+					</div>
+					<div class="col-12 col-sm-6 mb-1">
+						<a class="btn btn-primary w-100" [routerLink]="['/print-remission',order_info.order.id]">Ver Remisión</a>
+					</div>
+
+					@if(!order_info.sat_factura?.uuid && !order_info?.sat_factura?.request && order_info.order.status == 'CLOSED'){
+						<div class="col-12 col-sm-6 mb-1" >
+							<button class="btn btn-primary w-100" type="button" (click)="showFacturar($event)">
+								Facturar
+							</button>
+						</div>
+					}
+
+					@if(order_info.sat_factura && !order_info.sat_factura.uuid && order_info.sat_factura?.request){
+						<div class="col-12 col-sm-6 mb-1" >
+							<button class="btn btn-primary w-100" type="button" (click)="replayFactura()">
+								Facturar
+								<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="currentColor" d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10s10-4.48 10-10S17.52 2 12 2m6 10.74c-.12 3.09-2.67 5.64-5.76 5.76a5.995 5.995 0 0 1-6.12-4.82c-.13-.61.36-1.18.98-1.18c.47 0 .88.33.98.8a3.997 3.997 0 0 0 4.72 3.12c1.56-.3 2.82-1.56 3.12-3.12A4 4 0 0 0 12 8.5v1.79c0 .45-.54.67-.85.35l-2.8-2.79c-.2-.2-.2-.51 0-.71l2.79-2.79c.32-.31.86-.09.86.36V6.5a6.01 6.01 0 0 1 6 6.24"/></svg>
+							</button>
+						</div>
+					}
+					@if(order_info.sat_factura){
+						<div class="col-12 col-sm-6 mb-1" >
+							<a [href]="getExternalLink('list-order-sat-factura', order_info.order.id)" class="btn btn-primary w-100">Facturas Relacionadas</a>
+						</div>
+					}
+					@if(order_info.sat_factura){
+						@if(order_info?.sat_factura?.xml_attachment_id){
+							<div class="col-12 col-sm-6 mb-1" >
+								<a target="_blank" class="btn btn-primary w-100" [href]="getPdfUrl(order_info.order.id)">Ver Factura</a>
+							</div>
+						}
+						@if(cancelar_factura_enabled){
+							<div class="col-12 col-sm-6 mb-1" >
+								<button class="btn btn-primary w-100" (click)="cancelarFactura()">
+									Cancelar Factura
+								</button>
+							</div>
+						}
+						@if(order_info?.sat_factura?.pdf_attachment_id){
+							<div class="col-12 col-sm-6 mb-1" >
+								@if(order_info.sat_factura.pdf_attachment_id){
+									<button  class="btn btn-primary w-100" (click)="show_reenviar_factura=true">
+										Reenviar Factura
+									</button>
+								}
+							</div>
+						}
+					}
+				</div>
+			</div>
+		</div>
+		@if(order_info.sat_factura){
+			<div class="my-3 col-12 col-md-6" >
+				<app-satxmlviewer [xml_attachment_id]="order_info.sat_factura.xml_attachment_id"></app-satxmlviewer>
+			</div>
+		}
+		<div class="col-12 col-lg-6">
+			<div class="row align-items-center">
+				<div class="col-8 col-md-10">
+					<h2 class="my-3">Pagos</h2>
+				</div>
+				@if(order_info.order.status == 'CLOSED' && this.order_info.order.paid_status != 'PAID'){
+					<div class="col-4 col-md-2 text-end" >
+						<button class="btn btn-secondary" type="button" (click)="showPaymentForm()">
+							<svg xmlns="http://www.w3.org/2000/svg" width="1.13em" height="1em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 576 512"><path fill="currentColor" d="M251.1 207.1c0-11 9-20 20-20h16c11.9 0 20.9 9 20.9 20v68h4c11 0 20 9 20 20c0 11.9-9 20-20 20h-48.9c-11 0-20-8.1-20-20c0-11 9-20 20-20h4v-47.5c-8.2-1.9-16-9.9-16-20.5zM48.66 79.13C128.4 100.9 208.2 80.59 288 60.25c87-22.17 174-44.35 261-11.87c16.9 6.31 27 23.24 27 41.28V399.5c0 23.9-25.6 39.7-48.7 33.4c-79.7-21.8-159.5-1.5-239.3 18.8c-87.9 22.2-174.9 44.4-261.03 11.9C10.06 457.3 0 440.4 0 422.3V112.5c0-23.91 25.61-39.67 48.66-33.37zM127.1 416c0-35.3-27.75-64-64-64v64h64zm-64-192.9c36.25 0 64-27.8 64-64h-64v64zM512 352v-64.9c-35.3 0-64 29.6-64 64.9h64zm0-256.9h-64c0 36.2 28.7 64 64 64v-64zm-224.9 48c-53 0-96 51-96 112c0 62.8 43 112.9 96 112.9c53.9 0 96.9-50.1 96.9-112.9c0-61-43-112-96.9-112z"/></svg>
+							<span class="">&nbsp;Abonar</span>
+						</button>
+					</div>
+				}
+			</div>
+			@if(order_info){
+				<div class="card p-3" >
+					<div class="row d-none d-md-flex fw-bold border-bottom">
+						<div class="col-4">Fecha</div>
+						<div class="col-4">Tipo de pago</div>
+						<div class="col-4 text-end">Cantidad</div>
+					</div>
+					@if(payment_info_list.length == 0){
+						<div class="row border-bottom" >
+							<div class="col-12 text-center">
+								No hay pagos registrados
+							</div>
+						</div>
+					}
+					@for(p of active_payment_list; track p){
+						<div class="" >
+							@for(bm of p.movements; track bm){
+								<div class="row border-bottom" >
+									<div class="col-4">
+										<a [routerLink]="['/print-payment-receipt',p.payment.id,order_info.order.id]">
+											{{p.payment.created | shortDate:'full' }}
+										</a>
+									</div>
+									<div class="col-4">
+										{{ payment_type_dic[ bm.bank_movement.transaction_type ]}}
+									</div>
+									<div class="col-4 text-end">
+										{{ bm.bank_movement.total | currency }}
+										{{bm.bank_movement.currency_id}}
+									</div>
+									<div class="col-12 text-end">
+										@if(!p.payment.sat_factura_id){
+											<button class="btn btn-primary w-10 m-1"  (click)="showChangeTransactionType(bm.bank_movement)" title="Cambiar forma de Pago">
+												<svg xmlns="http://www.w3.org/2000/svg" width="1.3em" height="1.3em" viewBox="0 0 640 512">
+													<path fill="currentColor" d="M535 41c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l64 64c4.5 4.5 7 10.6 7 17s-2.5 12.5-7 17l-64 64c-9.4 9.4-24.6 9.4-33.9 0s-9.4-24.6 0-33.9l23-23l-174-.2c-13.3 0-24-10.7-24-24s10.7-24 24-24h174.1zM105 377l-23 23h174c13.3 0 24 10.7 24 24s-10.7 24-24 24H81.9l23 23c9.4 9.4 9.4 24.6 0 33.9s-24.6 9.4-33.9 0L7 441c-4.5-4.5-7-10.6-7-17s2.5-12.5 7-17l64-64c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9zM96 64h241.9c-3.7 7.2-5.9 15.3-5.9 24c0 28.7 23.3 52 52 52h117.4c-4 17 .6 35.5 13.8 48.8c20.3 20.3 53.2 20.3 73.5 0l19.3-19.3V384c0 35.3-28.7 64-64 64H302.1c3.7-7.2 5.9-15.3 5.9-24c0-28.7-23.3-52-52-52H138.6c4-17-.6-35.5-13.8-48.8c-20.3-20.3-53.2-20.3-73.5 0L32 342.5V128c0-35.3 28.7-64 64-64m64 64H96v64c35.3 0 64-28.7 64-64m384 192c-35.3 0-64 28.7-64 64h64zm-224 32a96 96 0 1 0 0-192a96 96 0 1 0 0 192"/>
+												</svg>
+											</button>
+										}
+										@if(!p.payment.sat_factura_id && rest.current_permission.cancel_payments){
+											<button  class="btn btn-danger w-10 m-1" (click)="cancelarPago(p.payment.id)" title="Cancelar Pago">
+												<svg xmlns="http://www.w3.org/2000/svg" width="1.1em" height="1.1em" fill="currentColor" class="bi bi-x-lg" viewBox="0 0 16 16">
+													<path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8z"/>
+												</svg>
+											</button>
+										}
+										@if(order_info.order.sat_factura_id && !p.payment.sat_factura_id){
+											<button type="button"  class="btn btn-primary w-10 m-1" (click)="showFacturarPago(p)" title="Facturar Pago">
+												<svg xmlns="http://www.w3.org/2000/svg" width="1.1em" height="1.1em" fill="currentColor" class="bi bi-receipt-cutoff" viewBox="0 0 16 16">
+													<path d="M3 4.5a.5.5 0 0 1 .5-.5h6a.5.5 0 1 1 0 1h-6a.5.5 0 0 1-.5-.5m0 2a.5.5 0 0 1 .5-.5h6a.5.5 0 1 1 0 1h-6a.5.5 0 0 1-.5-.5m0 2a.5.5 0 0 1 .5-.5h6a.5.5 0 1 1 0 1h-6a.5.5 0 0 1-.5-.5m0 2a.5.5 0 0 1 .5-.5h6a.5.5 0 0 1 0 1h-6a.5.5 0 0 1-.5-.5m0 2a.5.5 0 0 1 .5-.5h6a.5.5 0 0 1 0 1h-6a.5.5 0 0 1-.5-.5M11.5 4a.5.5 0 0 0 0 1h1a.5.5 0 0 0 0-1zm0 2a.5.5 0 0 0 0 1h1a.5.5 0 0 0 0-1zm0 2a.5.5 0 0 0 0 1h1a.5.5 0 0 0 0-1zm0 2a.5.5 0 0 0 0 1h1a.5.5 0 0 0 0-1zm0 2a.5.5 0 0 0 0 1h1a.5.5 0 0 0 0-1z"/>
+													<path d="M2.354.646a.5.5 0 0 0-.801.13l-.5 1A.5.5 0 0 0 1 2v13H.5a.5.5 0 0 0 0 1h15a.5.5 0 0 0 0-1H15V2a.5.5 0 0 0-.053-.224l-.5-1a.5.5 0 0 0-.8-.13L13 1.293l-.646-.647a.5.5 0 0 0-.708 0L11 1.293l-.646-.647a.5.5 0 0 0-.708 0L9 1.293 8.354.646a.5.5 0 0 0-.708 0L7 1.293 6.354.646a.5.5 0 0 0-.708 0L5 1.293 4.354.646a.5.5 0 0 0-.708 0L3 1.293zm-.217 1.198.51.51a.5.5 0 0 0 .707 0L4 1.707l.646.647a.5.5 0 0 0 .708 0L6 1.707l.646.647a.5.5 0 0 0 .708 0L8 1.707l.646.647a.5.5 0 0 0 .708 0L10 1.707l.646.647a.5.5 0 0 0 .708 0L12 1.707l.646.647a.5.5 0 0 0 .708 0l.509-.51.137.274V15H2V2.118z"/>
+												</svg>
+											</button>
+										}
+										<!--button *ngIf="p.sat_factura.sat_pdf_attachment_id" class="btn btn-primary w-100" (click)="showPdfFile(p?.order?.sat_pdf_attachment_id)">
+											Factura
+										</button-->
+										@if(p?.sat_factura?.xml_attachment_id){
+											<a target="_blank"  class="btn btn-primary w-10 m-1" [href]="getPaymentPdfUrl(p.payment.id)" title="Ver Factura">
+												<svg _ngcontent-yke-c140="" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" width="1.1em" height="1.1em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 384 512"><path _ngcontent-yke-c140="" d="M181.9 256.1c-5-16-4.9-46.9-2-46.9c8.4 0 7.6 36.9 2 46.9zm-1.7 47.2c-7.7 20.2-17.3 43.3-28.4 62.7c18.3-7 39-17.2 62.9-21.9c-12.7-9.6-24.9-23.4-34.5-40.8zM86.1 428.1c0 .8 13.2-5.4 34.9-40.2c-6.7 6.3-29.1 24.5-34.9 40.2zM248 160h136v328c0 13.3-10.7 24-24 24H24c-13.3 0-24-10.7-24-24V24C0 10.7 10.7 0 24 0h200v136c0 13.2 10.8 24 24 24zm-8 171.8c-20-12.2-33.3-29-42.7-53.8c4.5-18.5 11.6-46.6 6.2-64.2c-4.7-29.4-42.4-26.5-47.8-6.8c-5 18.3-.4 44.1 8.1 77c-11.6 27.6-28.7 64.6-40.8 85.8c-.1 0-.1.1-.2.1c-27.1 13.9-73.6 44.5-54.5 68c5.6 6.9 16 10 21.5 10c17.9 0 35.7-18 61.1-61.8c25.8-8.5 54.1-19.1 79-23.2c21.7 11.8 47.1 19.5 64 19.5c29.2 0 31.2-32 19.7-43.4c-13.9-13.6-54.3-9.7-73.6-7.2zM377 105L279 7c-4.5-4.5-10.6-7-17-7h-6v128h128v-6.1c0-6.3-2.5-12.4-7-16.9zm-74.1 255.3c4.1-2.7-2.5-11.9-42.8-9c37.1 15.8 42.8 9 42.8 9z" fill="currentColor"></path></svg>
+											</a>
+										}
+										<a [href]="getExternalLink('list-payment-sat-factura', p.payment.id)" class="btn btn-primary w-10 m-1">Facturas Relacionadas</a>
+										@if(p.payment.sat_factura_id && rest.user_permission.cancelar_factura){
+											<button  class="btn btn-danger w-10 m-1" (click)="cancelarFacturaDelPago(p.payment.sat_factura_id)" title="Cancelar Factura">
+												<svg xmlns="http://www.w3.org/2000/svg" width="1.1em" height="1.1em" fill="currentColor" class="bi bi-x-lg" viewBox="0 0 16 16">
+													<path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8z"/>
+												</svg>
+											</button>
+										}
+										@if(p?.sat_factura?.xml_attachment_id){
+											<a class="btn btn-primary w-10 m-1"  [href]="rest.getFilePath(p.sat_factura.xml_attachment_id, true)" title="Descargar XML">
+												<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-file-earmark-code-fill" viewBox="0 0 16 16">
+													<path d="M9.293 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V4.707A1 1 0 0 0 13.707 4L10 .293A1 1 0 0 0 9.293 0M9.5 3.5v-2l3 3h-2a1 1 0 0 1-1-1M6.646 7.646a.5.5 0 1 1 .708.708L5.707 10l1.647 1.646a.5.5 0 0 1-.708.708l-2-2a.5.5 0 0 1 0-.708zm2.708 0 2 2a.5.5 0 0 1 0 .708l-2 2a.5.5 0 0 1-.708-.708L10.293 10 8.646 8.354a.5.5 0 1 1 .708-.708"/>
+												</svg>
+											</a>
+										}
+										<button class="btn btn-primary w-10 m-1" [routerLink]="['/print-payment-receipt',p.payment.id,order_info.order.id]" title="Ver Pago">
+											<svg xmlns="http://www.w3.org/2000/svg" width="1.1em" height="1.1em" fill="currentColor" class="bi bi-eye-fill" viewBox="0 0 16 16">
+												<path d="M10.5 8a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0"/>
+												<path d="M0 8s3-5.5 8-5.5S16 8 16 8s-3 5.5-8 5.5S0 8 0 8m8 3.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7"/>
+											</svg>
+										</button>
+									</div>
+								</div>
+							}
+						</div>
+					}
+				</div>
+			}
+		</div>
+		@if(deleted_payment_list.length > 0){
+			<div class="col-12 col-lg-6" >
+				<h2 class="my-3">Pagos Cancelados</h2>
+				@if(order_info){
+					<div class="card p-3" >
+						<div class="row d-none d-md-flex fw-bold border-bottom">
+							<div class="col-3">Fecha de Cancelación</div>
+							<div class="col-3">Tipo de pago</div>
+							<div class="col-3 text-end">Cantidad</div>
+							<div class="col-3 text-end">Acciones</div>
+						</div>
+						@for(p of deleted_payment_list; track p){
+							<div class="" >
+								@for(bm of p.movements; track bm){
+									<div class="row border-bottom" >
+										<div class="col-3">
+											<a [routerLink]="['/print-payment-receipt',p.payment.id,order_info.order.id]">
+												{{p.payment.updated | shortDate:'full' }}
+											</a>
+										</div>
+										<div class="col-4 col-md-3">
+											{{ payment_type_dic[ bm.bank_movement.transaction_type ]}}
+										</div>
+										<div class="col-4 col-md-3 text-end">
+											{{ bm.bank_movement.total | currency }}
+											{{bm.bank_movement.currency_id}}
+										</div>
+										<div class="col-12 col-md-3 text-end">
+											<button class="btn btn-primary w-10 m-1" [routerLink]="['/print-payment-receipt',p.payment.id,order_info.order.id]" title="Ver Pago">
+												<svg xmlns="http://www.w3.org/2000/svg" width="1.1em" height="1.1em" fill="currentColor" class="bi bi-eye-fill" viewBox="0 0 16 16">
+													<path d="M10.5 8a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0"/>
+													<path d="M0 8s3-5.5 8-5.5S16 8 16 8s-3 5.5-8 5.5S0 8 0 8m8 3.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7"/>
+												</svg>
+											</button>
+										</div>
+									</div>
+								}
+							</div>
+						}
+					</div>
+				}
+			</div>
+		}
+		@if(cinstallment_list.length > 0){
+			<div class="col-12 col-lg-6" >
+				<h4 class="p-3 my-3">Registro de plazos</h4>
+				<div class="card">
+					<div class="card-body">
+						<div class="table-responsive">
+							<table class="table">
+								<thead class="thead-light">
+									<tr>
+										<th>#</th>
+										<th class="text-end">Vencimiento</th>
+										<th class="d-none d-md-table-cell text-end">Estatus</th>
+										<th class="text-end">Monto</th>
+										<th class="text-end">Abonado</th>
+										<th class="d-none d-md-table-cell text-end">Fecha Saldado</th>
+									</tr>
+								</thead>
+								<tbody>
+									@for(installment of cinstallment_list; track installment){
+										<tr [ngClass]="{'bg-danger':installment.due_status == 'VENCIDO','text-white':installment.due_status == 'VENCIDO'}">
+											<td>{{installment.installment_number}}</td>
+											<td class="text-end">{{installment.due_date | shortDate:'full'}}</td>
+											<td class="d-none d-md-table-cell text-end fw-bold">
+												{{installment.due_status | titlecase}}
+											</td>
+											<td class="text-end">{{installment.amount | currency}}</td>
+											<td class="text-end">{{installment.paid_amount | currency}}</td>
+											<td class="d-none d-md-table-cell text-end">{{installment.paid_timestamp | shortDate:'full'}}</td>
+										</tr>
+									}
+								</tbody>
+							</table>
+						</div>
+					</div>
+				</div>
+			</div>
+		}
+		<div class="col-12 col-lg-6">
+			<h2 class="my-3">Artículos</h2>
+			<div class="card">
+				<div class="card-body">
+					<div class="table-responsive">
+						<table class="table">
+							<thead class="thead-light">
+								<tr>
+									<th>Nombre</th>
+									<th class="text-end"></th>
+									<th class="text-end">Cantidad</th>
+									<th class="text-end">Precio</th>
+									<th class="text-end">Subtotal</th>
+									<th class="text-end">Iva</th>
+									<th class="text-end">Subtotal</th>
+									<th class="text-end">Total</th>
+								</tr>
+							</thead>
+							@if(order_info){
+								<tbody >
+									@for(io of order_info.items; track io){
+										<tr>
+											@if(!io.order_item.item_option_id){
+												<td class="border-bottom-0 border-top" >
+													<!--img [src]="rest.getImagePath(io.item.image_id,io?.category?.image_id,rest.local_preferences.default_product_image_id)" style="max-height:30px;max-width:30px;margin-right:10px"-->
+													@if(!this.rest.current_permission.add_items){
+														<span >{{io.category?.name | titlecase}} - {{io.item.name| titlecase}}</span>
+													}
+													@if(this.rest.current_permission.add_items){
+														<a  [routerLink]="['/edit-item',io.item.id]"><!--{{io.category?.name | titlecase}} -->{{io.item.name| titlecase}}</a>
+													}
+
+												</td>
+											}
+											<td class="" [ngClass]="{'border-0':io.order_item.item_option_id,'border-top':!io.order_item.item_option_id, 'border-bottom-0':!io.order_item.item_option_id}"></td>
+											@if(io.order_item.item_option_id){
+												<td class="border-0" >
+													{{io.item.name| titlecase}}
+												</td>
+											}
+											<td class="text-end" [ngClass]="{'border-0':io.order_item.item_option_id, 'border-top':!io.order_item.item_option_id,'border-bottom-0':!io.order_item.item_option_id}">
+												{{io.order_item.qty | number}}
+											</td>
+											<td class="text-end" [ngClass]="{'border-0':io.order_item.item_option_id,'border-top': !io.order_item.item_option_id, 'border-bottom-0': !io.order_item.item_option_id}">
+												@if(io.order_item.total){
+													{{io.order_item.unitary_price}}
+												}
+											</td>
+											<td class="text-end" [ngClass]="{'border-0':io.order_item.item_option_id,'border-top': !io.order_item.item_option_id, 'border-bottom-0': !io.order_item.item_option_id}">
+												@if(io.order_item.total){
+													{{io.order_item.unitary_price*io.order_item.qty }}
+												}
+											</td>
+											<td class="text-end" [ngClass]="{'border-0':io.order_item.item_option_id,'border-top': !io.order_item.item_option_id, 'border-bottom-0': !io.order_item.item_option_id}">
+												@if(io.order_item.total){
+													{{io.order_item.tax }}
+												}
+											</td>
+
+											<td class="text-end" [ngClass]="{'border-0':io.order_item.item_option_id, 'border-top': !io.order_item.item_option_id, 'border-bottom-0':!io.order_item.item_option_id}">
+												@if(io.order_item.total){
+													{{io.order_item.subtotal}}
+												}
+											</td>
+
+
+											<td class="text-end" [ngClass]="{'border-0':io.order_item.item_option_id, 'border-top': !io.order_item.item_option_id, 'border-bottom-0':!io.order_item.item_option_id}">
+												@if(io.order_item.total){
+													{{io.order_item.total }}
+												}
+											</td>
+										</tr>
+										@if(io.serials.length){
+											<tr>
+												<td colspan="6">
+													@for(serial of io.serials; track serial){
+														<span>
+															<br>
+															{{serial.serial.serial_number}} - {{serial.serial.additional_data}} - {{serial.serial.description}}
+														</span>
+													}
+												</td>
+											</tr>
+										}
+									}
+									@if(order_info.order.discount>0){
+										<tr>
+											<th colspan="4">Descuento</th>
+											<td colspan="4">{{order_info.order.discount | currency}}</td>
+										</tr>
+									}
+									@if(order_info.order.discount>0){
+										<tr>
+											<th class="fw-bold text-end" colspan="4">subtotal</th>
+											<td class="fw-bold text-end">{{order_info.order.total | currency}}</td>
+										</tr>
+									}
+									<tr>
+										<th class="fw-bold text-end" colspan="4">Total</th>
+										<td class="fw-bold text-end">{{order_info.order.total-order_info.order.discount | currency}} {{order_info.order.currency_id}}</td>
+									</tr>
+								</tbody>
+							}
+						</table>
+					</div>
+				</div>
+			</div>
+		</div>
+		@if(returns_info_list.length > 0){
+			<div class="col-12 col-lg-6" >
+				<h2 class="my-3">Artículos Cancelados</h2>
+				<div class="card">
+					<div class="card-body">
+						<div class="table-responsive">
+							<table class="table">
+								<thead class="thead-light">
+									<tr>
+										<th>Nombre</th>
+										<th class="text-center">Tipo</th>
+										<th class="text-center">Cantidad</th>
+										<th class="text-center">Devolvió</th>
+										<th class="text-center">Fecha</th>
+										<th class="text-end">Monto</th>
+									</tr>
+								</thead>
+								@if(order_info){
+									<tbody >
+										@for(return of returns_info_list; track return){
+											@for(items of return.items; track items){
+												<tr>
+													<td class="text-start">
+														{{items.item.name | titlecase}}
+													</td>
+													<td class="text-center">
+														{{ return.returns.type === 'RETURN_MONEY' ? 'Cancelación'
+														: (return.returns.type === 'RETURN_COUPON' ? 'Cupón'
+														: return.returns.type | titlecase) }}
+													</td>
+													<td class="text-center">
+														{{items.returned_item.returned_qty | number}}
+													</td>
+													<td class="text-center">
+														{{cashier_user.name | titlecase}}
+													</td>
+													<td class="text-center">
+														{{return.returns.created | date:'d/MMM/y h:mma'}}
+													</td>
+													<td class="text-end">
+														{{items.returned_item.total | currency}}
+													</td>
+												</tr>
+											}
+										}
+										<!-- <tr>
+											<th class="fw-bold text-end" colspan="4">Total</th>
+											<th>AQUI IRA EL TOTAL</th>
+										</tr> -->
+									</tbody>
+								}
+							</table>
+						</div>
+					</div>
+				</div>
+			</div>
+		}
+		@if(has_forms){
+			<div class="col-12 col-md" >
+				<h4 class="my-3">Formularios</h4>
+				<div class="card p-3">
+					@for(coii_response of coii_response_list; track coii_response){
+						<div class="row my-1 fw-bold border-bottom">
+							<div class="col-6">{{coii_response.form.title}}</div>
+							<div class="col-6 text-end">
+								@if(coii_response.order_item.qty>coii_response.responses.length){
+									<button (click)="showAgregarResponse(coii_response)">+</button>
+								}
+							</div>
+						</div>
+						@for(response of coii_response.responses; track response){
+							<div class="row my-1 ms-0 me-0" >
+								<div class="col-4 p-0 fw-bold">
+									{{coii_response | itemName}} -
+									<a [routerLink]="['/edit-response',response.response.id]">
+										{{response.response.title}}
+									</a>
+								</div>
+								<div class="col-2 p-0 fw-bold">
+									{{response?.serial?.serial_number | titlecase}}
+								</div>
+								<div class="col-2 p-0 text-end">{{response.response.created | shortDate: 'full'}}</div>
+								<div class="col-4 p-0 text-end">
+									<button type="button" class="btn btn-primary" (click)="showChangeSerial(response)" title="Cambiar Serial">
+										Cambiar
+									</button>
+								</div>
+							</div>
+						}
+					}
+				</div>
+			</div>
+		}
+	</div>
+</div>
+
+@if(show_add_payment_to_order){
+	<app-modal [show]="show_add_payment_to_order" [biggest_posible]="true" [closable]="false" >
+		<app-add-client-payment [currency_rate_list]="currency_rate_list" [order_info_list]="client_order_info_list" (onPayment)="onPayment($event)"></app-add-client-payment>
+	</app-modal>
+}
+
+<app-modal [(show)]="show_facturar">
+	@if(order_info){
+		<div >
+			<app-save-order-factura [order_info]="order_info" (onFinish)="onTerminoFacturar(true)" [billing_data_list]="billing_data_list"></app-save-order-factura>
+		</div>
+	}
+</app-modal>
+<app-modal [(show)]="show_reenviar_factura" [closable]="false">
+	@if(order_info){
+		<div class="container-fluid" >
+			<h2>Reenviar Factura por Correo</h2>
+			<form name="send_factura_form" (submit)="resendFactura($event)" ngNativeValidate>
+				<app-loading [is_loading]="is_loading"></app-loading>
+				<div class="row">
+					<div class="col-12 col-md-6">
+						<label>Nombre</label>
+						<input type="text" name="name" [(ngModel)]="reenviar_factura_name" class="form-control">
+					</div>
+					<div class="col-12 col-md-6">
+						<label>Correo Electrónico</label>
+						<input type="email" name="factura_email" [(ngModel)]="reenviar_factura_email" class="form-control" required>
+					</div>
+				</div>
+				<div class="row py-3">
+					<div class="col-6">
+						<button type="button" class="btn btn-primary w-100" (click)="show_reenviar_factura=false" [disabled]="is_loading">Cancelar</button>
+					</div>
+					<div class="col-6">
+						<button type="submit" class="btn btn-primary w-100">Enviar</button>
+					</div>
+				</div>
+			</form>
+		</div>
+	}
+</app-modal>
+
+<app-modal [(show)]="show_refacturar" [closable]="false">
+	@if(order_info){
+		<div class="container-fluid" >
+			<h2>Reiniciar Facturación</h2>
+			<form name="reset_factura_form" (submit)="resetFacturacion($event)" ngNativeValidate>
+				<app-loading [is_loading]="is_loading"></app-loading>
+				<div class="row">
+					<div class="col-12 col-md-6">
+						<label>Forma de Pago</label>
+						<select class="form-control" name="sat_forma_pago" [(ngModel)]="sat_forma_pago">
+							<option value="">Seleccionar</option>
+							<option value="01">Efectivo</option>
+							<option value="02">Cheque</option>
+							<option value="04">Tarjeta de crédito</option>
+							<option value="28">Tarjeta de débito</option>
+							<option value="03">Transferencia</option>
+						</select>
+					</div>
+				</div>
+				<div class="row py-3">
+					<div class="col-6">
+						<button type="button" class="btn btn-primary w-100" (click)="show_refacturar=false" [disabled]="is_loading">Cancelar</button>
+					</div>
+					<div class="col-6">
+						<button type="submit" class="btn btn-primary w-100">Reiniciar</button>
+					</div>
+				</div>
+			</form>
+		</div>
+	}
+</app-modal>
+
+<app-modal [(show)]="show_facturar_pago">
+	@if(order_info){
+		<div class="container-fluid" >
+			<h2>Facturar el pago</h2>
+			<app-loading [is_loading]="is_loading"></app-loading>
+			<form name="facturar_tfp" (submit)="facturarElPago($event)" ngNativeValidate>
+				<div class="row">
+					<div class="col-12">
+						<label>Fecha de pago</label>
+						<input type="datetime-local" class="form-control" name="fecha_pago" [(ngModel)]="fecha_pago" required>
+					</div>
+					<div class="col-12">
+						<label>Serie</label>
+						<input type="text" class="form-control" name="sat_serie" [(ngModel)]="sat_serie" minlength="1" maxlength="25" required>
+					</div>
+					<div class="col-12">
+						<label>Correo Electrónico</label>
+						<input type="email" name="pago_factura_email" [(ngModel)]="pago_factura_email" class="form-control" required>
+					</div>
+				</div>
+				<div class="row py-3">
+					<div class="col-6">
+						<button type="button" class="btn btn-primary w-100" (click)="show_facturar_pago=false" [disabled]="is_loading">Cancelar</button>
+					</div>
+					<div class="col-6">
+						<button type="submit" class="btn btn-primary w-100">Facturar Pago</button>
+					</div>
+				</div>
+			</form>
+		</div>
+	}
+</app-modal>
+
+<app-modal [(show)]="show_change_transaction_type">
+	@if(order_info){
+		<div class="container-fluid p-3" >
+			<form (submit)="changeTransactionType($event)">
+				<div class="row">
+					<div class="col-12 form-group">
+						<label>Forma de Pago</label>
+						<select name="transaction_type" [(ngModel)]="transaction_type" class="form-control" required>
+							<option value="CASH">Efectivo</option>
+							<option value="CHECK">Cheque</option>
+							<option value="TRANSFER">Transferencia</option>
+							<option value="CREDIT_CARD">Tarjeta de crédito</option>
+							<option value="DEBIT_CARD">Tarjeta de débito</option>
+						</select>
+					</div>
+					<div class="col-6 my-3">
+						<button type="button" class="btn btn-primary w-100" (click)="show_change_transaction_type=false">Cancelar</button>
+					</div>
+					<div class="col-6 my-3">
+						<button type="submit" class="btn btn-primary w-100">Cambiar</button>
+					</div>
+				</div>
+			</form>
+		</div>
+	}
+</app-modal>
+
+<app-modal [(show)]="show_assign_response">
+	@if(order_info){
+		<div class="container-fluid p-3" >
+			<form (submit)="submitOrderItemResponse($event)">
+				<div class="row">
+					<div class="col-12 form-group">
+						<label>Respuesta</label>
+						<select name="selected_response_id" [ngModel]="selected_response_id" (ngModelChange)="onSelectedResponse($event)" class="form-control" required>
+							<option value="">Seleccionar</option>
+							@for(response_info of response_info_list; track response_info){
+								<option  [value]="response_info.response.id">
+									{{response_info.response.title}}
+								</option>
+							}
+						</select>
+					</div>
+					<div class="col-12 form-group">
+						<label>#Serie Codigo</label>
+						<input type="text"  name="serial_number" [(ngModel)]="serial_number" class="form-control">
+					</div>
+					<div class="col-6 my-3">
+						<button type="button" class="btn btn-primary w-100" (click)="show_assign_response=false">Cancelar</button>
+					</div>
+					<div class="col-6 my-3">
+						<button type="submit" class="btn btn-primary w-100">Agregar {{selected_form?.title}}</button>
+					</div>
+				</div>
+			</form>
+		</div>
+	}
+</app-modal>
+
+<app-modal [(show)]="show_confirm_cancel" [closable]="false">
+	<app-loading [is_loading]="is_loading"></app-loading>
+	<div class="container-fluid p-3">
+		<h3>¿Está seguro que desea cancelar esta orden?</h3>
+		<p class="fw-bold">Esta acción no se puede deshacer</p>
+
+		<form (submit)="confirmCancelOrder($event)" ngNativeValidate>
+			<div class="row">
+				<div class="col-12 form-group">
+					<label>Motivo de cancelación</label>
+					<textarea name="cancel_reason" [(ngModel)]="cancel_reason" class="form-control" required></textarea>
+				</div>
+			</div>
+			<div class="row mt-3">
+				<div class="col-6">
+					<button type="button" class="btn btn-secondary w-100" (click)="show_confirm_cancel=false">No</button>
+				</div>
+				<div class="col-6">
+					<button type="submit" class="btn btn-danger w-100">Sí, cancelar</button>
+				</div>
+			</div>
+		</form>
+	</div>
+</app-modal>
+
+<app-modal [(show)]="show_change_serial">
+	<form (submit)="submitSerial($event)">
+		<div class="container-fluid p-3">
+			<div class="row">
+				<div class="col-12 form-group">
+					<label>#Serial</label>
+					<input type="text"  name="serial_number" [(ngModel)]="serial_number" class="form-control">
+				</div>
+				<div class="col-6 my-3">
+					<button type="button" class="btn btn-primary w-100" (click)="show_change_serial=false">Cancelar</button>
+				</div>
+				<div class="col-6 my-3">
+					<button type="submit" class="btn btn-primary w-100">Cambiar</button>
+				</div>
+			</div>
+		</div>
+	</form>
+</app-modal>
