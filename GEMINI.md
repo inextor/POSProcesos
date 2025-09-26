@@ -202,3 +202,5 @@ showError and showSuccess, warging they disable is_loading on BaseComponent
 
 use the subscribe({ next, error }) to subscribe to observables, the subscribe(accept_func,reject_func) is deprecated on new versions,
 and we are alredy removing from here and adding to the new version of angular
+
+# About migation from angular 11 to 20 see Migration.md
