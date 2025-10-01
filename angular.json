@@ -25,14 +25,16 @@
 							"src/assets/*",
 							"src/assets/bootstrap/js/bootstrap.bundle.min.js",
 							"src/favicon.ico",
-							"src/manifest.webmanifest"
+							"src/manifest.webmanifest",
+							"src/assets/js/xlsx.full.min.js"
 						],
 						"styles": [
 							"src/assets/bootstrap/css/bootstrap.min.css",
 							"src/styles.css"
 						],
 						"scripts": [
-							"src/assets/js/maps.js"
+							"src/assets/js/maps.js",
+							"src/assets/js/excelUtils.js"
 						]
 					},
 					"configurations": {
