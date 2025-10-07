@@ -1,5 +1,5 @@
 import { ExtendedReservation, ItemInfo, OrderInfo, OrderItemInfo, ReservationInfo, ReservationItemInfo, ShippingInfo } from "./Models";
-import { User_Permission,Preferences,Production_Area,Process, Production, Shipping, Store, Payroll, Payroll_Concept_Value, Work_log_rules, User_extra_fields, User, Production_Area_Item, Item, Category, Reservation, Reservation_Item, Period, Order, Price_Type, Order_Item, Price, Item_Exception, Role, Role_Item_Price, Ecommerce_Item_Role } from "./RestModels";
+import { User_Permission,Preferences,Production_Area,Process, Production, Shipping, Store, Payroll, Payroll_Concept_Value, Work_log_rules, User_extra_fields, User, Production_Area_Item, Item, Category, Reservation, Reservation_Item, Period, Order, Price_Type, Order_Item, Price, Item_Exception, Role, Role_Item_Price, Ecommerce_Item_Role, Address } from "./RestModels";
 import { RestService } from "./services/rest.service";
 
 export class GetEmpty
@@ -78,6 +78,8 @@ export class GetEmpty
 			has_separator: "NO",
 			id: 0,
 			id_payment: null,
+			ieps_type: "RATE",
+			ieps_value: 0,
 			is_free_of_charge: "NO",
 			is_item_extra: "NO",
 			item_extra_id: null,
@@ -497,6 +499,35 @@ export class GetEmpty
 			workshift_id: null,
 		};
 	}
+
+	static address(): Address
+	{
+		return {
+			address: null,
+			city: null,
+			country: null,
+			created: new Date(),
+			email: null,
+			id: 0,
+			lat: null,
+			lng: null,
+			name: '',
+			note: null,
+			phone: null,
+			rfc: null,
+			sat_regimen_capital: null,
+			sat_regimen_fiscal: null,
+			sat_uso_cfdi: null,
+			state: null,
+			status: 'ACTIVE',
+			suburb: null,
+			type: 'BILLING',
+			updated: new Date(),
+			user_id: 0,
+			zipcode: null
+		};
+	}
+
 	static user_permission():User_Permission
 	{
 		return {
