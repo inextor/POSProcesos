@@ -15,6 +15,7 @@ export interface Address{
 	rfc:string | null;
 	sat_regimen_capital:string | null;
 	sat_regimen_fiscal:string | null;
+	sat_uso_cfdi: string | null;
 	state:string | null;
 	status:'ACTIVE'|'DELETED';
 	suburb:string | null;
@@ -58,6 +59,7 @@ export interface Bank_Movement{
 	client_user_id:number | null;
 	created:Date;
 	currency_id:string | null;
+	exchange_rate:number;
 	id:number;
 	invoice_attachment_id:number | null;
 	note:string | null;
@@ -668,6 +670,8 @@ export interface Order_Item{
 	has_separator:'NO'|'YES';
 	id:number;
 	id_payment:number | null;
+	ieps_type:'RATE'|'AMOUNT';
+	ieps_value:number;
 	is_free_of_charge:'NO'|'YES';
 	is_item_extra:'NO'|'YES';
 	item_extra_id:number | null;
