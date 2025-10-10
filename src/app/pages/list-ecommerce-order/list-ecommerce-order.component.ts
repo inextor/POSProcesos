@@ -16,6 +16,12 @@ import { LoadingComponent } from '../../components/loading/loading.component';
 import { PaginationComponent } from '../../components/pagination/pagination.component';
 import { ConfirmationResult, ConfirmationService } from '../../modules/shared/services/confirmation.service';
 
+interface COrder extends Order
+{
+	to_prepare: '' | '1';
+}
+
+
 @Component({
 	selector: 'app-list-ecommerce-order',
 	standalone: true,
@@ -25,25 +31,24 @@ import { ConfirmationResult, ConfirmationService } from '../../modules/shared/se
 })
 export class ListEcommerceOrderComponent extends BaseComponent implements OnInit, OnDestroy {
 
-	public rest_ecommerce_order: Rest<Order,OrderInfo> = this.rest.initRest<Order,OrderInfo>('order_info',['id','client_name','store_id','created','closed']);
+	public rest_ecommerce_order: Rest<COrder,OrderInfo> = this.rest.initRest<COrder,OrderInfo>('order_info',['id','client_name','store_id','created','closed','to_prepare']);
 	public ecommerce_orders: OrderInfo[] = [];
-	public search_object: SearchObject<Order> = this.rest_ecommerce_order.getEmptySearch();
-
-
+	public search_object: SearchObject<COrder> = this.rest_ecommerce_order.getEmptySearch();
 
 	ngOnInit(): void
 {
 		this.path = 'list-ecommerce-order';
 		this.titleService.setTitle('Listado de Ordenes de Ecommerce');
-		this.subs.sink = this.route.queryParamMap.subscribe(queryParams => {
-			this.search_object = this.rest_ecommerce_order.getSearchObject(queryParams);
-			this.search(this.search_object);
-		});
-	}
 
-	override search(search_object: SearchObject<OrderInfo>): void {
-		this.is_loading = true;
-		this.sink = this.rest_ecommerce_order.search(search_object).subscribe
+		this.sink = this.route.queryParamMap.pipe
+		(
+			mergeMap((queryParams: any) => {
+				this.search_object = this.rest_ecommerce_order.getSearchObject(queryParams);
+				this.search_object.eq.to_prepare = '1';
+				return this.rest_ecommerce_order.search(this.search_object)
+			})
+		)
+		.subscribe
 		({
 			next: (response: any) => {
 				this.ecommerce_orders = response.data;
