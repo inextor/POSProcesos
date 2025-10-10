@@ -1,0 +1,16 @@
+<div class="card p-3">
+	<div class="row">
+		<code>[name,	phone,	email,	address,	rfc,	city,	state,	zipcode,
+			sat_razon_social,	store_id,	sat_uso_cfdi,	sat_regimen_fiscal]</code>
+
+		<form (submit)="createUsersBilling($event)">
+			<div class="">
+				<input type="file" name="users_file" class="form-control" (change)="onUsersFileChanged($event)" required>
+			</div>
+			<div class="my-3">
+				<button type="submit" class="btn btn-primary">Actualizar Usuarios</button>
+			</div>
+		</form>
+
+	</div>
+</div>
