@@ -692,15 +692,17 @@ export class Rest<U,T>
 			});
 		});
 
-		let sort_order = param_map.get('sort_order');
+		let s_order = param_map.get('sort_order');
+		item_search.sort_order = s_order ? s_order.split(',') : [];
 
-		if(sort_order !== null )
+
+		if( item_search.sort_order.length == 0 )
 		{
-			item_search.sort_order = sort_order.split(',');
+			item_search.sort_order.push('id_DESC');
 		}
 
-		let page_str:string | null = param_map.get('page');
 
+		let page_str:string | null = param_map.get('page');
 		let page = page_str ? parseInt( page_str ) : 0;
 		item_search.page = isNaN( page ) ? 0 : page;
 		item_search.limit = this.page_size;
