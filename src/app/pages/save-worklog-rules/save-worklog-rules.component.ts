@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { BaseComponent } from '../../modules/shared/base/base.component';
-import { Work_log_rules } from '../../modules/shared/RestModels';
+import { Work_Log_Rules } from '../../modules/shared/RestModels';
 import { RestSimple } from '../../modules/shared/services/Rest';
 import { mergeMap } from 'rxjs';
 import { FormsModule } from '@angular/forms';
@@ -20,9 +20,9 @@ interface Rule {
 })
 export class SaveWorklogRulesComponent extends BaseComponent implements OnInit {
 
-	rest_work_log_rules:RestSimple<Work_log_rules> = this.rest.initRestSimple('work_log_rules');
+	rest_work_log_rules:RestSimple<Work_Log_Rules> = this.rest.initRestSimple('work_log_rules');
 
-	work_log_rules:Work_log_rules = GetEmpty.work_log_rules();
+	work_log_rules:Work_Log_Rules = GetEmpty.work_log_rules();
 	array_rules:Rule[] = [];
 
 	ngOnInit(): void {

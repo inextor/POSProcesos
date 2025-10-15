@@ -14,9 +14,10 @@ import { ListShippingComponent } from './pages/list-shipping/list-shipping.compo
 import { NgModule } from '@angular/core';
 import { authGuard } from './modules/shared/finger/auth.guard';
 import { CloseShiftComponent } from './pages/close-shift/close-shift.component';
-import { ListPayrollComponent } from './pages/list-payroll/list-payroll.component';
+/*import { ListPayrollComponent } from './pages/list-payroll/list-payroll.component';
 import { SavePayrollConceptComponent } from './pages/save-payroll-concept/save-payroll-concept.component';
 import { SavePayrollComponent } from './pages/save-payroll/save-payroll.component';
+*/
 import { SaveProductionPaymentComponent } from './pages/save-production-payment/save-production-payment.component';
 import { SaveWorklogRulesComponent } from './pages/save-worklog-rules/save-worklog-rules.component';
 import { SaveUserExtraFieldsComponent } from './pages/save-user-extra-fields/save-user-extra-fields.component';
@@ -43,6 +44,7 @@ import { ListSatFacturaComponent } from './pages/list-sat-factura/list-sat-factu
 import { ListObjectSatFacturaComponent } from './pages/list-object-sat-factura/list-object-sat-factura.component';
 import { ListMermaTotalsComponent } from './pages/list-merma-totals/list-merma-totals.component';
 import { WeirdComponent } from './pages/weird/weird.component';
+import { ListItemOnlineComponent } from './pages/list-item-online/list-item-online.component';
 
 
 export const routes: Routes = [
@@ -74,10 +76,12 @@ export const routes: Routes = [
 			{path: 'edit-shipping/:id', component: SaveShippingComponent, canActivate: [authGuard]},
 			{path: 'close-shift', component: CloseShiftComponent},
 			{path: 'save-production-payment', component: SaveProductionPaymentComponent, canActivate: [authGuard]},
+			/*
 			{path: 'save-payroll-concept', component: SavePayrollConceptComponent, canActivate: [authGuard]},
 			{path: 'create-payroll', component: SavePayrollComponent, canActivate: [authGuard]},
 			{path: 'edit-payroll/:id', component: SavePayrollComponent, canActivate: [authGuard]},
 			{path: 'list-payroll', component: ListPayrollComponent, canActivate: [authGuard]},
+			*/
 			{path: 'save-worklog-rules', component: SaveWorklogRulesComponent, canActivate: [authGuard]},
 			{path: 'search-serial', component: SearchSerialComponent, canActivate: [authGuard]},
 			{path: 'rentals', loadChildren: () => import('./modules/rentals/rentals.module').then(m => m.RentalsModule)},
@@ -86,6 +90,7 @@ export const routes: Routes = [
 			{path: 'edit-role/:id', component: SaveRoleComponent, canActivate: [authGuard]},
 			{path: 'list-role-item-price', component: ListRoleItemPriceComponent, canActivate: [authGuard]},
 			{path: 'list-production', component: ListProductionComponent, canActivate: [authGuard]},
+			{path: 'list-item-online', component: ListItemOnlineComponent, canActivate: [authGuard]},
 			{path: 'resume-production', component: ResumeProductionComponent, canActivate: [authGuard]},
 			{path: 'resume-production-day', component: ResumeProductionDayComponent, canActivate: [authGuard]},
 			{path: 'list-ecommerce-order', component: ListEcommerceOrderComponent, canActivate: [authGuard]},
@@ -97,14 +102,10 @@ export const routes: Routes = [
 			{path: 'list-order-sat-factura/:order_id', component: ListObjectSatFacturaComponent},
 			{path: 'list-payment-sat-factura/:payment_id', component: ListObjectSatFacturaComponent},
 			{path: 'list-merma-totals', component: ListMermaTotalsComponent, canActivate: [authGuard]},
+			{path: 'list-item-online', component: ListItemOnlineComponent, canActivate: [authGuard]},
 			{path: 'weird', component: WeirdComponent, canActivate: [authGuard]},
 		]
 	},
 ];
 
-@NgModule({
-	imports: [RouterModule.forRoot(routes, { preloadingStrategy: PreloadAllModules, useHash:true})],
-	exports: [RouterModule]
-})
-export class AppRoutingModule { }
 

@@ -1,5 +1,5 @@
 import { ExtendedReservation, ItemInfo, OrderInfo, OrderItemInfo, ReservationInfo, ReservationItemInfo, ShippingInfo } from "./Models";
-import { User_Permission,Preferences,Production_Area,Process, Production, Shipping, Store, Payroll, Payroll_Concept_Value, Work_log_rules, User_extra_fields, User, Production_Area_Item, Item, Category, Reservation, Reservation_Item, Period, Order, Price_Type, Order_Item, Price, Item_Exception, Role, Role_Item_Price, Ecommerce_Item_Role, Address } from "./RestModels";
+import { User_Permission,Preferences,Production_Area,Process, Production, Shipping, Store, Payroll, User_Extra_Fields, User, Production_Area_Item, Item, Category, Reservation, Reservation_Item, Period, Order, Price_Type, Order_Item, Price, Item_Exception, Role, Role_Item_Price, Ecommerce_Item_Role, Address, Payroll_Value, Item_Online, Work_Log_Rules } from "./RestModels";
 import { RestService } from "./services/rest.service";
 
 export class GetEmpty
@@ -196,7 +196,7 @@ export class GetEmpty
 	{
 		let date = new Date();
 		return {
-			id:0,
+			id: 0,
 			applicable_tax: 'DEFAULT',
 			availability_type: 'ALWAYS',
 			background: 'transparent',
@@ -210,19 +210,18 @@ export class GetEmpty
 			commission_type: 'NONE',
 			created: date,
 			created_by_user_id: null,
-			currency_id: null,
 			description: '',
 			extra_name: '',
 			form_id: null,
-			for_reservation:'NO',
+			for_reservation: 'NO',
 			has_serial_number: 'NO',
 			image_id: null,
-			image_style:'COVER',
-			json_tags:[],
+			image_style: 'COVER',
+			json_tags: [],
 			measurement_unit: null,
 			name: '',
 			note_required: 'NO',
-			on_sale:'YES',
+			on_sale: 'YES',
 			partial_sale: 'NO',
 			period_type: 'MONTHLY',
 			product_id: null,
@@ -232,12 +231,18 @@ export class GetEmpty
 			return_action: 'RETURN_TO_STOCK',
 			shadow_color: '#000000',
 			sort_weight: 1,
-			status:'ACTIVE',
+			status: 'ACTIVE',
 			text_color: '#FFFFFF',
 			text_style: 'CENTER',
 			unidad_medida_sat_id: 'H87',
 			updated: date,
-			updated_by_user_id:null,
+			updated_by_user_id: null,
+			currency_id: "",
+			response_requirement_qty: "ONCE_PER_CLIENT",
+			ieps_type: "RATE",
+			ieps_value: 0,
+			stock_type: "NORMAL",
+			tax_percent: 0
 		};
 	}
 
@@ -373,15 +378,16 @@ export class GetEmpty
 	static process():Process
 	{
 		return {
-			created: new Date(),
-			id:0,
-			name:'',
-			category_id: null,
-			production_area_id:0,
-			type: 'SALE_ITEM',
-			item_id: null,
-			status:'ACTIVE',
-			updated: new Date(),
+			category_id:null,
+    		created:new Date(),
+    		generator_type:"ON_DEMAN",
+    		id:0,
+    		item_id:null,
+    		json_tags:undefined,
+    		name:'',
+    		production_area_id:0,
+    		status:'ACTIVE',
+    		updated:new Date(),
 		};
 	}
 
@@ -531,33 +537,45 @@ export class GetEmpty
 	static user_permission():User_Permission
 	{
 		return {
+			add_accounts:0,
 			add_asistance:0,
 			add_bills:0,
 			add_commandas:0,
+			add_consumptions:0,
+			add_credit_limit:0,
 			add_credit_sales:0,
-			add_items:0,
 			add_form:0,
+			add_item_points:0,
+			add_items:0,
 			add_marbetes:0,
+			add_merma:0,
+			add_offers:0,
 			add_payments:0,
 			add_payroll:0,
 			add_providers:0,
 			add_purchases:0,
 			add_requisition:0,
-			add_roles: 0,
+			add_roles:0,
 			add_stock:0,
 			add_user:0,
 			advanced_order_search:0,
 			approve_bill_payments:0,
+			approve_requisition:0,
 			asign_marbetes:0,
 			caldos:0,
 			cancel_closed_orders:0,
 			cancel_ordered_item:0,
+			cancel_payments:0,
+			cancelar_factura:0,
 			change_client_prices:0,
-			created: new Date(),
-			created_by_user_id: null,
+			created:new Date(),
+			created_by_user_id:null,
 			currency_rates:0,
+			delete_draft_items:0,
 			discounts:0,
 			edit_billing_data:0,
+			factura_global:0,
+			facturar_orden:0,
 			fullfill_orders:0,
 			global_add_stock:0,
 			global_bills:0,
@@ -574,6 +592,7 @@ export class GetEmpty
 			open_cashier_box_anytime:0,
 			order_delivery:0,
 			pay_bills:0,
+			pay_payrolls:0,
 			pos:0,
 			preferences:0,
 			price_types:0,
@@ -583,25 +602,30 @@ export class GetEmpty
 			pv_returns:0,
 			quotes:0,
 			receive_shipping:0,
+			reiniciar_facturacion:0,
 			reports:0,
-			shipping_receive_type: 'CAPTURE_QTY',
-			show_tables:0,
+			return_money:0,
 			send_shipping:0,
+			shipping_receive_type:'CAPTURE_QTY',
+			show_tables:0,
 			stocktake:0,
 			store_prices:0,
-			updated: new Date(),
-			updated_by_user_id: null,
+			updated:new Date(),
+			updated_by_user_id:null,
 			user_id:0,
+			view_accounts:0,
 			view_asistance:0,
 			view_commandas:0,
 			view_payroll:0,
+			view_payrolls:0,
+			view_reservations:0,
 			view_responses:0,
 			view_stock:0,
-			view_stock_alerts:0
+			view_stock_alerts:0,
 		};
 	}
 
-	static user_extra_fields(user_id:number):User_extra_fields
+	static user_extra_fields(user_id:number):User_Extra_Fields
 	{
 		return {
 			id:0,
@@ -613,11 +637,11 @@ export class GetEmpty
 	static preferences():Preferences
 	{
 		return {
-			ask_for_guests_number: 1,
-			default_pos_availability_type: 'ALWAYS',
-			background_image_id: null,
-			background_image_size: 'cover',
-			btn_primary_bg_color: '#000000',
+			ask_for_guests_number:1,
+			default_pos_availability_type:'ALWAYS',
+			background_image_id:null,
+			background_image_size:'cover',
+			btn_primary_bg_color:'#000000',
 			btn_primary_bg_color_hover:null,
 			btn_primary_border_color:null,
 			btn_primary_border_color_hover:'#000000',
@@ -638,18 +662,18 @@ export class GetEmpty
 			card_background_opacity:60,
 			card_border_color:null,
 			card_border_radius:'0.5em',
-			charts_colors: '#000000',
+			charts_colors:'#000000',
 			chat_upload_attachment_image_id:null,
 			chat_upload_image_id:null,
 			created:new Date(),
 			currency_price_preference:'ONLY_DEFAULT_CURRENCY',
-			default_cash_close_receipt: 1,
-			default_ticket_format: 1,
+			default_cash_close_receipt:1,
+			default_ticket_format:1,
 			default_file_logo_image_id:null,
 			default_input_type:'TACTILE',
 			default_price_type_id:null,
 			default_product_image_id:null,
-			default_print_receipt: 1,
+			default_print_receipt:1,
 			default_ticket_image_id:null,
 			default_user_logo_image_id:null,
 			display_categories_on_items:'YES',
@@ -675,24 +699,31 @@ export class GetEmpty
 			pv_bar_background_color:'#000000',
 			pv_bar_text_color:'#FFFFFF',
 			pv_bar_total_color:'#FFFFFF',
-			pv_show_all_categories: 'NO',
-			pv_show_orders: 'OPEN_SAME_DAY',
+			pv_show_all_categories:'NO',
+			pv_show_orders:'OPEN_SAME_DAY',
 			radius_style:null,
 			submenu_background_color:'#FFFFFF',
 			submenu_color_opacity:80,
 			submenu_icon_color:'#000000',
 			submenu_text_color:'#000000',
-			text_color: '#000000',
+			text_color:'#000000',
 			titles_color:null,
-			touch_size_button: '100px',
-			update_prices_on_purchases: 0,
-			touch_text_color: '#FFFFFF',
-			touch_text_shadow_color: '#000000',
-			default_return_action: 'RETURN_TO_STOCK',
+			touch_size_button:'100px',
+			update_prices_on_purchases:0,
+			touch_text_color:'#FFFFFF',
+			touch_text_shadow_color:'#000000',
+			default_return_action:'RETURN_TO_STOCK',
 			link_hover:'#000000',
-			stock_negative_values_allowed: 0,
-			ecommerce_enabled: 0,
-			updated:new Date()
+			stock_negative_values_allowed:0,
+			ecommerce_enabled:0,
+			updated:new Date(),
+			comex_enabled:0,
+			offers_enabled:0,
+			production_enabled:0,
+			reservations_enabled:0,
+			restaurant_enabled:0,
+			user_attachments:"DISABLED",
+			default_cash_close_type:"SIMPLE"
 		};
 	}
 
@@ -759,6 +790,7 @@ export class GetEmpty
 			subtotal:0,
 			total:0,
 			paid_status:'PENDING',
+			paid_timestamp:null
 		}
 	}
 
@@ -837,12 +869,25 @@ export class GetEmpty
 		}
 	}
 
-	static work_log_rules():Work_log_rules
+	static work_log_rules():Work_Log_Rules
 	{
 		return {
 			id:0,
 			store_id:0,
 			json_rules:{}
 		}
+	}
+	static item_online(): Item_Online
+	{
+		return {
+			id: 0,
+			created_by_user_id: 0,
+			created: new Date(),
+			item_id: 0,
+			store_id: 0,
+			preference: 'SHOW',
+			updated_by_user_id: 0,
+			updated: new Date(),
+		};
 	}
 }

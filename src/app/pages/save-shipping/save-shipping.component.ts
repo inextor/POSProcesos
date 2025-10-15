@@ -54,7 +54,7 @@ export class SaveShippingComponent extends BaseComponent
 	item_list:ItemStockInfo[] = [];
 	store_list:Store[] = [];
 
-	to_store_id:number | null = 0;
+	to_store_id:number= 0;
 	from_store_id:number = 0;
 	fecha_requisitions:string = '';
 	shipping_info:ShippingInfo = GetEmpty.shipping_info();
@@ -73,7 +73,7 @@ export class SaveShippingComponent extends BaseComponent
 			{
 
 				this.is_loading = true;
-				this.to_store_id = parseInt(params.get('store_id') as string) || null;
+				this.to_store_id = parseInt(params.get('store_id') as string) || 0;
 				this.from_store_id = parseInt(this.rest.user?.store_id?.toString() || '');
 				let shipping_id = params.has('id') ? parseInt(params.get('id') ?? '') : null;
 				console.log('shipping_id', shipping_id);

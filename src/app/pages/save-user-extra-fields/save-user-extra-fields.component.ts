@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { BaseComponent } from '../../modules/shared/base/base.component';
 import { FormsModule } from '@angular/forms';
-import { User, User_extra_fields } from '../../modules/shared/RestModels';
+import { User, User_Extra_Fields } from '../../modules/shared/RestModels';
 import { GetEmpty } from '../../modules/shared/GetEmpty';
 import { forkJoin, mergeMap } from 'rxjs';
 import { RestSimple } from '../../modules/shared/services/Rest';
@@ -21,10 +21,10 @@ interface ExtraField {
 export class SaveUserExtraFieldsComponent extends BaseComponent implements OnInit{
 
 	rest_user:RestSimple<User> = this.rest.initRestSimple('user');
-	rest_user_extra_fields:RestSimple<User_extra_fields> = this.rest.initRestSimple('user_extra_fields');
+	rest_user_extra_fields:RestSimple<User_Extra_Fields> = this.rest.initRestSimple('user_extra_fields');
 
 	user:User = GetEmpty.user();
-	user_extra_fields:User_extra_fields = GetEmpty.user_extra_fields(0);
+	user_extra_fields:User_Extra_Fields = GetEmpty.user_extra_fields(0);
 	array_extra_fields:ExtraField[] = [];
 
 	ngOnInit(): void {

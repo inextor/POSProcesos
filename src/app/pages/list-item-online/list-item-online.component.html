@@ -1,0 +1,45 @@
+<div class="container-fluid">
+	<h1 class="my-3">Articulos disponibles en línea</h1>
+		<div class="card-body">
+			<form (submit)="search()" class="mb-3">
+				<div class="row">
+					<div class="col-md-4">
+						<div class="form-group">
+							<label for="item_id">Item ID</label>
+							<input type="number" class="form-control" id="item_id" name="item_id" [(ngModel)]="search_object.eq.item_id">
+						</div>
+					</div>
+					<div class="col-md-4">
+						<div class="form-group">
+							<label for="store_id">Store ID</label>
+							<input type="number" class="form-control" id="store_id" name="store_id" [(ngModel)]="search_object.eq.store_id">
+						</div>
+					</div>
+					<div class="col-md-4">
+						<button type="submit" class="btn btn-primary mt-4">Search</button>
+					</div>
+				</div>
+			</form>
+
+			<div class="table-responsive">
+				<table class="table table-bordered table-striped">
+					<thead>
+						<tr>
+							<th>ID</th>
+							<th>Item ID</th>
+							<th>Store ID</th>
+							<th>Preference</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr *ngFor="let i of items">
+							<td>{{ i.item_online.id }}</td>
+							<td>{{ i.item_online.item_id }}</td>
+							<td>{{ i.store.name}}</td>
+							<td>{{ i.item_online.preference }}</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
+</div>

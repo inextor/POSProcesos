@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-
 import { GetEmpty } from '../../modules/shared/GetEmpty';
-import { Production_Area,Item,Production_Area_Item, Process, User, User_extra_fields } from '../../modules/shared/RestModels';
+import { Production_Area,Item,Production_Area_Item, Process, User, User_Extra_Fields } from '../../modules/shared/RestModels';
 import { forkJoin,of,mergeMap, filter } from 'rxjs';
 import { RouterModule } from '@angular/router';
 import { RestSimple } from '../../modules/shared/services/Rest';
@@ -46,7 +45,7 @@ export class ViewProductionAreaComponent extends BaseComponent implements OnInit
 	}
 	rest_production_area: RestSimple<Production_Area> = this.rest.initRestSimple<Production_Area>('production_area');
 	rest_production_area_item: RestSimple<Production_Area_Item> = this.rest.initRestSimple<Production_Area_Item>('production_area_item');
-	rest_user_extra_fields:RestSimple<User_extra_fields> = this.rest.initRestSimple('user_extra_fields');
+	rest_user_extra_fields:RestSimple<User_Extra_Fields> = this.rest.initRestSimple('user_extra_fields');
 	rest_user:RestSimple<User> = this.rest.initRestSimple<User>('user');
 	rest_process:RestSimple<Process> = this.rest.initRestSimple<Process>('process');
 	rest_item:RestSimple<Item> = this.rest.initRestSimple<Item>('item');
@@ -110,7 +109,7 @@ export class ViewProductionAreaComponent extends BaseComponent implements OnInit
 			this.process_list = response.process.data;
 			this.user_list = response.users.data.map((user:User)=>
 			{
-				let user_extra_fields = response.user_extra_values?.data.filter((uef:User_extra_fields)=>uef.user_id == user.id)[0];
+				let user_extra_fields = response.user_extra_values?.data.filter((uef:User_Extra_Fields)=>uef.user_id == user.id)[0];
 
 				let extra_fields:Extra_Field[] = [];
 
@@ -162,7 +161,7 @@ export class ViewProductionAreaComponent extends BaseComponent implements OnInit
 
 	saveUserExtraFields(cuser:CUser)
 	{
-		let user_extra_fields:User_extra_fields = GetEmpty.user_extra_fields(cuser.id);
+		let user_extra_fields:User_Extra_Fields = GetEmpty.user_extra_fields(cuser.id);
 		user_extra_fields.user_id = cuser.id;
 		user_extra_fields.json_fields = {};
 		cuser.extra_fields.forEach((extra_field:Extra_Field)=>
@@ -261,7 +260,7 @@ export class ViewProductionAreaComponent extends BaseComponent implements OnInit
 				{
 					this.is_loading = false;
 
-					let user_extra_fields = response.extra_fields?.data.filter((uef:User_extra_fields)=>uef.user_id == user.id)[0];
+					let user_extra_fields = response.extra_fields?.data.filter((uef:User_Extra_Fields)=>uef.user_id == user.id)[0];
 
 					let extra_fields:Extra_Field[] = [];
 

@@ -11,7 +11,6 @@ import { filter, mergeMap } from 'rxjs/operators';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
-import { HeaderComponent } from '../../components/header/header.component';
 import { LoadingComponent } from '../../components/loading/loading.component';
 import { PaginationComponent } from '../../components/pagination/pagination.component';
 import { ConfirmationResult, ConfirmationService } from '../../modules/shared/services/confirmation.service';
@@ -25,7 +24,7 @@ interface COrder extends Order
 @Component({
 	selector: 'app-list-ecommerce-order',
 	standalone: true,
-	imports: [CommonModule, FormsModule, RouterModule, HeaderComponent, LoadingComponent, PaginationComponent],
+	imports: [CommonModule, FormsModule, RouterModule, LoadingComponent, PaginationComponent],
 	templateUrl: './list-ecommerce-order.component.html',
 	styleUrl: './list-ecommerce-order.component.css'
 })

@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { BaseComponent } from '../../modules/shared/base/base.component';
 import { CommonModule } from '@angular/common';
-import { Item, Price, Production, User, User_extra_fields, Work_Log, Work_log_rules } from '../../modules/shared/RestModels';
+import { Item, Price, Production, User, User_Extra_Fields, Work_Log, Work_Log_Rules } from '../../modules/shared/RestModels';
 import { Utils } from '../../modules/shared/Utils';
 import { FormsModule } from '@angular/forms';
 import { forkJoin, mergeMap, of } from 'rxjs';
@@ -42,14 +42,14 @@ export class SaveProductionPaymentComponent extends BaseComponent implements OnI
 	rest_item_info:Rest<Item, ItemInfo> = this.rest.initRest('item_info');
 	rest_item_prices:RestSimple<Price> = this.rest.initRestSimple('price');
 	rest_user:RestSimple<User> = this.rest.initRestSimple('user');
-	rest_work_log_rules:RestSimple<Work_log_rules> = this.rest.initRestSimple('work_log_rules');
-	rest_user_extra_fields:RestSimple<User_extra_fields> = this.rest.initRestSimple('user_extra_fields');
+	rest_work_log_rules:RestSimple<Work_Log_Rules> = this.rest.initRestSimple('work_log_rules');
+	rest_user_extra_fields:RestSimple<User_Extra_Fields> = this.rest.initRestSimple('user_extra_fields');
 
 	user_work_logs_list:Work_Log[] = [];
 	Cuser_production_report_list:CUser_production_report[] = [];
 	CItem_production_report_list:CItem_production_report[] = [];
-	json_rules_list:Work_log_rules[] = [];
-	user_extra_fields_list:User_extra_fields[] = [];
+	json_rules_list:Work_Log_Rules[] = [];
+	user_extra_fields_list:User_Extra_Fields[] = [];
 
 	search_work_log_obj:SearchObject<Work_Log> = this.getEmptySearch();
 	search_date:string = '';
