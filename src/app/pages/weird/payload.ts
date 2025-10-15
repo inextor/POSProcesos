@@ -13,6 +13,12 @@ interface CreateOrderParams
 	amount_paid: number;
 	currency_id: string;
 	item_id: number;
+	// Parámetros opcionales para pagos a mensualidades
+	frequency?: string;
+	installment_months?: number;
+	initial_payment?: number;
+	first_payment_date?: string;
+	installment_round_amount?: number;
 }
 
 export function createOrder(
@@ -20,7 +26,7 @@ export function createOrder(
 	params: CreateOrderParams
 ): Observable<OrderInfo | PaymentInfo>
 {
-	const { title, client_user_id, total, tax_percent, amount_paid, currency_id, item_id } = params;
+	const { title, client_user_id, total, tax_percent, amount_paid, currency_id, item_id, frequency, installment_months, initial_payment, first_payment_date, installment_round_amount } = params;
 
 	const subtotal = total / (1 + (tax_percent / 100));
 	const tax = subtotal * (tax_percent / 100);
@@ -63,7 +69,7 @@ export function createOrder(
 		cancelled_by_user_id: null,
 		closed_timestamp: null,
 		discount: 0,
-		initial_payment: 0,
+		initial_payment: initial_payment || 0,
 		sat_isr: 0,
 		sat_ieps: 0,
 		discount_calculated: 0,
@@ -92,7 +98,11 @@ export function createOrder(
 		client_name: title,
 		client_user_id,
 		sat_receptor_rfc: "",
-		sat_razon_social: ""
+		sat_razon_social: "",
+		...(frequency && { frequency }),
+		...(installment_months && { installment_months }),
+		...(first_payment_date && { first_payment_date }),
+		...(installment_round_amount !== undefined && { installment_round_amount })
 	};
 
 	const payload = {
