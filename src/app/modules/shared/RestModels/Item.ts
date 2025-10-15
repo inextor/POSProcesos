@@ -1,0 +1,51 @@
+export interface Item {
+  id: number;
+  background: string;
+  applicable_tax: 'DEFAULT' | 'EXEMPT' | 'PERCENT';
+  availability_type: 'ON_STOCK' | 'BY_ORDER' | 'ALWAYS';
+  brand_id: number | null;
+  category_id: number | null;
+  clave_sat: string | null;
+  code: string | null;
+  commanda_type_id: number | null;
+  commission_currency_id: string;
+  commission_type: 'NONE' | 'AMOUNT' | 'PERCENT';
+  commission: number;
+  created: Date;
+  created_by_user_id: number | null;
+  currency_id: string;
+  description: string | null;
+  extra_name: string | null;
+  form_id: number | null;
+  response_requirement_qty: 'ONCE_PER_CLIENT' | 'ONCE_PER_SALE' | 'EVERY_ITEM';
+  for_reservation: 'YES' | 'NO';
+  has_serial_number: 'NO' | 'YES';
+  ieps_type: 'RATE' | 'AMOUNT';
+  ieps_value: number;
+  image_id: number | null;
+  image_style: 'COVER' | 'CONTAIN';
+  json_tags: any | null;
+  measurement_unit: string | null;
+  name: string;
+  note_required: 'NO' | 'YES';
+  on_sale: 'NO' | 'YES';
+  stock_type: 'NORMAL' | 'BATCH';
+  partial_sale: 'NO' | 'YES';
+  period_type: 'BY_HOUR' | 'DAILY' | 'WEEKLY' | 'MONTHLY';
+  product_id: number | null;
+  provider_user_id: number | null;
+  reference_currency_id: string;
+  reference_price: number;
+  return_action: 'RETURN_TO_STOCK' | 'ADD_TO_MERMA' | 'TRANSFORM_INTO_ITEM';
+  sort_weight: number;
+  shadow_color: string;
+  status: 'ACTIVE' | 'DELETED';
+  tax_percent: number;
+  text_color: string;
+  text_style: 'NEVER' | 'CENTER' | 'DOWN';
+  unidad_medida_sat_id: string;
+  updated_by_user_id: number | null;
+  updated: Date;
+}
+
+
