@@ -45,6 +45,7 @@ import { ListObjectSatFacturaComponent } from './pages/list-object-sat-factura/l
 import { ListMermaTotalsComponent } from './pages/list-merma-totals/list-merma-totals.component';
 import { WeirdComponent } from './pages/weird/weird.component';
 import { ListItemOnlineComponent } from './pages/list-item-online/list-item-online.component';
+import { SaveItemOnlineComponent } from './pages/save-item-online/save-item-online.component';
 
 
 export const routes: Routes = [
@@ -90,7 +91,12 @@ export const routes: Routes = [
 			{path: 'edit-role/:id', component: SaveRoleComponent, canActivate: [authGuard]},
 			{path: 'list-role-item-price', component: ListRoleItemPriceComponent, canActivate: [authGuard]},
 			{path: 'list-production', component: ListProductionComponent, canActivate: [authGuard]},
-			{path: 'list-item-online', component: ListItemOnlineComponent, canActivate: [authGuard]},
+			{
+						path: 'list-item-online', component: ListItemOnlineComponent, canActivate: [authGuard]
+					},
+					{path: 'add-item-online', component: SaveItemOnlineComponent, canActivate: [authGuard]},
+					{path: 'edit-item-online/:id', component: SaveItemOnlineComponent, canActivate: [authGuard]},
+			
 			{path: 'resume-production', component: ResumeProductionComponent, canActivate: [authGuard]},
 			{path: 'resume-production-day', component: ResumeProductionDayComponent, canActivate: [authGuard]},
 			{path: 'list-ecommerce-order', component: ListEcommerceOrderComponent, canActivate: [authGuard]},
