@@ -3,6 +3,7 @@ import { Observable, of } from 'rxjs';
 declare function txt2html(str:string):string;
 declare function printHtml(html_body:string,title:string):any;
 declare function xlsx2json(file:File,headers:string[]):Promise<any>
+declare function downloadTemplate(filename:string,headers:string[]):void;
 // declare function array2xlsx(array:any[],filename:string,headers:string[]);
 
 export class ExcelUtils
@@ -22,6 +23,11 @@ export class ExcelUtils
 		console.log( x );
 		*/
 		// array2xlsx(array,filename,headers);
+	}
+
+	static downloadTemplate(filename:string, headers:string[]):void
+	{
+		downloadTemplate(filename, headers);
 	}
 
 	static array2Tsv(array:any[], filename:string, headers:string[] )

@@ -67,3 +67,13 @@ function array2xlsx(array,filename,headers)
 	let x = XLSX.writeFile( wb, filename );
 	console.log( x );
 }
+
+// downloadTemplate(filename:string,headers:string[])
+function downloadTemplate(filename, headers)
+{
+	// Create a worksheet with just the headers
+	let ws = XLSX.utils.aoa_to_sheet([headers]);
+	let wb = XLSX.utils.book_new();
+	XLSX.utils.book_append_sheet(wb, ws, 'Plantilla');
+	XLSX.writeFile(wb, filename);
+}
