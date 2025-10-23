@@ -215,13 +215,16 @@ export class RestService
 	{
 		const protocol = window.location.protocol;
 		const hostname = window.location.hostname;
+		const currentPort = window.location.port;
 
-		if (environment.production) {
-			return `${protocol}//${hostname}/`;
+		// Si estamos corriendo en un puerto de desarrollo (4200, 4201, etc.),
+		// el sistema externo está en puerto 4000
+		if (currentPort && currentPort !== '80' && currentPort !== '443') {
+			return `${protocol}//${hostname}:4000`; // Dev port for the external project
 		}
 		else
 		{
-			return `${protocol}//${hostname}:4000`; // Assuming 4001 is the dev port for the other project
+			return `${protocol}//${hostname}`;
 		}
 	}
 
