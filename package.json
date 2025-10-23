@@ -5,9 +5,9 @@
     "ng": "ng",
     "start": "cd ~/Projects/POSReservaciones20/ && ng serve --port=4001 --host=0.0.0.0 --configuration development",
     "build_maps": "./update_build_info.sh && ng build --source-map --base-href",
-    "build": "./update_build_info.sh && ng build --base-href",
+    "build": "./update_build_info.sh && ng build --configuration=production --base-href",
     "watch": "ng build --watch --configuration development",
-	"deploy": "./update_build_info.sh && ng build --base-href && ./deploy.sh",
+	"deploy": "./update_build_info.sh && ng build --configuration=production --base-href  && ./deploy.sh",
     "test": "ng test"
   },
   "private": true,

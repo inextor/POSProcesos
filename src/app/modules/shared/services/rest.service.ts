@@ -9,7 +9,7 @@ import { HttpHeaders, HttpClient, HttpParams } from '@angular/common/http'
 import { BehaviorSubject, mergeMap, Observable, of, Subject } from 'rxjs';
 import { environment } from '../../../../environments/environment';
 import { io, Socket } from 'socket.io-client';
-import { OrderInfo, OrderItemInfo, OrderItemStructureInfo, SocketMessage, StructuredOrderInfo } from '../Models';
+import { AttachmentInfo, OrderInfo, OrderItemInfo, OrderItemStructureInfo, SocketMessage, StructuredOrderInfo } from '../Models';
 import { OfflineUtils, ServerInfo } from '../OfflineUtils';
 import { BuildInfo } from '../BuildInfo';
 
@@ -308,6 +308,15 @@ export class RestService
 
 		let url = `${this.domain_configuration.domain}/${this.url_base}/reservationUpdates.php`;
 		return this.http.post<T>(`${url}`,obj , { withCredentials: true, headers: this.getSessionHeaders() });
+	}
+
+	uploadAttachment(file:File, is_private:boolean = false):Observable<AttachmentInfo>
+	{
+		let fd = new FormData();
+		fd.append('file', file, file.name);
+		fd.append('is_private', (is_private ? '1' : '0'));
+		let url = `${this.domain_configuration.domain}/${this.url_base}/attachment.php`;
+		return this.http.post<AttachmentInfo>(url, fd, {headers: this.getSessionHeaders(), withCredentials: true});
 	}
 
 	logout(redirect:boolean = true)

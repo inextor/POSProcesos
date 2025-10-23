@@ -1,4 +1,4 @@
-import { Address, Cash_Close, Cash_Count, Bank_Movement, Bank_Movement_Order, Category, Delivery_Assignment, Item, Item_Exception, Item_Option, Item_Option_Value, Offer, Order, Order_Item, Order_Item_Exception, Order_Item_Serial, Payment, Period, Price, Price_Type, Process, Production, Production_Area, Purchase, Requisition, Requisition_Item, Reservation, Reservation_Item, Reservation_Item_Serial, Return_Assignment, Serial, Serial_Image, Shipping, Shipping_Item, Stock_Record, Store, Task, User } from "./RestModels";
+import { Address, Attachment, Cash_Close, Cash_Count, Bank_Movement, Bank_Movement_Order, Category, Delivery_Assignment, File_Type, Item, Item_Exception, Item_Option, Item_Option_Value, Offer, Order, Order_Item, Order_Item_Exception, Order_Item_Serial, Payment, Period, Price, Price_Type, Process, Production, Production_Area, Purchase, Requisition, Requisition_Item, Reservation, Reservation_Item, Reservation_Item_Serial, Return_Assignment, Serial, Serial_Image, Shipping, Shipping_Item, Stock_Record, Store, Task, User } from "./RestModels";
 
 interface CSerial extends Serial
 {
@@ -265,4 +265,10 @@ export interface PaymentInfo
 {
 	payment:Payment;
 	movements:MovementInfo[];
+}
+
+export interface AttachmentInfo
+{
+	attachment:Attachment;
+	file_type?:File_Type;
 }

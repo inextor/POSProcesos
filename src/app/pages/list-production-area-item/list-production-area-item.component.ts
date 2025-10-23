@@ -6,7 +6,6 @@ import { debounceTime, forkJoin, mergeMap, of } from 'rxjs';
 import { Category, Item, Production_Area, Production_Area_Item } from '../../modules/shared/RestModels';
 import { Rest, RestSimple, SearchObject } from '../../modules/shared/services/Rest';
 import { FormsModule } from '@angular/forms';
-import { SearchItemsComponent } from '../../components/search-items/search-items.component';
 import { GetEmpty } from '../../modules/shared/GetEmpty';
 import { LoadingComponent } from '../../components/loading/loading.component';
 import { ItemInfo } from '../../modules/shared/Models';
@@ -20,7 +19,7 @@ interface CProduction_Area_Item extends Production_Area_Item
 
 @Component({
     selector: 'app-list-production-area-item',
-    imports: [CommonModule, RouterModule, FormsModule, SearchItemsComponent, LoadingComponent],
+    imports: [CommonModule, RouterModule, FormsModule, LoadingComponent],
     templateUrl: './list-production-area-item.component.html',
     styleUrl: './list-production-area-item.component.css'
 })

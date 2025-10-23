@@ -1,0 +1,216 @@
+<div class="container-fluid py-4">
+	<div class="row">
+		<div class="col-12">
+			<div class="card shadow-sm">
+				<div class="card-header bg-primary text-white">
+					<h4 class="mb-0">
+						<i class="bi bi-file-earmark-pdf me-2"></i>
+						Asignar Factura SAT a Orden
+					</h4>
+				</div>
+				<div class="card-body">
+
+					<!-- Búsqueda de Orden -->
+					<div class="row mb-4">
+						<div class="col-md-6">
+							<h5 class="text-secondary mb-3">1. Buscar Orden Cerrada</h5>
+							<div class="input-group">
+								<input
+									type="number"
+									class="form-control"
+									[(ngModel)]="search_order"
+									placeholder="Ingrese el ID de la orden"
+									(keyup.enter)="searchOrder()"
+									[disabled]="searching"
+								/>
+								<button
+									class="btn btn-primary"
+									type="button"
+									(click)="searchOrder()"
+									[disabled]="searching"
+								>
+									@if (searching) {
+										<span class="spinner-border spinner-border-sm me-1"></span>
+										Buscando...
+									} @else {
+										<i class="bi bi-search me-1"></i>
+										Buscar
+									}
+								</button>
+							</div>
+							<small class="text-muted">La orden debe estar en estado CERRADA</small>
+						</div>
+					</div>
+
+					<!-- Información de la Orden -->
+					@if (selected_order) {
+						<div class="row mb-4">
+							<div class="col-12">
+								<div class="card border-success">
+									<div class="card-header bg-success text-white">
+										<h5 class="mb-0">
+											<i class="bi bi-receipt me-2"></i>
+											Información de la Orden #{{ selected_order.id }}
+										</h5>
+									</div>
+									<div class="card-body">
+										<div class="row">
+											<div class="col-md-3">
+												<strong>Cliente:</strong><br>
+												{{ selected_order.client_display_name }}
+											</div>
+											<div class="col-md-3">
+												<strong>Total:</strong><br>
+												{{ selected_order.total | currency:'MXN':'symbol':'1.2-2' }}
+											</div>
+											<div class="col-md-3">
+												<strong>Estado:</strong><br>
+												<span class="badge bg-success">{{ selected_order.status }}</span>
+											</div>
+											<div class="col-md-3">
+												<strong>Fecha de Cierre:</strong><br>
+												{{ selected_order.closed_timestamp | date:'short' }}
+											</div>
+										</div>
+										<div class="row mt-3">
+											<div class="col-md-6">
+												<strong>RFC:</strong><br>
+												{{ selected_order.sat_receptor_rfc || 'No especificado' }}
+											</div>
+											<div class="col-md-6">
+												<strong>Razón Social:</strong><br>
+												{{ selected_order.sat_razon_social || 'No especificada' }}
+											</div>
+										</div>
+										@if (selected_order.sat_factura_id) {
+											<div class="alert alert-warning mt-3 mb-0">
+												<i class="bi bi-exclamation-triangle me-2"></i>
+												Esta orden ya tiene una factura SAT asignada (ID: {{ selected_order.sat_factura_id }})
+											</div>
+										}
+									</div>
+								</div>
+							</div>
+						</div>
+
+						<!-- Carga de Archivos -->
+						<div class="row mb-4">
+							<div class="col-12">
+								<h5 class="text-secondary mb-3">2. Cargar Archivos de Factura</h5>
+							</div>
+							<div class="col-md-6 mb-3">
+								<label class="form-label fw-bold">
+									<i class="bi bi-file-earmark-code me-1"></i>
+									Archivo XML
+								</label>
+								<app-attachment-uploader
+									[default_message]="'Seleccionar archivo XML'"
+									[displayUploadedAttachmentName]="true"
+									[containerClasses]="{}"
+									[imageClasses]="{}"
+									(attachmentChange)="onXmlAttachmentChange($event)"
+								></app-attachment-uploader>
+								@if (xml_attachment_id) {
+									<div class="alert alert-success mt-2 mb-0 py-1 px-2">
+										<i class="bi bi-cloud-check me-1"></i>
+										Archivo subido (ID: {{ xml_attachment_id }})
+									</div>
+								}
+							</div>
+							<div class="col-md-6 mb-3">
+								<label class="form-label fw-bold">
+									<i class="bi bi-file-earmark-pdf me-1"></i>
+									Archivo PDF
+								</label>
+								<app-attachment-uploader
+									[default_message]="'Seleccionar archivo PDF'"
+									[displayUploadedAttachmentName]="true"
+									[containerClasses]="{}"
+									[imageClasses]="{}"
+									(attachmentChange)="onPdfAttachmentChange($event)"
+								></app-attachment-uploader>
+								@if (pdf_attachment_id) {
+									<div class="alert alert-success mt-2 mb-0 py-1 px-2">
+										<i class="bi bi-cloud-check me-1"></i>
+										Archivo subido (ID: {{ pdf_attachment_id }})
+									</div>
+								}
+							</div>
+						</div>
+
+						<!-- Información de la Factura XML -->
+						@if (factura_info) {
+							<div class="row mb-4">
+								<div class="col-12">
+									<div class="card border-info">
+										<div class="card-header bg-info text-white">
+											<h5 class="mb-0">
+												<i class="bi bi-file-earmark-text me-2"></i>
+												Información Extraída del XML
+											</h5>
+										</div>
+										<div class="card-body">
+											<div class="row">
+												<div class="col-md-4">
+													<strong>UUID:</strong><br>
+													<code>{{ factura_info.uuid }}</code>
+												</div>
+												<div class="col-md-4">
+													<strong>Serie:</strong><br>
+													<span class="badge bg-secondary">{{ factura_info.serie }}</span>
+												</div>
+												<div class="col-md-4">
+													<strong>Folio:</strong><br>
+													<span class="badge bg-secondary">{{ factura_info.folio }}</span>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						}
+
+						<!-- Botón de Asignación -->
+						<div class="row">
+							<div class="col-12">
+								<h5 class="text-secondary mb-3">3. Asignar Factura a la Orden</h5>
+								<button
+									class="btn btn-success btn-lg"
+									(click)="assignFactura()"
+									[disabled]="!xml_attachment_id || !pdf_attachment_id || is_assigning"
+								>
+									@if (is_assigning) {
+										<span class="spinner-border spinner-border-sm me-2"></span>
+										Asignando factura...
+									} @else {
+										<i class="bi bi-check-circle me-2"></i>
+										Asignar Factura SAT
+									}
+								</button>
+								<button
+									class="btn btn-secondary btn-lg ms-2"
+									(click)="reset()"
+									[disabled]="is_assigning"
+								>
+									<i class="bi bi-arrow-counterclockwise me-2"></i>
+									Reiniciar
+								</button>
+							</div>
+						</div>
+					}
+
+					<!-- Mensaje cuando no hay orden seleccionada -->
+					@if (!selected_order && !searching) {
+						<div class="alert alert-info">
+							<i class="bi bi-info-circle me-2"></i>
+							Por favor busque una orden cerrada para comenzar el proceso de asignación de factura.
+						</div>
+					}
+
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<app-loading *ngIf="is_assigning || searching"></app-loading>

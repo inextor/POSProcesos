@@ -46,6 +46,9 @@ import { ListMermaTotalsComponent } from './pages/list-merma-totals/list-merma-t
 import { WeirdComponent } from './pages/weird/weird.component';
 import { ListItemOnlineComponent } from './pages/list-item-online/list-item-online.component';
 import { SaveItemOnlineComponent } from './pages/save-item-online/save-item-online.component';
+import { ListProductionAreaItemComponent } from './pages/list-production-area-item/list-production-area-item.component';
+import { SaveProductionAreaItemComponent } from './pages/save-production-area-item/save-production-area-item.component';
+import { AssignSatFacturaComponent } from './pages/assign-sat-factura/assign-sat-factura.component';
 
 
 export const routes: Routes = [
@@ -63,6 +66,9 @@ export const routes: Routes = [
 			{path: 'edit-production-area/:id', component: SaveProductionAreaComponent, canActivate: [authGuard]},
 			{path: 'list-production-area', component: ListProductionAreaComponent, canActivate: [authGuard]},
 			{path: 'view-production-area/:id', component: ViewProductionAreaComponent, canActivate: [authGuard]},
+			{path: 'list-production-area-item', component: ListProductionAreaItemComponent, canActivate: [authGuard]},
+			{path: 'add-production-area-item', component: SaveProductionAreaItemComponent, canActivate: [authGuard]},
+			{path: 'edit-production-area-item/:id', component: SaveProductionAreaItemComponent, canActivate: [authGuard]},
 			{path: 'add-process/:production_area_id', component: SaveProcessComponent, canActivate: [authGuard]},
 			{path: 'edit-process/:id', component: SaveProcessComponent, canActivate: [authGuard]},
 			{path: 'list-requisition', component: ListRequisitionComponent, canActivate: [authGuard]},
@@ -105,6 +111,7 @@ export const routes: Routes = [
 			{path: 'reporte-estado-cuenta-cliente', component: ReporteEstadoCuentaClienteComponent, canActivate: [authGuard]},
 			{path: 'test', component: TestComponent, canActivate: [authGuard]},
 			{path: 'list-sat-factura', component: ListSatFacturaComponent, canActivate: [authGuard]},
+			{path: 'assign-sat-factura', component: AssignSatFacturaComponent, canActivate: [authGuard]},
 			{path: 'list-order-sat-factura/:order_id', component: ListObjectSatFacturaComponent},
 			{path: 'list-payment-sat-factura/:payment_id', component: ListObjectSatFacturaComponent},
 			{path: 'list-merma-totals', component: ListMermaTotalsComponent, canActivate: [authGuard]},

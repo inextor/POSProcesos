@@ -1,0 +1,48 @@
+.card {
+	border-radius: 8px;
+}
+
+.card-header {
+	border-radius: 8px 8px 0 0;
+}
+
+.form-control:disabled {
+	background-color: #e9ecef;
+	cursor: not-allowed;
+}
+
+code {
+	color: #e83e8c;
+	background-color: #f8f9fa;
+	padding: 2px 6px;
+	border-radius: 3px;
+	font-size: 0.9em;
+}
+
+.badge {
+	font-size: 0.9em;
+	padding: 0.4em 0.8em;
+}
+
+.alert {
+	border-radius: 6px;
+}
+
+.btn-lg {
+	padding: 0.75rem 1.5rem;
+	font-size: 1.1rem;
+}
+
+.input-group .btn {
+	min-width: 120px;
+}
+
+small.text-muted {
+	display: block;
+	margin-top: 0.25rem;
+}
+
+small.text-success {
+	display: block;
+	margin-top: 0.5rem;
+}

@@ -1,0 +1,11 @@
+<div>
+	<label class="py-3">
+		<div>
+			<div [ngClass]="containerClasses">
+				<img [ngClass]="imageClasses" [src]="rest.getImagePath(image)">
+			</div>
+		</div>
+		<input style="display:none" type="file" [name]="file_id" (change)="uploadAttachment($event)" [multiple]="multiple">
+		<span *ngIf="displayUploadedAttachmentName"> {{filename || default_message}} </span>
+	</label>
+</div>

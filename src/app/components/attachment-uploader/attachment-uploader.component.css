@@ -1,0 +1,7 @@
+label {
+	cursor: pointer;
+}
+
+.card .avatar.avatar-sm {
+	border-radius: 0 !important;
+}
