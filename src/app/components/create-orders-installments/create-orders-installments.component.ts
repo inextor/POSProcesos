@@ -37,6 +37,12 @@ export class CreateOrdersInstallmentsComponent extends BaseComponent
     }
   }
 
+  downloadTemplate(): void
+  {
+    let headers = ["name", "total", "user_id", "currency_id", "paid", "item_id", "frequency", "installment_months", "initial_payment", "first_payment_date", "installment_round_amount"];
+    ExcelUtils.downloadTemplate('plantilla_ordenes_plazos.xlsx', headers);
+  }
+
     createOrders(evt: Event)
     {
       evt.preventDefault();

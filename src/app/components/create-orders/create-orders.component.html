@@ -4,8 +4,9 @@
 		<div class="">
 			<input type="file" name="users_file" class="form-control" (change)="onUsersFileChanged($event)" required>
 		</div>
-		<div class="my-3">
+		<div class="my-3 d-flex gap-2">
 			<button type="submit" class="btn btn-primary">Registrar Ordenes</button>
+			<button type="button" class="btn btn-secondary" (click)="downloadTemplate()">Descargar Plantilla</button>
 		</div>
 	</form>
 
