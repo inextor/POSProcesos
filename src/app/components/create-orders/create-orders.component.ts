@@ -35,6 +35,12 @@ export class CreateOrdersComponent extends BaseComponent
     }
   }
 
+  downloadTemplate(): void
+  {
+    let headers = ["name", "total", "user_id", "currency_id", "paid", "item_id"];
+    ExcelUtils.downloadTemplate('plantilla_ordenes.xlsx', headers);
+  }
+
 	createOrders(evt: Event)
 	{
 		evt.preventDefault();

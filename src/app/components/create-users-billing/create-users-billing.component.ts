@@ -38,6 +38,15 @@ export class CreateUsersBillingComponent extends BaseComponent
     }
   }
 
+  downloadTemplate(): void
+  {
+    let headers = `name,phone,email,address,rfc,city,state,zipcode,sat_razon_social,store_id,sat_uso_cfdi,sat_regimen_fiscal`
+      .split(',')
+      .map(i => i.trim());
+
+    ExcelUtils.downloadTemplate('plantilla_usuarios_facturacion.xlsx', headers);
+  }
+
   createUsersBilling(event: Event): void
   {
     event.preventDefault();
