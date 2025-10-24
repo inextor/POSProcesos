@@ -23,9 +23,12 @@ export class HeaderComponent extends BaseComponent
 	commanda_list:Commanda[] = [];
 	show_commandas:boolean = false;
 	rest_commanda:RestSimple<Commanda> = this.rest.initRestSimple<Commanda>('commanda');
+	external_base_url: string = '';
 
 	ngOnInit(): void
 	{
+		this.external_base_url = this.rest.getExternalAppUrl();
+
 		this.subs.sink = this.rest.notification.subscribe
 		({
 			next:(message)=>
