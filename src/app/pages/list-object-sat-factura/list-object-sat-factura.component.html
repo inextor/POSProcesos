@@ -38,12 +38,17 @@
 									@if(sat_factura.is_current){<span>✔️</span>}
 								</td>
 								<td class="text-center">
-									@if(sat_factura.type == 'POR_PERIODO'){<span>{{sat_factura.name_type}}</span>}
-									@if(sat_factura.link.length){
-										<a [routerLink]="sat_factura.link">
+									@if(sat_factura.type == 'POR_PERIODO')
+									{
+										<span>{{sat_factura.name_type}}</span>
+									}
+									@else
+									{
+										<a [href]="sat_factura.link">
 											{{sat_factura.name_type}}
-											@if(sat_factura.order_id){<span>- Orden {{sat_factura.order_id}}</span>}
-											@if(sat_factura.payment_id){<span>- Pago {{sat_factura.payment_id}}</span>}
+											<span>
+												{{sat_factura.order_id ? '- Orden '+sat_factura.order_id :  '- Pago '+sat_factura.payment_id }}
+											</span>
 										</a>
 									}
 								</td>

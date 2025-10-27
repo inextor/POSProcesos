@@ -53,16 +53,29 @@ export class AssignSatFacturaComponent extends BaseComponent implements OnInit {
 	is_assigning: boolean = false;
 
 	// Rest services
-	rest_order: RestSimple<Order> = this.rest.initRestSimple<Order>('order');
-	http: HttpClient;
+	rest_order!: RestSimple<Order>;
+	http!: HttpClient;
 
 	constructor(injector: Injector) {
 		super(injector);
-		this.http = injector.get(HttpClient);
 	}
 
 	ngOnInit(): void {
 		this.setTitle('Asignar Factura SAT');
+
+		// Initialize rest services
+		this.rest_order = this.rest.initRestSimple<Order>('order');
+		this.http = this.injector.get(HttpClient);
+
+		// Check if order_id is provided in the route
+		const order_id = this.route.snapshot.paramMap.get('order_id');
+		if (order_id) {
+			this.search_order = order_id;
+			// Use setTimeout to ensure component is fully initialized
+			setTimeout(() => {
+				this.searchOrder();
+			}, 0);
+		}
 	}
 
 	searchOrder() {
@@ -82,35 +95,32 @@ export class AssignSatFacturaComponent extends BaseComponent implements OnInit {
 		this.selected_order = null;
 		this.resetFiles();
 
-		const search: SearchObject<Order> = this.rest_order.getEmptySearch();
-		search.eq = { id: order_id } as Partial<Order>;
-		search.limit = 1;
-
-		this.subs.sink = this.rest_order.search(search).subscribe({
-			next: (response) => {
+		this.subs.sink = this.rest_order.get(order_id).subscribe({
+			next: (order: Order) => {
 				this.searching = false;
-				if (response.data.length === 0) {
+
+				if (!order) {
 					this.rest.showError('No se encontró una orden con ese ID');
 					return;
 				}
 
-				const order = response.data[0] as OrderDisplay;
+				const orderDisplay = order as OrderDisplay;
 
 				// Verificar que la orden esté cerrada
-				if (order.status !== 'CLOSED') {
+				if (orderDisplay.status !== 'CLOSED') {
 					this.rest.showError('La orden debe estar cerrada para asignarle una factura');
 					return;
 				}
 
 				// Verificar si ya tiene factura asignada
-				if (order.sat_factura_id) {
-					this.rest.showWarning('Esta orden ya tiene una factura SAT asignada (ID: ' + order.sat_factura_id + ')');
+				if (orderDisplay.sat_factura_id) {
+					this.rest.showWarning('Esta orden ya tiene una factura SAT asignada (ID: ' + orderDisplay.sat_factura_id + ')');
 				}
 
 				// Formato del nombre del cliente
-				order.client_display_name = order.client_name || `Cliente #${order.client_user_id || 'N/A'}`;
+				orderDisplay.client_display_name = orderDisplay.client_name || `Cliente #${orderDisplay.client_user_id || 'N/A'}`;
 
-				this.selected_order = order;
+				this.selected_order = orderDisplay;
 			},
 			error: (error) => {
 				this.searching = false;

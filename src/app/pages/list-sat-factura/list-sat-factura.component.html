@@ -70,7 +70,7 @@
 										<span *ngIf="sat_factura.type == 'POR_PERIODO'">
 											{{sat_factura.name_type}}
 										</span>
-										<a *ngIf="sat_factura.link.length" [routerLink]="sat_factura.link">
+										<a *ngIf="sat_factura.link" [href]="sat_factura.link">
 											{{sat_factura.name_type}}
 											<ng-container *ngIf="sat_factura.order_id">- Orden {{sat_factura.order_id}}</ng-container>
 											<ng-container *ngIf="sat_factura.payment_id">- Pago {{sat_factura.payment_id}}</ng-container>

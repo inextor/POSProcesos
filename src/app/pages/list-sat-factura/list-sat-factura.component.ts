@@ -4,7 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { BaseComponent } from '../../modules/shared/base/base.component';
 import { RestSimple, SearchObject } from '../../modules/shared/services/Rest';
 import { Order, Sat_Factura, Billing_Data } from '../../modules/shared/RestModels';
-import { ActivatedRoute, RouterLink } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 import { filter, map, mergeMap } from 'rxjs/operators';
 import { forkJoin, of } from 'rxjs';
 import { Utils } from '../../modules/shared/Utils';
@@ -17,7 +17,7 @@ export interface CSatFacturaInfo extends Sat_Factura
 {
 	name_type:string;
 	sat_cancelled:string;
-	link: Array<any>;
+	link: string|null;
 	system_status: string;
 	client_name?: string;
 	folio: string | null;
@@ -39,7 +39,6 @@ export interface CSatFacturaInfo extends Sat_Factura
 	imports: [
 		CommonModule,
 		FormsModule,
-		RouterLink,
 		LoadingComponent,
 		ModalComponent,
 		PaginationComponent,
@@ -47,7 +46,6 @@ export interface CSatFacturaInfo extends Sat_Factura
 })
 export class ListSatFacturaComponent extends BaseComponent implements OnInit
 {
-
 	sat_factura_search: SearchObject<Sat_Factura> = this.getEmptySearch();
 	sat_factura_info_list: CSatFacturaInfo[] = [];
 	billing_data_list: Billing_Data[] = [];
@@ -163,14 +161,20 @@ export class ListSatFacturaComponent extends BaseComponent implements OnInit
   	}
 
 	getType(sat_factura: Sat_Factura, order_list: Order[], payment_info_list: PaymentInfo[]): CSatFacturaInfo {
-		let link: (string | number)[] = [];
+		let link: string|null= null;
 		let extended_sat_factura = sat_factura as CSatFacturaInfo;
 
 		if (extended_sat_factura.type == 'NORMAL')
-			link = ['/view-order', extended_sat_factura.order_id as number];
+		{
+			//link = ['/view-order', extended_sat_factura.order_id as number];
+			link = this.rest.getExternalAppUrl()+'/#/view-order/'+extended_sat_factura.order_id;
+		}
 
 		if (extended_sat_factura.type == 'COMPLEMENTO_PAGO')
-			link = ['/view-payment', extended_sat_factura.payment_id];
+		{
+			//link = ['/view-payment', extended_sat_factura.payment_id];
+			link = this.rest.getExternalAppUrl()+'/#/view-payment/'+extended_sat_factura.payment_id;
+		}
 
 		let name_type = 'Desconocido';
 
