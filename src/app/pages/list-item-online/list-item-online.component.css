@@ -1,0 +1,41 @@
+/* Modal styles */
+.modal {
+	background: rgba(0, 0, 0, 0.5);
+}
+
+.modal.show {
+	opacity: 1;
+}
+
+.modal-backdrop.show {
+	opacity: 0.5;
+}
+
+.list-group-item.active {
+	z-index: 2;
+	color: #fff;
+	background-color: #007bff;
+	border-color: #007bff;
+}
+
+.list-group-item:hover {
+	cursor: pointer;
+}
+
+/* Close button fix for Bootstrap */
+.close {
+	background: transparent;
+	border: 0;
+	font-size: 1.5rem;
+	font-weight: 700;
+	line-height: 1;
+	color: #000;
+	text-shadow: 0 1px 0 #fff;
+	opacity: .5;
+}
+
+.close:hover {
+	color: #000;
+	text-decoration: none;
+	opacity: .75;
+}

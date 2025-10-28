@@ -21,12 +21,13 @@ export class SaveItemOnlineComponent extends BaseComponent implements OnInit {
 	rest_item_online: RestSimple<Item_Online> = this.rest.initRestSimple('item_online', ['item_id', 'store_id']);
 	rest_store: RestSimple<Store> = this.rest.initRestSimple('store');
 	search_item_online: SearchObject<Item_Online> = this.rest_item_online.getEmptySearch();
-    store_list: Store[] = [];
+	store_list: Store[] = [];
 
 	ngOnInit() {
 		this.sink = this.route.paramMap.pipe
 		(
-			mergeMap(param_map => {
+			mergeMap(param_map =>
+			{
 				this.search_item_online = this.rest_item_online.getSearchObject(param_map);
 				this.search_item_online.limit = this.page_size;
 				this.current_page = this.search_item_online.page;
