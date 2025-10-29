@@ -10,6 +10,7 @@ export interface DataRelation<T>
 	relations?:DataRelation<any>[];
 	source_obj?:string;
 	target_obj?:string;
+	custom_map?:(data:any)=>any;
 }
 
 //jexport class RelationResponse<T>
