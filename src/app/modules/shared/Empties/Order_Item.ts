@@ -1,0 +1,52 @@
+import { Order_Item, Item } from '../RestModels';
+
+export function order_item(item: Item): Order_Item {
+	let order_item: Order_Item = {
+		commanda_id: null,
+		commanda_status: "PENDING",
+		created: new Date(),
+		created_by_user_id: null,
+		delivered_qty: 0,
+		delivery_status: "PENDING",
+		discount: 0,
+		discount_percent: 0,
+		exceptions: '',
+		has_separator: "NO",
+		id: 0,
+		id_payment: null,
+		ieps_type: "RATE",
+		ieps_value: 0,
+		is_free_of_charge: "NO",
+		is_item_extra: "NO",
+		item_extra_id: null,
+		item_group: Date.now(),
+		item_id: item.id,
+		item_option_id: null,
+		item_option_qty: 1,
+		note: null,
+		offer_id: null,
+		order_id: 0,
+		original_unitary_price: 0,
+		paid_qty: null,
+		preparation_status: "PENDING",
+		price_id: null,
+		qty: 0,
+		reservation_item_id: null,
+		return_required: "NO",
+		status: "ACTIVE",
+		stock_status: "IN_STOCK",
+		subtotal: 0,
+		system_preparation_ended: null,
+		system_preparation_started: null,
+		tax: 0,
+		tax_included: "YES",
+		total: 0,
+		type: "NORMAL",
+		unitary_price: 0,
+		unitary_price_meta: 0,
+		updated: new Date(),
+		updated_by_user_id: null
+	};
+
+	return order_item;
+}

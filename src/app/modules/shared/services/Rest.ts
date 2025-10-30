@@ -733,12 +733,12 @@ export class Rest<U,T>
 		return item_search;
 	}
 
-	getRelation(source_field:string,target_field:keyof T | '' = '',target_obj:string | undefined = undefined ):DataRelation<T>
+	getRelation(source_field:string,target_field:keyof U | '' = '',target_obj:string | undefined = undefined ):DataRelation<U>
 	{
-		let t_f = target_field == '' ? 'id' as keyof T : target_field;
+		let t_f = target_field == '' ? 'id' as keyof U : target_field;
 
-		let relation:DataRelation<T> = {
-			rest: (this as unknown as Rest<T,any>),
+		let relation:DataRelation<U> = {
+			rest: (this as unknown as Rest<U,any>),
 			source_field,
 			target_field: t_f,
 			relations: []

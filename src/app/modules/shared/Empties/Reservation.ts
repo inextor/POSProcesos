@@ -1,0 +1,35 @@
+import { ExtendedReservation } from '../Models';
+
+export function reservation(): ExtendedReservation {
+	return {
+		id: 0,
+		_end: '',
+		address_id: null,
+		client_name: '',
+		created: new Date(),
+		created_by_user_id: 0,
+		condition: 'ACTIVE',
+		currency_id: 'MXN',
+		note: '',
+		price_type_id: 1,
+		start: '',
+		status: 'ACTIVE',
+		store_id: 0,
+		updated: new Date(),
+		updated_by_user_id: 0,
+		user_id: null,
+		_timestamp_next_delivery: null,
+		_timestamp_next_return: null,
+		_timestamp_next_dispatch_after: null,
+		_to_schedule: 0,
+		_to_schedule_delivery: 0,
+		_to_schedule_return: 0,
+		_to_be_returned: 0,
+		_to_be_delivered: 0,
+		_to_assign: 0,
+		_return_assignments: 0,
+		_delivery_assignments: 0,
+		_count_items: 0,
+		_total_qty: 0,
+	};
+}
