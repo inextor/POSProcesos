@@ -30,6 +30,7 @@ export class MenuComponent extends BaseComponent
     show_menu_accountant: Falseable = false;
     show_menu_production: Falseable  = false;
     show_menu_ecommerce: Falseable = false;
+    show_menu_orders: Falseable = false;
     show_menu_reservations: Falseable = false;
     show_menu_settings: Falseable = false;
 	show_old_menu: Falseable = false;
@@ -64,6 +65,8 @@ export class MenuComponent extends BaseComponent
 
 				this.show_menu_accountant = false;
 				this.show_menu_production = this.rest.user_permission.production || this.rest.user_permission.add_roles;
+
+				this.show_menu_orders = this.rest.user_permission.reports || this.rest.user_permission.pos || this.rest.user_permission.global_pos;
 
 				this.show_menu_ecommerce = this.rest.preferences.ecommerce_enabled && this.rest.user_permission.add_user;
 
