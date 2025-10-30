@@ -53,6 +53,7 @@ export const routes: Routes = [
 			{path: 'add-item-online', loadComponent: () => import('./pages/save-item-online/save-item-online.component').then(m => m.SaveItemOnlineComponent), canActivate: [authGuard]},
 			{path: 'edit-item-online/:id', loadComponent: () => import('./pages/save-item-online/save-item-online.component').then(m => m.SaveItemOnlineComponent), canActivate: [authGuard]},
 			{path: 'list-item-store', loadComponent: () => import('./pages/list-item-store/list-item-store.component').then(m => m.ListItemStoreComponent), canActivate: [authGuard]},
+			{path: 'list-category-store', loadComponent: () => import('./pages/list-category-store/list-category-store.component').then(m => m.ListCategoryStoreComponent), canActivate: [authGuard]},
 			{path: 'resume-production', loadComponent: () => import('./pages/resume-production/resume-production.component').then(m => m.ResumeProductionComponent), canActivate: [authGuard]},
 			{path: 'resume-production-day', loadComponent: () => import('./pages/resume-production-day/resume-production-day.component').then(m => m.ResumeProductionDayComponent), canActivate: [authGuard]},
 			{path: 'list-ecommerce-order', loadComponent: () => import('./pages/list-ecommerce-order/list-ecommerce-order.component').then(m => m.ListEcommerceOrderComponent), canActivate: [authGuard]},

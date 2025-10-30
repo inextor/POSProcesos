@@ -4,14 +4,16 @@ import { FormsModule } from '@angular/forms';
 import { BaseComponent } from '../../modules/shared/base/base.component';
 import { Rest, RestSimple, SearchObject } from '../../modules/shared/services/Rest';
 import { Order, Sat_Factura, Billing_Data, Payment } from '../../modules/shared/RestModels';
-import { ActivatedRoute } from '@angular/router';
-import { catchError, filter, map, mergeMap } from 'rxjs/operators';
-import { forkJoin, of } from 'rxjs';
-import { Utils } from '../../modules/shared/Utils';
-import { OrderInfo, PaymentInfo } from '../../modules/shared/Models';
+import { catchError, filter, forkJoin, mergeMap, of } from 'rxjs';
 import { LoadingComponent } from '../../components/loading/loading.component';
 import { ModalComponent } from '../../components/modal/modal.component';
 import { PaginationComponent } from '../../components/pagination/pagination.component';
+import { PaymentInfo } from '../../modules/shared/Models';
+
+interface CancelacionRequest
+{
+	sat_factura_id:number;
+}
 
 export interface CSatFacturaInfo extends Sat_Factura
 {
@@ -65,10 +67,11 @@ export class ListObjectSatFacturaComponent extends BaseComponent implements OnIn
 	startx: string = '';
 	billing_data_id: string = '';
 
-	rest_sat_factura!: RestSimple<Sat_Factura>;
-	rest_order!: RestSimple<Order>;
-	rest_billing_data!: RestSimple<Billing_Data>;
-	rest_payment_info!: Rest<Payment,PaymentInfo>;
+	rest_sat_factura: RestSimple<Sat_Factura> = this.rest.initRestSimple('sat_factura');;
+	rest_order: RestSimple<Order> = this.rest.initRestSimple('order');
+	rest_billing_data: RestSimple<Billing_Data> = this.rest.initRestSimple('billing_data');
+	rest_payment_info: Rest<Payment,PaymentInfo> = this.rest.initRest('payment_info');
+	rest_cancelar_factura:Rest<CancelacionRequest,CancelacionRequest> = this.rest.initRest('cancelar_factura');
 
 	order_id:number | null = null;
 	payment_id:number | null = null;
@@ -77,20 +80,14 @@ export class ListObjectSatFacturaComponent extends BaseComponent implements OnIn
 
 	ngOnInit(): void
 	{
-		console.log('ngOnInit started for ListObjectSatFacturaComponent');
 		try {
 			this.path = '/list-sat-factura';
 
-			this.rest_sat_factura = this.rest.initRestSimple('sat_factura');
-			this.rest_payment_info = this.rest.initRest('payment_info');
-			this.rest_order = this.rest.initRestSimple('order');
-			this.rest_billing_data = this.rest.initRestSimple('billing_data');
 
 			this.subs.sink = this.route.paramMap.pipe
 			(
 				mergeMap((param_map) =>
 				{
-					console.log('paramMap received', param_map);
 					this.order_id = param_map.has('order_id') ? parseInt(param_map.get('order_id') as string) : null;
 					this.payment_id = param_map.has('payment_id') ? parseInt(param_map.get('payment_id') as string) : null;
 
@@ -98,21 +95,19 @@ export class ListObjectSatFacturaComponent extends BaseComponent implements OnIn
 					this.is_loading = true;
 
 					this.sat_factura_search = this.getEmptySearch();
-
 					this.sat_factura_search.eq.order_id = this.order_id;
 					this.sat_factura_search.eq.payment_id = this.payment_id;
 
 					let order_obs = this.order_id ? this.rest_order.get(this.order_id) : of(null);
 					let payment_obs = this.payment_id ? this.rest_payment_info.get(this.payment_id) : of(null);
 
-					console.log('Making API calls');
 					return forkJoin({
 						facturas: this.rest_sat_factura.search(this.sat_factura_search),
 						order: order_obs,
 						payment_info: payment_obs
 					});
 				}),
-				catchError((error) => {
+				catchError((error:any) => {
 					console.error('Error in API call', error);
 					this.showError(error);
 					return of(null);
@@ -261,7 +256,9 @@ export class ListObjectSatFacturaComponent extends BaseComponent implements OnIn
 			mergeMap((result:any)=>
 			{
 				this.is_loading = true;
-				return this.rest.update('cancelar_factura',{ sat_factura_id: sat_factura.id });
+
+				return this.rest_cancelar_factura.create({sat_factura_id: sat_factura.id});
+				//return this.rest.update('cancelar_factura',{ sat_factura_id: sat_factura.id });
 			}),
 		)
 		.subscribe
@@ -278,7 +275,7 @@ export class ListObjectSatFacturaComponent extends BaseComponent implements OnIn
 	}
 
 	print()
-{
+	{
 		this.rest.hideMenu?.();
 		setTimeout(() => window.print(), 500);
 	}

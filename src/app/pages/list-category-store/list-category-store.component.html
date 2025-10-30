@@ -1,0 +1,149 @@
+<div class="container-fluid">
+	<h1 class="my-3">Categorías disponibles por tienda</h1>
+	<button (click)="openModal()" class="btn btn-primary mb-3">Add New</button>
+
+	<div class="card-body">
+		<form (submit)="search()" class="mb-3">
+			<div class="row">
+				<div class="col-md-4">
+					<div class="form-group">
+						<label for="category_id">Category ID</label>
+						<input type="number" class="form-control" id="category_id" name="category_id" [(ngModel)]="search_object.eq.category_id">
+					</div>
+				</div>
+				<div class="col-md-4">
+					<div class="form-group">
+						<label for="store_id">Store ID</label>
+						<input type="number" class="form-control" id="store_id" name="store_id" [(ngModel)]="search_object.eq.store_id">
+					</div>
+				</div>
+				<div class="col-md-4">
+					<button type="submit" class="btn btn-primary mt-4">Search</button>
+				</div>
+			</div>
+		</form>
+
+		<div class="table-responsive">
+			<table class="table table-bordered table-striped">
+				<thead>
+					<tr>
+						<th>ID</th>
+						<th>Category ID</th>
+						<th>Category Name</th>
+						<th>Store</th>
+						<th>POS Preference</th>
+						<th>Actions</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr *ngFor="let i of ccategory_store">
+						<td>{{ i.category_store.id }}</td>
+						<td>{{ i.category_store.category_id }}</td>
+						<td>{{ i.category.name }}</td>
+						<td>{{ i.store.name }}</td>
+						<td>{{ i.category_store.pos_preference }}</td>
+						<td>
+							<a [routerLink]="['/edit-category-store', i.category_store.id]" class="btn btn-sm btn-warning">Edit</a>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+	</div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" [class.show]="show_modal" [style.display]="show_modal ? 'block' : 'none'" tabindex="-1" role="dialog" *ngIf="show_modal">
+	<div class="modal-dialog modal-lg" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title">Agregar Categoría a Tienda</h5>
+				<button type="button" class="close" (click)="closeModal()" aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+				</button>
+			</div>
+			<div class="modal-body">
+				<!-- Search Category -->
+				<div class="form-group">
+					<label for="category_search">Buscar Categoría</label>
+					<input
+						type="text"
+						class="form-control"
+						id="category_search"
+						[(ngModel)]="category_search"
+						(ngModelChange)="onSearchInput()"
+						placeholder="Ingrese nombre de categoría (mínimo 2 caracteres)">
+				</div>
+
+				<!-- Category Results -->
+				<div class="category-results mb-3" *ngIf="category_list.length > 0 && !selected_category">
+					<label>Resultados (máximo 10):</label>
+					<div class="list-group">
+						<button
+							type="button"
+							class="list-group-item list-group-item-action"
+							*ngFor="let category of category_list"
+							(click)="selectCategory(category)">
+							<div class="d-flex w-100 justify-content-between">
+								<h6 class="mb-1">{{ category.name }}</h6>
+								<small>ID: {{ category.id }}</small>
+							</div>
+						</button>
+					</div>
+				</div>
+
+				<!-- Selected Category Display -->
+				<div class="alert alert-success" *ngIf="selected_category">
+					<div class="d-flex justify-content-between align-items-center">
+						<div>
+							<strong>Categoría Seleccionada:</strong> {{ selected_category.name }} (ID: {{ selected_category.id }})
+						</div>
+						<button type="button" class="btn btn-sm btn-outline-secondary" (click)="clearSelection()">
+							Cambiar
+						</button>
+					</div>
+				</div>
+
+				<!-- Store Selection -->
+				<div class="form-group">
+					<label for="modal_store_id">Tienda *</label>
+					<select
+						class="form-control"
+						id="modal_store_id"
+						[(ngModel)]="new_category_store.store_id"
+						[class.is-invalid]="new_category_store.store_id === 0"
+						required>
+						<option [value]="0" disabled selected>Seleccione una tienda</option>
+						<option *ngFor="let s of store_list" [value]="s.id">{{ s.name }}</option>
+					</select>
+					<div class="invalid-feedback" *ngIf="new_category_store.store_id === 0">
+						Debe seleccionar una tienda
+					</div>
+				</div>
+
+				<!-- POS Preference Selection -->
+				<div class="form-group">
+					<label for="modal_pos_preference">Preferencia POS *</label>
+					<select
+						class="form-control"
+						id="modal_pos_preference"
+						[(ngModel)]="new_category_store.pos_preference"
+						required>
+						<option value="SHOW">Mostrar</option>
+						<option value="HIDE">Ocultar</option>
+						<option value="DEFAULT">Default</option>
+					</select>
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-secondary" (click)="closeModal()">Cancelar</button>
+				<button type="button" class="btn btn-primary" (click)="saveCategoryStore()" [disabled]="!selected_category || !new_category_store.store_id || new_category_store.store_id === 0">
+					Guardar
+				</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<!-- Modal Backdrop -->
+<div class="modal-backdrop fade" [class.show]="show_modal" *ngIf="show_modal"></div>

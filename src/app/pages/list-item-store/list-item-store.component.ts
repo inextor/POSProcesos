@@ -53,7 +53,14 @@ export class ListItemStoreComponent extends BaseComponent implements OnInit {
 					? of({ data: this.store_list, total: this.store_list.length })
 					: this.rest_store.search({ limit: 9999999, eq: { status: 'ACTIVE' } });
 
-				let relations = [ this.rest_store.getRelation('store_id') ];
+				let item_relation = this.rest_item_info.getRelation('item_id');
+
+				item_relation.source_field = 'item_id';
+				item_relation.target_field = 'id';
+				item_relation.target_obj = 'item';
+
+
+				let relations = [ this.rest_store.getRelation('store_id'), item_relation ];
 				let search_object = this.rest_item_store.getSearchObject(query_params);
 
 				return forkJoin
@@ -61,32 +68,33 @@ export class ListItemStoreComponent extends BaseComponent implements OnInit {
 					item_store: this.rest_item_store.searchWithRelations(search_object, relations),
 					stores: stores as Observable<RestResponse<Store>>
 				})
-			}),
-			mergeMap((response:any) =>
-			{
-				let item_info_obs = this.rest_item_info.search({ limit: 9999999, csv: {id: response.item_store.data.map((i:any) => i.item_store.item_id) } });
-				this.store_list = response.stores.data;
-
-				return forkJoin({
-					item_info: item_info_obs,
-					item_storec: of( response.item_store )
-				});
-			}),
-			mergeMap((response) =>
-			{
-				let x = response.item_storec.data.map((i:any) =>
-				{
-					i.item_info = response.item_info.data.find((z:any) => z.item.id == i.item_store.item_id);
-					return i as CItemStore;
-				});
-				return of( x );
 			})
+			//mergeMap((response:any) =>
+			//{
+			//	let item_info_obs = this.rest_item_info.search({ limit: 9999999, csv: {id: response.item_store.data.map((i:any) => i.item_store.item_id) } });
+			//	this.store_list = response.stores.data;
+
+			//	return forkJoin({
+			//		item_info: item_info_obs,
+			//		item_storec: of( response.item_store )
+			//	});
+			//}),
+			//mergeMap((response) =>
+			//{
+			//	let x = response.item_storec.data.map((i:any) =>
+			//	{
+			//		i.item_info = response.item_info.data.find((z:any) => z.item.id == i.item_store.item_id);
+			//		return i as CItemStore;
+			//	});
+			//	return of( x );
+			//})
 		)
 		.subscribe
 		({
 			next: (response) =>
 			{
-				this.citem_store = response;
+				console.log('response', response);
+				this.citem_store = response.item_store.data
 			},
 			error: (error) =>
 			{

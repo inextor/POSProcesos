@@ -15,7 +15,7 @@ import { forkJoin, mergeMap, of } from 'rxjs';
 })
 export class SaveRoleItemPriceComponent extends BaseComponent implements OnInit
 {
-	rest_role_item_price: RestSimple<Production_Role_Price> = this.rest.initRest('production_role_price',['id','name','price','created','updated']);
+	rest_role_item_price: RestSimple<Production_Role_Price> = this.rest.initRest('role_item_price',['id','name','price','created','updated']);
 	rest_role: RestSimple<Role> = this.rest.initRest('role',['id','name','created','updated']);
 	role_list: Role[] = [];
 
@@ -29,11 +29,11 @@ export class SaveRoleItemPriceComponent extends BaseComponent implements OnInit
 
 				let role_item_price_observable = param_map.has('id')
 					? this.rest_role_item_price.get(param_map.get('id'))
-					: of( GetEmpty.production_role_price() );
-				
+					: of( GetEmpty.role_item_price() );
+
 				return forkJoin
 				({
-					production_role_price: prp_observable,
+					role_item_price: role_item_price_observable,
 					role : this.rest_role.search({limit:999999})
 				});
 			})

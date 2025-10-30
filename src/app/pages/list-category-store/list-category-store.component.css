@@ -1,0 +1,21 @@
+/* Modal styles */
+.modal {
+	background-color: rgba(0, 0, 0, 0.5);
+}
+
+.modal.show {
+	display: block;
+}
+
+.category-results {
+	max-height: 300px;
+	overflow-y: auto;
+}
+
+.list-group-item {
+	cursor: pointer;
+}
+
+.list-group-item:hover {
+	background-color: #f8f9fa;
+}
