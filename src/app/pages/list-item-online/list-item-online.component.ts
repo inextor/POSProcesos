@@ -14,7 +14,7 @@ import { ItemInfo } from '../../modules/shared/Models';
 interface CItemOnline
 {
 	item_online:Item_Online;
-	item:Item;
+	item_info:ItemInfo;
 	store:Store;
 }
 
@@ -54,7 +54,12 @@ export class ListItemOnlineComponent extends BaseComponent implements OnInit {
 					? of({ data:this.store_list, total: this.store_list.length })
 					: this.rest_store.search({ limit:9999999, eq: { status: 'ACTIVE' } });
 
-				let relations = [ this.rest_item_online.getRelation('item_id'), this.rest_store.getRelation('store_id') ];
+				let item_relation = this.rest_item_info.getRelation('item_id');
+				item_relation.source_field = 'item_id';
+				item_relation.target_field = 'id';
+				item_relation.target_obj = 'item';
+
+				let relations = [ this.rest_store.getRelation('store_id'), item_relation ];
 				let search_object = this.rest_item_online.getSearchObject( query_params );
 
 				return forkJoin
