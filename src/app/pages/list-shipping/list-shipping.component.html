@@ -18,12 +18,12 @@
         </select>
       </div>
       <div class="col-12 col-md-3">
-        <label>Fecha Inicial</label>
-        <input type="date" class="form-control" [(ngModel)]="fecha_inicial" (ngModelChange)="fechaInicialChange($event)">
+        <label>Fecha y Hora Inicial</label>
+        <input type="datetime-local" class="form-control" [(ngModel)]="fecha_inicial" (ngModelChange)="fechaInicialChange($event)">
       </div>
       <div class="col-12 col-md-3">
-        <label>Fecha Final</label>
-        <input type="date" class="form-control" [(ngModel)]="fecha_final" (ngModelChange)="fechaFinalChange($event)">
+        <label>Fecha y Hora Final</label>
+        <input type="datetime-local" class="form-control" [(ngModel)]="fecha_final" (ngModelChange)="fechaFinalChange($event)">
       </div>
       <div class="col-12 col-md-3">
         <label>&nbsp;</label>
