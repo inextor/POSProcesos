@@ -64,30 +64,34 @@ export class ListShippingComponent extends BaseComponent
 
 				if(paramMap.has('ge.created'))
 				{
-					let start = new Date(paramMap.get('ge.created') as string);
+					// Leer fecha UTC desde URL y convertir a Date local
+					let start = Utils.getDateFromUTCMysqlString(paramMap.get('ge.created') as string);
 					this.production_search.ge.created = start;
-					this.fecha_inicial = (paramMap.get('ge.created') as string).split(/T|\s/)[0];
+					// Formatear para datetime-local (usa tiempo local)
+					this.fecha_inicial = Utils.getLocalMysqlStringFromDate(start).replace(' ', 'T');
 				}
 				else
 				{
 					let start = new Date();
 					start.setHours(0, 0, 0, 0);
-					this.fecha_inicial = start.toISOString().split('T')[0];
 					this.production_search.ge.created = start;
+					this.fecha_inicial = Utils.getLocalMysqlStringFromDate(start).replace(' ', 'T');
 				}
 
 				if(paramMap.has('le.created'))
 				{
-					let end = new Date(paramMap.get('le.created') as string);
+					// Leer fecha UTC desde URL y convertir a Date local
+					let end = Utils.getDateFromUTCMysqlString(paramMap.get('le.created') as string);
 					this.production_search.le.created = end;
-					this.fecha_final = (paramMap.get('le.created') as string).split(/T|\s/)[0];
+					// Formatear para datetime-local (usa tiempo local)
+					this.fecha_final = Utils.getLocalMysqlStringFromDate(end).replace(' ', 'T');
 				}
 				else
 				{
 					let end = new Date();
 					end.setHours(23, 59, 59);
-					this.fecha_final = end.toISOString().split('T')[0];
 					this.production_search.le.created = end;
+					this.fecha_final = Utils.getLocalMysqlStringFromDate(end).replace(' ', 'T');
 				}
 
 				let search_obj =
@@ -123,21 +127,26 @@ export class ListShippingComponent extends BaseComponent
 		});
 	}
 
-	fechaInicialChange(fecha:Date)
+	fechaInicialChange(fecha: string)
 	{
 		this.fecha_inicial = fecha;
 		if( fecha )
 		{
-			this.production_search.ge.created = fecha;
+			// Convertir de formato datetime-local (con T) a Date
+			// El input viene como "2025-11-03T14:30"
+			let dateString = fecha.replace('T', ' ') + ':00'; // Agregar segundos
+			this.production_search.ge.created = Utils.getDateFromLocalMysqlString(dateString);
 		}
 	}
 
-	fechaFinalChange(fecha:Date)
+	fechaFinalChange(fecha: string)
 	{
 		this.fecha_final = fecha;
 		if( fecha )
 		{
-			this.production_search.le.created= fecha;
+			// Convertir de formato datetime-local (con T) a Date
+			let dateString = fecha.replace('T', ' ') + ':00'; // Agregar segundos
+			this.production_search.le.created = Utils.getDateFromLocalMysqlString(dateString);
 		}
 	}
 
