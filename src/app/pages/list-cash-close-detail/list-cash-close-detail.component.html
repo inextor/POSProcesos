@@ -1,0 +1,259 @@
+<div class="container-fluid">
+	<h1 class="my-3">Detalle de Corte de Caja</h1>
+
+	@if (is_loading) {
+		<div class="text-center">
+			<p>Cargando datos del corte...</p>
+		</div>
+	}
+
+	@if (!is_loading && cash_close) {
+		<div class="card my-3 p-3">
+			<h3>Información del Corte</h3>
+			<div class="row">
+				<div class="col-md-3">
+					<strong>ID:</strong> {{ cash_close.id }}
+				</div>
+				<div class="col-md-3">
+					<strong>Inicio:</strong> {{ cash_close.since | date:'short' }}
+				</div>
+				<div class="col-md-3">
+					<strong>Fin:</strong> {{ cash_close.created | date:'short' }}
+				</div>
+				<div class="col-md-3">
+					<strong>Efectivo en mano:</strong> ${{ cash_close.cash_on_hand | number:'1.2-2' }}
+				</div>
+			</div>
+		</div>
+
+		<div class="card my-3 p-3">
+			<h3>Resumen</h3>
+			<div class="row">
+				<div class="col-md-3">
+					<div class="card bg-info text-white p-3">
+						<h5>Total Fondos</h5>
+						<h3>${{ total_funds | number:'1.2-2' }}</h3>
+						<small>{{ fund_list.length }} registro(s)</small>
+					</div>
+				</div>
+				<div class="col-md-3">
+					<div class="card bg-success text-white p-3">
+						<h5>Ingresos</h5>
+						<h3>${{ total_income_payments | number:'1.2-2' }}</h3>
+						<small>{{ income_payments_count }} pago(s)</small>
+					</div>
+				</div>
+
+				<div class="col-md-3">
+					<div class="card bg-success text-white p-3">
+						<h5>Total Ingresos Efectivo</h5>
+						<h3>${{ total_ingresos_efectivo | number:'1.2-2' }}</h3>
+						<small></small>
+					</div>
+				</div>
+
+				<div class="col-md-3">
+					<div class="card bg-success text-white p-3">
+						<h5>Total Ingresos Transferencia</h5>
+						<h3>${{ total_ingresos_transferencia | number:'1.2-2' }}</h3>
+					</div>
+				</div>
+
+				<div class="col-md-3">
+					<div class="card bg-success text-white p-3">
+						<h5>Gastos Efectivo</h5>
+						<h3>${{ total_egresos_efectivo | number:'1.2-2' }}</h3>
+					</div>
+				</div>
+
+				<div class="col-md-3">
+					<div class="card bg-success text-white p-3">
+						<h5>Gastos Transferencia</h5>
+						<h3>${{ total_egresos_transferencia | number:'1.2-2' }}</h3>
+					</div>
+				</div>
+
+				<div class="col-md-3">
+					<div class="card bg-danger text-white p-3">
+						<h5>Egresos</h5>
+						<h3>${{ total_expense_payments | number:'1.2-2' }}</h3>
+						<small>{{ expense_payments_count }} pago(s)</small>
+					</div>
+				</div>
+				<div class="col-md-3">
+					<div class="card bg-primary text-white p-3">
+						<h5>Total Ventas</h5>
+						<h3>${{ total_orders | number:'1.2-2' }}</h3>
+						<small>{{ order_list.length }} venta(s)</small>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="card my-3 p-3">
+			<h3>Fondos del Periodo</h3>
+			@if (fund_list.length > 0) {
+				<table class="table table-striped">
+					<thead>
+						<tr>
+							<th>ID</th>
+							<th>Monto</th>
+							<th>Moneda</th>
+							<th>Hora del Cajero</th>
+							<th>Creado Por</th>
+							<th>Tienda</th>
+							<th>Fecha Creación</th>
+						</tr>
+					</thead>
+					<tbody>
+						@for (f of fund_list; track f.id) {
+							<tr>
+								<td>{{ f.id }}</td>
+								<td>${{ f.amount | number:'1.2-2' }}</td>
+								<td>{{ f.currency_id }}</td>
+								<td>{{ f.cashier_hour | date:'short' }}</td>
+								<td></td>
+								<td>{{ f.store_id || 'N/A' }}</td>
+								<td>{{ f.created | date:'short' }}</td>
+							</tr>
+						}
+					</tbody>
+					<tfoot>
+						<tr>
+							<td colspan="1"><strong>Total:</strong></td>
+							<td><strong>${{ total_funds | number:'1.2-2' }}</strong></td>
+							<td colspan="5"></td>
+						</tr>
+					</tfoot>
+				</table>
+			} @else {
+				<p class="text-muted">No hay fondos registrados en este periodo.</p>
+			}
+		</div>
+
+		<div class="card my-3 p-3">
+			<h3>Pagos del Periodo</h3>
+			@if (payment_info_list.length > 0) {
+				<table class="table table-striped">
+					<thead>
+						<tr>
+							<th>ID</th>
+							<th>Tipo</th>
+							<th>Monto</th>
+							<th>Recibido</th>
+							<th>Cambio</th>
+							<th>Moneda</th>
+							<th>Concepto</th>
+							<th>Pagado Por</th>
+							<th>Tienda</th>
+							<th>Fecha</th>
+						</tr>
+					</thead>
+					<tbody>
+						@for (p of payment_info_list; track p.payment.id) {
+							<tr [class.table-success]="p.payment.type === 'income'" [class.table-danger]="p.payment.type === 'expense'">
+								<td>{{ p.payment.id }}</td>
+								<td>
+									<span [class.badge]="true"
+										  [class.bg-success]="p.payment.type === 'income'"
+										  [class.bg-danger]="p.payment.type === 'expense'">
+										{{ p.payment.type === 'income' ? 'Ingreso' : 'Egreso' }}
+									</span>
+								</td>
+								<td>${{ p.payment.payment_amount | number:'1.2-2' }}</td>
+								<td>${{ p.payment.received_amount | number:'1.2-2' }}</td>
+								<td>${{ p.payment.change_amount | number:'1.2-2' }}</td>
+								<td>{{ p.payment.currency_id }}</td>
+								<td>{{ p.payment.concept || 'Sin concepto' }}</td>
+								<td>NOMBRE</td>
+								<td>{{ p.payment.store_id || 'N/A' }}</td>
+								<td>{{ p.payment.created | date:'short' }}</td>
+							</tr>
+						}
+					</tbody>
+					<tfoot>
+						<tr>
+							<td colspan="2"><strong>Total Ingresos:</strong></td>
+							<td><strong class="text-success">${{ total_income_payments | number:'1.2-2' }}</strong></td>
+							<td colspan="7"></td>
+						</tr>
+						<tr>
+							<td colspan="2"><strong>Total Egresos:</strong></td>
+							<td><strong class="text-danger">${{ total_expense_payments | number:'1.2-2' }}</strong></td>
+							<td colspan="7"></td>
+						</tr>
+						<tr>
+							<td colspan="2"><strong>Neto:</strong></td>
+							<td><strong>${{ (total_income_payments - total_expense_payments) | number:'1.2-2' }}</strong></td>
+							<td colspan="7"></td>
+						</tr>
+					</tfoot>
+				</table>
+			} @else {
+				<p class="text-muted">No hay pagos registrados en este periodo.</p>
+			}
+		</div>
+
+		<div class="card my-3 p-3">
+			<h3>Ventas del Periodo</h3>
+			@if (order_list.length > 0) {
+				<table class="table table-striped">
+					<thead>
+						<tr>
+							<th>ID</th>
+							<th>Cliente</th>
+							<th>Cajero</th>
+							<th>Subtotal</th>
+							<th>Descuento</th>
+							<th>Impuestos</th>
+							<th>Total</th>
+							<th>Moneda</th>
+							<th>Estado Pago</th>
+							<th>Tipo Servicio</th>
+							<th>Fecha Cierre</th>
+						</tr>
+					</thead>
+					<tbody>
+						@for (o of order_list; track o.order.id) {
+							<tr>
+								<td>{{ o.order.id }}</td>
+								<td>CAJERO</td>
+								<td>CAJERO CREO</td>
+								<td>${{ o.order.subtotal | number:'1.2-2' }}</td>
+								<td>${{ o.order.discount | number:'1.2-2' }}</td>
+								<td>${{ o.order.tax | number:'1.2-2' }}</td>
+								<td><strong>${{ o.order.total | number:'1.2-2' }}</strong></td>
+								<td>{{ o.order.currency_id }}</td>
+								<td>
+									<span [class.badge]="true"
+										  [class.bg-success]="o.order.paid_status === 'PAID'"
+										  [class.bg-warning]="o.order.paid_status === 'PARTIALLY_PAID'"
+										  [class.bg-danger]="o.order.paid_status === 'PENDING'">
+										{{ o.order.paid_status }}
+									</span>
+								</td>
+								<td>{{ o.order.service_type }}</td>
+								<td>{{ o.order.closed_timestamp | date:'short' }}</td>
+							</tr>
+						}
+					</tbody>
+					<tfoot>
+						<tr>
+							<td colspan="6"><strong>Total Ventas:</strong></td>
+							<td><strong>${{ total_orders | number:'1.2-2' }}</strong></td>
+							<td colspan="4"></td>
+						</tr>
+					</tfoot>
+				</table>
+			} @else {
+				<p class="text-muted">No hay ventas registradas en este periodo.</p>
+			}
+		</div>
+	}
+
+	@if (!is_loading && !cash_close) {
+		<div class="alert alert-warning">
+			No se encontró el corte de caja especificado.
+		</div>
+	}
+</div>

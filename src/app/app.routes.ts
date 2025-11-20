@@ -34,6 +34,7 @@ export const routes: Routes = [
 			{path: 'add-shipping/:store_id', loadComponent: () => import('./pages/save-shipping/save-shipping.component').then(m => m.SaveShippingComponent), canActivate: [authGuard]},
 			{path: 'edit-shipping/:id', loadComponent: () => import('./pages/save-shipping/save-shipping.component').then(m => m.SaveShippingComponent), canActivate: [authGuard]},
 			{path: 'close-shift', loadComponent: () => import('./pages/close-shift/close-shift.component').then(m => m.CloseShiftComponent)},
+			{path: 'list-cash-close-detail/:id', loadComponent: () => import('./pages/list-cash-close-detail/list-cash-close-detail.component').then(m => m.ListCashCloseDetailComponent), canActivate: [authGuard]},
 			{path: 'save-production-payment', loadComponent: () => import('./pages/save-production-payment/save-production-payment.component').then(m => m.SaveProductionPaymentComponent), canActivate: [authGuard]},
 			/*
 			{path: 'save-payroll-concept', loadComponent: () => import('./pages/save-payroll-concept/save-payroll-concept.component').then(m => m.SavePayrollConceptComponent), canActivate: [authGuard]},
