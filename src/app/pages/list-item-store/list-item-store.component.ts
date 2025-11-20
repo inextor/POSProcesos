@@ -94,6 +94,7 @@ export class ListItemStoreComponent extends BaseComponent implements OnInit {
 			next: (response) =>
 			{
 				console.log('response', response);
+				this.store_list = response.stores.data;
 				this.citem_store = response.item_store.data
 			},
 			error: (error) =>
