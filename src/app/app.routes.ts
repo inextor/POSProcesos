@@ -71,6 +71,7 @@ export const routes: Routes = [
 			{path: 'list-payment-sat-factura/:payment_id', loadComponent: () => import('./pages/list-object-sat-factura/list-object-sat-factura.component').then(m => m.ListObjectSatFacturaComponent)},
 			{path: 'list-merma-totals', loadComponent: () => import('./pages/list-merma-totals/list-merma-totals.component').then(m => m.ListMermaTotalsComponent), canActivate: [authGuard]},
 			{path: 'weird', loadComponent: () => import('./pages/weird/weird.component').then(m => m.WeirdComponent), canActivate: [authGuard]},
+			{path: 'report-comex-sales', loadComponent: () => import('./pages/report-comex-sales/report-comex-sales.component').then(m => m.ReportComexSalesComponent), canActivate: [authGuard]}
 		]
 	},
 ];
