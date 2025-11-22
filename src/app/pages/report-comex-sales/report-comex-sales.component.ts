@@ -129,10 +129,12 @@ export class ReportComexSalesComponent extends BaseComponent implements OnInit {
 
 		// 1. Setup the very first search (Page 0)
 		// We do NOT create a loop here. Just one object.
-		let initialSearch = { ...search_object, limit: 50, page: 0 } as Partial<SearchObject<COrder>>;
+		let initialSearch = { ...search_object, limit: BATCH_SIZE, page: 0 } as Partial<SearchObject<COrder>>;
 
-		const makeRequest = (s: Partial<SearchObject<U>>) =>
-			as_post ? this.searchAsPost(s) : this.search(s);
+		const makeRequest = (s: Partial<SearchObject<COrder>>) =>
+		{
+			return this.rest_order_info.search(s);
+		}
 
 		// 2. Start the chain
 		return makeRequest(initialSearch).pipe(
@@ -143,7 +145,7 @@ export class ReportComexSalesComponent extends BaseComponent implements OnInit {
 				// 'index' counts how many recursions we've done.
 				// We just finished page 'index'. Next is 'index + 1'.
 				const nextPage = index + 1;
-				const totalPages = Math.ceil(response.total / page_size);
+				const totalPages = Math.ceil(response.total / BATCH_SIZE);
 
 				console.log('Launching gemini code on expand 4th iteration', nextPage, totalPages,Date.now());
 

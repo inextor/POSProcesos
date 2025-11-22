@@ -8,6 +8,7 @@ export function store(): Store {
 		accept_credit_card: 1,
 		accept_check: 1,
 		business_name: '',
+		code: '',
 		city: '',
 		lat: null,
 		lng: null,

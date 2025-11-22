@@ -10,6 +10,7 @@ export interface Store{
 	business_name?:string | null;
 	city:string | null;
 	client_user_id:number | null;
+	code:string | null;
 	created?:Date;
 	created_by_user_id?:number | null;
 	default_billing_data_id:number | null;

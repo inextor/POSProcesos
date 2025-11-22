@@ -148,12 +148,9 @@ export class Utils
 		);
 	}
 
-	static getLocalMysqlStringFromDate(date:Date):string
+	static getLocalMysqlStringFromDate(d:Date):string
 	{
-		let d= new Date();
-		d.setTime(date.getTime());
-
-		let event_string = d.getFullYear()
+		let event_string = ''+d.getFullYear()
 		+ '-' + this.zero(d.getMonth() + 1)
 		+ '-' + this.zero(d.getDate())
 		+ ' ' + this.zero(d.getHours())
