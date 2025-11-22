@@ -1,7 +1,7 @@
-import { forkJoin, Observable, of } from 'rxjs';
+import { concat, EMPTY, forkJoin, from, Observable, of, range } from 'rxjs';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Utils} from '../Utils';
-import {mergeMap, retry} from 'rxjs/operators';
+import {concatMap, expand, last, map, mergeMap, reduce, retry, scan, switchMap, take} from 'rxjs/operators';
 import { ParamMap } from '@angular/router';
 import { DataRelation } from './DataRelation';
 //import { HttpErrorResponse } from '@angular/common/http';
@@ -326,6 +326,7 @@ export class Rest<U,T>
 		);
 	}
 
+	/*
 	searchAll(obj_search:Partial<SearchObject<U>>,page_size:number = 100, as_post:boolean = false):Observable<RestResponse<T>>
 	{
 		let search = {...obj_search, limit: page_size } as Partial<SearchObject<U>>;
@@ -366,6 +367,119 @@ export class Rest<U,T>
 					data: items
 				};
 				return of( item_response );
+			})
+		);
+	}
+	*/
+
+	/**
+	* Recursively fetches **all** pages of data matching the search criteria in a strictly sequential manner.
+	*
+	* @remarks
+	* This method uses the RxJS `expand` operator to request one page at a time. The next request
+	* is only launched after the previous one completes. This prevents browser network timeouts
+	* and "Too Many Requests" errors when dealing with large datasets (e.g., 1,000,000+ records).
+	* * **Warning:** This accumulates all results into a single array in memory. For extremely large
+	* datasets, this may cause High Memory usage.
+	*
+	* @template U - The type of the search criteria object.
+	* @template T - The type of the data items being retrieved.
+	*
+	* @param {Partial<SearchObject<U>>} obj_search - The initial filter criteria. The `page` and `limit` properties will be automatically managed.
+	* @param {number} [page_size=100] - The number of items to fetch per HTTP request.
+	* @param {boolean} [as_post=false] - If `true`, executes the request via HTTP POST (`searchAsPost`); otherwise, uses HTTP GET (`search`).
+	*
+	* @returns {Observable<RestResponse<T>>} An Observable that emits a single `RestResponse` object containing the aggregated `data` array from all fetched pages.
+	*/
+
+	/*
+	searchAll(obj_search: Partial<SearchObject<U>>, page_size: number = 100, as_post: boolean = false): Observable<RestResponse<T>>
+	{
+		// 1. Setup the very first search (Page 0)
+		// We do NOT create a loop here. Just one object.
+		let initialSearch = { ...obj_search, limit: page_size, page: 0 } as Partial<SearchObject<U>>;
+
+		const makeRequest = (s: Partial<SearchObject<U>>) =>
+			as_post ? this.searchAsPost(s) : this.search(s);
+
+		// 2. Start the chain
+		return makeRequest(initialSearch).pipe(
+
+			// 3. 'expand' acts as a recursive loop.
+			// It subscribes to the output, looks at it, and decides if it should run again.
+			expand((response, index) => {
+				// 'index' counts how many recursions we've done.
+				// We just finished page 'index'. Next is 'index + 1'.
+				const nextPage = index + 1;
+				const totalPages = Math.ceil(response.total / page_size);
+
+				console.log('Launching gemini code on expand 4th iteration', nextPage, totalPages,Date.now());
+
+				// STOP CONDITION: If we have enough pages, return EMPTY to stop the recursion.
+				if (nextPage >= totalPages) {
+					return EMPTY;
+				}
+
+				// CONTINUE CONDITION: Create the next request object ONLY NOW.
+				const nextSearch = { ...initialSearch, page: nextPage };
+
+				// This return triggers the next subscription.
+				// The next request cannot start until this line runs.
+				return makeRequest(nextSearch);
+			}),
+
+			// 4. 'reduce' collects every single response from 'expand' into one giant array
+			reduce((acc, currentResponse) => {
+				// Add the new data to our accumulated array
+				acc.data.push(...currentResponse.data);
+				// Keep the total accurate
+				acc.total = currentResponse.total;
+				return acc;
+			}) // The initial value is implicit from the first emission
+		);
+	}
+	*/
+
+	searchAll(obj_search: Partial<SearchObject<U>>, page_size: number = 100, as_post: boolean = false): Observable<RestResponse<T>>
+	{
+		let search = { ...obj_search, limit: page_size, page: 0 } as Partial<SearchObject<U>>;
+
+		// Helper to generate the request observable
+		const makeRequest = (s: Partial<SearchObject<U>>) => as_post ? this.searchAsPost(s) : this.search(s);
+
+		return makeRequest(search).pipe
+		(
+			switchMap((firstResponse) =>
+			{
+				const totalPages = Math.ceil(firstResponse.total / page_size);
+
+				// If only 1 page, return immediately
+				if (totalPages <= 1) return of(firstResponse);
+
+				// Create an array of remaining page numbers: [1, 2, 3, ... N]
+				const remainingPages = Array.from({ length: totalPages - 1 }, (_, i) => i + 1);
+
+				// Emit the page numbers
+				return from(remainingPages).pipe(
+					// --- THE MAGIC IS HERE ---
+					// The second argument '5' limits concurrent requests to 5 at a time.
+					mergeMap((pageIndex) => {
+						const s = { ...search, page: pageIndex };
+						return makeRequest(s);
+					}, 5),
+
+					// Collect the results of the remaining pages
+					reduce((acc, current) => {
+						acc.push(...current.data);
+						return acc;
+					}, [] as T[]),
+
+					// Combine with the data from the very first request
+					map((allOtherData) => {
+						firstResponse.data.push(...allOtherData);
+						return firstResponse;
+					})
+				);
 			})
 		);
 	}
