@@ -2,6 +2,7 @@ import { User } from '../RestModels';
 
 export function user(): User {
 	return {
+		code: null,
 		created: new Date(),
 		created_by_user_id: null,
 		credit_days: 0,
