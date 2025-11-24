@@ -1,4 +1,5 @@
 export interface User{
+    code: string | null;
 	created:Date;
 	created_by_user_id:number | null;
 	credit_days:number | null;
