@@ -290,7 +290,7 @@ export class ReportComexSalesComponent extends BaseComponent implements OnInit {
 			NUM_SUCURSAL: store.code || '',
 			NOMBRE_SUCURSAL: (store as any)?.comex_nombre_oficial || store?.name || '',
 			FECHA_FACTURA: sat_factura ? this.formatDate(sat_factura.created as Date) : this.formatDate(order_info.order.closed_timestamp as Date),
-			NUMERO_FACTURA: sat_factura ? sat_factura.folio || '' : ''+order_info.order.id,
+			NUMERO_FACTURA: sat_factura?.folio ? sat_factura.serie+'-'+sat_factura.folio || '' : ''+order_info.order.id,
 			FECHA_PEDIDO: this.formatDate(order_info.order.closed_timestamp as Date),
 			NUMERO_PEDIDO: order_info.order.id.toString(),
 			NUMERO_CLIENTE: order_info.order.client_user_id?.toString() || '',
