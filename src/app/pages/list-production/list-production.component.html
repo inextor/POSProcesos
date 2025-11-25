@@ -18,33 +18,39 @@
 				</select>
 			</div>
 			<div class="col-12 col-md-3 form-group">
-				<label>Fecha Inicial</label>
-				<input type="date" class="form-control" name="le.created" [ngModel]="production_search.le.created" (ngModelChange)="onDateChange($event,production_search.le,'created')">
+				<label>Fecha y Hora Inicial</label>
+				<input type="datetime-local" class="form-control" [(ngModel)]="fecha_inicial" (ngModelChange)="fechaInicialChange($event)">
+			</div>
+			<div class="col-12 col-md-3 form-group">
+				<label>Fecha y Hora Final</label>
+				<input type="datetime-local" class="form-control" [(ngModel)]="fecha_final" (ngModelChange)="fechaFinalChange($event)">
 			</div>
 			<div class="col-12 col-md-3 form-group">
 				<label>&nbsp;</label>
 				<div>
-					<button type="button" class="btn btn-primary" (click)="search(production_search)">Buscar</button>
+					<button type="button" class="btn btn-primary w-100" (click)="search(production_search)">Buscar</button>
 				</div>
 			</div>
 		</div>
 	</div>
 
 	<div class="card p-3">
-		<div class="row">
+		<div class="row fw-bold border-bottom pb-2">
+			<div class="col-12 col-md-4">Producto</div>
 			<div class="col-12 col-md-3">Sucursal</div>
 			<div class="col-12 col-md-3">Fecha</div>
+			<div class="col-12 col-md-2">Cantidad</div>
+			<!-- <div class="col-12 col-md-2">Piezas</div> -->
 		</div>
 
 		@for(production_info of production_info_list; track production_info.production.id)
 		{
-			<div class="row">
-				<div class="col-12 col-md">{{production_info.item.name}}</div>
-				<div class="col-12 col-md">{{production_info.store.name}}</div>
-				<div class="col-12 col-md">{{production_info.production.created | date:'dd/MM/yyyy'}}</div>
-				<div class="col-12 col-md-auto">{{production_info.production.qty}}</div>
-				<div class="col-12 col-md-auto">{{production_info.production.alternate_qty}}</div>
-				<div></div>
+			<div class="row border-bottom py-2">
+				<div class="col-12 col-md-4">{{production_info.item.name}}</div>
+				<div class="col-12 col-md-3">{{production_info.store.name}}</div>
+				<div class="col-12 col-md-3">{{production_info.production.created | date:'dd/MM/yyyy'}}</div>
+				<div class="col-12 col-md-2">{{production_info.production.qty}}</div>
+				<!-- <div class="col-12 col-md-2">{{production_info.production.alternate_qty}}</div> -->
 			</div>
 		}
 	</div>

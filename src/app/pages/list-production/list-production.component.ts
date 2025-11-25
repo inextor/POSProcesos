@@ -6,6 +6,7 @@ import { ProductionInfo } from '../../modules/shared/Models';
 import { forkJoin, mergeMap } from 'rxjs';
 import {DatePipe} from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { Utils } from '../../modules/shared/Utils';
 
 interface CProductionInfo extends ProductionInfo
 {
@@ -26,22 +27,60 @@ export class ListProductionComponent extends BaseComponent
 	production_info_list: CProductionInfo[] = [];
 	store_list: Store[] = [];
 
-	start_date:string = '';
-	end_date:string = '';
+	fecha_inicial: string | Date = '';
+	fecha_final: string | Date = '';
 
 	ngOnInit()
 	{
 		this.path = '/list-production';
 
-		this.sink = this.getQueryParamObservable()
+		this.sink = this.route.queryParamMap
 		.pipe
 		(
-			mergeMap(([_params,query_param_map])=>
+			mergeMap((query_param_map)=>
 			{
-				this.production_search = this.rest_production_info.getSearchObject(query_param_map);
+				this.is_loading = true;
+
+				if(query_param_map.has('eq.store_id'))
+				{
+					let store_id = query_param_map.get('eq.store_id');
+					this.production_search.eq.store_id = store_id ? parseInt(store_id) : undefined;
+				}
+
+				if(query_param_map.has('page'))
+				{
+					let page = query_param_map.get('page');
+					this.production_search.page = page ? parseInt(page) : 0;
+				}
 				this.current_page = this.production_search.page;
 
-				console.log(this.production_search);
+				if(query_param_map.has('ge.created'))
+				{
+					let start = Utils.getDateFromUTCMysqlString(query_param_map.get('ge.created') as string);
+					this.production_search.ge.created = start;
+					this.fecha_inicial = Utils.getLocalMysqlStringFromDate(start).replace(' ', 'T');
+				}
+				else
+				{
+					let start = new Date();
+					start.setHours(0, 0, 0, 0);
+					this.production_search.ge.created = start;
+					this.fecha_inicial = Utils.getLocalMysqlStringFromDate(start).replace(' ', 'T');
+				}
+
+				if(query_param_map.has('le.created'))
+				{
+					let end = Utils.getDateFromUTCMysqlString(query_param_map.get('le.created') as string);
+					this.production_search.le.created = end;
+					this.fecha_final = Utils.getLocalMysqlStringFromDate(end).replace(' ', 'T');
+				}
+				else
+				{
+					let end = new Date();
+					end.setHours(23, 59, 59);
+					this.production_search.le.created = end;
+					this.fecha_final = Utils.getLocalMysqlStringFromDate(end).replace(' ', 'T');
+				}
 
 				return forkJoin
 				({
@@ -54,7 +93,6 @@ export class ListProductionComponent extends BaseComponent
 		({
 			next:( response )=>
 			{
-				//this.production_info_list = data.productions.data.map(p=>this.mapProductionInfo(p));
 				this.store_list = response.stores.data;
 				this.production_info_list = response.productions.data.map(p=>this.mapProductionInfo(p));
 				this.setPages( this.current_page, response.productions.total );
@@ -69,6 +107,26 @@ export class ListProductionComponent extends BaseComponent
 		return {
 			...production_info,
 			store: this.store_list.find(s=>s.id == production_info.production.store_id) as Store
+		}
+	}
+
+	fechaInicialChange(fecha: string)
+	{
+		this.fecha_inicial = fecha;
+		if( fecha )
+		{
+			let dateString = fecha.replace('T', ' ') + ':00';
+			this.production_search.ge.created = Utils.getDateFromLocalMysqlString(dateString);
+		}
+	}
+
+	fechaFinalChange(fecha: string)
+	{
+		this.fecha_final = fecha;
+		if( fecha )
+		{
+			let dateString = fecha.replace('T', ' ') + ':00';
+			this.production_search.le.created = Utils.getDateFromLocalMysqlString(dateString);
 		}
 	}
 }
