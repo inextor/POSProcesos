@@ -15,6 +15,14 @@ interface CancelacionRequest
 	sat_factura_id:number;
 }
 
+
+export interface ReenviarFacturaRequest
+{
+	email:string;
+	name: string;
+	order_id:number;
+}
+
 export interface CSatFacturaInfo extends Sat_Factura
 {
 	name_type:string;
@@ -53,6 +61,7 @@ export class ListObjectSatFacturaComponent extends BaseComponent implements OnIn
 	sat_factura_search: SearchObject<Sat_Factura> = this.getEmptySearch();
 	sat_factura_info_list: CSatFacturaInfo[] = [];
 	billing_data_list: Billing_Data[] = [];
+	rest_reenviar_factura = this.rest.initRestSimple<ReenviarFacturaRequest>('reenviar_factura');
 
 	reenviar_factura_name:string = '';
 	reenviar_factura_email:string = '';
@@ -80,42 +89,44 @@ export class ListObjectSatFacturaComponent extends BaseComponent implements OnIn
 
 	ngOnInit(): void
 	{
-		try {
-			this.path = '/list-sat-factura';
+		this.path = '/list-sat-factura';
 
+		this.subs.sink = this.route.paramMap.pipe
+		(
+			mergeMap((param_map) =>
+			{
+				this.order_id = param_map.has('order_id') ? parseInt(param_map.get('order_id') as string) : null;
+				this.payment_id = param_map.has('payment_id') ? parseInt(param_map.get('payment_id') as string) : null;
 
-			this.subs.sink = this.route.paramMap.pipe
-			(
-				mergeMap((param_map) =>
-				{
-					this.order_id = param_map.has('order_id') ? parseInt(param_map.get('order_id') as string) : null;
-					this.payment_id = param_map.has('payment_id') ? parseInt(param_map.get('payment_id') as string) : null;
+				this.setTitle('Facturas');
+				this.is_loading = true;
 
-					this.setTitle('Facturas');
-					this.is_loading = true;
+				this.sat_factura_search = this.getEmptySearch();
+				this.sat_factura_search.eq.order_id = this.order_id;
+				this.sat_factura_search.eq.payment_id = this.payment_id;
 
-					this.sat_factura_search = this.getEmptySearch();
-					this.sat_factura_search.eq.order_id = this.order_id;
-					this.sat_factura_search.eq.payment_id = this.payment_id;
+				let order_obs = this.order_id ? this.rest_order.get(this.order_id) : of(null);
+				let payment_obs = this.payment_id ? this.rest_payment_info.get(this.payment_id) : of(null);
 
-					let order_obs = this.order_id ? this.rest_order.get(this.order_id) : of(null);
-					let payment_obs = this.payment_id ? this.rest_payment_info.get(this.payment_id) : of(null);
-
-					return forkJoin({
-						facturas: this.rest_sat_factura.search(this.sat_factura_search),
-						order: order_obs,
-						payment_info: payment_obs
-					});
-				}),
-				catchError((error:any) => {
-					console.error('Error in API call', error);
-					this.showError(error);
-					return of(null);
-				})
-			)
-			.subscribe((response:any) =>
+				return forkJoin({
+					facturas: this.rest_sat_factura.search(this.sat_factura_search),
+					order: order_obs,
+					payment_info: payment_obs
+				});
+			}),
+			catchError((error:any) => {
+				console.error('Error in API call', error);
+				this.showError(error);
+				return of(null);
+			})
+		)
+		.subscribe
+		({
+			error:(error:any)=>this.showError(error),
+			next:(response:any) =>
 			{
 				console.log('API response received', response);
+
 				if(response) {
 					this.order = response.order;
 					this.payment_info = response.payment;
@@ -125,10 +136,8 @@ export class ListObjectSatFacturaComponent extends BaseComponent implements OnIn
 				}
 				this.is_loading = false;
 				console.log('ngOnInit finished');
-			});
-		} catch (e) {
-			console.error('Synchronous error in ngOnInit', e);
-		}
+			}
+		});
 	}
 
 	getType(sat_factura: Sat_Factura, order: Order, payment_info: PaymentInfo): CSatFacturaInfo {
@@ -228,6 +237,29 @@ export class ListObjectSatFacturaComponent extends BaseComponent implements OnIn
 	resendFactura(evt:Event)
 	{
 		// console.log("HOLA SI JALO LA FUNCIÓN");
+		//
+		let x:any = evt;
+
+		this.subs.sink = this.rest_reenviar_factura.create
+		({
+			order_id: this.order_id,
+			email: this.reenviar_factura_email,
+			name: this.reenviar_factura_name
+		})
+		.subscribe
+		({
+			error:(error)=>this.showError(error),
+			next:()=>
+			{
+				this.reenviar_factura_email = '';
+				this.reenviar_factura_name	= '';
+				this.is_loading = false;
+				x.target.reset();
+				this.showSuccess('Se reenvío la factura correctamente');
+				window.location.reload();
+			}
+		});
+
 	}
 
 	replayFactura(sat_factura:Sat_Factura)
