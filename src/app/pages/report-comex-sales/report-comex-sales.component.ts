@@ -1,10 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { BaseComponent } from '../../modules/shared/base/base.component';
-import { Order, Store, Item, User } from '../../modules/shared/RestModels';
+import { Order, Store, Item, User, Sat_Factura } from '../../modules/shared/RestModels';
 import { Rest, RestResponse, SearchObject } from '../../modules/shared/services/Rest';
 import { ItemInfo, OrderInfo, OrderItemInfo } from '../../modules/shared/Models';
-import { forkJoin, of, EMPTY } from 'rxjs';
-import { switchMap, map, tap, take, reduce, expand } from 'rxjs/operators';
+import { forkJoin, of, EMPTY, Observable } from 'rxjs';
+import { switchMap, map, tap, take, reduce, expand, mergeMap } from 'rxjs/operators';
 import { Utils } from '../../modules/shared/Utils';
 import { FormsModule } from '@angular/forms'; // Added FormsModule
 import { ExcelUtils } from '../../classes/ExcelUtils';
@@ -13,6 +13,11 @@ import { ExcelUtils } from '../../classes/ExcelUtils';
 interface COrder extends Order {
 	start_timestamp: Date;
 	end_timestamp: Date;
+}
+
+interface CResponse {
+	order_info: RestResponse<OrderInfo>;
+	sat_facturas: RestResponse<Sat_Factura>;
 }
 
 interface ComexReportRow {
@@ -61,7 +66,6 @@ const headers = [
 	'LINEA_ORIGINAL',
 ];
 
-
 @Component({
 	selector: 'app-report-comex-sales',
 	templateUrl: './report-comex-sales.component.html',
@@ -80,6 +84,7 @@ export class ReportComexSalesComponent extends BaseComponent implements OnInit {
 	progress_message = '';
 	rest_order_info: Rest<Order, OrderInfo> = this.rest.initRest('order_info');
 	rest_store: Rest<Store, Store> = this.rest.initRest('store');
+	rest_sat_factura: Rest<Sat_Factura, Sat_Factura> = this.rest.initRest('sat_factura');
 
 	ngOnInit(): void {
 		this.start_date = this.getFirstDayOfMonth();
@@ -133,19 +138,43 @@ export class ReportComexSalesComponent extends BaseComponent implements OnInit {
 
 		const makeRequest = (s: Partial<SearchObject<COrder>>) =>
 		{
-			return this.rest_order_info.search(s);
+			return this.rest_order_info.search(s).pipe
+			(
+				mergeMap(response =>
+				{
+					let sat_factura_ids: number[] = [];
+
+					for (const order_info of response.data) {
+						if( order_info.order.sat_factura_id )
+						{
+							sat_factura_ids.push(order_info.order.sat_factura_id);
+						}
+					}
+
+					return forkJoin({
+						order_info: of( response ),
+						sat_facturas: sat_factura_ids.length
+							? this.rest_sat_factura.search({ csv:{ id: sat_factura_ids }, limit: 999999 })
+							: of({total:0, data:[]}) as Observable<RestResponse<Sat_Factura>>
+					})
+				})
+			);
 		}
 
-		// 2. Start the chain
-		return makeRequest(initialSearch).pipe(
+		let acc: ComexReportRow[] = [];
 
+		// 2. Start the chain
+		return makeRequest(initialSearch).pipe
+		(
 			// 3. 'expand' acts as a recursive loop.
 			// It subscribes to the output, looks at it, and decides if it should run again.
-			expand((response, index) => {
+			expand((cresponse, index) => {
 				// 'index' counts how many recursions we've done.
 				// We just finished page 'index'. Next is 'index + 1'.
 				const nextPage = index + 1;
-				const totalPages = Math.ceil(response.total / BATCH_SIZE);
+				const totalPages = Math.ceil(cresponse.order_info.total/ BATCH_SIZE);
+
+				this.progress = Math.round(100 * nextPage / totalPages);
 
 				console.log('Launching gemini code on expand 4th iteration', nextPage, totalPages,Date.now());
 
@@ -161,27 +190,32 @@ export class ReportComexSalesComponent extends BaseComponent implements OnInit {
 				// The next request cannot start until this line runs.
 				return makeRequest(nextSearch);
 			}),
-
 			// 4. 'reduce' collects every single response from 'expand' into one giant array
-			reduce((acc:ComexReportRow[], currentResponse:RestResponse<OrderInfo>) => {
+			reduce((acc:ComexReportRow[],response:CResponse) => {
 				// Add the new data to our accumulated array
 				//acc.data.push(...currentResponse.data);
 				// Keep the total accurate
 				//acc.total = currentResponse.total;
 
-				for (const order_info of currentResponse.data) {
+				for (const order_info of response.order_info.data)
+				{
+					let index = response.sat_facturas.data.findIndex(s => s.id === order_info.order.sat_factura_id);
+
+					let sat_factura:Sat_Factura | null = index >= 0 ? response.sat_facturas.data[index] : null;
+
+
 					let store = this.store_list.find(s => s.id === order_info.order.store_id );
 
 					let line_number = 1;
 					for (const item_item_info of order_info.items)
 					{
-						const row = this.createReportRow(order_info, item_item_info, line_number, store as Store);
+						const row = this.createReportRow(order_info, item_item_info, line_number, store as Store, sat_factura);
 						acc.push(row);
 						line_number++;
 					}
 				}
 				return acc;
-			},[]) // The initial value is implicit from the first emission
+			},[] as ComexReportRow[]) // The initial value is implicit from the first emission
 		)
 		.subscribe
 		({
@@ -200,7 +234,9 @@ export class ReportComexSalesComponent extends BaseComponent implements OnInit {
 	}
 
 	formatDate(dateStr: string | Date | undefined): string {
+
 		if (!dateStr) return '';
+
 		try {
 			const date = new Date(dateStr);
 			if (isNaN(date.getTime())) return '';
@@ -222,16 +258,38 @@ export class ReportComexSalesComponent extends BaseComponent implements OnInit {
 		return parseFloat(num.toFixed(decimals));
 	}
 
-	createReportRow(order_info: OrderInfo, order_item_info: OrderItemInfo, line_number: number, store: Store): ComexReportRow {
+	createReportRow(order_info: OrderInfo, order_item_info: OrderItemInfo, line_number: number, store: Store, sat_factura: Sat_Factura | null): ComexReportRow {
 		let cantidad_litros = 0;
+
+		let percent_iva = order_item_info.order_item.subtotal/order_item_info.order_item.subtotal;
+		let percent_iva_rounded  = 0;
+
+		if( percent_iva > 0.02 && percent_iva <= 0.081 )
+		{
+			percent_iva_rounded = 8;
+		}
+		else if( percent_iva > 0.081 )
+		{
+			percent_iva_rounded = 16
+		}
+
+
+		let numero_lealtad = order_info?.client?.code || '';
+
+		// Si la unidad de medida es “G” Gramos o “CM” Centímetros o cualquier otro artículo a
+		// granel CANTIDAD_PIEZA es igual a 1. Si no la CANTIDAD_PIEZA solo debe ser redondeado
+		// a 4 decimales.
+		let qty_piezas = order_item_info.item.partial_sale == 'YES' ? 1 : order_item_info.order_item.qty.toFixed(4);
+
+
 
 		const row: ComexReportRow = {
 			NUM_CONCESIONARIO: (store as any)?.comex_num_concesionario || '',
 			NUM_CUENTA: (store as any)?.comex_num_cuenta || '',
 			NUM_SUCURSAL: store.code || '',
 			NOMBRE_SUCURSAL: (store as any)?.comex_nombre_oficial || store?.name || '',
-			FECHA_FACTURA: '',
-			NUMERO_FACTURA: '',
+			FECHA_FACTURA: sat_factura ? this.formatDate(sat_factura.created as Date) : this.formatDate(order_info.order.closed_timestamp as Date),
+			NUMERO_FACTURA: sat_factura ? this.formatDate(sat_factura.created as Date) : '',
 			FECHA_PEDIDO: this.formatDate(order_info.order.closed_timestamp as Date),
 			NUMERO_PEDIDO: order_info.order.id.toString(),
 			NUMERO_CLIENTE: order_info.order.client_user_id?.toString() || '',
@@ -242,15 +300,15 @@ export class ReportComexSalesComponent extends BaseComponent implements OnInit {
 			CANTIDAD_LITROS: 0,
 			PRECIO_UNITARIO_NETO: this.parseNum(order_item_info.order_item.unitary_price, 2),
 			IMPORTE_NETO: this.parseNum(order_item_info.order_item.subtotal, 2),
-			FACTOR_IVA: 0,
+			FACTOR_IVA: percent_iva_rounded,
 			COSTO_UNITARIO_NETO: order_item_info.item.reference_price,
-			IMPORTE_NETO_TOTAL: this.parseNum(order_info.order.subtotal, 2),
-			TIPO_MOVIMIENTO: 1,
-			NUMERO_CLIENTE_LEALTAD: '',
-			RFC_VENTA: '',
-			RAZON_SOCIAL_VENTA: '',
-			RFC_FACTURA:  '',
-			RAZON_SOCIAL_FACTURA: '',
+			IMPORTE_NETO_TOTAL: this.parseNum(order_info.order.total - order_info.order.discount, 2),
+			TIPO_MOVIMIENTO: order_item_info.order_item.type == 'NORMAL' ? 1 : 2,
+			NUMERO_CLIENTE_LEALTAD: numero_lealtad,
+			RFC_VENTA:  sat_factura ? order_info?.order?.sat_receptor_rfc||'' : '',
+			RAZON_SOCIAL_VENTA: sat_factura ? order_info?.order?.sat_razon_social||'' : '',
+			RFC_FACTURA: sat_factura ? order_info.order.sat_receptor_rfc||'' : '',
+			RAZON_SOCIAL_FACTURA: sat_factura ? order_info.order.sat_razon_social||'' : '',
 			NUMERO_EMPLEADO: order_info.order.cashier_user_id?.toString() || '',
 			NOMBRE_EMPLEADO: '',
 			ECOMMERCE: 'NO',
