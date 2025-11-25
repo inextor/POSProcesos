@@ -273,6 +273,7 @@ export class ReportComexSalesComponent extends BaseComponent implements OnInit {
 			percent_iva_rounded = 16
 		}
 
+		let cashier_name = order_info.cashier?.name || '';
 
 		let numero_lealtad = order_info?.client?.code || '';
 
@@ -289,7 +290,7 @@ export class ReportComexSalesComponent extends BaseComponent implements OnInit {
 			NUM_SUCURSAL: store.code || '',
 			NOMBRE_SUCURSAL: (store as any)?.comex_nombre_oficial || store?.name || '',
 			FECHA_FACTURA: sat_factura ? this.formatDate(sat_factura.created as Date) : this.formatDate(order_info.order.closed_timestamp as Date),
-			NUMERO_FACTURA: sat_factura ? this.formatDate(sat_factura.created as Date) : '',
+			NUMERO_FACTURA: sat_factura ? sat_factura.folio || '' : ''+order_info.order.id,
 			FECHA_PEDIDO: this.formatDate(order_info.order.closed_timestamp as Date),
 			NUMERO_PEDIDO: order_info.order.id.toString(),
 			NUMERO_CLIENTE: order_info.order.client_user_id?.toString() || '',
@@ -310,7 +311,7 @@ export class ReportComexSalesComponent extends BaseComponent implements OnInit {
 			RFC_FACTURA: sat_factura ? order_info.order.sat_receptor_rfc||'' : '',
 			RAZON_SOCIAL_FACTURA: sat_factura ? order_info.order.sat_razon_social||'' : '',
 			NUMERO_EMPLEADO: order_info.order.cashier_user_id?.toString() || '',
-			NOMBRE_EMPLEADO: '',
+			NOMBRE_EMPLEADO:  cashier_name,
 			ECOMMERCE: 'NO',
 			SEGMENTO: '',
 			GENERO: '',
