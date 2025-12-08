@@ -7,6 +7,7 @@ import { forkJoin, mergeMap } from 'rxjs';
 import {DatePipe} from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Utils } from '../../modules/shared/Utils';
+import { PaginationComponent } from "../../components/pagination/pagination.component";
 
 interface CProductionInfo extends ProductionInfo
 {
@@ -15,7 +16,7 @@ interface CProductionInfo extends ProductionInfo
 
 @Component({
 	selector: 'app-list-production',
-	imports: [DatePipe, FormsModule],
+	imports: [DatePipe, FormsModule, PaginationComponent],
 	templateUrl: './list-production.component.html',
 	styleUrl: './list-production.component.css'
 })
