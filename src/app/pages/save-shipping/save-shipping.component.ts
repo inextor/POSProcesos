@@ -237,8 +237,8 @@ export class SaveShippingComponent extends BaseComponent
 				return forkJoin
 				({
 					requisitions: ids.length > 0 ? this.rest_requisition_info.search(search_requisition) : of( null ),
-					shippings: ids.length > 0 ? this.rest_shipping_info.search({ csv:{id:ids}, eq:{from_store_id: Number(this.from_store_id), to_store_id: Number(this.to_store_id), date: this.fecha_requisitions },limit:9999}) : of( null ),
-					production: ids.length > 0 ? this.rest_production.search({csv:{id:ids}, limit: 999999}) : of( null ),
+					shippings: ids.length > 0 ? this.rest_shipping_info.searchAsPost({ csv:{id:ids}, eq:{from_store_id: Number(this.from_store_id), to_store_id: Number(this.to_store_id), date: this.fecha_requisitions },limit:9999}) : of( null ),
+					production: ids.length > 0 ? this.rest_production.searchAsPost({csv:{id:ids}, limit: 999999}) : of( null ),
 					item_stock: ids.length > 0 ? of(response.item) : of( null ),
 				})
 			})
