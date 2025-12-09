@@ -650,7 +650,8 @@ export class FacturaAsisComponent extends BaseComponent implements OnInit {
 		if (this.currentEditingIndex >= 0 && this.currentEditingItem) {
 			// Update the item with changes from modal
 			this.invoiceForm.conceptos[this.currentEditingIndex] = { ...this.currentEditingItem };
-			this.updateItemTotal(this.currentEditingIndex);
+			// Recalculate totals without modifying the tax amounts
+			this.calculateTotals();
 		}
 
 		this.closeTaxModal();

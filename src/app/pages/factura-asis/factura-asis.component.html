@@ -597,9 +597,9 @@
                              [disabled]="tax.TipoFactor === 'Exento'">
                     </td>
                     <td>
-                      <input type="number" class="form-control form-control-sm"
+                      <input type="text" class="form-control form-control-sm"
                              [(ngModel)]="tax.Importe" name="tax_amount_{{t}}"
-                             step="0.01">
+                             placeholder="0.00">
                     </td>
                     <td>
                       <button type="button" class="btn btn-sm btn-danger"
@@ -657,9 +657,9 @@
                              step="0.0001" (change)="calculateRetencionAmount(currentEditingItem)">
                     </td>
                     <td>
-                      <input type="number" class="form-control form-control-sm"
+                      <input type="text" class="form-control form-control-sm"
                              [(ngModel)]="tax.Importe" name="ret_amount_{{r}}"
-                             step="0.01">
+                             placeholder="0.00">
                     </td>
                     <td>
                       <button type="button" class="btn btn-sm btn-danger"
