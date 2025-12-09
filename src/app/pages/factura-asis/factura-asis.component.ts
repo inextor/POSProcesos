@@ -5,11 +5,12 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { Title } from '@angular/platform-browser';
 import { forkJoin } from 'rxjs';
 import { OrderInfo, OrderItemInfo } from '../../modules/shared/Models';
-import { Order, Order_Item } from '../../modules/shared/RestModels';
+import { Billing_Data, Order, Order_Item } from '../../modules/shared/RestModels';
 import { RestService } from '../../modules/shared/services/rest.service';
 import { GetEmpty } from '../../modules/shared/GetEmpty';
 import { Utils } from '../../modules/shared/Utils';
 import { BaseComponent } from '../../modules/shared/base/base.component';
+import { Rest, RestResponse } from '../../modules/shared/services/Rest';
 // import { environment } from '../../environments/environment';
 
 interface TaxTrasladado {
@@ -160,17 +161,20 @@ export class FacturaAsisComponent extends BaseComponent implements OnInit {
 		conceptos: []
 	};
 
+    billing_data_list: Billing_Data[] = [];
+	rest_billing_data:Rest<Billing_Data,Billing_Data> = this.rest.initRest('billing_data');
 
 	ngOnInit(): void {
 		this.route.paramMap.subscribe(params => {
 			const orderId = params.get('order_id');
-			if (orderId) {
-				this.setTitle(`Factura ASIS - Orden #${orderId}`);
-				this.loadOrderInfo(orderId);
-			} else {
-				this.showError('ID de orden no proporcionado');
-				this.router.navigate(['/dashboard']);
-			}
+
+			this.rest_billing_data.search({limit:999999}).subscribe
+			({
+				next: (response:RestResponse<Billing_Data>) => {
+					this.billing_data_list = response.data;
+					this.loadOrderInfo(orderId as string);
+				}
+			});
 		});
 	}
 
@@ -221,12 +225,10 @@ export class FacturaAsisComponent extends BaseComponent implements OnInit {
 		this.error = null;
 		this.response = null;
 
-		// Debug: Check if session token exists
-
 		// Initialize REST endpoints
 		let rest_order_info = this.rest.initRest('order_info');
 
-		// Simplified version - just get order info
+		// Get order info
 		rest_order_info.get(orderId).subscribe({
 			next: (orderData: any) => {
 				console.log('Order data received:', orderData);
@@ -274,17 +276,8 @@ export class FacturaAsisComponent extends BaseComponent implements OnInit {
 		this.invoiceForm.datos_cfdi.Total = orderTotal.toFixed(2);
 		this.invoiceForm.datos_cfdi.Descuento = '0.00';
 
-		// Load billing credentials from order (only usuario and contrasena)
-		const order: any = this.order_info.order;
-		const billingData = order.billing_data;
-
-		if (billingData) {
-			// Only load credentials from billing_data
-			if (billingData.usuario) this.invoiceForm.usuario = billingData.usuario;
-			if (billingData.contrasena) this.invoiceForm.contrasena = billingData.contrasena;
-		}
-
 		// Load client SAT information from order
+		const order: any = this.order_info.order;
 		if (order.sat_razon_social) this.invoiceForm.receptor_cfdi.RazonSocial = order.sat_razon_social;
 		if (order.sat_receptor_email) this.invoiceForm.receptor_cfdi.Email = order.sat_receptor_email;
 		if (order.sat_receptor_rfc) this.invoiceForm.receptor_cfdi.RFC = order.sat_receptor_rfc;
@@ -338,6 +331,11 @@ export class FacturaAsisComponent extends BaseComponent implements OnInit {
 				}
 			};
 		});
+
+		if( this.billing_data_list.length ){
+			this.invoiceForm.usuario = this.billing_data_list[0].usuario as string;
+			this.invoiceForm.contrasena = this.billing_data_list[0].password as string;
+		}
 
 		// Recalculate totals to ensure consistency
 		this.calculateTotals();
