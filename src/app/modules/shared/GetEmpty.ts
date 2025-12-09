@@ -32,6 +32,7 @@ import { item_store } from './Empties/Item_Store';
 import { category_store } from './Empties/Category_Store';
 import { category } from './Empties/Category';
 import { item } from './Empties/Item';
+import { price_type } from './Empties/Price_Type';
 
 /**
  * GetEmpty class provides static methods for creating empty/default instances of models.
@@ -72,4 +73,5 @@ export class GetEmpty {
 	static category_store = category_store;
 	static category = category;
 	static item = item;
+	static price_type = price_type;
 }
