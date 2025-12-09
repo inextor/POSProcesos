@@ -1,0 +1,56 @@
+<div class="container-fluid">
+  <h1 class="my-3 text-capitalize">{{item_provider.id ? 'Actualizar':'Agregar'}} Proveedor de Item</h1>
+  <form ngNativeValidate (submit)="save($event)">
+    <div class="card p-3">
+      <div class="row p-3">
+        <div class="col-12 col-md-6">
+          <label class="">Nombre *</label>
+          <input type="text" name="name" [(ngModel)]="item_provider.name" class="form-control" required>
+        </div>
+        <div class="col-12 col-md-6">
+          <label class="">Código</label>
+          <input type="text" name="codigo" [(ngModel)]="item_provider.codigo" class="form-control" maxlength="20">
+        </div>
+      </div>
+      <div class="row p-3">
+        <div class="col-12 col-md-6">
+          <label class="">Proveedor (Usuario) *</label>
+          <select class="form-control" name="provider_user_id" [(ngModel)]="item_provider.provider_user_id" required>
+            <option [value]="0">-- Seleccione --</option>
+            @for (user of user_list; track user.id) {
+              <option [value]="user.id">{{user.name}}</option>
+            }
+          </select>
+        </div>
+        <div class="col-12 col-md-6">
+          <label class="">Item *</label>
+          <select class="form-control" name="to_item_id" [(ngModel)]="item_provider.to_item_id" required>
+            <option [value]="0">-- Seleccione --</option>
+            @for (item of item_list; track item.id) {
+              <option [value]="item.id">{{item.name}}</option>
+            }
+          </select>
+        </div>
+      </div>
+      <div class="row p-3">
+        <div class="col-12 col-md-4">
+          <label class="">Tasa</label>
+          <input type="text" name="tasa" [(ngModel)]="item_provider.tasa" class="form-control" maxlength="5">
+        </div>
+        <div class="col-12 col-md-4">
+          <label class="">Clave Unidad</label>
+          <input type="text" name="clave_unidad" [(ngModel)]="item_provider.clave_unidad" class="form-control" maxlength="3">
+        </div>
+        <div class="col-12 col-md-4">
+          <label class="">Objeto Impuesto</label>
+          <input type="text" name="objeto_impuesto" [(ngModel)]="item_provider.objeto_impuesto" class="form-control" maxlength="3">
+        </div>
+      </div>
+      <div class="row p-3">
+        <div class="col-12 text-right text-end">
+          <button type="submit" [disabled]="is_loading" class="btn btn-primary">Guardar</button>
+        </div>
+      </div>
+    </div>
+  </form>
+</div>

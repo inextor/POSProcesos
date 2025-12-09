@@ -1,0 +1,60 @@
+<div class="container-fluid">
+  <div class="row align-items-end mx-0">
+    <div class="col">
+      <h1 class="my-3 text-capitalize">Proveedores de Items</h1>
+    </div>
+    <div class="col-auto">
+      <button type="button" class="ml-2 btn btn-secondary lift" [routerLink]="['/add-item-provider']">Agregar</button>
+    </div>
+  </div>
+
+  <div class="card p-3 mt-3">
+    <div class="table-responsive">
+      <table class="table table-sm table-nowrap mb-0">
+        <thead class="thead-light">
+          <tr>
+            <th>Nombre</th>
+            <th>Código</th>
+            <th>Proveedor ID</th>
+            <th>Item ID</th>
+            <th>Tasa</th>
+            <th>Clave Unidad</th>
+            <th>Objeto Impuesto</th>
+            <th>Creación</th>
+            <th class="text-end">Actualización</th>
+            <th class="text-end">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (item_provider of item_provider_list; track item_provider.id) {
+            <tr>
+              <td>
+                <a class="text-decoration-none" [routerLink]="['/view-item-provider', item_provider.id]">
+                  {{ item_provider.name }}
+                </a>
+              </td>
+              <td>{{ item_provider.codigo || '-' }}</td>
+              <td>{{ item_provider.provider_user_id }}</td>
+              <td>{{ item_provider.to_item_id }}</td>
+              <td>{{ item_provider.tasa || '-' }}</td>
+              <td>{{ item_provider.clave_unidad || '-' }}</td>
+              <td>{{ item_provider.objeto_impuesto || '-' }}</td>
+              <td>{{ item_provider.created | date: 'MMM d, y' }}</td>
+              <td class="text-end">{{ item_provider.updated | date: 'MMM d, y, h:mm a' }}</td>
+              <td class="text-end">
+                <a [routerLink]="['/edit-item-provider', item_provider.id]" class="btn btn-primary">Editar</a>
+              </td>
+            </tr>
+          }
+          @if (item_provider_list == null || item_provider_list.length == 0 && !is_loading) {
+            <tr>
+              <td colspan="10">
+                <div class="alert alert-light m-3" role="alert">No se encontraron elementos</div>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

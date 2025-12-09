@@ -1,0 +1,38 @@
+<div class="container-fluid">
+  <h1 class="my-3 text-capitalize">{{item_transform.id ? 'Actualizar':'Agregar'}} Transformación de Item</h1>
+  <form ngNativeValidate (submit)="save($event)">
+    <div class="card p-3">
+      <div class="row p-3">
+        <div class="col-12 col-md-6">
+          <label class="">Item Origen</label>
+          <select class="form-control" name="from_item_id" [(ngModel)]="item_transform.from_item_id">
+            <option [value]="null">-- Seleccione --</option>
+            @for (item of item_list; track item.id) {
+              <option [value]="item.id">{{item.name}}</option>
+            }
+          </select>
+        </div>
+        <div class="col-12 col-md-6">
+          <label class="">Item Destino *</label>
+          <select class="form-control" name="to_item_id" [(ngModel)]="item_transform.to_item_id" required>
+            <option [value]="0">-- Seleccione --</option>
+            @for (item of item_list; track item.id) {
+              <option [value]="item.id">{{item.name}}</option>
+            }
+          </select>
+        </div>
+      </div>
+      <div class="row p-3">
+        <div class="col-12 col-md-6">
+          <label class="">Multiplicador *</label>
+          <input type="number" step="0.00001" name="multiplier" [(ngModel)]="item_transform.multiplier" class="form-control" required>
+        </div>
+      </div>
+      <div class="row p-3">
+        <div class="col-12 text-right text-end">
+          <button type="submit" [disabled]="is_loading" class="btn btn-primary">Guardar</button>
+        </div>
+      </div>
+    </div>
+  </form>
+</div>

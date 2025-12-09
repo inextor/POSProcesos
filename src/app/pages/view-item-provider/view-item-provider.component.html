@@ -1,0 +1,64 @@
+<div class="container-fluid">
+  <div class="row align-items-end mx-0">
+    <div class="col">
+      <h1 class="my-3 text-capitalize">Ver Proveedor de Item</h1>
+    </div>
+    <div class="col-auto">
+      <a [routerLink]="['/edit-item-provider', item_provider.id]" class="btn btn-primary">Editar</a>
+      <a [routerLink]="['/list-item-provider']" class="btn btn-secondary ml-2">Volver</a>
+    </div>
+  </div>
+
+  <div class="card p-3 mt-3">
+    <div class="row">
+      <div class="col-12 col-md-6 mb-3">
+        <label class="text-muted">ID</label>
+        <p class="fw-bold">{{ item_provider.id }}</p>
+      </div>
+      <div class="col-12 col-md-6 mb-3">
+        <label class="text-muted">Nombre</label>
+        <p class="fw-bold">{{ item_provider.name }}</p>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-12 col-md-6 mb-3">
+        <label class="text-muted">Código</label>
+        <p class="fw-bold">{{ item_provider.codigo || '-' }}</p>
+      </div>
+      <div class="col-12 col-md-6 mb-3">
+        <label class="text-muted">Proveedor (Usuario ID)</label>
+        <p class="fw-bold">{{ item_provider.provider_user_id }}</p>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-12 col-md-6 mb-3">
+        <label class="text-muted">Item (ID)</label>
+        <p class="fw-bold">{{ item_provider.to_item_id }}</p>
+      </div>
+      <div class="col-12 col-md-6 mb-3">
+        <label class="text-muted">Tasa</label>
+        <p class="fw-bold">{{ item_provider.tasa || '-' }}</p>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-12 col-md-6 mb-3">
+        <label class="text-muted">Clave Unidad</label>
+        <p class="fw-bold">{{ item_provider.clave_unidad || '-' }}</p>
+      </div>
+      <div class="col-12 col-md-6 mb-3">
+        <label class="text-muted">Objeto Impuesto</label>
+        <p class="fw-bold">{{ item_provider.objeto_impuesto || '-' }}</p>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-12 col-md-6 mb-3">
+        <label class="text-muted">Creación</label>
+        <p class="fw-bold">{{ item_provider.created | date: 'MMM d, y, h:mm a' }}</p>
+      </div>
+      <div class="col-12 col-md-6 mb-3">
+        <label class="text-muted">Actualización</label>
+        <p class="fw-bold">{{ item_provider.updated | date: 'MMM d, y, h:mm a' }}</p>
+      </div>
+    </div>
+  </div>
+</div>
