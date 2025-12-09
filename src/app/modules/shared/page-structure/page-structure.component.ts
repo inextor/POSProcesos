@@ -6,6 +6,7 @@ import { MenuComponent } from "../components/menu/menu.component";
 
 @Component
 ({
+    standalone: true,
     selector: 'app-page-structure',
     templateUrl: './page-structure.component.html',
     styleUrl: './page-structure.component.css',
