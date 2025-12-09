@@ -29,6 +29,8 @@ import { store } from './Empties/Store';
 import { work_log_rules } from './Empties/Work_Log_Rules';
 import { item_online } from './Empties/Item_Online';
 import { item_store } from './Empties/Item_Store';
+import { item_provider } from './Empties/Item_Provider';
+import { item_transform } from './Empties/Item_Transform';
 import { category_store } from './Empties/Category_Store';
 import { category } from './Empties/Category';
 import { item } from './Empties/Item';
@@ -70,6 +72,8 @@ export class GetEmpty {
 	static work_log_rules = work_log_rules;
 	static item_online = item_online;
 	static item_store = item_store;
+	static item_provider = item_provider;
+	static item_transform = item_transform;
 	static category_store = category_store;
 	static category = category;
 	static item = item;

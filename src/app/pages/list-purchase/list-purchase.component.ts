@@ -267,7 +267,7 @@ export class ListPurchaseComponent extends BaseComponent implements OnInit
 
 	deletePurchase(purchase_info: CPurchaseInfo)
 	{
-		let rest_purchase_info = this.rest.initRestSimple<PurchaseInfo>('purchase_info');
+		let rest_purchase_info = this.rest.initRest<Purchase,PurchaseInfo>('purchase_info');
 
 		this.subs.sink = this.confirmation.showConfirmAlert
 		(
@@ -277,14 +277,18 @@ export class ListPurchaseComponent extends BaseComponent implements OnInit
 		)
 		.pipe
 		(
+			filter((response) =>
+			{
+				return response.accepted;
+			}),
 			mergeMap((response) =>
 			{
-				if( response.accepted )
-				{
-					purchase_info.purchase.status = 'DELETED';
-					return rest_purchase_info.update(purchase_info);
-				}
-				return of(purchase_info);
+				purchase_info.purchase.status = 'DELETED';
+
+				let purchase:Purchase = {...purchase_info.purchase};
+				purchase.status = 'DELETED';
+
+				return rest_purchase_info.delete(purchase);
 			})
 		)
 		.subscribe

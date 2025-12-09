@@ -54,6 +54,14 @@ export const routes: Routes = [
 			{path: 'add-item-online', loadComponent: () => import('./pages/save-item-online/save-item-online.component').then(m => m.SaveItemOnlineComponent), canActivate: [authGuard]},
 			{path: 'edit-item-online/:id', loadComponent: () => import('./pages/save-item-online/save-item-online.component').then(m => m.SaveItemOnlineComponent), canActivate: [authGuard]},
 			{path: 'list-item-store', loadComponent: () => import('./pages/list-item-store/list-item-store.component').then(m => m.ListItemStoreComponent), canActivate: [authGuard]},
+		{path: 'list-item-provider', loadComponent: () => import('./pages/list-item-provider/list-item-provider.component').then(m => m.ListItemProviderComponent), canActivate: [authGuard]},
+		{path: 'add-item-provider', loadComponent: () => import('./pages/save-item-provider/save-item-provider.component').then(m => m.SaveItemProviderComponent), canActivate: [authGuard]},
+		{path: 'edit-item-provider/:id', loadComponent: () => import('./pages/save-item-provider/save-item-provider.component').then(m => m.SaveItemProviderComponent), canActivate: [authGuard]},
+		{path: 'view-item-provider/:id', loadComponent: () => import('./pages/view-item-provider/view-item-provider.component').then(m => m.ViewItemProviderComponent), canActivate: [authGuard]},
+		{path: 'list-item-transform', loadComponent: () => import('./pages/list-item-transform/list-item-transform.component').then(m => m.ListItemTransformComponent), canActivate: [authGuard]},
+		{path: 'add-item-transform', loadComponent: () => import('./pages/save-item-transform/save-item-transform.component').then(m => m.SaveItemTransformComponent), canActivate: [authGuard]},
+		{path: 'edit-item-transform/:id', loadComponent: () => import('./pages/save-item-transform/save-item-transform.component').then(m => m.SaveItemTransformComponent), canActivate: [authGuard]},
+		{path: 'view-item-transform/:id', loadComponent: () => import('./pages/view-item-transform/view-item-transform.component').then(m => m.ViewItemTransformComponent), canActivate: [authGuard]},
 			{path: 'list-category-store', loadComponent: () => import('./pages/list-category-store/list-category-store.component').then(m => m.ListCategoryStoreComponent), canActivate: [authGuard]},
 			{path: 'resume-production', loadComponent: () => import('./pages/resume-production/resume-production.component').then(m => m.ResumeProductionComponent), canActivate: [authGuard]},
 			{path: 'resume-production-day', loadComponent: () => import('./pages/resume-production-day/resume-production-day.component').then(m => m.ResumeProductionDayComponent), canActivate: [authGuard]},
@@ -72,7 +80,11 @@ export const routes: Routes = [
 			{path: 'list-payment-sat-factura/:payment_id', loadComponent: () => import('./pages/list-object-sat-factura/list-object-sat-factura.component').then(m => m.ListObjectSatFacturaComponent)},
 			{path: 'list-merma-totals', loadComponent: () => import('./pages/list-merma-totals/list-merma-totals.component').then(m => m.ListMermaTotalsComponent), canActivate: [authGuard]},
 			{path: 'weird', loadComponent: () => import('./pages/weird/weird.component').then(m => m.WeirdComponent), canActivate: [authGuard]},
-			{path: 'report-comex-sales', loadComponent: () => import('./pages/report-comex-sales/report-comex-sales.component').then(m => m.ReportComexSalesComponent), canActivate: [authGuard]}
+			{path: 'report-comex-sales', loadComponent: () => import('./pages/report-comex-sales/report-comex-sales.component').then(m => m.ReportComexSalesComponent), canActivate: [authGuard]},
+			{path: 'list-purchase', loadComponent: () => import('./pages/list-purchase/list-purchase.component').then(m => m.ListPurchaseComponent), canActivate: [authGuard]},
+			{path: 'purchase', loadComponent: () => import('./pages/save-purchase/save-purchase.component').then(m => m.SavePurchaseComponent), canActivate: [authGuard]},
+			{path: 'purchase/provider/:provider_id', loadComponent: () => import('./pages/save-purchase/save-purchase.component').then(m => m.SavePurchaseComponent), canActivate: [authGuard]},
+			{path: 'purchase/edit/:id', loadComponent: () => import('./pages/save-purchase/save-purchase.component').then(m => m.SavePurchaseComponent), canActivate: [authGuard]}
 		]
 	},
 ];
