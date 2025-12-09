@@ -1,0 +1,63 @@
+<div class="card p-3">
+    <form>
+        <div class="row align-items-end">
+            <div class="col-md-8">
+                <label for="store_select" class="form-label">Seleccionar Sucursal</label>
+                <select
+                    id="store_select"
+                    class="form-select"
+                    (change)="onStoreChange($event)"
+                    [value]="selected_store_id || ''"
+                >
+                    <option value="">-- Seleccione una sucursal --</option>
+                    @for (store of stores; track store.id) {
+                        <option [value]="store.id">{{ store.name }}</option>
+                    }
+                </select>
+            </div>
+            <div class="col-md-4">
+                <button
+                    type="button"
+                    class="btn btn-danger w-100"
+                    (click)="openConfirmationModal()"
+                    [disabled]="!selected_store_id"
+                >
+                    Vaciar Inventario
+                </button>
+            </div>
+        </div>
+    </form>
+
+    <app-modal [(show)]="show_confirmation_modal">
+        <div class="card">
+            <div class="card-header bg-danger text-white">
+                <h5 class="mb-0">Confirmación de Vaciado de Inventario</h5>
+            </div>
+            <div class="card-body">
+                <p class="mb-3">
+                    ¿Estás seguro que deseas vaciar el inventario de la sucursal
+                    <strong>{{ getSelectedStoreName() }}</strong>?
+                </p>
+                <p class="text-danger mb-0">
+                    <strong>Advertencia:</strong> Esta acción pondrá en ceros el inventario de todos los artículos en esta sucursal.
+                </p>
+            </div>
+            <div class="card-footer d-flex gap-2 justify-content-end">
+                <button
+                    type="button"
+                    class="btn btn-secondary"
+                    (click)="show_confirmation_modal = false"
+                >
+                    Cancelar
+                </button>
+                <button
+                    type="button"
+                    class="btn btn-danger"
+                    (click)="clearInventory()"
+                >
+                    Sí, Vaciar Inventario
+                </button>
+            </div>
+        </div>
+    </app-modal>
+</div>
