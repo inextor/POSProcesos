@@ -1,0 +1,686 @@
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+          <h4 class="mb-0">
+            <i class="fas fa-file-invoice"></i>
+            Factura ASIS - Orden #{{ order_info.order.id }}
+          </h4>
+          <button class="btn btn-secondary" (click)="goBack()">
+            <i class="fas fa-arrow-left"></i> Volver
+          </button>
+        </div>
+        <div class="card-body">
+          <!-- Loading State -->
+          <div *ngIf="isLoading" class="text-center py-5">
+            <div class="spinner-border" role="status">
+              <span class="sr-only">Cargando...</span>
+            </div>
+            <p class="mt-2">Cargando información de la orden...</p>
+          </div>
+
+          <!-- Error State -->
+          <div *ngIf="error && !isLoading" class="alert alert-danger">
+            <h5>Error</h5>
+            <p>{{ error }}</p>
+          </div>
+
+          <!-- Main Content -->
+          <div *ngIf="!isLoading && !error">
+            <!-- Order Information -->
+            <div class="row mb-4">
+              <div class="col-12">
+                <h5>Información de la Orden</h5>
+                <div class="row">
+                  <div class="col-md-8">
+                    <table class="table table-sm table-borderless">
+                      <tr><th>ID:</th><td>{{ order_info.order.id }}</td></tr>
+                      <tr><th>Fecha:</th><td>{{ order_info.order.created | date:'medium' }}</td></tr>
+                      <tr><th>Subtotal:</th><td>{{ order_info.order.subtotal | currency }}</td></tr>
+                      <tr><th>IVA:</th><td>{{ order_info.order.tax | currency }}</td></tr>
+                      <tr><th>Total:</th><td>{{ order_info.order.total | currency }}</td></tr>
+                    </table>
+                  </div>
+                  <div class="col-md-4">
+                    <button type="button" class="btn btn-primary w-100" (click)="addEmptyItem()">
+                      <i class="fas fa-plus"></i> Agregar Artículo
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Artículos de la Factura - Full Width -->
+            <div class="row mb-4">
+              <div class="col-12">
+                <h5>Artículos de la Factura</h5>
+                <div class="table-responsive" style="max-height: 600px; overflow-y: auto;">
+                  <table class="table table-striped table-hover">
+                    <thead class="table-dark sticky-top">
+                      <tr>
+                        <th style="width: 30%;">Artículo</th>
+                        <th style="width: 8%;">Cantidad</th>
+                        <th style="width: 10%;">Precio Unitario</th>
+                        <th style="width: 10%;">Subtotal</th>
+                        <th style="width: 10%;">Total</th>
+                        <th style="width: 22%;">Impuestos</th>
+                        <th style="width: 10%;">Acciones</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr *ngFor="let concepto of invoiceForm.conceptos; let i = index">
+                        <td>
+                          <div class="form-group mb-2">
+                            <input type="text" class="form-control form-control-sm"
+                                   [(ngModel)]="concepto.Descripcion" name="descripcion_{{i}}"
+                                   placeholder="Descripción del artículo">
+                          </div>
+                          <div class="form-group mb-0">
+                            <input type="text" class="form-control form-control-sm"
+                                   [(ngModel)]="concepto.ClaveProdServ" name="claveprodserv_{{i}}"
+                                   placeholder="Clave SAT">
+                          </div>
+                        </td>
+                        <td>
+                          <input type="number" class="form-control form-control-sm"
+                                 [(ngModel)]="concepto.Cantidad" name="cantidad_{{i}}"
+                                 (change)="updateItemTotal(i)"
+                                 step="0.01" min="0">
+                        </td>
+                        <td>
+                          <input type="number" class="form-control form-control-sm"
+                                 [(ngModel)]="concepto.ValorUnitario" name="valor_unitario_{{i}}"
+                                 (change)="updateItemTotal(i)"
+                                 step="0.01" min="0">
+                        </td>
+                        <td>
+                          <input type="number" class="form-control form-control-sm"
+                                 [(ngModel)]="concepto.Importe" name="subtotal_{{i}}"
+                                 (change)="updateItemTotal(i)"
+                                 step="0.01" min="0">
+                        </td>
+                        <td>
+                          <span class="fw-bold">{{ concepto.Importe | currency }}</span>
+                        </td>
+                        <td>
+                          <div class="tax-summary">
+                            <div *ngIf="concepto.Traslados?.ImpuestoTrasladado40?.length">
+                              <small *ngFor="let tax of concepto.Traslados?.ImpuestoTrasladado40" class="text-muted">
+                                {{ getTaxDescription(tax.Impuesto) }}: {{ tax.Importe | currency }}
+                              </small>
+                            </div>
+                            <button type="button" class="btn btn-sm btn-outline-primary w-100"
+                                    (click)="openTaxModal(i)" title="Editar impuestos">
+                              <i class="fas fa-edit"></i> Editar Impuestos
+                            </button>
+                          </div>
+                        </td>
+                        <td>
+                          <button type="button" class="btn btn-sm btn-danger me-1"
+                                  (click)="removeItem(i)" title="Eliminar">
+                            <i class="fas fa-trash"></i>
+                          </button>
+                          <button type="button" class="btn btn-sm btn-info"
+                                  (click)="duplicateItem(i)" title="Duplicar">
+                            <i class="fas fa-copy"></i>
+                          </button>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                  </div>
+              </div>
+            </div>
+
+            <!-- Invoice Form -->
+            <div class="row">
+              <div class="col-12">
+                <h5>Datos de Facturación</h5>
+                <form (ngSubmit)="generateInvoice()">
+                  <!-- Authentication Section -->
+                  <div class="card mb-3">
+                    <div class="card-header">
+                      <h6 class="mb-0">Autenticación Sicofi</h6>
+                    </div>
+                    <div class="card-body">
+                      <div class="row">
+                        <div class="col-md-6">
+                          <div class="form-group">
+                            <label for="usuario">Usuario Sicofi</label>
+                            <input type="email" class="form-control" id="usuario"
+                                   [(ngModel)]="invoiceForm.usuario" name="usuario"
+                                   placeholder="demo1@sicofi.com.mx" required>
+                          </div>
+                        </div>
+                        <div class="col-md-6">
+                          <div class="form-group">
+                            <label for="contrasena">Contraseña Sicofi</label>
+                            <input type="password" class="form-control" id="contrasena"
+                                   [(ngModel)]="invoiceForm.contrasena" name="contrasena"
+                                   placeholder="demodemoD" required>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- CFDI Data Section -->
+                  <div class="card mb-3">
+                    <div class="card-header">
+                      <h6 class="mb-0">Datos del CFDI</h6>
+                    </div>
+                    <div class="card-body">
+                      <div class="row">
+                        <div class="col-md-3">
+                          <div class="form-group">
+                            <label for="Moneda">Moneda</label>
+                            <select class="form-control" id="Moneda"
+                                    [(ngModel)]="invoiceForm.datos_cfdi.Moneda" name="Moneda">
+                              <option value="MXN">MXN - Peso Mexicano</option>
+                              <option value="USD">USD - Dólar Americano</option>
+                            </select>
+                          </div>
+                        </div>
+                        <div class="col-md-3">
+                          <div class="form-group">
+                            <label for="TipoCambio">Tipo de Cambio</label>
+                            <input type="number" class="form-control" id="TipoCambio"
+                                   [(ngModel)]="invoiceForm.datos_cfdi.TipoCambio" name="TipoCambio"
+                                   step="0.0001" min="0">
+                          </div>
+                        </div>
+                        <div class="col-md-3">
+                          <div class="form-group">
+                            <label for="Subtotal">Subtotal</label>
+                            <input type="number" class="form-control" id="Subtotal"
+                                   [(ngModel)]="invoiceForm.datos_cfdi.Subtotal" name="Subtotal"
+                                   step="0.01" (change)="calculateTotals()">
+                          </div>
+                        </div>
+                        <div class="col-md-3">
+                          <div class="form-group">
+                            <label for="Total">Total</label>
+                            <input type="number" class="form-control" id="Total"
+                                   [(ngModel)]="invoiceForm.datos_cfdi.Total" name="Total"
+                                   step="0.01" readonly>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="col-md-3">
+                          <div class="form-group">
+                            <label for="TipodeComprobante">Tipo de Comprobante</label>
+                            <select class="form-control" id="TipodeComprobante"
+                                    [(ngModel)]="invoiceForm.datos_cfdi.TipodeComprobante" name="TipodeComprobante">
+                              <option value="I">I - Ingreso</option>
+                              <option value="E">E - Egreso</option>
+                              <option value="T">T - Traslado</option>
+                              <option value="N">N - Nómina</option>
+                              <option value="P">P - Pago</option>
+                            </select>
+                          </div>
+                        </div>
+                        <div class="col-md-3">
+                          <div class="form-group">
+                            <label for="Exportacion">Exportación</label>
+                            <select class="form-control" id="Exportacion"
+                                    [(ngModel)]="invoiceForm.datos_cfdi.Exportacion" name="Exportacion">
+                              <option value="01">01 - No aplica</option>
+                              <option value="02">02 - Definitiva</option>
+                              <option value="03">03 - Temporal</option>
+                              <option value="04">04 - Definitiva con clave A1</option>
+                            </select>
+                          </div>
+                        </div>
+                        <div class="col-md-3">
+                          <div class="form-group">
+                            <label for="Fecha">Fecha</label>
+                            <input type="datetime-local" class="form-control" id="Fecha"
+                                   [(ngModel)]="invoiceForm.datos_cfdi.Fecha" name="Fecha">
+                          </div>
+                        </div>
+                        <div class="col-md-3">
+                          <div class="form-group">
+                            <label for="Descuento">Descuento</label>
+                            <input type="number" class="form-control" id="Descuento"
+                                   [(ngModel)]="invoiceForm.datos_cfdi.Descuento" name="Descuento"
+                                   step="0.01" min="0">
+                          </div>
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="col-md-2">
+                          <div class="form-group">
+                            <label for="Serie">Serie</label>
+                            <input type="text" class="form-control" id="Serie"
+                                   [(ngModel)]="invoiceForm.datos_cfdi.Serie" name="Serie"
+                                   maxlength="25">
+                          </div>
+                        </div>
+                        <div class="col-md-2">
+                          <div class="form-group">
+                            <label for="Folio">Folio</label>
+                            <input type="text" class="form-control" id="Folio"
+                                   [(ngModel)]="invoiceForm.datos_cfdi.Folio" name="Folio"
+                                   maxlength="40">
+                          </div>
+                        </div>
+                        <div class="col-md-2">
+                          <div class="form-group">
+                            <label for="Transaccion">Transacción</label>
+                            <input type="text" class="form-control" id="Transaccion"
+                                   [(ngModel)]="invoiceForm.datos_cfdi.Transaccion" name="Transaccion"
+                                   maxlength="50">
+                          </div>
+                        </div>
+                        <div class="col-md-3">
+                          <div class="form-group">
+                            <label for="LugarDeExpedicion">Lugar de Expedición (CP)</label>
+                            <input type="text" class="form-control" id="LugarDeExpedicion"
+                                   [(ngModel)]="invoiceForm.datos_cfdi.LugarDeExpedicion" name="LugarDeExpedicion"
+                                   maxlength="5" required>
+                          </div>
+                        </div>
+                        <div class="col-md-3">
+                          <div class="form-group">
+                            <label for="CondicionesDePago">Condiciones de Pago</label>
+                            <input type="text" class="form-control" id="CondicionesDePago"
+                                   [(ngModel)]="invoiceForm.datos_cfdi.CondicionesDePago" name="CondicionesDePago"
+                                   maxlength="1000">
+                          </div>
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="col-md-4">
+                          <div class="form-group">
+                            <label for="FormadePago">Forma de Pago</label>
+                            <select class="form-control" id="FormadePago"
+                                    [(ngModel)]="invoiceForm.datos_cfdi.FormadePago" name="FormadePago">
+                              <option value="01">01 - Efectivo</option>
+                              <option value="02">02 - Cheque nominativo</option>
+                              <option value="03">03 - Transferencia electrónica de fondos</option>
+                              <option value="04">04 - Tarjeta de crédito</option>
+                              <option value="99">99 - Por definir</option>
+                            </select>
+                          </div>
+                        </div>
+                        <div class="col-md-4">
+                          <div class="form-group">
+                            <label for="MetodoPago">Método de Pago</label>
+                            <select class="form-control" id="MetodoPago"
+                                    [(ngModel)]="invoiceForm.datos_cfdi.MetodoPago" name="MetodoPago">
+                              <option value="PUE">PUE - Pago en una sola exhibición</option>
+                              <option value="PPD">PPD - Pago en parcialidades o diferido</option>
+                            </select>
+                          </div>
+                        </div>
+                        <div class="col-md-4">
+                          <div class="form-group">
+                            <label for="MensajePDF">Mensaje PDF</label>
+                            <input type="text" class="form-control" id="MensajePDF"
+                                   [(ngModel)]="invoiceForm.datos_cfdi.MensajePDF" name="MensajePDF"
+                                   placeholder="Mensaje opcional para el PDF">
+                          </div>
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="col-md-12">
+                          <div class="form-group">
+                            <label for="DatosAdicionales">Datos Adicionales</label>
+                            <textarea class="form-control" id="DatosAdicionales"
+                                      [(ngModel)]="invoiceForm.datos_cfdi.DatosAdicionales" name="DatosAdicionales"
+                                      rows="2"
+                                      placeholder="Información adicional opcional"></textarea>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Receptor Section -->
+                  <div class="card mb-3">
+                    <div class="card-header">
+                      <h6 class="mb-0">Datos del Receptor</h6>
+                    </div>
+                    <div class="card-body">
+                      <div class="row">
+                        <div class="col-md-6">
+                          <div class="form-group">
+                            <label for="RFC">RFC *</label>
+                            <input type="text" class="form-control" id="RFC"
+                                   [(ngModel)]="invoiceForm.receptor_cfdi.RFC" name="RFC"
+                                   maxlength="13" required>
+                          </div>
+                        </div>
+                        <div class="col-md-6">
+                          <div class="form-group">
+                            <label for="RazonSocial">Razón Social *</label>
+                            <input type="text" class="form-control" id="RazonSocial"
+                                   [(ngModel)]="invoiceForm.receptor_cfdi.RazonSocial" name="RazonSocial"
+                                   required>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="col-md-4">
+                          <div class="form-group">
+                            <label for="UsoCfdi">Uso del CFDI</label>
+                            <select class="form-control" id="UsoCfdi"
+                                    [(ngModel)]="invoiceForm.receptor_cfdi.UsoCfdi" name="UsoCfdi">
+                              <option value="G01">G01 - Adquisición de mercancías</option>
+                              <option value="G02">G02 - Devoluciones, descuentos o bonificaciones</option>
+                              <option value="G03">G03 - Gastos en general</option>
+                              <option value="D01">D01 - Honorarios médicos, dentales y gastos hospitalarios</option>
+                            </select>
+                          </div>
+                        </div>
+                        <div class="col-md-4">
+                          <div class="form-group">
+                            <label for="RegimenFiscalReceptor">Régimen Fiscal</label>
+                            <select class="form-control" id="RegimenFiscalReceptor"
+                                    [(ngModel)]="invoiceForm.receptor_cfdi.RegimenFiscalReceptor" name="RegimenFiscalReceptor">
+                              <option value="601">601 - General de Ley Personas Morales</option>
+                              <option value="603">603 - Personas Morales con Fines no Lucrativos</option>
+                              <option value="607">607 - Régimen de Sueldos y Salarios</option>
+                              <option value="610">610 - Personas Físicas con Actividades Empresariales</option>
+                              <option value="621">621 - Incorporación Fiscal</option>
+                            </select>
+                          </div>
+                        </div>
+                        <div class="col-md-4">
+                          <div class="form-group">
+                            <label for="DomicilioFiscalReceptor">Domicilio Fiscal (CP)</label>
+                            <input type="text" class="form-control" id="DomicilioFiscalReceptor"
+                                   [(ngModel)]="invoiceForm.receptor_cfdi.DomicilioFiscalReceptor" name="DomicilioFiscalReceptor"
+                                   maxlength="5"
+                                   placeholder="Código postal">
+                          </div>
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="col-md-12">
+                          <div class="form-group">
+                            <label for="Email">Email</label>
+                            <input type="email" class="form-control" id="Email"
+                                   [(ngModel)]="invoiceForm.receptor_cfdi.Email" name="Email"
+                                   placeholder="correo@ejemplo.com">
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Submit Button -->
+                  <div class="text-center">
+                    <button type="submit" class="btn btn-primary btn-lg" [disabled]="isSubmitting">
+                      <i class="fas fa-file-invoice" *ngIf="!isSubmitting"></i>
+                      <span class="spinner-border spinner-border-sm" *ngIf="isSubmitting"></span>
+                      {{ isSubmitting ? 'Generando...' : 'Generar Factura' }}
+                    </button>
+                  </div>
+
+                  <!-- Response Log Section -->
+                  <div class="row mt-4">
+                    <div class="col-12">
+                      <div class="card">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                          <h5 class="mb-0">
+                            <i class="fas fa-history"></i> Historial de Respuestas
+                          </h5>
+                          <button type="button" class="btn btn-sm btn-outline-danger"
+                                  (click)="clearResponseLog()"
+                                  [disabled]="!responseLog">
+                            <i class="fas fa-trash"></i> Limpiar Historial
+                          </button>
+                        </div>
+                        <div class="card-body">
+                          <textarea class="form-control font-monospace"
+                                    rows="15"
+                                    readonly
+                                    [value]="responseLog"
+                                    placeholder="Las respuestas de las facturas aparecerán aquí. Puedes enviar múltiples facturas y todas las respuestas se mostrarán en orden cronológico."
+                                    style="font-size: 0.875rem; resize: vertical;"></textarea>
+                          <div class="mt-2">
+                            <small class="text-muted">
+                              <i class="fas fa-info-circle"></i>
+                              Este registro muestra todas las respuestas del servidor. Puedes generar múltiples facturas sin recargar la página.
+                            </small>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                </form>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Response Section - Independent from main content -->
+    <div *ngIf="response" class="container mt-4">
+      <div class="row">
+        <div class="col-12">
+          <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+              <h5 class="mb-0">Respuesta del Servidor</h5>
+              <div>
+                <button class="btn btn-sm btn-outline-primary me-2" (click)="toggleShowRequest()">
+                  {{ showRequest ? 'Ocultar' : 'Mostrar' }} Petición
+                </button>
+                <button class="btn btn-sm btn-outline-primary me-2" (click)="toggleShowResponse()">
+                  {{ showResponse ? 'Ocultar' : 'Mostrar' }} Respuesta
+                </button>
+                <button class="btn btn-sm btn-outline-secondary" (click)="clearResponse()">
+                  <i class="fas fa-times"></i> Limpiar
+                </button>
+              </div>
+            </div>
+            <div class="card-body">
+              <!-- Success Message -->
+              <div *ngIf="response.success" class="alert alert-success">
+                <h6><i class="fas fa-check-circle"></i> Factura generada exitosamente</h6>
+                <p *ngIf="response.soap_response?.GeneraCFDIV40Result?.UUID">
+                  UUID: <strong>{{ response.soap_response.GeneraCFDIV40Result.UUID }}</strong>
+                </p>
+              </div>
+
+              <!-- Error Message -->
+              <div *ngIf="!response.success" class="alert alert-danger">
+                <h6><i class="fas fa-exclamation-triangle"></i> Error</h6>
+                <p>{{ response.error }}</p>
+              </div>
+
+              <!-- Download Buttons -->
+              <div *ngIf="response.success && response.soap_response?.GeneraCFDIV40Result" class="mb-3">
+                <button class="btn btn-success me-2" (click)="downloadPDF()"
+                        [disabled]="!response.soap_response.GeneraCFDIV40Result.PDF">
+                  <i class="fas fa-file-pdf"></i> Descargar PDF
+                </button>
+                <button class="btn btn-info" (click)="downloadXML()"
+                        [disabled]="!response.soap_response.GeneraCFDIV40Result.XMLCFDI">
+                  <i class="fas fa-file-code"></i> Descargar XML
+                </button>
+              </div>
+
+              <!-- Request JSON -->
+              <div *ngIf="showRequest" class="mt-3">
+                <h6>Petición Enviada:</h6>
+                <pre class="bg-light p-3" style="max-height: 300px; overflow-y: auto;">{{ response.request_sent | json }}</pre>
+              </div>
+
+              <!-- Response JSON -->
+              <div *ngIf="showResponse" class="mt-3">
+                <h6>Respuesta Completa:</h6>
+                <pre class="bg-light p-3" style="max-height: 300px; overflow-y: auto;">{{ response | json }}</pre>
+              </div>
+
+              <!-- Raw Response Textarea -->
+              <div class="mt-3">
+                <h6>Respuesta Cruda (Raw Response):</h6>
+                <textarea class="form-control"
+                          rows="10"
+                          readonly>{{ rawResponse }}</textarea>
+                <div class="mt-2">
+                  <small class="text-muted">
+                    Esta es la respuesta cruda del servidor sin formato. Puede copiarla para análisis o depuración.
+                  </small>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Tax Edit Modal -->
+<div class="modal fade" id="taxModal" tabindex="-1" aria-labelledby="taxModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="taxModalLabel">Editar Impuestos del Artículo</h5>
+        <button type="button" class="btn-close" (click)="closeTaxModal()" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="row mb-3">
+          <div class="col-12">
+            <h6>Artículo: {{ currentEditingItem?.Descripcion }}</h6>
+          </div>
+        </div>
+
+        <!-- Traslados (Transferred Taxes) -->
+        <div class="row mb-4">
+          <div class="col-12">
+            <h6>Traslados (Impuestos Trasladados)</h6>
+            <div class="table-responsive">
+              <table class="table table-sm">
+                <thead>
+                  <tr>
+                    <th>Impuesto</th>
+                    <th>Tipo</th>
+                    <th>Base</th>
+                    <th>Tasa/Cuota</th>
+                    <th>Importe</th>
+                    <th>Acciones</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let tax of currentEditingItem?.Traslados?.ImpuestoTrasladado40; let t = index">
+                    <td>
+                      <select class="form-control form-control-sm" [(ngModel)]="tax.Impuesto" name="tax_imp_{{t}}">
+                        <option value="002">IVA</option>
+                        <option value="003">IEPS</option>
+                      </select>
+                    </td>
+                    <td>
+                      <select class="form-control form-control-sm" [(ngModel)]="tax.TipoFactor" name="tax_type_{{t}}">
+                        <option value="Tasa">Tasa</option>
+                        <option value="Cuota">Cuota</option>
+                        <option value="Exento">Exento</option>
+                      </select>
+                    </td>
+                    <td>
+                      <input type="number" class="form-control form-control-sm"
+                             [(ngModel)]="tax.Base" name="tax_base_{{t}}"
+                             step="0.01" (change)="calculateTaxAmount(currentEditingItem)">
+                    </td>
+                    <td>
+                      <input type="number" class="form-control form-control-sm"
+                             [(ngModel)]="tax.TasaOCuota" name="tax_rate_{{t}}"
+                             step="0.000001" (change)="calculateTaxAmount(currentEditingItem)"
+                             [disabled]="tax.TipoFactor === 'Exento'">
+                    </td>
+                    <td>
+                      <input type="number" class="form-control form-control-sm"
+                             [(ngModel)]="tax.Importe" name="tax_amount_{{t}}"
+                             step="0.01">
+                    </td>
+                    <td>
+                      <button type="button" class="btn btn-sm btn-danger"
+                              (click)="removeTrasladoTax(t)" title="Eliminar">
+                        <i class="fas fa-trash"></i>
+                      </button>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+              <button type="button" class="btn btn-sm btn-primary" (click)="addTrasladoTax()">
+                <i class="fas fa-plus"></i> Agregar Traslado
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Retenciones (Withholding Taxes) -->
+        <div class="row mb-4">
+          <div class="col-12">
+            <h6>Retenciones (Impuestos Retenidos)</h6>
+            <div class="table-responsive">
+              <table class="table table-sm">
+                <thead>
+                  <tr>
+                    <th>Impuesto</th>
+                    <th>Tipo</th>
+                    <th>Base</th>
+                    <th>Tasa/Cuota</th>
+                    <th>Importe</th>
+                    <th>Acciones</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let tax of currentEditingItem?.Retenciones?.ImpuestoRetenido40; let r = index">
+                    <td>
+                      <select class="form-control form-control-sm" [(ngModel)]="tax.Impuesto" name="ret_imp_{{r}}">
+                        <option value="001">ISR</option>
+                      </select>
+                    </td>
+                    <td>
+                      <select class="form-control form-control-sm" [(ngModel)]="tax.TipoFactor" name="ret_type_{{r}}">
+                        <option value="Tasa">Tasa</option>
+                        <option value="Cuota">Cuota</option>
+                      </select>
+                    </td>
+                    <td>
+                      <input type="number" class="form-control form-control-sm"
+                             [(ngModel)]="tax.Base" name="ret_base_{{r}}"
+                             step="0.01" (change)="calculateRetencionAmount(currentEditingItem)">
+                    </td>
+                    <td>
+                      <input type="number" class="form-control form-control-sm"
+                             [(ngModel)]="tax.TasaOCuota" name="ret_rate_{{r}}"
+                             step="0.0001" (change)="calculateRetencionAmount(currentEditingItem)">
+                    </td>
+                    <td>
+                      <input type="number" class="form-control form-control-sm"
+                             [(ngModel)]="tax.Importe" name="ret_amount_{{r}}"
+                             step="0.01">
+                    </td>
+                    <td>
+                      <button type="button" class="btn btn-sm btn-danger"
+                              (click)="removeRetencionTax(r)" title="Eliminar">
+                        <i class="fas fa-trash"></i>
+                      </button>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+              <button type="button" class="btn btn-sm btn-primary" (click)="addRetencionTax()">
+                <i class="fas fa-plus"></i> Agregar Retención
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="closeTaxModal()">Cancelar</button>
+        <button type="button" class="btn btn-primary" (click)="saveTaxChanges()">Guardar Cambios</button>
+      </div>
+    </div>
+  </div>
+</div>
