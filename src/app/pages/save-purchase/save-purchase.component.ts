@@ -1,6 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Injector } from '@angular/core';
 import { BaseComponent } from '../../modules/shared/base/base.component';
-import { ItemInfo, PurchaseDetailInfo, PurchaseInfo} from '../../modules/shared/RestModels';
+import { ItemInfo, PurchaseDetailInfo, PurchaseInfo} from '../../modules/shared/Models';
 import { Currency, Currency_Rate, Purchase, Purchase_Detail, Store, User} from '../../modules/shared/RestModels';
 import { forkJoin, of } from 'rxjs';
 import { mergeMap } from 'rxjs/operators';
@@ -10,39 +10,65 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ModalComponent } from '../../components/modal/modal.component';
 import { SearchItemsComponent } from '../../components/search-items/search-items.component';
+import { AttachmentUploaderComponent } from '../../components/attachment-uploader/attachment-uploader.component';
 
 declare function txt2html(str:string):string;
 declare function printHtml(html_body:string,title:string):any;
 
+interface CItemAdd
+{
+	item_info:ItemInfo;
+	qty:number;
+}
+interface CPurchaseInfo extends PurchaseInfo
+{
+	store:Store;
+}
+
 @Component({
 	selector: 'app-save-purchase',
 	standalone: true,
-	imports: [CommonModule, FormsModule, ModalComponent, SearchItemsComponent],
+	imports: [CommonModule, FormsModule, ModalComponent, SearchItemsComponent, AttachmentUploaderComponent],
 	templateUrl: './save-purchase.component.html',
 	styleUrls: ['./save-purchase.component.css']
 })
 export class SavePurchaseComponent extends BaseComponent implements OnInit
 {
-	purchase_info:PurchaseInfo	= this.getEmptyPurchaseInfo();
+	show_item_exists_modal: boolean = false;
+	item_to_add: ItemInfo | null = null;
+
+	purchase_info:CPurchaseInfo	= this.getEmptyPurchaseInfo();
 	item_info_list:ItemInfo[] = [];
 	input_search:string = '';
 	show_provider_list:boolean = false;
 	provider_user_list:User[] = [];
-	
+	show_add_new:boolean = false;
 	show_new_provider:boolean = false;
 	store_list:Store[] = [];
 	currency_list:Currency[] = [];
 	currency_rate_list:Currency_Rate[] = [];
 	item_count:number = 0;
+	override total_items:number = 0;
 	search_str:string = '';
 
 	note:string = '';
 	paid_date:string = '';
 	reference:string = '';
-	transaction_type: "CASH" | "TRANSFER" | "CREDIT_CARD" | "DEBIT_CARD" | "CHECK" | "COUPON" | "DISCOUNT" | "RETURN_DISCOUNT" | "PAYPAL";
+	transaction_type: "CASH" | "TRANSFER" | "CREDIT_CARD" | "DEBIT_CARD" | "CHECK" | "COUPON" | "DISCOUNT" | "RETURN_DISCOUNT" | "PAYPAL" = "CASH";
+
+	constructor(injector: Injector)
+	{
+		super(injector);
+	}
 
 	ngOnInit()
 	{
+		let rest_store = this.rest.initRestSimple<Store>('store');
+		let rest_purchase_info = this.rest.initRestSimple<PurchaseInfo>('purchase_info');
+		let rest_user = this.rest.initRestSimple<User>('user');
+		let rest_currency = this.rest.initRestSimple<Currency>('currency');
+		let rest_currency_rate = this.rest.initRestSimple<Currency_Rate>('currency_rate');
+
 		this.sink = this.route.paramMap
 		.pipe
 		(
@@ -50,15 +76,18 @@ export class SavePurchaseComponent extends BaseComponent implements OnInit
 			{
 				this.is_loading = true;
 				this.input_search = '';
+				let id_str = params.get('id');
+				let provider_id_str = params.get('provider_id');
+
 				return forkJoin
 				({
-					stores: this.rest.store.search({limit:9999,sort_order:['name_ASC']}),
-					purchase: params.has('id')
-						? this.rest.purchase_info.get( params.get('id') )
+					stores: rest_store.search({limit:9999,sort_order:['name_ASC']}),
+					purchase: id_str
+						? rest_purchase_info.get( parseInt(id_str) )
 						: of( this.getEmptyPurchaseInfo() ),
-					provider: params.has('provider_id') ? this.rest.user.get( params.get('provider_id') ) : of(null as User),
-					currency: this.rest.currency.search({limit:9999,sort_order:['name_ASC']}),
-					currency_rate: this.rest.currency_rate.search({limit:9999,sort_order:['currency_id_ASC']}),
+					provider: provider_id_str ? rest_user.get( parseInt(provider_id_str) ) : of(null as User | null),
+					currency: rest_currency.search({limit:9999,sort_order:['name_ASC']}),
+					currency_rate: rest_currency_rate.search({limit:9999,sort_order:['currency_id_ASC']}),
 				})
 			})
 		)
@@ -79,17 +108,19 @@ export class SavePurchaseComponent extends BaseComponent implements OnInit
 				this.currency_rate_list = response.currency_rate.data;
 
 				this.is_loading = false;
-				this.purchase_info = response.purchase;
 
+				let store = GetEmpty.store();
+
+				this.purchase_info = {...response.purchase, store };
 
 				if( response.purchase.purchase.id )
 				{
-					this.purchase_info.store = this.store_list.find(i=>i.id == response.purchase.purchase.store_id) || null
+					this.purchase_info.store = this.store_list.find(i=>i.id == response.purchase.purchase.store_id) || GetEmpty.store();
 				}
-				else if( this.rest.current_user.store_id )
+				else if( this.rest.user && this.rest.user.store_id )
 				{
-					this.purchase_info.store = this.store_list.find(i=>i.id == this.rest.current_user.store_id) || null;
-					this.purchase_info.purchase.store_id = this.rest.current_user.store_id;
+					this.purchase_info.store = this.store_list.find(i=>i.id == this.rest.user!.store_id!) || GetEmpty.store();
+					this.purchase_info.purchase.store_id = this.rest.user.store_id;
 				}
 
 				if( response.provider )
@@ -131,8 +162,8 @@ export class SavePurchaseComponent extends BaseComponent implements OnInit
 		}
 
 		return default_currency_id == this.purchase_info.bill.currency_id
-			? currency_rate.rate
-			: 1/currency_rate.rate;
+			? currency_rate!.rate
+			: 1/currency_rate!.rate;
 	}
 
 	searchProvider(provider_name:string)
@@ -141,7 +172,8 @@ export class SavePurchaseComponent extends BaseComponent implements OnInit
 		this.purchase_info.purchase.provider_name = provider_name;
 		this.purchase_info.purchase.provider_user_id = null;
 
-		this.subs.sink = this.rest.user.search(
+		let rest_user = this.rest.initRestSimple<User>('user');
+		this.subs.sink = rest_user.search(
 		{
 			start:{	name:provider_name },
 			eq:{ status:'ACTIVE'},
@@ -172,7 +204,10 @@ export class SavePurchaseComponent extends BaseComponent implements OnInit
 		let user_permission = GetEmpty.user_permission();
 		user_permission.is_provider = 1;
 
-		this.subs.sink = this.rest.user
+		let rest_user = this.rest.initRestSimple<User>('user');
+		let rest_user_permission = this.rest.initRestSimple<any>('user_permission');
+
+		this.subs.sink = rest_user
 		.create(user).pipe
 		(
 			mergeMap((response)=>
@@ -181,7 +216,7 @@ export class SavePurchaseComponent extends BaseComponent implements OnInit
 				this.purchase_info.purchase.provider_user_id = response.id;
 				this.purchase_info.bill.provider_user_id = response.id;
 
-				return this.rest.user_permission.update(user_permission);
+				return rest_user_permission.update(user_permission);
 			})
 		)
 		.subscribe
@@ -209,24 +244,26 @@ export class SavePurchaseComponent extends BaseComponent implements OnInit
 		this.provider_user_list = [];
 	}
 
-	getEmptyPurchaseInfo():PurchaseInfo
+	getEmptyPurchaseInfo():CPurchaseInfo
 	{
 		let purchase:Purchase = {
 			stock_status: 'PENDING',
 			order_id: null,
-			store_id: this.rest?.current_user?.store_id	|| 0,
+			store_id: this.rest?.user?.store_id	|| 0,
 			created: new Date(),
 			updated: new Date(),
-			created_by_user_id: this.rest?.current_user?.id || 0,
+			created_by_user_id: this.rest?.user?.id || 0,
 			provider_name: '',
 			status: 'ACTIVE',
 			provider_user_id: null,
 			updated_by_user_id: null,
 			total: 0,
 			id: 0,
+			amount_paid: 0,
+			paid_timestamp: null
 		};
 
-		let p:PurchaseInfo = {
+		let p:CPurchaseInfo = {
 			purchase,
 			bill: {
 				paid_status: 'PENDING',
@@ -237,6 +274,7 @@ export class SavePurchaseComponent extends BaseComponent implements OnInit
 			details:[] as PurchaseDetailInfo[],
 			shipping: null,
 			bank_movements_info: [],
+			store: GetEmpty.store()
 		};
 
 		return p;
@@ -252,11 +290,13 @@ export class SavePurchaseComponent extends BaseComponent implements OnInit
 			this.markAsPaid();
 		}
 
+		let rest_purchase_info = this.rest.initRestSimple<PurchaseInfo>('purchase_info');
+
 		if( this.purchase_info.purchase.id	)
 		{
-			this.purchase_info.purchase.total =this.purchase_info.bill.total;
+			this.purchase_info.purchase.total =this.purchase_info.bill.total!;
 
-			this.subs.sink = this.rest.purchase_info.update( this.purchase_info )
+			this.subs.sink = rest_purchase_info.update( this.purchase_info )
 			.subscribe
 			({
 				next: (purchase)=>
@@ -274,11 +314,11 @@ export class SavePurchaseComponent extends BaseComponent implements OnInit
 		}
 		else
 		{
-			this.purchase_info.purchase.total =this.purchase_info.bill.total;
+			this.purchase_info.purchase.total =this.purchase_info.bill.total!;
 
-			if( !this.rest.current_permission.global_purchases )
+			if( !this.rest.user_permission.global_purchases )
 			{
-				this.purchase_info.purchase.store_id = this.rest.current_user.store_id;
+				this.purchase_info.purchase.store_id = this.rest.user!.store_id!;
 			}
 
 			if (!this.purchase_info.purchase.provider_user_id)
@@ -288,7 +328,7 @@ export class SavePurchaseComponent extends BaseComponent implements OnInit
 				return;
 			}
 
-			this.subs.sink = this.rest.purchase_info.create(this.purchase_info)
+			this.subs.sink = rest_purchase_info.create(this.purchase_info)
 			.subscribe
 			({
 				next: (purchase)=>
@@ -308,29 +348,30 @@ export class SavePurchaseComponent extends BaseComponent implements OnInit
 
 	onInput(evt:Event)
 	{
-		if( evt.target['value'] == '' )
+		if( (evt.target as HTMLInputElement).value == '' )
 		{
 			this.item_info_list = [];
 			return;
 		}
 
 		let input = evt.target as HTMLInputElement;
-		this.subs.sink = this.rest.item_info.search({
-			eq:{status:'ACTIVE'},
-			search_extra:{category_name:input.value}
-		})
+		let rest_item_info = this.rest.initRestSimple<ItemInfo>('item_info');
+		this.subs.sink = rest_item_info.search({
+			search_extra:{category_name:input.value, status:'ACTIVE'}
+		} as any)
 		.subscribe((response)=>
 		{
 			this.item_info_list = response.data;
 		});
 	}
 
-	/* onItemInfoSelect(item_info:ItemInfo)
+	onItemInfoSelect(item_info:ItemInfo, qty:number=1)
 	{
 		console.log('Item ifno has', item_info.item );
 		if( this.purchase_info.details.some((i)=>i.purchase_detail.item_id == item_info.item.id && item_info.item.has_serial_number == "NO") )
 		{
-			this.showError('El producto ya se encuentra en la lista');
+			this.item_to_add = item_info;
+			this.show_item_exists_modal = true;
 			return;
 		}
 
@@ -342,7 +383,7 @@ export class SavePurchaseComponent extends BaseComponent implements OnInit
 			purchase_id: this.purchase_info.purchase.id,
 			item_id	:	item_info.item.id,
 			status: 'ACTIVE',
-			qty: 1,
+			qty: qty,
 			stock_status: 'PENDING',
 			description: '',
 			id: 0,
@@ -363,7 +404,38 @@ export class SavePurchaseComponent extends BaseComponent implements OnInit
 		this.updateTotal();
 
 		this.input_search = '';
-	} */
+	}
+
+	incrementExistingItem()
+	{
+		let existing_item = this.purchase_info.details.find(i => i.item.id === this.item_to_add!.item.id);
+		existing_item!.purchase_detail.qty++;
+		this.updateTotal();
+		this.show_item_exists_modal = false;
+		this.item_to_add = null;
+	}
+
+	cancelAddExistingItem()
+	{
+		this.show_item_exists_modal = false;
+		this.item_to_add = null;
+	}
+
+	onItemScannedAdd(item_add:CItemAdd)
+	{
+		let purchase_detail = this.purchase_info.details.find(i=>i.purchase_detail.item_id == item_add.item_info.item.id);
+
+		if( purchase_detail )
+		{
+			purchase_detail.purchase_detail.qty += item_add.qty;
+		}
+		else
+		{
+			this.onItemInfoSelect(item_add.item_info, item_add.qty);
+		}
+
+		this.updateTotal();
+	}
 
 	updateTotal()
 	{
@@ -390,8 +462,14 @@ export class SavePurchaseComponent extends BaseComponent implements OnInit
 		{
 			pid.purchase_detail.status = 'DELETED';
 		}
+		this.updateTotal();
 	}
-	
+
+	showAddNewItem()
+	{
+		this.search_str = '';
+		this.show_add_new = true;
+	}
 
 	toggleMarkAsPaid()
 	{
@@ -401,9 +479,9 @@ export class SavePurchaseComponent extends BaseComponent implements OnInit
 	markAsPaid()
 	{
 		this.purchase_info.bill.amount_paid = this.purchase_info.bill.total;
-		this.purchase_info.bill.paid_by_user_id = this.rest.current_user.id;
+		this.purchase_info.bill.paid_by_user_id = this.rest.user!.id;
 		this.purchase_info.bill.paid_date = Utils.getUTCMysqlStringFromDate(new Date());
-		this.purchase_info.bill.aproved_by_user_id = this.rest.current_user.id;
+		this.purchase_info.bill.aproved_by_user_id = this.rest.user!.id;
 		this.purchase_info.bill.accepted_status = 'ACCEPTED';
 
 		//set the bank movement info
@@ -448,11 +526,16 @@ export class SavePurchaseComponent extends BaseComponent implements OnInit
 	print(evt:Event)
 	{
 		let store = this.store_list.find(i=>this.purchase_info.purchase.store_id == i.id);
-		let store_name = txt2html(store?.name || '');
+
+		if( !store )
+			return;
+
+		let store_name = txt2html(store.name || '');
+
 		let html = `
 			<h1>Orden de compra ${this.purchase_info.purchase.id}</h1>
 			<div>
-				Proveedor:<b>${txt2html(this.purchase_info.purchase.provider_name)}</b>
+				Proveedor:<b>${txt2html(this.purchase_info.purchase.provider_name || '')}</b>
 			</div>
 			<div>
 				Sucursal:<b>${store_name}</b>
@@ -478,7 +561,7 @@ export class SavePurchaseComponent extends BaseComponent implements OnInit
 		{
 			let cname = '';
 
-			if( di.category && this.rest.local_preferences.display_categories_on_items == 'YES' )
+			if( di.category && this.rest.preferences.display_categories_on_items == 'YES' )
 				cname = di.category.name+' - ';
 
 			total += di.purchase_detail.qty*di.purchase_detail.unitary_price;
@@ -529,5 +612,23 @@ export class SavePurchaseComponent extends BaseComponent implements OnInit
 			item:pdi.item,
 			category:pdi.category
 		})
+	}
+
+	closeScannerDialog()
+	{
+		let dialog = document.getElementById('scanner_dialog') as HTMLDialogElement;
+		dialog.close();
+	}
+
+	showScanner()
+	{
+		let dialog = document.getElementById('scanner_dialog') as HTMLDialogElement;
+		dialog.showModal();
+	}
+
+	onNoResultsFound(barcode: string)
+	{
+		this.search_str = barcode;
+		this.showAddNewItem();
 	}
 }

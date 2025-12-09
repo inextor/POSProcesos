@@ -29,15 +29,13 @@
 				</div>
 				<div class="col-12 col-md-6 col-lg-3">
 					<label>Sucursal</label>
-					<select name="store_id" [(ngModel)]="purchase_info.purchase.store_id" class="form-control" [disabled]="purchase_info.purchase.stock_status!='PENDING' || purchase_info.bank_movements_info.length > 0" *ngIf="rest.current_permission.global_purchases">
+					<select name="store_id" [(ngModel)]="purchase_info.purchase.store_id" class="form-control" [disabled]="purchase_info.purchase.stock_status!='PENDING' || purchase_info.bank_movements_info.length > 0" *ngIf="rest.user_permission.global_purchases">
 						<option [ngValue]="null">Seleccione una opción</option>
 						<option *ngFor="let store of store_list" [ngValue]="store.id">
 							{{store.name | titlecase}}
 						</option>
 					</select>
-					<div class="form-control" *ngIf="!rest.current_permission.global_purchases">
-						{{purchase_info.store.name | titlecase }}
-					</div>
+					<div class="form-control" *ngIf="!rest.user_permission.global_purchases">{{purchase_info.store.name | titlecase }}</div>
 				</div>
 				<div class="col-12 col-md-6 col-lg-2 form-group">
 					<label>Total</label>
@@ -59,11 +57,12 @@
 						<option *ngFor="let currency of currency_list" [value]="currency.id">{{currency.id}}</option>
 					</select>
 				</div>
-				
+
 
 				<div class="col col-md-4 form-check form-switch mt-3" *ngIf="purchase_info.bank_movements_info.length == 0 && purchase_info.purchase.stock_status == 'PENDING'">
 					<label class="form-check-label">
-						<input type="checkbox" (click)="toggleMarkAsPaid()" class="form-check-input" [checked]="purchase_info.bill.paid_status == 'PAID'"> Marcar como Pagado
+						<input type="checkbox" (click)="toggleMarkAsPaid()" class="form-check-input" [checked]="purchase_info.bill.paid_status == 'PAID'">
+						Marcar como Pagado
 					</label>
 				</div>
 				<!-- solo para introducir una vez los campos de pago (liquidacion) -->
@@ -94,33 +93,21 @@
 							<label for="">Nota</label>
 							<textarea name="note" [(ngModel)]="note" cols="1" rows="1" class="form-control" [disabled]="purchase_info.bank_movements_info.length > 0"></textarea>
 						</div>
-						<!-- <div class="col-12 col-md-3">
-							<label for="">Cuenta de banco</label>
-							<select name="bank_account_id" [(ngModel)]="bank_account_id"
-								class="form-control" [disabled]="purchase_info.bank_movements_info.length > 0">
-								<option [ngValue]="null">Seleccionar</option>
-								<option *ngFor="let bank_account of bank_account_list" [ngValue]="bank_account.id">{{bank_account.name}}</option>
-							</select>
-						</div> -->
 					</div>
 				</ng-container>
 			</div>
 		</div>
 		<div class="card p-3 mt-3">
-			
 			<div class="row fw-bold d-none d-md-flex pb-3 border-bottom mb-3">
 				<div class="col-7">Artículo</div>
-				<div class="col-3"></div>
-				<div class="col-2"></div>
 			</div>
 			<ng-container *ngFor="let pdi of purchase_info.details;let i=index">
-				<div class="row my-1 border-bottom border-md-none pb-3 pb-md-1 mb-3 mb-md-1 align-items-center"
-					*ngIf="pdi.purchase_detail.status != 'DELETED'">
+				<div class="row my-1 border-bottom border-md-none pb-3 pb-md-1 mb-3 mb-md-1 align-items-center" *ngIf="pdi.purchase_detail.status != 'DELETED'">
 					<div class="col-10 col-md-4 fw-bold">
 						{{i+1}} -
-						<img [src]="rest.getImagePath(pdi.item.image_id,pdi?.category?.image_id,rest.local_preferences.default_product_image_id)"
+						<img [src]="rest.getImagePath(pdi.item.image_id,pdi?.category?.image_id,rest.preferences.default_product_image_id)"
 							style="height:44px;width:44px;">
-						<span *ngIf="pdi?.category">{{pdi.category.name}} - </span>
+						<span *ngIf="pdi?.category">{{pdi.category?.name}} - </span>
 						{{pdi.item.name}}
 					</div>
 					<div class="col-2 col-md-1 fw-bold flex-order-1 order-md-last text-end ms-auto">
@@ -140,8 +127,7 @@
 					</div>
 					<div class="col-12 col-md-3" *ngIf="pdi.item.has_serial_number != 'YES'">
 						<label class="">
-							Cantidad
-							<span>{{pdi.item.measurement_unit}}</span>
+							Cantidad <span>{{pdi.item.measurement_unit}}</span>
 						</label>
 						<input type="number" [name]="'qty'+pdi.item.id+'-'+i" min="0" [step]="pdi.item.partial_sale == 'NO'?'1':'any'"
 							[(ngModel)]="pdi.purchase_detail.qty" class="form-control" (ngModelChange)="updateTotal()"
@@ -159,18 +145,7 @@
 			<div class="row" *ngIf="purchase_info.purchase.stock_status=='PENDING'">
 				<div class="col-8 col-lg-10">
 					<div class="mb-3 w-100">
-						<!--div class="dropdown">
-							<input type="text" name="input_search" [(ngModel)]="input_search" (input)="onInput($event)" class="form-control" placeholder="Buscar Artículo" autocomplete="off">
-							<ul class="dropdown-menu show w-100" *ngIf="item_info_list.length">
-								<li *ngFor="let item_info of item_info_list" class="border-bottom">
-									<button class="dropdown-item" (click)="onItemInfoSelect(item_info)">
-										<img [src]="rest.getImagePath(item_info.item.image_id,item_info?.category?.image_id,rest.local_preferences.default_product_image_id)" style="height:44px;width:44px;">
-										{{item_info?.category?.name}} {{item_info.item.name}}
-									</button>
-								</li>
-							</ul>
-						</div-->
-						<!-- <app-search-items [(search_str)]="search_str" (item_selected)="onItemInfoSelect($event)"></app-search-items> -->
+						<app-search-items [(search_str)]="search_str" (item_selected)="onItemInfoSelect($event)"></app-search-items>
 					</div>
 				</div>
 				<div class="col-4 col-lg-2 text-end">
@@ -191,3 +166,19 @@
 	</form>
 </div>
 
+<app-modal [(show)]="show_add_new">
+	<div class="p-3 overflow-scroll" style="max-height:95vh">
+		<p class="text-center">Add new item component not yet implemented</p>
+	</div>
+</app-modal>
+
+<app-modal [show]="show_item_exists_modal" [closable]="false">
+	<div class="p-3">
+		<h2>El artículo ya existe en la orden</h2>
+		<p>¿Deseas agregar uno más a la cantidad?</p>
+		<div class="text-end">
+			<button type="button" class="btn btn-secondary me-2" (click)="cancelAddExistingItem()">Cancelar</button>
+			<button type="button" class="btn btn-primary" (click)="incrementExistingItem()">Agregar uno más</button>
+		</div>
+	</div>
+</app-modal>

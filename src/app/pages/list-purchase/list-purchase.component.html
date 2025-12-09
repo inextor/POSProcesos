@@ -1,0 +1,145 @@
+<div class="container-fluid">
+
+	<div class="row align-items-center mx-0">
+		<div class="col">
+			<h1 class="py-3 text-capitalize">Ordenes De Compra</h1>
+		</div>
+		<div class="col-auto">
+			<button type="button" *ngIf="rest.user_permission.add_purchases && purchase_search.eq.provider_user_id" class="btn btn-secondary" [routerLink]="['/purchase/provider',purchase_search.eq.provider_user_id]">Agregar</button>
+			<button type="button" *ngIf="rest.user_permission.add_purchases && !purchase_search.eq.provider_user_id" class="btn btn-secondary" [routerLink]="['/purchase']">Agregar</button>
+		</div>
+	</div>
+
+	<div class="card p-3">
+		<div class="row">
+			<div class="col-6 col-md-4 form-group">
+				<label class="">Proveedor</label>
+				<select name="provider_user_id" [(ngModel)]="purchase_search.eq.provider_user_id" class="form-control">
+					<option [value]="null">Todos</option>
+					<option *ngFor="let provider of provider_list" [value]="provider.id">{{provider.name}}</option>
+				</select>
+			</div>
+			<div class="col-6 col-md-4 form-group">
+				<label class="">Sucursal</label>
+				<select name="store_id" [(ngModel)]="purchase_search.eq.store_id" class="form-control">
+					<option [value]="null">Todos</option>
+					<option *ngFor="let store of store_list" [value]="store.id">{{store.name}}</option>
+				</select>
+			</div>
+			<div class="col-6 col-md-4 form-group">
+				<label class="">Estatus pago</label>
+				<select name="paid_status" [(ngModel)]="purchase_search.search_extra['paid_status']" class="form-control">
+					<option [value]="null">Todos</option>
+					<option value="PAID">Pagado</option>
+					<option value="PENDING">Pendiente</option>
+				</select>
+			</div>
+			<div class="col-6 col-md-4 form-group">
+				<label class="">Fecha inicial</label>
+				<input type="datetime-local" name="search_start" [(ngModel)]="search_start" (ngModelChange)="onDateChange($event, purchase_search.ge, 'created')" class="form-control">
+			</div>
+			<div class="col-6 col-md-4 form-group">
+				<label class="">Fecha final</label>
+				<input type="datetime-local" name="search_end" [(ngModel)]="search_end" (ngModelChange)="onDateChange($event, purchase_search.le, 'created')" class="form-control">
+			</div>
+			<div class="col-6 col-md-4 form-group">
+				<label>&nbsp;</label>
+				<button type="button" class="w-100 btn btn-primary" (click)="search(purchase_search)">Buscar</button>
+			</div>
+		</div>
+	</div>
+
+	<div  class="card p-3 mt-3">
+		<app-loading [is_loading]="is_loading"></app-loading>
+		<div class="table-responsive">
+			<table class="table table-sm table-nowrap mb-0">
+				<thead class="thead-light">
+					<tr>
+						<th>Proveedor</th>
+						<th>Sucursal</th>
+						<th>Total</th>
+						<th>Folio</th>
+						<th>Estatus</th>
+						<th>Actualizado</th>
+						<th class="text-end">Acciones</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr *ngFor="let purchase_info of purchase_info_list">
+						<td>
+							<a [routerLink]="['/purchase/edit',purchase_info.purchase.id]">
+								{{purchase_info.purchase.id}} - {{purchase_info.purchase.provider_name }}
+							</a>
+						</td>
+						<td>{{purchase_info.store.name  | titlecase }}</td>
+						<td>{{purchase_info.purchase.total | currency }} {{purchase_info.bill.currency_id}}</td>
+						<td>
+							{{purchase_info.bill.folio}}
+						</td>
+						<td>
+							<span *ngIf="purchase_info.bill.paid_status == 'PAID'">
+								[Pagado]
+							</span>
+							<span *ngIf="purchase_info.bill.paid_status == 'PENDING'">
+								[Pendiente]
+							</span>
+						</td>
+						<td>
+							<abbr title="{{purchase_info.purchase.updated | date: 'MMM d, y h:mm a' }}">{{purchase_info.purchase.updated | date: 'MMM d, y' }}</abbr>
+						</td>
+						<td class="text-end">
+							<button type="button" class="btn btn-danger mx-1" (click)="deletePurchase(purchase_info)" *ngIf="purchase_info.purchase.stock_status == 'PENDING' && !purchase_info.shipping && rest.user_permission.add_purchases">
+								Eliminar
+							</button>
+							<button type="button" class="btn btn-primary mx-1" (click)="showCreateShipping(purchase_info)" *ngIf="purchase_info.purchase.stock_status == 'PENDING' && rest.user_permission.add_purchases">
+								Crear Envio
+							</button>
+							<button type="button" class="btn btn-primary mx-1" (click)="addToStock(purchase_info)" *ngIf="purchase_info.purchase.stock_status == 'PENDING' && rest.user_permission.add_purchases">
+								Ingresar Inventario
+							</button>
+							<a  class="btn btn-primary" *ngIf="purchase_info.shipping"  [routerLink]="['/view-shipping',purchase_info.shipping.id]">Envío</a>
+						</td>
+					</tr>
+					<tr *ngIf="purchase_info_list.length == 0 && !is_loading" colspan="5">
+						<td class="text-center">No se encontraron elementos</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+	</div>
+	<app-pagination [path]="'/list-purchase'" [pages]="pages" [total_pages]="total_pages" [current_page]="current_page"></app-pagination>
+</div>
+<app-modal [(show)]="show_create_shipping">
+	<form (ngSubmit)="createShipping($event)" ngNativeValidate>
+		<div class="row align-items-center p-3">
+			<div class="col-12 col-md-6">
+				<label class=""># Económico o Guía</label>
+				<input type="text" name="shipping_guide" [(ngModel)]="shipping_guide" placeholder="xxxxxx" class="form-control" required>
+			</div>
+			<div class="col-12 col-md-6">
+				<label class="">Nombre chofer/Paqueteria</label>
+				<input type="text" name="shipping_company" [(ngModel)]="shipping_company" placeholder="Jesus martinez" class="form-control" required>
+			</div>
+			<div class="col-12 col-md-6">
+				<label class="">Fecha de envío</label>
+				<input type="date" name="shipping_date" [(ngModel)]="shipping_date" class="form-control" placeholder="YYYY-mm-dd" required>
+			</div>
+			<div class="col-12 col-md-6">
+				<div class="form-check form-switch">
+					<input name="mark_shipping_as_send" class="form-check-input" type="checkbox" id="mark_as_sent" (change)="markAsSentChange($event)" [checked]="mark_as_sent">
+					<label class="form-check-label" for="mark_as_sent">Marcar Como enviado</label>
+				</div>
+			</div>
+		</div>
+		<div class="row p-3">
+			<div class="d-none d-md-flex col-md-6">
+			</div>
+			<div class="col-6 col-md-3">
+				<button type="button" class="btn btn-primary w-100" (click)="show_create_shipping=false">Cancelar</button>
+			</div>
+			<div class="col-6 col-md-3">
+				<button type="submit" class="btn btn-primary w-100">Crear Envio</button>
+			</div>
+		</div>
+	</form>
+</app-modal>
