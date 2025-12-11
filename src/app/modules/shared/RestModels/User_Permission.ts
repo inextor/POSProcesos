@@ -73,6 +73,7 @@ export interface User_Permission {
   user_id: number;
   view_asistance: any;
   view_commandas: any;
+  view_facturas: any;
   view_payroll: any;
   view_responses: any;
   view_stock: any;
