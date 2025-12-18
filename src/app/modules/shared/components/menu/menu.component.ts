@@ -71,7 +71,7 @@ export class MenuComponent extends BaseComponent
 				this.show_menu_ecommerce = this.rest.preferences.ecommerce_enabled && this.rest.user_permission.add_user;
 
 				this.show_menu_reservations = false;
-				this.show_menu_reports = this.rest.user_permission.reports;
+				this.show_menu_reports = this.rest.user_permission.reports || this.rest.user_permission.view_facturas;
 
 				this.show_menu_settings = this.rest.user_permission.add_user
 					|| this.rest.user_permission.add_commandas;

@@ -55,7 +55,7 @@ interface FacturaAsisRequest {
 		Moneda: string;
 		Subtotal: string;
 		Total: string;
-		CondicionesDePago: string;
+		CondicionesDePago?: string;
 		TipodeComprobante: string;
 		LugarDeExpedicion: string;
 		FormadePago?: string;
@@ -371,13 +371,21 @@ export class FacturaAsisComponent extends BaseComponent implements OnInit {
 			headers['Authorization'] = sessionHeaders.get('Authorization')!;
 		}
 
+		// Create a copy of the invoiceForm to modify before sending
+		const payload = { ...this.invoiceForm };
+
+		// Conditionally remove CondicionesDePago if empty
+		if (payload.datos_cfdi.CondicionesDePago === '') {
+			delete payload.datos_cfdi.CondicionesDePago;
+		}
+
 		console.log('Sending headers:', headers);
 		console.log('Endpoint URL:', endpointUrl);
 
 		fetch(endpointUrl, {
 			method: 'POST',
 			headers: headers,
-			body: JSON.stringify(this.invoiceForm),
+			body: JSON.stringify(payload),
 			credentials: 'include' // Important for cookies/sessions
 		})
 		.then(response => {
