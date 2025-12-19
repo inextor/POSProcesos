@@ -282,8 +282,6 @@ export class ReportComexSalesComponent extends BaseComponent implements OnInit {
 		// a 4 decimales.
 		let qty_piezas = order_item_info.item.partial_sale == 'YES' ? 1 : order_item_info.order_item.qty.toFixed(4);
 
-
-
 		const row: ComexReportRow = {
 			NUM_CONCESIONARIO: (store as any)?.comex_num_concesionario || '',
 			NUM_CUENTA: (store as any)?.comex_num_cuenta || '',
@@ -301,7 +299,7 @@ export class ReportComexSalesComponent extends BaseComponent implements OnInit {
 			CANTIDAD_LITROS: 0,
 			PRECIO_UNITARIO_NETO: this.parseNum(order_item_info.order_item.unitary_price, 2),
 			IMPORTE_NETO: this.parseNum(order_item_info.order_item.subtotal, 2),
-			FACTOR_IVA: percent_iva_rounded,
+			FACTOR_IVA: this.getIva(order_item_info, order_info.store),
 			COSTO_UNITARIO_NETO: order_item_info.item.reference_price,
 			IMPORTE_NETO_TOTAL: this.parseNum(order_info.order.total - order_info.order.discount, 2),
 			TIPO_MOVIMIENTO: order_item_info.order_item.type == 'NORMAL' ? 1 : 2,
@@ -321,5 +319,16 @@ export class ReportComexSalesComponent extends BaseComponent implements OnInit {
 			LINEA_ORIGINAL: ''
 		};
 		return row;
+	}
+
+	getIva(oii: OrderItemInfo, store: Store): number
+	{
+		if( oii.order_item.total < 1 )
+		{
+			return oii.item.applicable_tax == 'DEFAULT' ? store.tax_percent : oii.item.tax_percent;
+		}
+
+		let subtotal = oii.order_item.total - oii.order_item.tax;
+		return Math.round( (oii.order_item.tax / subtotal) * 100 );
 	}
 }

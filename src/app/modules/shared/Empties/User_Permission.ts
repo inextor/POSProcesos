@@ -81,6 +81,7 @@ export function user_permission(): User_Permission {
 		view_accounts: 0,
 		view_asistance: 0,
 		view_commandas: 0,
+		view_facturas: 0,
 		view_payroll: 0,
 		view_payrolls: 0,
 		view_reservations: 0,
