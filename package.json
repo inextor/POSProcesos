@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
-    "start": "serve --port=4001 --host=0.0.0.0 --configuration development",
+    "start": "ng serve --port=4001 --host=0.0.0.0 --configuration development",
     "build_maps": "./update_build_info.sh && ng build --source-map --base-href",
     "build": "./update_build_info.sh && ng build --configuration=production --base-href",
     "watch": "ng build --watch --configuration development",
