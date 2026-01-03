@@ -60,12 +60,6 @@
 								<span>{{ sortDirection === 'asc' ? '▲' : '▼' }}</span>
 							}
 						</th>
-						<th class="sortable" (click)="sortBy('category_name')">
-							Categoría
-							@if (sortColumn === 'category_name') {
-								<span>{{ sortDirection === 'asc' ? '▲' : '▼' }}</span>
-							}
-						</th>
 						<th class="sortable" (click)="sortBy('total_received')">
 							Recibidos
 							@if (sortColumn === 'total_received') {
@@ -113,7 +107,7 @@
 				</tbody>
 				<tfoot>
 					<tr class="table-secondary fw-bold">
-						<td colspan="4" class="text-end">TOTALES:</td>
+						<td colspan="3" class="text-end">TOTALES:</td>
 						<td>{{totalReceived}}</td>
 						<td>{{totalRequested}}</td>
 						<td>{{totalMerma}}</td>
