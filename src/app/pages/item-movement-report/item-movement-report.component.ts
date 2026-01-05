@@ -9,6 +9,8 @@ import { BaseComponent } from '../../modules/shared/base/base.component';
 import { Category, Store } from '../../modules/shared/RestModels';
 import { ItemMovement } from '../../modules/shared/Models';
 import { forkJoin,Observable, of } from 'rxjs';
+import {RouterLink} from '@angular/router';
+
 
 interface CItemMovement extends ItemMovement
 {
@@ -26,7 +28,7 @@ interface ItemMovementRequest
 	selector: 'app-item-movement-report',
 	templateUrl: './item-movement-report.component.html',
 	styleUrl: './item-movement-report.component.css',
-	imports: [CommonModule, FormsModule]
+	imports: [CommonModule, FormsModule, RouterLink],
 })
 export class ItemMovementReportComponent extends BaseComponent implements OnInit
 {
@@ -66,6 +68,22 @@ export class ItemMovementReportComponent extends BaseComponent implements OnInit
 		(
 			mergeMap((param_map: ParamMap) =>
 			{
+				let store_obs = this.stores.length
+					? of({total: this.stores.length, data: this.stores})
+					: this.rest_store.search({ eq: { status: 'ACTIVE', sales_enabled: 1 }, limit: 999999 });
+
+				return forkJoin
+				({
+					stores: store_obs,
+					param_map: of(param_map),
+				})
+			}),
+			mergeMap((response) =>
+			{
+				this.stores = response.stores.data;
+
+				let param_map = response.param_map;
+
 				this.setTitle('Reporte de Movimientos de Items');
 				this.path = '/item-movement-report';
 				this.is_loading = true;
@@ -101,28 +119,19 @@ export class ItemMovementReportComponent extends BaseComponent implements OnInit
 				this.start_date = Utils.getLocalMysqlStringFromDate(start);
 				this.end_date = Utils.getLocalMysqlStringFromDate(end);
 
-				let store_obs = this.stores.length
-					? of({total: this.stores.length, data: this.stores})
-					: this.rest_store.search({ eq: { status: 'ACTIVE', sales_enabled: 1 }, limit: 999999 });
 
-				return forkJoin
-				({
-					stores: store_obs,
-					report: this.rest.getReportByPath('getItemMovement',
-					{
-						start_timestamp: start,
-						end_timestamp: end,
-						store_id: this.item_movement_search.eq['store_id'],
-					}) as Observable<RestResponse<ItemMovement>>
-				})
+				return this.rest.getReportByPath('getItemMovement',
+				{
+					start_timestamp: start,
+					end_timestamp: end,
+					store_id: this.item_movement_search.eq['store_id'],
+				}) as Observable<RestResponse<ItemMovement>>
 			})
-			,mergeMap((response)=>
+			,mergeMap((report)=>
 			{
-				this.stores = response.stores.data;
-
 				let map = new Map<number,number>();
 
-				let categories_map = response.report.data
+				let categories_map = report.data
 					.filter((item)=>item.category_id!=null)
 					.map((item)=>map.set(item.category_id as number,item.category_id as number));
 
@@ -141,7 +150,7 @@ export class ItemMovementReportComponent extends BaseComponent implements OnInit
 				return forkJoin
 				({
 					category: category_obs,
-					report: of( response.report ),
+					report: of( report ),
 				})
 			})
 		)
