@@ -288,3 +288,16 @@ export interface PurchaseInfo
 	shipping:Shipping | null;
 	bank_movements_info:any[];
 }
+
+export interface ItemMovement
+{
+	item_id:number,
+	item_name:string,
+	item_code:string|null,
+	category_id:number|null,
+	total_received:number,
+	total_requested:number,
+	total_merma:number,
+	total_sold:number,
+	total_produced:number
+}
