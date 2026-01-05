@@ -60,25 +60,25 @@
 								<span>{{ sortDirection === 'asc' ? '▲' : '▼' }}</span>
 							}
 						</th>
-						<th class="sortable" (click)="sortBy('total_received')">
+						<th class="sortable text-end" (click)="sortBy('total_received')">
 							Recibidos
 							@if (sortColumn === 'total_received') {
 								<span>{{ sortDirection === 'asc' ? '▲' : '▼' }}</span>
 							}
 						</th>
-						<th class="sortable" (click)="sortBy('total_requested')">
+						<th class="sortable text-end" (click)="sortBy('total_requested')">
 							Requeridos
 							@if (sortColumn === 'total_requested') {
 								<span>{{ sortDirection === 'asc' ? '▲' : '▼' }}</span>
 							}
 						</th>
-						<th class="sortable" (click)="sortBy('total_merma')">
+						<th class="sortable text-end" (click)="sortBy('total_merma')">
 							Merma
 							@if (sortColumn === 'total_merma') {
 								<span>{{ sortDirection === 'asc' ? '▲' : '▼' }}</span>
 							}
 						</th>
-						<th class="sortable" (click)="sortBy('total_sold')">
+						<th class="sortable text-end" (click)="sortBy('total_sold')">
 							Vendidos
 							@if (sortColumn === 'total_sold') {
 								<span>{{ sortDirection === 'asc' ? '▲' : '▼' }}</span>
@@ -93,10 +93,10 @@
 							<td>{{item.item_id}}</td>
 							<td>{{item?.category?.name}} - {{item.item_name}}</td>
 							<td>{{item.item_code}}</td>
-							<td>{{item.total_received}}</td>
-							<td>{{item.total_requested}}</td>
-							<td>{{item.total_merma}}</td>
-							<td>{{item.total_sold}}</td>
+							<td class="text-end">{{item.total_received| number}}</td>
+							<td class="text-end">{{item.total_requested|number}}</td>
+							<td class="text-end">{{item.total_merma|number}}</td>
+							<td class="text-end">{{item.total_sold|number}}</td>
 						</tr>
 					}
 					@empty {
@@ -108,10 +108,10 @@
 				<tfoot>
 					<tr class="table-secondary fw-bold">
 						<td colspan="3" class="text-end">TOTALES:</td>
-						<td>{{totalReceived}}</td>
-						<td>{{totalRequested}}</td>
-						<td>{{totalMerma}}</td>
-						<td>{{totalSold}}</td>
+						<td class="text-end">{{totalReceived|number}}</td>
+						<td class="text-end">{{totalRequested|number}}</td>
+						<td class="text-end">{{totalMerma|number}}</td>
+						<td class="text-end">{{totalSold|number}}</td>
 					</tr>
 				</tfoot>
 			</table>
