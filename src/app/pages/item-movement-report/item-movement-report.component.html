@@ -67,11 +67,8 @@
 								<span>{{ sortDirection === 'asc' ? '▲' : '▼' }}</span>
 							}
 						</th>
-						<th class="sortable text-end" (click)="sortBy('total_received')">
-							Recibidos
-							@if (sortColumn === 'total_received') {
-								<span>{{ sortDirection === 'asc' ? '▲' : '▼' }}</span>
-							}
+						<th class="sortable" (click)="sortBy('item_code')">
+							Precio Referencia
 						</th>
 						<th class="sortable text-end" (click)="sortBy('total_requested')">
 							Requeridos
@@ -79,9 +76,9 @@
 								<span>{{ sortDirection === 'asc' ? '▲' : '▼' }}</span>
 							}
 						</th>
-						<th class="sortable text-end" (click)="sortBy('total_merma')">
-							Merma
-							@if (sortColumn === 'total_merma') {
+						<th class="sortable text-end" (click)="sortBy('total_received')">
+							Recibidos
+							@if (sortColumn === 'total_received') {
 								<span>{{ sortDirection === 'asc' ? '▲' : '▼' }}</span>
 							}
 						</th>
@@ -92,10 +89,26 @@
 							}
 						</th>
 						<th class="sortable text-end" (click)="sortBy('sold_amount')">
-							Monto Total
+							Ingresos
 							@if (sortColumn === 'sold_amount') {
 								<span>{{ sortDirection === 'asc' ? '▲' : '▼' }}</span>
 							}
+						</th>
+
+						<th class="sortable text-end" (click)="sortBy('total_merma')">
+							Merma
+							@if (sortColumn === 'total_merma') {
+								<span>{{ sortDirection === 'asc' ? '▲' : '▼' }}</span>
+							}
+						</th>
+						<th class="sortable text-end" (click)="sortBy('total_merma')">
+							Costo Merma
+							@if (sortColumn === 'total_merma') {
+								<span>{{ sortDirection === 'asc' ? '▲' : '▼' }}</span>
+							}
+						</th>
+						<th class="sortable text-end" (click)="sortBy('total_merma')">
+							Utilidad
 						</th>
 					</tr>
 				</thead>
@@ -106,14 +119,14 @@
 							<td>{{item.item_id}}</td>
 							<td>{{item?.category?.name}} - {{item.item_name}}</td>
 							<td>{{item.item_code}}</td>
-							<td class="text-end">{{item.total_received| number}}</td>
-							<td class="text-end">{{item.total_requested|number}}</td>
-							<td class="text-end">{{item.total_merma|number}}</td>
-							<td class="text-end">{{item.total_sold|number}}</td>
 							<td class="text-end">{{item.reference_price|number}}</td>
-							<td class="text-end">{{item.total_loss |number}}</td>
+							<td class="text-end">{{item.total_requested|number}}</td>
+							<td class="text-end">{{item.total_received| number}}</td>
+							<td class="text-end">{{item.total_sold|number}} </td>
+							<td class="text-end">{{item.sold_amount|currency}}</td>
+							<td class="text-end">{{item.total_merma|number}}</td>
+							<td class="text-end">{{item.total_merma*item.reference_price|number}}</td>
 							<td class="text-end">{{item.total_gain |number}}</td>
-							<td class="text-end">{{item.sold_amount |currency}}</td>
 						</tr>
 					}
 					@empty {
@@ -124,13 +137,25 @@
 				</tbody>
 				<tfoot>
 					<tr class="table-secondary fw-bold">
-						<td colspan="3" class="text-end">TOTALES:</td>
-						<td class="text-end">{{totalReceived|number}}</td>
+						<td colspan=4 rowspan=2 class="text-end">TOTALES:</td>
 						<td class="text-end">{{totalRequested|number}}</td>
-						<td class="text-end">{{totalMerma|number}}</td>
+						<td class="text-end">{{totalReceived|number}}</td>
 						<td class="text-end">{{totalSold|number}}</td>
 						<td class="text-end">{{totalAmount|currency}}</td>
+						<td class="text-end">{{totalMerma|number}}</td>
+						<td class="text-end">{{totalMermaAmount|currency}}</td>
+						<td class="text-end">{{totalUtilidad|currency}}</td>
 					</tr>
+					<tr class="table-secondary fw-bold">
+						<td class="text-end">Requeridos</td>
+						<td class="text-end">Recibidos</td>
+						<td class="text-end">Vendidos</td>
+						<td class="text-end">Ingresos</td>
+						<td class="text-end">Merma</td>
+						<td class="text-end">Costo Merma</td>
+						<td class="text-end">Utilidad</td>
+					</tr>
+
 				</tfoot>
 			</table>
 		}

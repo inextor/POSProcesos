@@ -43,7 +43,6 @@ export class ItemMovementReportComponent extends BaseComponent implements OnInit
 	rest_category: RestSimple<Category> = this.rest.initRestSimple('category', ['id']);
 	sortColumn: string = '';
 	sortDirection: 'asc' | 'desc' = 'asc';
-	totalAmount: ''|number = '';
 
 	get totalReceived(): number
 	{
@@ -60,10 +59,30 @@ export class ItemMovementReportComponent extends BaseComponent implements OnInit
 		return this.item_movement_list.reduce((sum, item) => sum + (item.total_merma || 0), 0);
 	}
 
+	get totalMermaAmount(): number
+	{
+		return this.item_movement_list.reduce((sum, item) => sum + (item.reference_price || 0) * (item.total_merma || 0), 0);
+	}
+
+
 	get totalSold(): number
 	{
 		return this.item_movement_list.reduce((sum, item) => sum + (item.total_sold || 0), 0);
 	}
+
+	get totalUtilidad(): number
+	{
+		return this.item_movement_list.reduce((sum, item) =>{
+			let utilidad = item.sold_amount - (item.reference_price * (item.total_merma || 0 + item.total_sold || 0));
+			return sum + utilidad;
+		}, 0);
+	}
+
+	get totalAmount(): number
+	{
+		return this.item_movement_list.reduce((sum, item) => sum + (item.sold_amount || 0), 0);
+	}
+
 
 	ngOnInit(): void
 	{
@@ -121,7 +140,6 @@ export class ItemMovementReportComponent extends BaseComponent implements OnInit
 
 				this.start_date = Utils.getLocalMysqlStringFromDate(start);
 				this.end_date = Utils.getLocalMysqlStringFromDate(end);
-
 
 				return this.rest.getReportByPath('getItemMovement',
 				{

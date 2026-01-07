@@ -46,9 +46,10 @@ export class ItemMovementAllStoresReportComponent extends BaseComponent implemen
 	total_sold: number = 0;
 	total_produced: number = 0;
 	total_production_cost: number = 0;
-	total_reference_price: number = 0;
 	total_sold_amount: number = 0;
+	total_qty_sold: number = 0;
 	total_gain: number = 0;
+	total_merma_cost: number = 0;
 
 	ngOnInit(): void
 	{
@@ -140,10 +141,10 @@ export class ItemMovementAllStoresReportComponent extends BaseComponent implemen
 					this.total_received += x.total_received || 0;
 					this.total_requested += x.total_requested || 0;
 					this.total_merma += x.total_merma || 0;
+					this.total_merma_cost += x.total_merma*x.reference_price || 0;
 					this.total_sold += x.total_sold || 0;
 					this.total_produced += x.total_produced || 0;
 					this.total_production_cost += x.production_cost || 0;
-					this.total_reference_price += x.reference_price || 0;
 					this.total_sold_amount += x.sold_amount || 0;
 					this.total_gain += x.total_gain || 0;
 				});
