@@ -13,6 +13,9 @@ import { forkJoin, Observable, of } from 'rxjs';
 interface CItemMovement extends ItemMovement
 {
 	category: Category | null;
+	total_gain: number;
+	production_cost: number;
+	text_danger: boolean;
 }
 
 interface ItemMovementRequest
@@ -37,30 +40,15 @@ export class ItemMovementAllStoresReportComponent extends BaseComponent implemen
 	sortColumn: string = '';
 	sortDirection: 'asc' | 'desc' = 'asc';
 
-	get totalReceived(): number
-	{
-		return this.item_movement_list.reduce((sum, item) => sum + (item.total_received || 0), 0);
-	}
-
-	get totalRequested(): number
-	{
-		return this.item_movement_list.reduce((sum, item) => sum + (item.total_requested || 0), 0);
-	}
-
-	get totalMerma(): number
-	{
-		return this.item_movement_list.reduce((sum, item) => sum + (item.total_merma || 0), 0);
-	}
-
-	get totalSold(): number
-	{
-		return this.item_movement_list.reduce((sum, item) => sum + (item.total_sold || 0), 0);
-	}
-
-	get totalProduced(): number
-	{
-		return this.item_movement_list.reduce((sum, item) => sum + (item.total_produced || 0), 0);
-	}
+	total_received: number = 0;
+	total_requested: number = 0;
+	total_merma: number = 0;
+	total_sold: number = 0;
+	total_produced: number = 0;
+	total_production_cost: number = 0;
+	total_reference_price: number = 0;
+	total_sold_amount: number = 0;
+	total_gain: number = 0;
 
 	ngOnInit(): void
 	{
@@ -88,7 +76,6 @@ export class ItemMovementAllStoresReportComponent extends BaseComponent implemen
 					this.item_movement_search.eq.start_timestamp = start;
 				}
 
-
 				if (this.item_movement_search.eq.end_timestamp)
 				{
 					end = this.item_movement_search.eq.end_timestamp;
@@ -103,14 +90,13 @@ export class ItemMovementAllStoresReportComponent extends BaseComponent implemen
 				this.start_date = Utils.getLocalMysqlStringFromDate(start);
 				this.end_date = Utils.getLocalMysqlStringFromDate(end);
 
-
 				return this.rest.getReportByPath('getItemMovementAllStores',
 				{
 					start_timestamp: start,
 					end_timestamp: end,
 				}) as Observable<RestResponse<ItemMovement>>
-			})
-			, mergeMap((report) =>
+			}),
+			mergeMap((report) =>
 			{
 				let map = new Map<number, number>();
 
@@ -139,25 +125,32 @@ export class ItemMovementAllStoresReportComponent extends BaseComponent implemen
 		)
 		.subscribe
 		({
+			error: (error) => this.showError(error),
 			next: (response) =>
 			{
 				this.item_movement_list = response.report.data.map(x => {
 					let category = response.category.data.find(c => c.id == x.category_id);
-					return { ...x, category: category || null };
+					let production_cost = x.total_merma*x.reference_price;
+					let total_gain = x.sold_amount-(x.total_merma+x.total_sold)*x.reference_price;
+					return { ...x, category: category || null, production_cost, total_gain,text_danger: total_gain<0 }
+				});
+
+
+				this.item_movement_list.forEach(x=>{
+					this.total_received += x.total_received || 0;
+					this.total_requested += x.total_requested || 0;
+					this.total_merma += x.total_merma || 0;
+					this.total_sold += x.total_sold || 0;
+					this.total_produced += x.total_produced || 0;
+					this.total_production_cost += x.production_cost || 0;
+					this.total_reference_price += x.reference_price || 0;
+					this.total_sold_amount += x.sold_amount || 0;
+					this.total_gain += x.total_gain || 0;
 				});
 
 				this.is_loading = false;
 			},
-			error: (error) =>
-			{
-				this.showError(error);
-			}
 		});
-	}
-
-	performSearch()
-	{
-		super.search(this.item_movement_search);
 	}
 
 	sortBy(column: string)
@@ -211,6 +204,15 @@ export class ItemMovementAllStoresReportComponent extends BaseComponent implemen
 					aValue = a.total_sold || 0;
 					bValue = b.total_sold || 0;
 					break;
+				case 'sold_amount':
+					aValue = a.sold_amount || 0;
+					bValue = b.sold_amount || 0;
+					break;
+				case 'total_gain':
+					aValue = a.total_gain || 0;
+					bValue = b.total_gain || 0;
+					break;
+
 				case 'total_produced':
 					aValue = a.total_produced || 0;
 					bValue = b.total_produced || 0;

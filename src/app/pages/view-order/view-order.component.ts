@@ -153,7 +153,7 @@ export class ViewOrderComponent extends BaseComponent implements OnInit
 	rest_order_item_response:Rest<COrder_Item_Response,Order_Item_Response> = this.rest.initRest('order_item_response');
 	forms: Form[] = [];
 	selected_form: Form | null;
-    show_change_serial: boolean = false;
+	show_change_serial: boolean = false;
 	selected_order_item_response: Order_Item_Response | null = null;
 	show_confirm_cancel: boolean = false;
 	cancel_reason: string = '';

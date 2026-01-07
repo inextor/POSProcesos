@@ -14,6 +14,8 @@ import {RouterLink} from '@angular/router';
 
 interface CItemMovement extends ItemMovement
 {
+	total_gain: string|number;
+	total_loss: string|number;
 	category: Category | null;
 }
 
@@ -41,6 +43,7 @@ export class ItemMovementReportComponent extends BaseComponent implements OnInit
 	rest_category: RestSimple<Category> = this.rest.initRestSimple('category', ['id']);
 	sortColumn: string = '';
 	sortDirection: 'asc' | 'desc' = 'asc';
+	totalAmount: ''|number = '';
 
 	get totalReceived(): number
 	{
@@ -156,18 +159,17 @@ export class ItemMovementReportComponent extends BaseComponent implements OnInit
 		)
 		.subscribe
 		({
+			error: (error) => this.showError(error),
 			next: (response) =>
 			{
 				this.item_movement_list = response.report.data.map(x=>{
 					let category = response.category.data.find(c=>c.id==x.category_id);
-					return {...x, category: category || null};
+					let total_loss = x.total_merma*x.reference_price;
+					let total_gain = x.sold_amount-(x.total_merma+x.total_sold)*x.reference_price;
+					return { ...x, category: category || null, total_loss, total_gain };
 				});
 
 				this.is_loading = false;
-			},
-			error: (error) =>
-			{
-				this.showError(error);
 			}
 		});
 	}
@@ -228,6 +230,12 @@ export class ItemMovementReportComponent extends BaseComponent implements OnInit
 					aValue = a.total_sold || 0;
 					bValue = b.total_sold || 0;
 					break;
+				case 'sold_amount':
+					aValue = a.sold_amount || 0;
+					bValue = b.sold_amount || 0;
+					break;
+
+
 				default:
 					return 0;
 			}

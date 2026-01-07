@@ -255,6 +255,7 @@ export interface CashCountInfo
 	first_date: string;
 	last_date: string;
 }
+
 export interface MovementInfo
 {
 	bank_movement:Bank_Movement;
@@ -294,10 +295,12 @@ export interface ItemMovement
 	item_id:number,
 	item_name:string,
 	item_code:string|null,
+	reference_price:number,
 	category_id:number|null,
 	total_received:number,
 	total_requested:number,
 	total_merma:number,
 	total_sold:number,
+	sold_amount:number,
 	total_produced:number
 }
