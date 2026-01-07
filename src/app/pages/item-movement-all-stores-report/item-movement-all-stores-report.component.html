@@ -129,16 +129,26 @@
 				</tbody>
 				<tfoot>
 					<tr class="table-secondary fw-bold">
-						<td colspan="3" class="text-end">TOTALES:</td>
-						<td class="text-end">{{total_reference_price|currency}}</td>
+						<th colspan=4 rowspan=2 class="text-center">Totales:</th>
+						<th class="text-end">Requeridos </th>
+						<th class="text-end">Producidos </th>
+						<th class="text-end">Costo de produccion</th>
+						<th class="text-end">Recibidos </th>
+						<th class="text-end">Vendidos </th>
+						<th class="text-end">Ventas </th>
+						<th class="text-end">Merma </th>
+						<th class="text-end">Costo de Merma </th>
+						<th class="text-end">Utilidad </th>
+					</tr>
+					<tr class="table-secondary fw-bold">
 						<td class="text-end">{{total_requested|number}}</td>
 						<td class="text-end">{{total_produced|number}}</td>
 						<td class="text-end">{{total_production_cost|currency}}</td>
 						<td class="text-end">{{total_received|number}}</td>
-						<td class="text-end">{{total_merma|number}}</td>
-						<td class="text-end">{{total_merma_cost|number}}</td>
 						<td class="text-end">{{total_sold|number}}</td>
 						<td class="text-end">{{total_sold_amount|currency}}</td>
+						<td class="text-end">{{total_merma|number}}</td>
+						<td class="text-end">{{total_merma_cost|currency}}</td>
 						<td class="text-end">{{total_gain|currency}}</td>
 					</tr>
 				</tfoot>
