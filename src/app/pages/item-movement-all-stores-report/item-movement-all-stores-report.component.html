@@ -1,5 +1,5 @@
 <div class="container-fluid">
-	<h1 class="my-3">Reporte de Movimientos de Items - Todas las Sucursales</h1>
+	<h1 class="my-3">Reporte Movimientos de Artículos- Todas las Sucursales</h1>
 	<div class="card p-3">
 		<div class="row">
 			<div class="col-6 col-md-4">
@@ -48,6 +48,7 @@
 								<span>{{ sortDirection === 'asc' ? '▲' : '▼' }}</span>
 							}
 						</th>
+						<th class="sortable text-end">Precio</th>
 						<th class="sortable text-end" (click)="sortBy('total_requested')">
 							Requeridos
 							@if (sortColumn === 'total_requested') {
@@ -68,13 +69,13 @@
 							}
 						</th>
 						<th class="sortable text-end" (click)="sortBy('total_sold')">
-							Vendidos
+							Venta
 							@if (sortColumn === 'total_sold') {
 								<span>{{ sortDirection === 'asc' ? '▲' : '▼' }}</span>
 							}
 						</th>
 						<th class="sortable text-end" (click)="sortBy('sold_amount')">
-							Ventas
+							Venta$
 							@if (sortColumn === 'sold_amount') {
 								<span>{{ sortDirection === 'asc' ? '▲' : '▼' }}</span>
 							}
@@ -86,13 +87,12 @@
 							}
 						</th>
 						<th class="sortable text-end" (click)="sortBy('total_merma')">
-							Costo de Merma
+							Merma$
 							@if (sortColumn === 'total_merma') {
 								<span>{{ sortDirection === 'asc' ? '▲' : '▼' }}</span>
 							}
 						</th>
-						<th class="sortable text-end">Precio de referencia</th>
-												<th class="sortable text-end" (click)="sortBy('total_gain')">
+						<th class="sortable text-end" (click)="sortBy('total_gain')">
 							Utilidad
 							@if (sortColumn === 'total_gain') {
 								<span>{{ sortDirection === 'asc' ? '▲' : '▼' }}</span>
@@ -112,10 +112,10 @@
 							<td class="text-end">{{item.total_produced|number}}</td>
 							<td class="text-end">{{item.production_cost|currency}}</td>
 							<td class="text-end">{{item.total_received| number}}</td>
-							<td class="text-end">{{item.total_merma|number}}</td>
-							<td class="text-end">{{item.total_merma*item.reference_price|currency}}</td>
 							<td class="text-end">{{item.total_sold|number}}</td>
 							<td class="text-end">{{item.sold_amount|currency}}</td>
+							<td class="text-end">{{item.total_merma|number}}</td>
+							<td class="text-end">{{item.total_merma*item.reference_price|currency}}</td>
 							<td class="text-end" [ngClass]="{'text-danger': item.text_danger}">
 								{{item.total_gain|currency}}
 							</td>
