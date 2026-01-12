@@ -112,6 +112,12 @@ export class ItemMovementReportComponent extends BaseComponent implements OnInit
 
 				this.item_movement_search = this.getSearch(param_map, ['store_id','start_timestamp','end_timestamp']);
 
+				// Si el usuario tiene un store_id asignado y no se ha especificado uno en los parámetros, usarlo por defecto
+				if (!this.item_movement_search.eq.store_id && this.rest.user?.store_id)
+				{
+					this.item_movement_search.eq.store_id = this.rest.user.store_id;
+				}
+
 				let start: Date = new Date();
 				let end: Date = new Date();
 
