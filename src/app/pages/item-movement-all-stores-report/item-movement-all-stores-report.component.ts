@@ -131,7 +131,7 @@ export class ItemMovementAllStoresReportComponent extends BaseComponent implemen
 			{
 				this.item_movement_list = response.report.data.map(x => {
 					let category = response.category.data.find(c => c.id == x.category_id);
-					let production_cost = x.total_merma*x.reference_price;
+					let production_cost = x.total_produced*x.reference_price;
 					let total_gain = x.sold_amount-(x.total_merma+x.total_sold)*x.reference_price;
 					return { ...x, category: category || null, production_cost, total_gain,text_danger: total_gain<0 }
 				});

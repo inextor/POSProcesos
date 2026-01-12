@@ -252,6 +252,19 @@ export class ItemMovementReportComponent extends BaseComponent implements OnInit
 					aValue = a.sold_amount || 0;
 					bValue = b.sold_amount || 0;
 					break;
+			case 'reference_price':
+				aValue = a.reference_price || 0;
+				bValue = b.reference_price || 0;
+				break;
+			case 'total_loss':
+				aValue = (typeof a.total_loss === 'number' ? a.total_loss : parseFloat(a.total_loss as string)) || 0;
+				bValue = (typeof b.total_loss === 'number' ? b.total_loss : parseFloat(b.total_loss as string)) || 0;
+				break;
+			case 'total_gain':
+				aValue = (typeof a.total_gain === 'number' ? a.total_gain : parseFloat(a.total_gain as string)) || 0;
+				bValue = (typeof b.total_gain === 'number' ? b.total_gain : parseFloat(b.total_gain as string)) || 0;
+				break;
+
 
 
 				default:

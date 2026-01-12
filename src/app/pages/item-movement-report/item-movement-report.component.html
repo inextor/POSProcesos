@@ -1,7 +1,7 @@
 <div class="container-fluid">
 	<div class="row align-items-center">
 		<div class="col-10">
-			<h1 class="my-3">Reporte de Movimientos de Items</h1>
+			<h1 class="my-3">Reporte de Movimientos de Artículos</h1>
 		</div>
 		<div class="col-2 text-end">
 			<a routerLink="/item-movement-all-stores-report" class="btn btn-primary">Todas</a>
@@ -67,8 +67,11 @@
 								<span>{{ sortDirection === 'asc' ? '▲' : '▼' }}</span>
 							}
 						</th>
-						<th class="sortable" (click)="sortBy('item_code')">
-							Precio Referencia
+						<th class="sortable" (click)="sortBy('reference_price')">
+							Precio
+							@if (sortColumn === 'reference_price') {
+								<span>{{ sortDirection === 'asc' ? '▲' : '▼' }}</span>
+							}
 						</th>
 						<th class="sortable text-end" (click)="sortBy('total_requested')">
 							Requeridos
@@ -83,13 +86,13 @@
 							}
 						</th>
 						<th class="sortable text-end" (click)="sortBy('total_sold')">
-							Vendidos
+							Venta
 							@if (sortColumn === 'total_sold') {
 								<span>{{ sortDirection === 'asc' ? '▲' : '▼' }}</span>
 							}
 						</th>
 						<th class="sortable text-end" (click)="sortBy('sold_amount')">
-							Ingresos
+							Venta$
 							@if (sortColumn === 'sold_amount') {
 								<span>{{ sortDirection === 'asc' ? '▲' : '▼' }}</span>
 							}
@@ -101,14 +104,17 @@
 								<span>{{ sortDirection === 'asc' ? '▲' : '▼' }}</span>
 							}
 						</th>
-						<th class="sortable text-end" (click)="sortBy('total_merma')">
-							Costo Merma
-							@if (sortColumn === 'total_merma') {
+						<th class="sortable text-end" (click)="sortBy('total_loss')">
+							Merma$
+							@if (sortColumn === 'total_loss') {
 								<span>{{ sortDirection === 'asc' ? '▲' : '▼' }}</span>
 							}
 						</th>
-						<th class="sortable text-end" (click)="sortBy('total_merma')">
+						<th class="sortable text-end" (click)="sortBy('total_gain')">
 							Utilidad
+							@if (sortColumn === 'total_gain') {
+								<span>{{ sortDirection === 'asc' ? '▲' : '▼' }}</span>
+							}
 						</th>
 					</tr>
 				</thead>
@@ -125,8 +131,8 @@
 							<td class="text-end">{{item.total_sold|number}} </td>
 							<td class="text-end">{{item.sold_amount|currency}}</td>
 							<td class="text-end">{{item.total_merma|number}}</td>
-							<td class="text-end">{{item.total_merma*item.reference_price|number}}</td>
-							<td class="text-end">{{item.total_gain |number}}</td>
+							<td class="text-end">{{item.total_merma*item.reference_price|currency}}</td>
+							<td class="text-end">{{item.total_gain |currency}}</td>
 						</tr>
 					}
 					@empty {
