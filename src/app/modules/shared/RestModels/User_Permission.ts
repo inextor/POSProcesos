@@ -63,6 +63,7 @@ export interface User_Permission {
   reports: any;
   return_money: any;
   add_roles: any;
+  shipment_quick_add_item: number;
   shipping_receive_type: 'VALIDATE' | 'CAPTURE_QTY';
   show_tables: any;
   send_shipping: any;
