@@ -75,6 +75,7 @@ export function user_permission(): User_Permission {
 		show_tables: 0,
 		stocktake: 0,
 		store_prices: 0,
+		shipment_quick_add_item: 0,
 		updated: new Date(),
 		updated_by_user_id: null,
 		user_id: 0,
