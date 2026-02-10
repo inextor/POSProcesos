@@ -1,0 +1,177 @@
+<div class="container-fluid">
+	<div class="row align-items-center">
+		<div class="col-12">
+			<h1 class="my-3">Reporte de Pagos a Crédito</h1>
+		</div>
+	</div>
+	<div class="card p-3">
+		<div class="row">
+			<div class="col-md-3">
+				<label>Sucursal</label>
+				<select name="store_id" class="form-control" [(ngModel)]="credit_payment_search.eq['store_id']">
+					<option [value]="undefined">Todas las sucursales</option>
+					@for(store of stores; track store.id)
+					{
+						<option [value]="store.id">{{store.name}}</option>
+					}
+				</select>
+			</div>
+			<div class="col-md-3">
+				<label>Cliente</label>
+				<select name="client_user_id" class="form-control" [(ngModel)]="credit_payment_search.eq['client_user_id']">
+					<option [value]="undefined">Todos los clientes</option>
+					@for(client of clients; track client.id)
+					{
+						<option [value]="client.id">{{client.name}}</option>
+					}
+				</select>
+			</div>
+			<div class="col-md-3">
+				<label>Fecha Inicial</label>
+				<input type="date" name="start_date" class="form-control" [(ngModel)]="start_date">
+			</div>
+			<div class="col-md-3">
+				<label>Fecha Final</label>
+				<input type="date" name="end_date" class="form-control" [(ngModel)]="end_date">
+			</div>
+		</div>
+		<div class="row mt-3">
+			<div class="col">
+				<button type="button" class="btn btn-primary w-100" (click)="performSearch()">
+					<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" width="1.3em" height="1.3em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 512 512"><path d="M505 442.7L405.3 343c-4.5-4.5-10.6-7-17-7H372c27.6-35.3 44-79.7 44-128C416 93.1 322.9 0 208 0S0 93.1 0 208s93.1 208 208 208c48.3 0 92.7-16.4 128-44v16.3c0 6.4 2.5 12.5 7 17l99.7 99.7c9.4 9.4 24.6 9.4 33.9 0l28.3-28.3c9.4-9.4 9.4-24.6.1-34zM208 336c-70.7 0-128-57.2-128-128c0-70.7 57.2-128 128-128c70.7 0 128 57.2 128 128c0 70.7-57.2 128-128 128z" fill="currentColor"/></svg>
+					Buscar
+				</button>
+			</div>
+		</div>
+	</div>
+
+	<div class="card p-3 mt-3">
+		@if (is_loading) {
+			<div class="text-center">
+				<div class="spinner-border" role="status">
+					<span class="visually-hidden">Cargando...</span>
+				</div>
+			</div>
+		} @else {
+			<div class="row mb-3">
+				<div class="col-md-4">
+					<div class="alert alert-info mb-0">
+						<strong>Total de registros:</strong> {{total_records | number}}
+					</div>
+				</div>
+				<div class="col-md-4">
+					<div class="alert alert-success mb-0">
+						<strong>Monto total aplicado:</strong> {{total_amount | currency}}
+					</div>
+				</div>
+				<div class="col-md-4">
+					<div class="alert alert-warning mb-0">
+						<strong>Promedio días de crédito:</strong> {{avgDaysDifference | number:'1.1-1'}}
+					</div>
+				</div>
+			</div>
+
+			<div class="table-responsive">
+				<table class="table table-bordered table-striped">
+					<thead class="table-dark">
+						<tr>
+							<th class="sortable" (click)="sortBy('payment_id')">
+								Pago ID
+								@if (sortColumn === 'payment_id') {
+									<span>{{ sortDirection === 'asc' ? '▲' : '▼' }}</span>
+								}
+							</th>
+							<th class="sortable" (click)="sortBy('order_id')">
+								Orden
+								@if (sortColumn === 'order_id') {
+									<span>{{ sortDirection === 'asc' ? '▲' : '▼' }}</span>
+								}
+							</th>
+							<th class="sortable" (click)="sortBy('client_name')">
+								Cliente
+								@if (sortColumn === 'client_name') {
+									<span>{{ sortDirection === 'asc' ? '▲' : '▼' }}</span>
+								}
+							</th>
+							<th class="sortable" (click)="sortBy('store_name')">
+								Sucursal
+								@if (sortColumn === 'store_name') {
+									<span>{{ sortDirection === 'asc' ? '▲' : '▼' }}</span>
+								}
+							</th>
+							<th class="sortable text-end" (click)="sortBy('order_total')">
+								Total Orden
+								@if (sortColumn === 'order_total') {
+									<span>{{ sortDirection === 'asc' ? '▲' : '▼' }}</span>
+								}
+							</th>
+							<th class="sortable" (click)="sortBy('order_local_date')">
+								Fecha
+								@if (sortColumn === 'order_local_date') {
+									<span>{{ sortDirection === 'asc' ? '▲' : '▼' }}</span>
+								}
+							</th>
+							<th class="sortable" (click)="sortBy('payment_local_date')">
+								Fecha Pago
+								@if (sortColumn === 'payment_local_date') {
+									<span>{{ sortDirection === 'asc' ? '▲' : '▼' }}</span>
+								}
+							</th>
+							<th class="sortable text-end" (click)="sortBy('days_difference')">
+								Días
+								@if (sortColumn === 'days_difference') {
+									<span>{{ sortDirection === 'asc' ? '▲' : '▼' }}</span>
+								}
+							</th>
+							<th class="sortable text-end" (click)="sortBy('amount_applied')">
+								Monto Aplicado
+								@if (sortColumn === 'amount_applied') {
+									<span>{{ sortDirection === 'asc' ? '▲' : '▼' }}</span>
+								}
+							</th>
+							<th class="sortable" (click)="sortBy('transaction_type')">
+								Tipo Pago
+								@if (sortColumn === 'transaction_type') {
+									<span>{{ sortDirection === 'asc' ? '▲' : '▼' }}</span>
+								}
+							</th>
+							<th>Referencia</th>
+						</tr>
+					</thead>
+					<tbody>
+						@for(item of credit_payment_list; track item.payment_id)
+						{
+							<tr>
+								<td>{{item.payment_id}}</td>
+								<td><a [href]="getExternalLink('view-order', item.order_id)" target="_blank">{{item.order_id}} <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg></a></td>
+								<td>{{item.client_name}}</td>
+								<td>{{item.store_name}}</td>
+								<td class="text-end">{{item.order_total | currency}}</td>
+								<td>{{item.order_local_date | shortDate:'dateNoYear'}}</td>
+								<td>{{item.payment_local_date | shortDate:'dateNoYear'}}</td>
+								<td class="text-end">{{item.days_difference}}</td>
+								<td class="text-end">{{item.amount_applied | currency}}</td>
+								<td>{{getPaymentMethodName(item.transaction_type)}}</td>
+								<td>{{item.reference}}</td>
+							</tr>
+						}
+						@empty {
+							<tr>
+								<td class="text-center" colspan="11">No se encontraron pagos a crédito</td>
+							</tr>
+						}
+					</tbody>
+					<tfoot>
+						<tr class="table-secondary fw-bold">
+							<td colspan="4" class="text-end">TOTALES:</td>
+							<td class="text-end">{{totalOrderAmount | currency}}</td>
+							<td colspan="3"></td>
+							<td class="text-end">{{totalAmountApplied | currency}}</td>
+							<td colspan="2"></td>
+						</tr>
+					</tfoot>
+				</table>
+			</div>
+		}
+	</div>
+</div>

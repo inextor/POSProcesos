@@ -86,7 +86,15 @@ export const routes: Routes = [
 			{path: 'purchase/provider/:provider_id', loadComponent: () => import('./pages/save-purchase/save-purchase.component').then(m => m.SavePurchaseComponent), canActivate: [authGuard]},
 			{path: 'purchase/edit/:id', loadComponent: () => import('./pages/save-purchase/save-purchase.component').then(m => m.SavePurchaseComponent), canActivate: [authGuard]},
 			{path: 'item-movement-report', loadComponent: () => import('./pages/item-movement-report/item-movement-report.component').then(m => m.ItemMovementReportComponent), canActivate: [authGuard]},
-			{path: 'item-movement-all-stores-report', loadComponent: () => import('./pages/item-movement-all-stores-report/item-movement-all-stores-report.component').then(m => m.ItemMovementAllStoresReportComponent), canActivate: [authGuard]}
+			{path: 'item-movement-all-stores-report', loadComponent: () => import('./pages/item-movement-all-stores-report/item-movement-all-stores-report.component').then(m => m.ItemMovementAllStoresReportComponent), canActivate: [authGuard]},
+			{path: 'list-printer', loadComponent: () => import('./pages/list-printer/list-printer.component').then(m => m.ListPrinterComponent), canActivate: [authGuard]},
+			{path: 'add-printer', loadComponent: () => import('./pages/save-printer/save-printer.component').then(m => m.SavePrinterComponent), canActivate: [authGuard]},
+			{path: 'edit-printer/:id', loadComponent: () => import('./pages/save-printer/save-printer.component').then(m => m.SavePrinterComponent), canActivate: [authGuard]},
+			{path: 'report-credit-payments', loadComponent: () => import('./pages/report-credit-payments/report-credit-payments.component').then(m => m.ReportCreditPaymentsComponent), canActivate: [authGuard]},
+			{path: 'list-transformation', loadComponent: () => import('./pages/list-transformation/list-transformation.component').then(m => m.ListTransformationComponent), canActivate: [authGuard]},
+			{path: 'add-transformation', loadComponent: () => import('./pages/save-transformation/save-transformation.component').then(m => m.SaveTransformationComponent), canActivate: [authGuard]},
+			{path: 'edit-transformation/:id', loadComponent: () => import('./pages/save-transformation/save-transformation.component').then(m => m.SaveTransformationComponent), canActivate: [authGuard]},
+			{path: 'provider-resume', loadComponent: () => import('./pages/provider-resume/provider-resume.component').then(m => m.ProviderResumeComponent), canActivate: [authGuard]}
 		]
 	},
 ];

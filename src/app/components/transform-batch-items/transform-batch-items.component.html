@@ -1,0 +1,16 @@
+<div class="card p-3">
+	<div class="row">
+		<code>[transformation_name,	reference,	input_item_id,	input_quantity,	output_item_id,	output_quantity]</code>
+
+		<form (submit)="createTransformations($event)">
+			<div class="">
+				<input type="file" name="transformations_file" class="form-control" (change)="onFileChanged($event)" required>
+			</div>
+			<div class="my-3 d-flex gap-2">
+				<button type="submit" class="btn btn-primary" [disabled]="is_loading">Crear Transformaciones</button>
+				<button type="button" class="btn btn-secondary" (click)="downloadTemplate()">Descargar Plantilla</button>
+			</div>
+		</form>
+
+	</div>
+</div>

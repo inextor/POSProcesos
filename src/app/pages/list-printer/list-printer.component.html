@@ -1,0 +1,41 @@
+<div class="container-fluid">
+  <div class="row align-items-center">
+    <div class="col-8">
+      <h1 class="my-3">Impresoras</h1>
+    </div>
+    <div class="col-4 text-end">
+      <button type="button" class="ml-2 btn btn-secondary lift" [routerLink]="['/add-printer']">Agregar Nueva</button>
+    </div>
+  </div>
+
+  <div class="card px-1 px-md-2 py-3 mt-3">
+    <table class="table table-striped w-100">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Nombre</th>
+          <th>IP</th>
+          <th>Protocolo</th>
+          <th>Dispositivo</th>
+          <th>No. Serie</th>
+          <th>Modificado</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (printer of printer_list; track printer) {
+          <tr>
+            <td>{{ printer.id }}</td>
+            <td>
+              <a [routerLink]="['/edit-printer', printer.id]">{{ printer.name }}</a>
+            </td>
+            <td>{{ printer.ip_address }}</td>
+            <td>{{ printer.protocol }}</td>
+            <td>{{ printer.device }}</td>
+            <td>{{ printer.serial_number }}</td>
+            <td>{{ printer.updated | shortDate: 'relative' }}</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+</div>

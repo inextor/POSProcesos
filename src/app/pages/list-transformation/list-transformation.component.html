@@ -1,0 +1,47 @@
+<div class="container-fluid">
+	<div class="row align-items-center">
+		<div class="col-8">
+			<h1 class="my-3">Transformaciones</h1>
+		</div>
+		<div class="col-4 text-end">
+			<button type="button" class="btn btn-secondary" [routerLink]="['/add-transformation']">Agregar Nueva</button>
+		</div>
+	</div>
+
+	<div class="card px-1 px-md-2 py-3 mt-3">
+		<table class="table table-striped w-100">
+			<thead>
+				<tr>
+					<th>ID</th>
+					<th>Nombre</th>
+					<th>Entradas</th>
+					<th>Salidas</th>
+					<th>Referencia</th>
+					<th>Modificado</th>
+				</tr>
+			</thead>
+			<tbody>
+				@for (info of transformation_info_list; track info.transformation.id) {
+					<tr>
+						<td>{{ info.transformation.id }}</td>
+						<td>
+							<a [routerLink]="['/edit-transformation', info.transformation.id]">{{ info.transformation.name }}</a>
+						</td>
+						<td>
+							@for (input of info.inputs; track input.id; let last = $last) {
+								<span>{{ input.quantity }} x {{ input.item?.name || 'Item #' + input.item_id }}@if (!last) {, }</span>
+							}
+						</td>
+						<td>
+							@for (output of info.outputs; track output.id; let last = $last) {
+								<span>{{ output.quantity }} x {{ output.item?.name || 'Item #' + output.item_id }}@if (!last) {, }</span>
+							}
+						</td>
+						<td>{{ info.transformation.reference }}</td>
+						<td>{{ info.transformation.updated | shortDate: 'relative' }}</td>
+					</tr>
+				}
+			</tbody>
+		</table>
+	</div>
+</div>

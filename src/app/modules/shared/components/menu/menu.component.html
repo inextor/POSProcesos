@@ -105,6 +105,14 @@
 										<span>Movimiento de artículos</span>
 									</a>
 								</li>
+								<li class="side-nav-item">
+									<a routerLink="/report-credit-payments" class="side-nav-link" aria-expanded="false" routerLinkActive="active">
+										<i class="svg-icon">
+											<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><path fill="currentColor" d="M12 12.5a3.5 3.5 0 1 0 0 7a3.5 3.5 0 0 0 0-7M10.5 16a1.5 1.5 0 1 1 3 0a1.5 1.5 0 0 1-3 0"/><path fill="currentColor" d="M17.526 5.116L14.347.659L2.658 9.997L2.01 9.99V10H1.5v12h21V10h-.962l-1.914-5.599zM19.425 10H9.397l7.469-2.546l1.522-.487zM15.55 5.79L7.84 8.418l6.106-4.878zM3.5 20v-8h17v8z"/></svg>
+										</i>
+										<span>Pagos a Crédito</span>
+									</a>
+								</li>
 							}
 
 							@if (rest.user_permission.edit_billing_data || rest.user_permission.view_facturas) {
@@ -513,6 +521,17 @@
 									</a>
 								</li>
 							}
+							@if (rest.user_permission.add_items) {
+								<li class="side-nav-item">
+									<a routerLink="list-transformation" class="side-nav-link pe-0" aria-expanded="false" routerLinkActive="active">
+										<i class="svg-icon">
+											<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" focusable="false" width="1em" height="1em" style="-ms-transform: rotate(360deg); -webkit-transform: rotate(360deg); transform: rotate(360deg);" preserveAspectRatio="xMidYMid meet" viewBox="0 0 1200 1200"><path d="M30.702 440.542V92.705C33.358 39.559 76.183.64 123.407 0h347.836c55.938 3.476 122.726 25.407 158.596 65.89l514.859 573.089c32.341 40.942 33.256 97.599 0 131.778l-403 403c-39.514 35.748-98.47 34.227-131.779 0L96.591 599.137C59.17 554.944 31.218 495.859 30.702 440.542zm150.933-200.734c2.193 51.71 42.984 89.029 88.875 89.641c51.859-2.316 89.028-43.651 89.641-89.641c-2.283-51.883-43.829-88.273-89.641-88.875c-51.735 2.161-88.276 43.163-88.875 88.875z" fill="currentColor"/></svg>
+										</i>
+										<span>Equivalencia Artículos</span>
+									</a>
+								</li>
+							}
+
 							@if (rest.user_permission.add_item_points && rest.preferences.offers_enabled && !rest.preferences.comex_enabled) {
 								<li class="side-nav-item">
 									<a [attr.href]="external_base_url + '/#/list-item-points'" class="side-nav-link pe-0" aria-expanded="false" routerLinkActive="active">

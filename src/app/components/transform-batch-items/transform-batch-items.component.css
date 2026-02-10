@@ -1,0 +1,22 @@
+/* Basic styling for transform-batch-items component */
+.card {
+  margin-bottom: 1rem;
+}
+
+code {
+  background-color: #f8f9fa;
+  padding: 0.5rem;
+  border-radius: 0.25rem;
+  display: block;
+  margin-bottom: 1rem;
+  font-size: 0.875rem;
+}
+
+.form-control {
+  margin-bottom: 1rem;
+}
+
+.btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}

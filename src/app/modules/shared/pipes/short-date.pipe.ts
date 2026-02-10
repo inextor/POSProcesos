@@ -48,6 +48,24 @@ export class ShortDatePipe implements PipeTransform {
 			{
 				return Utils.getDateString( v, false );
 			}
+
+			if( args.includes('dateNoYear') )
+			{
+				let date = Utils.getDateFromValue( v );
+				if( date )
+				{
+					let months = 'Ene,Feb,Mar,Abr,May,Jun,Jul,Ago,Sep,Oct,Nov,Dic'.split(',');
+					let today = new Date();
+					let day = date.getDate().toString().padStart(2, '0');
+					let month = months[date.getMonth()];
+					if( date.getFullYear() === today.getFullYear() )
+					{
+						return `${day}/${month}`;
+					}
+					return `${day}/${month}/${date.getFullYear()}`;
+				}
+				return '';
+			}
 		}
 
 		return Utils.getFullRelativeDateString( v );

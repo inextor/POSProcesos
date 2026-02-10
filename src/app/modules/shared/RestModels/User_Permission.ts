@@ -87,5 +87,3 @@ export interface User_Permission {
   view_payrolls: any | null;
   add_consumptions: any | null;
 }
-
-

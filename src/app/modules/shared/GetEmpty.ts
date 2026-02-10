@@ -35,6 +35,11 @@ import { category_store } from './Empties/Category_Store';
 import { category } from './Empties/Category';
 import { item } from './Empties/Item';
 import { price_type } from './Empties/Price_Type';
+import { printer } from './Empties/Printer';
+import { transformation } from './Empties/Transformation';
+import { transformation_input } from './Empties/Transformation_Input';
+import { transformation_output } from './Empties/Transformation_Output';
+import { transformation_info } from './Empties/Transformation_Info';
 
 /**
  * GetEmpty class provides static methods for creating empty/default instances of models.
@@ -78,4 +83,9 @@ export class GetEmpty {
 	static category = category;
 	static item = item;
 	static price_type = price_type;
+	static printer = printer;
+	static transformation = transformation;
+	static transformation_input = transformation_input;
+	static transformation_output = transformation_output;
+	static transformation_info = transformation_info;
 }

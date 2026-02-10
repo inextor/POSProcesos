@@ -8,6 +8,7 @@ export interface Printer {
   name: string;
   port: number | null;
   protocol: string;
+  serial_number: string;
   store_id: number | null;
   updated_by_user_id: number;
   updated: Date;

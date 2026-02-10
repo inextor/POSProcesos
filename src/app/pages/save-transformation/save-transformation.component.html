@@ -1,0 +1,122 @@
+<div class="container-fluid">
+	<div class="row">
+		<div class="col-12">
+			<h1 class="my-3">{{transformation_info.transformation.id ? 'Actualizar':'Agregar'}} Transformación</h1>
+		</div>
+	</div>
+
+	<app-loading [is_loading]="is_loading"></app-loading>
+
+	<form (submit)="save($event)" ngNativeValidate>
+		<div class="card p-3 mt-3">
+			<h5 class="mb-3">Información General</h5>
+			<div class="row my-2">
+				<div class="col-12 col-md-6 form-group">
+					<label for="name">Nombre</label>
+					<input type="text" id="name" name="name" class="form-control" [(ngModel)]="transformation_info.transformation.name" required>
+				</div>
+				<div class="col-12 col-md-6 form-group">
+					<label for="reference">Referencia</label>
+					<input type="text" id="reference" name="reference" class="form-control" [(ngModel)]="transformation_info.transformation.reference">
+				</div>
+			</div>
+			<div class="row my-2">
+				<div class="col-12 form-group">
+					<label for="note">Nota</label>
+					<textarea id="note" name="note" class="form-control" [(ngModel)]="transformation_info.transformation.note" rows="2"></textarea>
+				</div>
+			</div>
+		</div>
+
+		<div class="card p-3 mt-3">
+			<div class="d-flex justify-content-between align-items-center mb-3">
+				<h5 class="mb-0">Entradas (Artículos a consumir)</h5>
+				<button type="button" class="btn btn-sm btn-outline-primary" (click)="addInputRow()">+ Agregar Entrada</button>
+			</div>
+			<table class="table table-bordered">
+				<thead>
+					<tr>
+						<th style="width: 50%">Artículo</th>
+						<th style="width: 30%">Cantidad</th>
+						<th style="width: 20%">Acciones</th>
+					</tr>
+				</thead>
+				<tbody>
+					@for (row of input_rows; track row; let i = $index) {
+						<tr>
+							<td>
+								@if (row.item_info) {
+									<div class="d-flex align-items-center">
+										<span class="flex-grow-1">{{ row.item_info.item.name }}</span>
+										<button type="button" class="btn btn-sm btn-outline-secondary ms-2" (click)="row.item_info = null; row.transformation_input.item_id = 0; row.search_str = ''">Cambiar</button>
+									</div>
+								} @else {
+									<app-search-items
+										[(search_str)]="row.search_str"
+										(item_selected)="onInputItemSelected($event, row)"
+										[reset_on_search]="false">
+									</app-search-items>
+								}
+							</td>
+							<td>
+								<input type="number" class="form-control" [(ngModel)]="row.transformation_input.quantity" [name]="'input_qty_' + i" min="0.00001" step="any" required>
+							</td>
+							<td class="text-center">
+								<button type="button" class="btn btn-sm btn-outline-danger" (click)="removeInputRow(i)">Eliminar</button>
+							</td>
+						</tr>
+					}
+				</tbody>
+			</table>
+		</div>
+
+		<div class="card p-3 mt-3">
+			<div class="d-flex justify-content-between align-items-center mb-3">
+				<h5 class="mb-0">Salidas (Artículos a producir)</h5>
+				<button type="button" class="btn btn-sm btn-outline-primary" (click)="addOutputRow()">+ Agregar Salida</button>
+			</div>
+			<table class="table table-bordered">
+				<thead>
+					<tr>
+						<th style="width: 50%">Artículo</th>
+						<th style="width: 30%">Cantidad</th>
+						<th style="width: 20%">Acciones</th>
+					</tr>
+				</thead>
+				<tbody>
+					@for (row of output_rows; track row; let i = $index) {
+						<tr>
+							<td>
+								@if (row.item_info) {
+									<div class="d-flex align-items-center">
+										<span class="flex-grow-1">{{ row.item_info.item.name }}</span>
+										<button type="button" class="btn btn-sm btn-outline-secondary ms-2" (click)="row.item_info = null; row.transformation_output.item_id = 0; row.search_str = ''">Cambiar</button>
+									</div>
+								} @else {
+									<app-search-items
+										[(search_str)]="row.search_str"
+										(item_selected)="onOutputItemSelected($event, row)"
+										[reset_on_search]="false">
+									</app-search-items>
+								}
+							</td>
+							<td>
+								<input type="number" class="form-control" [(ngModel)]="row.transformation_output.quantity" [name]="'output_qty_' + i" min="0.00001" step="any" required>
+							</td>
+							<td class="text-center">
+								<button type="button" class="btn btn-sm btn-outline-danger" (click)="removeOutputRow(i)">Eliminar</button>
+							</td>
+						</tr>
+					}
+				</tbody>
+			</table>
+		</div>
+
+		<div class="card p-3 mt-3">
+			<div class="text-end">
+				<button type="button" class="btn btn-secondary me-2" (click)="location.back()">Cancelar</button>
+				<button type="submit" class="btn btn-primary">Guardar</button>
+			</div>
+		</div>
+	</form>
+</div>
