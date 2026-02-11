@@ -7,7 +7,8 @@
     "build_maps": "./update_build_info.sh && ng build --source-map --base-href",
     "build": "./update_build_info.sh && ng build --configuration=production --base-href",
     "watch": "ng build --watch --configuration development",
-	"deploy": "./update_build_info.sh && ng build --configuration=production --base-href  && ./deploy.sh",
+    "deploy": "./update_build_info.sh && ng build --configuration=production --base-href  && ./deploy.sh",
+    "deploy_test": "./update_build_info.sh && ng build --configuration=production --base-href  && ./deploy_test.sh",
     "test": "ng test"
   },
   "private": true,
