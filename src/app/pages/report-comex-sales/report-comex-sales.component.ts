@@ -127,7 +127,12 @@ export class ReportComexSalesComponent extends BaseComponent implements OnInit {
 		const BATCH_SIZE = 100;
 
 		let search_object: SearchObject<COrder> = this.rest_order_info.getEmptySearch();
-		search_object.eq = { store_id, start_timestamp, end_timestamp };
+		search_object.eq = {
+			store_id,
+			start_timestamp,
+			end_timestamp,
+			//status: 'CLOSED'
+		};
 		search_object.limit = BATCH_SIZE;
 
 
@@ -302,7 +307,7 @@ export class ReportComexSalesComponent extends BaseComponent implements OnInit {
 			FACTOR_IVA: this.getIva(order_item_info, order_info.store),
 			COSTO_UNITARIO_NETO: order_item_info.item.reference_price,
 			IMPORTE_NETO_TOTAL: this.parseNum(order_info.order.total - order_info.order.discount, 2),
-			TIPO_MOVIMIENTO: order_info.order.status == 'CANCELLED' || order_item_info.order_item.type == 'NORMAL' ? 1 : 2,
+			TIPO_MOVIMIENTO: (order_info.order.status == 'CANCELLED' || order_item_info.order_item.type != 'NORMAL') ? 2 : 1,
 			NUMERO_CLIENTE_LEALTAD: numero_lealtad,
 			RFC_VENTA:  sat_factura ? order_info?.order?.sat_receptor_rfc||'' : '',
 			RAZON_SOCIAL_VENTA: sat_factura ? order_info?.order?.sat_razon_social||'' : '',
