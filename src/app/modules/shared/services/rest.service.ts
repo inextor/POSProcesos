@@ -4,7 +4,7 @@ import { Rest,RestResponse, RestSimple, SearchObject } from './Rest';
 import { GetEmpty } from '../GetEmpty';
 import { OFFLINE_DB_SCHEMA } from '../OfflineDBSchema';
 import { ErrorMessage, Utils } from '../Utils';
-import { Preferences, Price_Type, User, User_Permission } from '../RestModels';
+import { Preferences, Price_Type, Sat_Factura, User, User_Permission } from '../RestModels';
 import { HttpHeaders, HttpClient, HttpParams } from '@angular/common/http'
 import { BehaviorSubject, mergeMap, Observable, of, Subject } from 'rxjs';
 import { environment } from '../../../../environments/environment';
@@ -274,6 +274,21 @@ export class RestService
 			return Utils.transformJson( usr );
 
 		return null;
+	}
+
+	httpPost(url:string,payload:Object):Observable<Object>
+	{
+		let postUrl:string= this.domain_configuration.domain+'/'+this.url_base+'/'+url;
+		//console.log('Url to post',postUrl);
+		let headers = this.getSessionHeaders();
+		headers = headers.set('Content-Type','application/json');
+
+		return this.http.post(postUrl,JSON.stringify( payload ),{headers,withCredentials:true});
+	}
+
+	replayFactura(sat_factura_id: number):Observable<Sat_Factura>
+	{
+		return this.httpPost('replay_sat_factura.php',{sat_factura_id}) as Observable<Sat_Factura>;
 	}
 
 	update<T>(method:string,data:any):Observable<T>
