@@ -3,13 +3,14 @@ import { BaseComponent } from '../../modules/shared/base/base.component';
 import { Rest, SearchObject } from '../../modules/shared/services/Rest';
 import { Transformation } from '../../modules/shared/RestModels';
 import { TransformationInfo } from '../../modules/shared/Models';
-import { mergeMap } from 'rxjs';
+import { switchMap } from 'rxjs';
 import { RouterModule } from '@angular/router';
 import { ShortDatePipe } from '../../modules/shared/pipes/short-date.pipe';
+import { PaginationComponent } from '../../components/pagination/pagination.component';
 
 @Component({
 	selector: 'app-list-transformation',
-	imports: [RouterModule, ShortDatePipe],
+	imports: [RouterModule, ShortDatePipe, PaginationComponent],
 	templateUrl: './list-transformation.component.html',
 	styleUrl: './list-transformation.component.css'
 })
@@ -19,9 +20,10 @@ export class ListTransformationComponent extends BaseComponent implements OnInit
 	transformation_info_list: TransformationInfo[] = [];
 
 	ngOnInit() {
-		this.sink = this.route.paramMap.pipe(
-			mergeMap((paramMap) => {
-				this.search_transformation = this.rest_transformation.getSearchObject(paramMap);
+		this.path = '/list-transformation';
+		this.sink = this.route.queryParamMap.pipe(
+			switchMap((queryParamMap) => {
+				this.search_transformation = this.rest_transformation.getSearchObject(queryParamMap);
 				this.search_transformation.limit = this.page_size;
 				this.search_transformation.eq.status = 'ACTIVE';
 				this.current_page = this.search_transformation.page;
