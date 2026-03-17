@@ -266,13 +266,16 @@ export class ListObjectSatFacturaComponent extends BaseComponent implements OnIn
 	{
 		this.is_loading = true;
 
-		this.subs.sink = this.rest.update('replayFactura',{id:sat_factura.id})
-		.subscribe((sat_factura2:any)=>
-		{
-			//sat_factura = this.getType(sat_factura);
-			sat_factura.uuid = sat_factura2.uuid;
-
-		},(error:any)=>this.showError(error));
+		this.subs.sink = this.rest.replayFactura(sat_factura.id)
+		//thi.subs.sink = this.rest.update('replayFactura',{id:sat_factura.id})
+		.subscribe
+		({
+			next:(sat_factura2:any)=>
+			{
+				sat_factura.uuid = sat_factura2.uuid;
+			},
+			error:(error:any)=>this.showError(error)
+		});
 	}
 
 	cancelarFactura(sat_factura:Sat_Factura)
