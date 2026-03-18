@@ -94,7 +94,8 @@ export const routes: Routes = [
 			{path: 'list-transformation', loadComponent: () => import('./pages/list-transformation/list-transformation.component').then(m => m.ListTransformationComponent), canActivate: [authGuard]},
 			{path: 'add-transformation', loadComponent: () => import('./pages/save-transformation/save-transformation.component').then(m => m.SaveTransformationComponent), canActivate: [authGuard]},
 			{path: 'edit-transformation/:id', loadComponent: () => import('./pages/save-transformation/save-transformation.component').then(m => m.SaveTransformationComponent), canActivate: [authGuard]},
-			{path: 'provider-resume', loadComponent: () => import('./pages/provider-resume/provider-resume.component').then(m => m.ProviderResumeComponent), canActivate: [authGuard]}
+			{path: 'provider-resume', loadComponent: () => import('./pages/provider-resume/provider-resume.component').then(m => m.ProviderResumeComponent), canActivate: [authGuard]},
+			{path: 'list-batch-record', loadComponent: () => import('./pages/list-batch-record/list-batch-record.component').then(m => m.ListBatchRecordComponent), canActivate: [authGuard]}
 		]
 	},
 ];
