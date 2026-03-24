@@ -22,7 +22,7 @@ export class ListBatchRecordComponent extends BaseComponent implements OnInit
 {
 	rest_batch_record: Rest<Batch_Record, BatchRecordInfo> = this.rest.initRest<Batch_Record, BatchRecordInfo>(
 		'batch_record_info',
-		['id', 'batch', 'item_id', 'store_id', 'created', 'updated', 'movement_type', 'is_current']
+		['id', 'batch', 'item_id', 'store_id', 'created', 'updated', 'movement_type', 'is_current', 'expiration_date']
 	);
 	rest_store: RestSimple<Store> = this.rest.initRestSimple<Store>('store', ['id', 'name']);
 
@@ -52,7 +52,7 @@ export class ListBatchRecordComponent extends BaseComponent implements OnInit
 			switchMap((queryParamMap) => {
 				this.batch_record_search = this.getSearch<Batch_Record>(
 					queryParamMap,
-					['id', 'batch', 'item_id', 'store_id', 'created', 'updated', 'movement_type', 'is_current'],
+					['id', 'batch', 'item_id', 'store_id', 'created', 'updated', 'movement_type', 'is_current', 'expiration_date'],
 					['item_name', 'batch', 'is_current']
 				);
 

@@ -1,4 +1,4 @@
-import { Address, Attachment, Bill, Cash_Close, Cash_Count, Bank_Movement, Bank_Movement_Order, Category, Delivery_Assignment, File_Type, Item, Item_Exception, Item_Option, Item_Option_Value, Offer, Order, Order_Item, Order_Item_Exception, Order_Item_Serial, Payment, Period, Price, Price_Type, Process, Production, Production_Area, Purchase, Purchase_Detail, Requisition, Requisition_Item, Reservation, Reservation_Item, Reservation_Item_Serial, Return_Assignment, Serial, Serial_Image, Shipping, Shipping_Item, Stock_Record, Store, Task, Transformation, Transformation_Input, Transformation_Output, User } from "./RestModels";
+import { Address, Attachment, Batch_Record, Bill, Cash_Close, Cash_Count, Bank_Movement, Bank_Movement_Order, Category, Delivery_Assignment, File_Type, Item, Item_Exception, Item_Option, Item_Option_Value, Offer, Order, Order_Item, Order_Item_Exception, Order_Item_Serial, Payment, Period, Price, Price_Type, Process, Production, Production_Area, Purchase, Purchase_Detail, Requisition, Requisition_Item, Reservation, Reservation_Item, Reservation_Item_Serial, Return_Assignment, Serial, Serial_Image, Shipping, Shipping_Item, Stock_Record, Store, Task, Transformation, Transformation_Input, Transformation_Output, User } from "./RestModels";
 
 interface CSerial extends Serial
 {
@@ -311,4 +311,13 @@ export interface TransformationInfo
 	provider_user: User | null;
 	inputs: Transformation_Input[];
 	outputs: Transformation_Output[];
+}
+
+export interface BatchRecordInfo
+{
+	batch_record: Batch_Record;
+	item: Item;
+	store: Store;
+	user: User | null;
+	category: Category | null;
 }

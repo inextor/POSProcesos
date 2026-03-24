@@ -63,6 +63,7 @@
 						<th class="pointer" (click)="sort('id', batch_record_search)">Id</th>
 						<th>Articulo</th>
 						<th class="pointer" (click)="sort('batch', batch_record_search)">Lote</th>
+						<th class="pointer" (click)="sort('expiration_date', batch_record_search)">Caducidad</th>
 						<th>Sucursal</th>
 						<th>Usuario</th>
 						<th class="text-end pointer" (click)="sort('previous_qty', batch_record_search)">Previo</th>
@@ -96,6 +97,7 @@
 									{{batch_record_info.batch_record.batch}}
 								</a>
 							</td>
+							<td>{{batch_record_info.batch_record.expiration_date || 'N/A'}}</td>
 							<td>{{batch_record_info.store.name}}</td>
 							<td>{{batch_record_info.user?.name}}</td>
 							<td class="text-end">{{batch_record_info.batch_record.previous_qty}}</td>
@@ -134,7 +136,7 @@
 					} @empty {
 						@if (!is_loading) {
 							<tr>
-								<td colspan="12" class="text-center text-muted py-4">
+								<td colspan="13" class="text-center text-muted py-4">
 									No se encontraron registros
 								</td>
 							</tr>
