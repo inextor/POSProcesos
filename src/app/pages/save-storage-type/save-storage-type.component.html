@@ -1,0 +1,32 @@
+<app-loading [is_loading]="is_loading"></app-loading>
+
+<div class="container-fluid">
+  <div class="row align-items-center">
+    <div class="col-8">
+      <h1 class="my-3">{{ storage_type.id ? 'Editar' : 'Agregar' }} Tipo de Almacenamiento</h1>
+    </div>
+    <div class="col-4 text-end">
+      <button type="button" class="btn btn-secondary lift" [routerLink]="['/list-storage-type']">Regresar</button>
+    </div>
+  </div>
+
+  <div class="card p-4 mt-3">
+    <form (ngSubmit)="save()" #storageTypeForm="ngForm">
+      <div class="row">
+        <div class="col-12 col-md-6 mb-3">
+          <label for="name" class="form-label">Nombre</label>
+          <input type="text" class="form-control" id="name" name="name" [(ngModel)]="storage_type.name" required>
+        </div>
+
+        <div class="col-12 col-md-6 mb-3">
+          <label for="sort_weight" class="form-label">Peso (Orden)</label>
+          <input type="number" class="form-control" id="sort_weight" name="sort_weight" [(ngModel)]="storage_type.sort_weight">
+        </div>
+      </div>
+
+      <div class="text-end mt-3">
+        <button type="submit" class="btn btn-primary" [disabled]="!storageTypeForm.form.valid">Guardar</button>
+      </div>
+    </form>
+  </div>
+</div>

@@ -1,0 +1,35 @@
+<div class="container-fluid">
+  <div class="row align-items-center">
+    <div class="col-8">
+      <h1 class="my-3">Tipos de Almacenamiento</h1>
+    </div>
+    <div class="col-4 text-end">
+      <button type="button" class="ml-2 btn btn-secondary lift" [routerLink]="['/add-storage-type']">Agregar Nuevo</button>
+    </div>
+  </div>
+
+  <div class="card px-1 px-md-2 py-3 mt-3">
+    <table class="table table-striped w-100">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Nombre</th>
+          <th>Peso (Orden)</th>
+          <th>Modificado</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (storage_type of storage_type_list; track storage_type.id) {
+          <tr>
+            <td>{{ storage_type.id }}</td>
+            <td>
+              <a [routerLink]="['/edit-storage-type', storage_type.id]">{{ storage_type.name || 'Sin nombre' }}</a>
+            </td>
+            <td>{{ storage_type.sort_weight }}</td>
+            <td>{{ storage_type.updated | shortDate: 'relative' }}</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+</div>
