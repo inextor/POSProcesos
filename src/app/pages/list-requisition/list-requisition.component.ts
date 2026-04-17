@@ -14,6 +14,7 @@ import { ModalComponent } from '../../components/modal/modal.component';
 import { ItemInfo, RequisitionInfo, SerialInfo, SerialItemInfo } from '../../modules/shared/Models';
 import { OrderItemsComponent } from "./order-items/order-items.component";
 import { PageStructureComponent } from '../../modules/shared/page-structure/page-structure.component';
+import { LoadingComponent } from '../../components/loading/loading.component';
 interface CRequistionItem
 {
 	item_id:number,
@@ -52,7 +53,7 @@ interface CRequisitionItem
     selector: 'app-list-requisition',
     templateUrl: './list-requisition.component.html',
     styleUrl: './list-requisition.component.css',
-    imports: [CommonModule, RouterModule, FormsModule, SearchItemsComponent, ModalComponent, OrderItemsComponent]
+    imports: [CommonModule, RouterModule, FormsModule, SearchItemsComponent, ModalComponent, OrderItemsComponent, LoadingComponent]
 })
 export class ListRequisitionComponent extends BaseComponent implements OnInit
 {
@@ -162,7 +163,7 @@ export class ListRequisitionComponent extends BaseComponent implements OnInit
 					stores: this.rest_store.search({limit:999999, eq:{status:'ACTIVE', sales_enabled: 1}}),
 					requisition: this.rest.getReport('requisitionItems', requisition_item_search),
 					production_areas: this.rest_production_area.search({eq:{store_id},limit:999999}),
-					item_production: this.getItemProductions(store_id, start_time, endtime),
+					item_production: this.getItemProductions(store_id, production_area_id, start_time, endtime),
 					users: this.rest_check_in.search({eq:{current:1},limit:999999}).pipe
 					(
 						mergeMap((response)=>
@@ -455,13 +456,18 @@ export class ListRequisitionComponent extends BaseComponent implements OnInit
 		});
 	}
 
-	getItemProductions(store_id:number, start_time: Date|null, endtime: Date|null):Observable<ItemProductions[]>
+	getItemProductions(store_id:number, production_area_id:number, start_time: Date|null, endtime: Date|null):Observable<ItemProductions[]>
 	{
 		start_time = start_time || new Date();
 
+		let eq:Record<string, any> = { store_id };
+
+		if( production_area_id )
+			eq['production_area_id'] = production_area_id;
+
 		let production_search=
 		{
-			eq:{ store_id },
+			eq,
 			lg:{ created: endtime},
 			gt:{ created: start_time},
 			limit:999999
@@ -472,6 +478,16 @@ export class ListRequisitionComponent extends BaseComponent implements OnInit
 			mergeMap((production_response)=>
 			{
 				let item_ids = production_response.data.map((pr)=>pr.item_id);
+
+				if( item_ids.length == 0 )
+				{
+					return forkJoin
+					({
+						production: of(production_response),
+						items: of({total:0, data:[]} as RestResponse<ItemInfo>)
+					});
+				}
+
 				return forkJoin
 				({
 					production: of(production_response),
