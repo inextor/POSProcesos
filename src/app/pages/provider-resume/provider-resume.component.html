@@ -189,9 +189,7 @@
 								{
 									<tr>
 										<td>
-											<a [routerLink]="['/purchase/edit', purchase.purchase.id]">
-												#{{purchase.purchase.id}}
-											</a>
+											<a [routerLink]="['/purchase/edit', purchase.purchase.id]">#{{purchase.purchase.id}}</a>
 										</td>
 										<td>{{purchase.purchase.created | shortDate}}</td>
 										<td class="text-end">${{purchase.purchase.total | number:'1.2-2'}}</td>

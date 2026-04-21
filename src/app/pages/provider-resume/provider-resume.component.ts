@@ -27,7 +27,7 @@ interface ItemSummary
 
 interface CPurchaseInfo extends PurchaseInfo
 {
-	shippings: ShippingInfo[];
+	shippings_info: ShippingInfo[];
 }
 
 @Component({
@@ -139,7 +139,7 @@ export class ProviderResumeComponent extends BaseComponent implements OnInit
 				if (!this.purchase_search.eq.provider_user_id)
 				{
 					this.is_loading = false;
-					return of({ purchases: [] as PurchaseInfo[], shippings: [] as ShippingInfo[] });
+					return of({ purchases: [] as PurchaseInfo[], shippings_info: [] as ShippingInfo[] });
 				}
 
 				// Fetch purchases for the provider within date range
@@ -158,14 +158,14 @@ export class ProviderResumeComponent extends BaseComponent implements OnInit
 						{
 							return forkJoin({
 								purchases: of(purchases),
-								shippings: this.rest_shipping_info.search({
+								shippings_info: this.rest_shipping_info.search({
 									csv: { purchase_id: purchaseIdsWithShipping },
 									limit: 999999
 								} as any)
 							}).pipe(
 								mergeMap((result) => of({
 									purchases: result.purchases,
-									shippings: result.shippings.data
+									shippings_info: result.shippings_info.data
 								}))
 							);
 						}
@@ -173,7 +173,7 @@ export class ProviderResumeComponent extends BaseComponent implements OnInit
 						// No shippings needed
 						return of({
 							purchases: purchases,
-							shippings: [] as ShippingInfo[]
+							shippings_info: [] as ShippingInfo[]
 						});
 					})
 				);
@@ -189,8 +189,8 @@ export class ProviderResumeComponent extends BaseComponent implements OnInit
 				// Map shippings to purchases
 				this.purchase_list = response.purchases.map((p: PurchaseInfo) =>
 				{
-					const purchaseShippings = response.shippings.filter((s: ShippingInfo) => s.shipping.purchase_id === p.purchase.id);
-					return { ...p, shippings: purchaseShippings } as CPurchaseInfo;
+					const purchaseShippings = response.shippings_info.filter((s: ShippingInfo) => s.shipping.purchase_id === p.purchase.id);
+					return { ...p, shippings_info: purchaseShippings } as CPurchaseInfo;
 				});
 
 				// Build item summary
@@ -241,7 +241,7 @@ export class ProviderResumeComponent extends BaseComponent implements OnInit
 			// Add received and merma from shippings (only for purchases with SHIPPING_CREATED status)
 			if (purchase.purchase.stock_status === 'SHIPPING_CREATED')
 			{
-				for (const shipping of purchase.shippings)
+				for (const shipping of purchase.shippings_info)
 				{
 					for (const shippingItem of shipping.items)
 					{

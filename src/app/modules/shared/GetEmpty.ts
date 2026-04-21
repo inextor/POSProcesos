@@ -40,6 +40,7 @@ import { transformation } from './Empties/Transformation';
 import { transformation_input } from './Empties/Transformation_Input';
 import { transformation_output } from './Empties/Transformation_Output';
 import { transformation_info } from './Empties/Transformation_Info';
+import { storage_type } from './Empties/Storage_Type';
 
 /**
  * GetEmpty class provides static methods for creating empty/default instances of models.
@@ -88,4 +89,5 @@ export class GetEmpty {
 	static transformation_input = transformation_input;
 	static transformation_output = transformation_output;
 	static transformation_info = transformation_info;
+	static storage_type = storage_type;
 }

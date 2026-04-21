@@ -117,7 +117,7 @@ export interface ShippingInfo
 {
 	shipping:Partial<Shipping>;
 	items:Partial<ShippingItemInfo>[];
-	//purchase:Purchase;
+	purchase?:Purchase;
 }
 export interface SocketMessage
 {
@@ -287,6 +287,7 @@ export interface PurchaseInfo
 	details:PurchaseDetailInfo[];
 	bill:Partial<Bill>;
 	shipping:Shipping | null;
+	//shippings:Shipping[];
 	bank_movements_info:any[];
 }
 
