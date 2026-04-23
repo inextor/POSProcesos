@@ -1,0 +1,80 @@
+.pointer
+{
+	cursor: pointer;
+}
+
+.storage-group-header
+{
+	background-color: #f8f9fa;
+	user-select: none;
+}
+
+.storage-group-header:hover
+{
+	background-color: #e9ecef;
+}
+
+.storage-toggle
+{
+	display: inline-block;
+	width: 0;
+	height: 0;
+	margin-top: 0.55rem;
+	border-style: solid;
+	border-width: 6px 4px 0 4px;
+	border-color: #6c757d transparent transparent transparent;
+	transition: transform 0.15s ease;
+}
+
+.storage-toggle.collapsed
+{
+	transform: rotate(-90deg);
+}
+
+.storage-name
+{
+	font-size: 1.05rem;
+	line-height: 1.3;
+}
+
+.storage-meta
+{
+	margin-top: 0.15rem;
+	line-height: 1.3;
+}
+
+.meta-label
+{
+	font-weight: 600;
+	color: #495057;
+}
+
+.min-w-0
+{
+	min-width: 0;
+}
+
+.thead-light
+{
+	background-color: #f1f3f5;
+}
+
+@media (max-width: 575.98px)
+{
+	.storage-meta
+	{
+		display: flex;
+		flex-direction: column;
+		gap: 0.1rem;
+	}
+
+	.storage-meta .meta-sep
+	{
+		display: none;
+	}
+
+	.storage-name
+	{
+		white-space: normal;
+	}
+}

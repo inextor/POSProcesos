@@ -3,6 +3,7 @@ export interface Storage_Item {
   created_by_user_id: number;
   created: Date;
   item_id: number;
+  qty: number;
   storage_id: number;
   updated_by_user_id: number;
   updated: Date;
