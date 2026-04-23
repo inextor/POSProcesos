@@ -1,0 +1,140 @@
+<div class="container-fluid">
+	<div class="row align-items-center mx-0">
+		<div class="col-12">
+			<h1 class="my-3">Articulos por Almacén</h1>
+		</div>
+	</div>
+
+	<div class="card py-3 p-sm-1 p-lg-3">
+		<form (submit)="performSearch(); $event.preventDefault()">
+			<div class="row mx-0">
+				<div class="col-6 col-md-3 form-group">
+					<label>Tienda</label>
+					<select name="store_id" [(ngModel)]="storage_search.eq.store_id"
+						class="form-control"
+						[disabled]="!rest.user_permission.global_add_stock">
+						<option [ngValue]="undefined">Todas</option>
+						@for (store of store_list; track store.id) {
+							<option [ngValue]="store.id">{{ store.name }}</option>
+						}
+					</select>
+				</div>
+				<div class="col-6 col-md-3 form-group">
+					<label>Tipo de almacén</label>
+					<select name="storage_type_id" [(ngModel)]="storage_search.eq.storage_type_id" class="form-control">
+						<option [ngValue]="undefined">Todos</option>
+						@for (st of storage_type_list; track st.id) {
+							<option [ngValue]="st.id">{{ st.name }}</option>
+						}
+					</select>
+				</div>
+				<div class="col-6 col-md-2 form-group">
+					<label>Almacén</label>
+					<input type="text" name="storage_name" [(ngModel)]="storage_name_filter" class="form-control" placeholder="Nombre del almacén">
+				</div>
+				<div class="col-6 col-md-2 form-group">
+					<label>Artículo</label>
+					<input type="text" name="item_name" [(ngModel)]="item_name_filter" class="form-control" placeholder="Nombre del artículo">
+				</div>
+				<div class="col-12 col-md-2 d-flex align-items-end">
+					<button type="button" class="btn btn-outline-secondary me-2 w-50" (click)="clearFilters()">Limpiar</button>
+					<button type="submit" class="btn btn-primary w-50">Buscar</button>
+				</div>
+			</div>
+		</form>
+	</div>
+
+	<app-loading [is_loading]="is_loading"></app-loading>
+
+	@if (!is_loading) {
+		@for (group of storage_groups; track group.info.storage.id) {
+			<div class="card mt-3 storage-group">
+				<div class="card-header storage-group-header pointer" (click)="toggleGroup(group)">
+					<div class="d-flex justify-content-between align-items-start gap-2">
+						<div class="d-flex align-items-start flex-grow-1 min-w-0">
+							<span class="storage-toggle me-2 flex-shrink-0"
+								[class.collapsed]="group.collapsed"></span>
+							<div class="flex-grow-1 min-w-0">
+								<div class="storage-name fw-bold text-truncate">
+									{{ group.info.storage.name || ('Almacén #' + group.info.storage.id) }}
+								</div>
+								<div class="storage-meta text-muted small">
+									<span class="meta-item">
+										<span class="meta-label">Sucursal:</span> {{ group.info.store?.name || '—' }}
+									</span>
+									<span class="meta-sep">·</span>
+									<span class="meta-item">
+										<span class="meta-label">Tipo:</span> {{ group.info.storage_type?.name || 'Sin tipo' }}
+									</span>
+								</div>
+							</div>
+						</div>
+						<span class="badge bg-primary flex-shrink-0 align-self-center">
+							{{ group.info.storage_items.length }} {{ group.info.storage_items.length === 1 ? 'artículo' : 'artículos' }}
+						</span>
+					</div>
+				</div>
+
+				@if (!group.collapsed) {
+					<div class="card-body p-0">
+						<div class="table-responsive">
+							<table class="table table-sm table-hover mb-0">
+								<thead class="thead-light">
+									<tr>
+										<th style="width: 80px">ID</th>
+										<th>Artículo</th>
+										<th style="width: 140px">Código</th>
+										<th>Ubicación</th>
+										<th class="text-end" style="width: 140px">Cantidad</th>
+									</tr>
+								</thead>
+								<tbody>
+									@for (si of group.info.storage_items; track si.storage_item.id) {
+										<tr>
+											<td>{{ si.item.id }}</td>
+											<td>
+												<strong>{{ si.item.name }}</strong>
+												@if (si.item.extra_name) {
+													<span class="text-muted ms-2">{{ si.item.extra_name }}</span>
+												}
+											</td>
+											<td>{{ si.item.code || '—' }}</td>
+											<td>
+												@if (si.leaf_storage) {
+													{{ si.leaf_storage.name || ('Almacén #' + si.leaf_storage.id) }}
+													@if (si.leaf_storages.length > 1) {
+														<span class="badge bg-secondary ms-1"
+															[title]="leafTooltip(si.leaf_storages)">
+															+{{ si.leaf_storages.length - 1 }}
+														</span>
+													}
+												} @else {
+													<span class="text-muted">—</span>
+												}
+											</td>
+											<td class="text-end">{{ si.storage_item.qty }}</td>
+										</tr>
+									} @empty {
+										<tr>
+											<td colspan="5" class="text-center text-muted py-3">
+												Este almacén no tiene artículos asignados.
+											</td>
+										</tr>
+									}
+								</tbody>
+							</table>
+						</div>
+					</div>
+				}
+			</div>
+		} @empty {
+			<div class="card mt-3">
+				<div class="card-body text-center text-muted py-4">
+					No se encontraron almacenes con los filtros aplicados.
+				</div>
+			</div>
+		}
+
+		<app-pagination [path]="path" [pages]="pages" [total_pages]="total_pages" [current_page]="current_page"></app-pagination>
+	}
+</div>
