@@ -81,7 +81,7 @@
                 @for (sale of agent.sales; track sale.order_id) {
                   <tr>
                     <td>{{ sale.client_name }}</td>
-                    <td>{{ sale.order_id }}</td>
+                    <td><a [attr.href]="external_base_url + '/#/view-order/' + sale.order_id">{{ sale.order_id }}</a></td>
                     <td>{{ sale.date | date:'short' }}</td>
                     <td class="text-end">{{ sale.sale_total | currency }}</td>
                     <td class="text-end">{{ sale.total_cost || 0 | currency }}</td>

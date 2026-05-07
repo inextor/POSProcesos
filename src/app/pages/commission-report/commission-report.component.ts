@@ -57,11 +57,13 @@ export class CommissionReportComponent extends BaseComponent implements OnInit {
 	start_date: string = '';
 	end_date: string = '';
 	summaries: CommissionSummary[] = [];
+	external_base_url: string = '';
 
 	ngOnInit(): void {
 		this.start_date = this.getFirstDayOfMonth();
 		this.end_date = this.getLastDayOfMonth();
 		this.setTitle('Reporte de Comisiones');
+		this.external_base_url = this.rest.getExternalAppUrl();
 	}
 
 	getFirstDayOfMonth(): string {
@@ -107,7 +109,7 @@ export class CommissionReportComponent extends BaseComponent implements OnInit {
 		const date_start = this.start_date.replace('T', ' ') + ':00';
 		const date_end = this.end_date.replace('T', ' ') + ':59';
 
-		this.rest.getReportByPath('getCommissionSalesByAgent', { agent_id: agent.agent_id, date_start, date_end })
+		this.sink = this.rest.getReportByPath('getCommissionSalesByAgent', { agent_id: agent.agent_id, date_start, date_end })
 			.subscribe({
 				next: (data: CommissionSale[]) => {
 					agent.sales = data.map(s => ({ ...s, expanded: false, items: [], loading_items: false }));
@@ -129,7 +131,7 @@ export class CommissionReportComponent extends BaseComponent implements OnInit {
 
 	loadItems(sale: CommissionSale) {
 		sale.loading_items = true;
-		this.rest.getReportByPath('getCommissionItemsByOrder', { order_id: sale.order_id })
+		this.sink = this.rest.getReportByPath('getCommissionItemsByOrder', { order_id: sale.order_id })
 			.subscribe({
 				next: (data: CommissionItem[]) => {
 					sale.items = data;

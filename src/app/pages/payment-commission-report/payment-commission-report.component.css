@@ -1,0 +1,19 @@
+.border-start-primary {
+	border-left: 4px solid var(--btn-primary-bg-color, #007bff);
+}
+
+.border-start-info {
+	border-left: 4px solid #17a2b8;
+}
+
+.table-xs {
+	font-size: 0.85rem;
+}
+
+.table-xs th, .table-xs td {
+	padding: 0.25rem;
+}
+
+.fw-bold {
+	font-weight: bold;
+}

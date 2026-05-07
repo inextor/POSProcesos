@@ -1,0 +1,159 @@
+<div class="container-fluid">
+  <h1>Reporte de Comisiones por Pagos Recibidos</h1>
+  <p class="text-muted">Este reporte muestra las comisiones proporcionales basadas en los pagos recibidos en el periodo seleccionado.</p>
+  <hr>
+  <form (ngSubmit)="generateReport()" class="mb-4" ngNativeValidate>
+    <div class="row g-3 align-items-end">
+      <div class="col-md-3">
+        <label for="fecha_inicio" class="form-label">Fecha Inicio (UTC)</label>
+        <input type="datetime-local" id="fecha_inicio" name="fecha_inicio" class="form-control" [(ngModel)]="start_date" required>
+      </div>
+      <div class="col-md-3">
+        <label for="fecha_fin" class="form-label">Fecha Fin (UTC)</label>
+        <input type="datetime-local" id="fecha_fin" name="fecha_fin" class="form-control" [(ngModel)]="end_date" required>
+      </div>
+      <div class="col-md-2">
+        <label for="billing_status" class="form-label">Estado de Facturación</label>
+        <select id="billing_status" name="billing_status" class="form-select" [(ngModel)]="billing_status">
+          <option value="ALL">Todos</option>
+          <option value="PENDING">Pendientes</option>
+          <option value="BILLED">Generados</option>
+        </select>
+      </div>
+      <div class="col-md-1">
+        <button type="submit" class="btn btn-primary w-100" [disabled]="is_loading">
+          @if (is_loading) {
+            <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+          }
+          {{ is_loading ? '...' : 'Buscar' }}
+        </button>
+      </div>
+      @if (summaries.length > 0) {
+        <div class="col-md-2">
+          <button type="button" class="btn btn-success w-100" (click)="processCommissions()" [disabled]="is_loading">
+            Generar Comisiones
+          </button>
+        </div>
+      }
+    </div>
+  </form>
+
+  @if (summaries.length > 0) {
+    <div class="table-responsive">
+      <table class="table table-sm table-hover mb-0">
+        <thead class="table-dark">
+          <tr>
+            <th colspan="2">Agente / Cliente</th>
+            <th class="text-end">Venta Prop.</th>
+            <th class="text-end">Costo Prop.</th>
+            <th class="text-end">Utilidad Prop.</th>
+            <th class="text-end">Pagado Periodo</th>
+            <th class="text-end">Comisión Prop.</th>
+            <th class="text-end">Com. Pagada</th>
+            <th class="text-center" style="width: 40px;">Ver</th>
+            <th class="text-center" style="width: 40px;"><input type="checkbox" class="form-check-input" (change)="toggleAll($event)"></th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (agent of summaries; track agent.agent_id) {
+            <tr class="table-primary align-middle">
+              <td colspan="2" class="fw-bold">{{ agent.agent_name }}</td>
+              <td class="text-end">{{ agent.total_sale | currency }}</td>
+              <td class="text-end">{{ agent.total_cost | currency }}</td>
+              <td class="text-end">{{ agent.total_profit | currency }}</td>
+              <td class="text-end">{{ agent.total_paid | currency }}</td>
+              <td class="text-end text-primary fw-bold">{{ agent.total_commission | currency }}</td>
+              <td class="text-end text-success fw-bold">{{ agent.total_commission_paid | currency }}</td>
+              <td class="text-center">
+                <button class="btn btn-sm btn-outline-dark" (click)="toggleAgent(agent)">
+                  {{ agent.expanded ? '−' : '+' }}
+                </button>
+              </td>
+              <td class="text-center">
+                <input type="checkbox" class="form-check-input" [(ngModel)]="agent.selected" (change)="toggleAgentSelection(agent)">
+              </td>
+            </tr>
+            @if (agent.expanded) {
+              @if (agent.loading_sales) {
+                <tr>
+                  <td colspan="10" class="text-center py-3">
+                    <div class="spinner-border spinner-border-sm" role="status"></div>
+                    <span> Cargando ventas...</span>
+                  </td>
+                </tr>
+              } @else if (agent.sales?.length === 0) {
+                <tr>
+                  <td colspan="10" class="text-muted text-center py-3">No se encontraron pagos para este agente en este periodo.</td>
+                </tr>
+              } @else {
+                @for (sale of agent.sales; track sale.order_id) {
+                  <tr class="table-secondary align-middle">
+                    <td class="ps-4">
+                      {{ sale.client_name }}
+                      @if (sale.commission_bill_id) {
+                        <span class="badge bg-success ms-2">Generada #{{ sale.commission_bill_id }}</span>
+                      }
+                    </td>
+                    <td style="width: 100px;"><a [attr.href]="external_base_url + '/#/view-order/' + sale.order_id" target="_blank">{{ sale.order_id }}</a></td>
+                    <td class="text-end">{{ sale.proportional_sale | currency }}</td>
+                    <td class="text-end">{{ sale.proportional_cost || 0 | currency }}</td>
+                    <td class="text-end">{{ sale.proportional_profit | currency }}</td>
+                    <td class="text-end">{{ sale.amount_paid_in_period | currency }}</td>
+                    <td class="text-end">{{ sale.total_commission | currency }}</td>
+                    <td class="text-end">{{ sale.commission_paid_in_period | currency }}</td>
+                    <td class="text-center">
+                      <button class="btn btn-sm btn-outline-info p-0 px-1" (click)="toggleSale(sale)">
+                        {{ sale.expanded ? '−' : '+' }}
+                      </button>
+                    </td>
+                    <td class="text-center">
+                      <input type="checkbox" class="form-check-input" [(ngModel)]="sale.selected" 
+                             (change)="onSaleSelectionChange(agent)"
+                             [disabled]="!!sale.commission_bill_id">
+                    </td>
+                  </tr>
+                  @if (sale.expanded) {
+                    @if (sale.loading_items) {
+                      <tr>
+                        <td colspan="10" class="text-center py-2">
+                          <div class="spinner-border spinner-border-sm" role="status"></div>
+                        </td>
+                      </tr>
+                    } @else {
+                      <tr class="table-light small text-muted">
+                        <td colspan="2" class="ps-5">Producto (Cant.)</td>
+                        <td class="text-end">Venta Unit.</td>
+                        <td class="text-end">Costo Unit.</td>
+                        <td class="text-end">Utilidad Prop.</td>
+                        <td class="text-end">Comisión Prop.</td>
+                        <td class="text-end">Com. en Periodo</td>
+                        <td class="text-end">Com. Pagada (Acum.)</td>
+                        <td colspan="2"></td>
+                      </tr>
+                      @for (item of sale.items; track item.item_name) {
+                        <tr class="table-light small align-middle">
+                          <td colspan="2" class="ps-5">{{ item.item_name }} ({{ item.qty }})</td>
+                          <td class="text-end">{{ item.unit_sale | currency }}</td>
+                          <td class="text-end">{{ item.unit_cost || 0 | currency }}</td>
+                          <td class="text-end">{{ item.profit || 0 | currency }}</td>
+                          <td class="text-end">{{ item.total_commission | currency }}</td>
+                          <td class="text-end text-success fw-bold">{{ item.commission_paid_in_period | currency }}</td>
+                          <td class="text-end">{{ item.total_commission_paid | currency }}</td>
+                          <td colspan="2"></td>
+                        </tr>
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        </tbody>
+      </table>
+    </div>
+  } @else if (!is_loading) {
+    <div class="alert alert-info mt-4">
+      Seleccione un rango de fechas de <strong>pagos</strong> y presione "Generar Reporte" para ver los datos.
+    </div>
+  }
+</div>

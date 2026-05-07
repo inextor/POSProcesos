@@ -86,4 +86,7 @@ export interface User_Permission {
   pay_payrolls: any | null;
   view_payrolls: any | null;
   add_consumptions: any | null;
+  view_commissions: any | null;
+  pay_commissions: any | null;
+  approve_commissions: any | null;
 }

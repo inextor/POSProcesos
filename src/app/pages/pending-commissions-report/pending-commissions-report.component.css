@@ -1,0 +1,11 @@
+.extra-small {
+	font-size: 0.7rem;
+}
+
+.table-sm td, .table-sm th {
+	padding: 0.3rem 0.5rem;
+}
+
+.fw-bold {
+	font-weight: bold;
+}

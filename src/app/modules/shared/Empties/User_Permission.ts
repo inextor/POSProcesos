@@ -89,5 +89,8 @@ export function user_permission(): User_Permission {
 		view_responses: 0,
 		view_stock: 0,
 		view_stock_alerts: 0,
+		view_commissions: 0,
+		pay_commissions: 0,
+		approve_commissions: 0,
 	};
 }

@@ -5,6 +5,8 @@ export interface Bill{
 	bank_account_id:number | null;
 	created:Date;
 	currency_id:string | null;
+	commission_order_id:number | null;
+	commission_payment_id:number | null;
 	due_date:string | null;
 	folio:string | null;
 	id:number;

@@ -1,0 +1,90 @@
+<div class="container-fluid">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <div>
+      <h1>Comisiones Pagadas</h1>
+      <p class="text-muted mb-0">Lista de facturas de comisiones que ya han sido pagadas, agrupadas por pago.</p>
+    </div>
+    <div>
+      <a class="btn btn-outline-primary" routerLink="/pending-commissions-report">
+        Ver Pendientes
+      </a>
+    </div>
+  </div>
+  <hr>
+
+  @if (is_loading && paymentsCommissions.length === 0) {
+    <div class="text-center py-5">
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Cargando...</span>
+      </div>
+      <p class="mt-2">Cargando pagos...</p>
+    </div>
+  } @else if (paymentsCommissions.length === 0) {
+    <div class="alert alert-info">
+      No se encontraron pagos de comisiones.
+    </div>
+  } @else {
+    <div class="table-responsive">
+      <table class="table table-sm table-hover mb-0">
+        <thead class="table-dark">
+          <tr>
+            <th>ID Pago / Concepto</th>
+            <th>Fecha Pago</th>
+            <th class="text-end">Cant. Facturas</th>
+            <th class="text-end">Monto Total</th>
+            <th class="text-center" style="width: 80px;">Detalles</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (pc of paymentsCommissions; track pc.payment_id) {
+            <tr class="table-primary align-middle">
+              <td class="fw-bold">
+                Pago #{{ pc.payment_id }}
+                @if (pc.payment?.payment?.concept) {
+                  <br><small class="text-muted fw-normal">{{ pc.payment?.payment?.concept }}</small>
+                }
+              </td>
+              <td>{{ pc.payment?.payment?.created | date:'shortDate' }}</td>
+              <td class="text-end">{{ pc.bills.length }}</td>
+              <td class="text-end fw-bold">{{ pc.payment?.payment?.payment_amount || pc.total | currency }}</td>
+              <td class="text-center">
+                <button class="btn btn-sm btn-outline-dark" (click)="togglePaymentGroup(pc)">
+                  {{ pc.expanded ? 'Ocultar' : 'Ver' }}
+                </button>
+              </td>
+            </tr>
+            @if (pc.expanded) {
+              <tr class="table-secondary">
+                <th class="ps-4">Agente</th>
+                <th>Descripción / Concepto</th>
+                <th class="text-end">Fecha</th>
+                <th class="text-end">Monto</th>
+                @if (rest.user_permission.hades > 0) {
+                  <th class="text-center">Debug</th>
+                }
+              </tr>
+              @for (b of pc.bills; track b.bill_id) {
+                <tr class="table-light small align-middle">
+                  <td class="ps-4 fw-bold">{{ b.agent_name }}</td>
+                  <td>
+                    {{ b.bill_name }}
+                    <div class="text-muted extra-small">ID Factura: {{ b.bill_id }}</div>
+                  </td>
+                  <td class="text-end">{{ b.created | date:'short' }}</td>
+                  <td class="text-end">{{ b.total | currency }}</td>
+                  @if (rest.user_permission.hades > 0) {
+                    <td class="text-center">
+                      <button class="btn btn-sm btn-outline-info" (click)="debug(b)">
+                        Debug
+                      </button>
+                    </td>
+                  }
+                </tr>
+              }
+            }
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</div>

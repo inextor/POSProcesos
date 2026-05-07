@@ -40,6 +40,7 @@ export class MenuComponent extends BaseComponent
 
 	forms_list:Form[] = [];
     show_menu_reports: Falseable = false;
+	show_menu_commissions: Falseable = false;
 	show_menu_rentals: Falseable = false; //Permisos por añadir
 	// add_clients
 	//
@@ -72,6 +73,9 @@ export class MenuComponent extends BaseComponent
 
 				this.show_menu_reservations = false;
 				this.show_menu_reports = this.rest.user_permission.reports || this.rest.user_permission.view_facturas;
+				this.show_menu_commissions = this.rest.user_permission.view_commissions
+					|| this.rest.user_permission.pay_commissions
+					|| this.rest.user_permission.approve_commissions;
 
 				this.show_menu_settings = this.rest.user_permission.add_user
 					|| this.rest.user_permission.add_commandas;

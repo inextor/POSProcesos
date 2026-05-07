@@ -1,0 +1,127 @@
+<div class="container-fluid">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <div>
+      <h1>Comisiones Pendientes de Pago</h1>
+      <p class="text-muted mb-0">Lista de facturas de comisiones generadas que aún no han sido pagadas, agrupadas por agente.</p>
+    </div>
+    <div class="d-flex gap-2">
+      <a class="btn btn-outline-secondary" routerLink="/paid-commissions-report">
+        Ver Pagadas
+      </a>
+      @if (agentsCommissions.length > 0 && can_pay_commissions) {
+        <button class="btn btn-success" (click)="generateBill()">
+          Generar Factura de Pago
+        </button>
+      }
+    </div>
+  </div>
+  <hr>
+
+  @if (is_loading && agentsCommissions.length === 0) {
+    <div class="text-center py-5">
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Cargando...</span>
+      </div>
+      <p class="mt-2">Cargando comisiones pendientes...</p>
+    </div>
+  } @else if (agentsCommissions.length === 0) {
+    <div class="alert alert-info">
+      No se encontraron comisiones pendientes de pago.
+    </div>
+  } @else {
+    <div class="table-responsive">
+      <table class="table table-sm table-hover mb-0">
+        <thead class="table-dark">
+          <tr>
+            <th>Agente</th>
+            <th class="text-end">Cant. Facturas</th>
+            <th class="text-end">Monto Total</th>
+            <th class="text-center" style="width: 80px;">Detalles</th>
+            <th class="text-center" style="width: 40px;">
+              <input type="checkbox" class="form-check-input" (change)="toggleAll($event)" [disabled]="!can_pay_commissions">
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (ac of agentsCommissions; track ac.agent_id) {
+            <tr class="table-primary align-middle">
+              <td class="fw-bold">{{ ac.agent_name }}</td>
+              <td class="text-end">{{ ac.bills.length }}</td>
+              <td class="text-end fw-bold">{{ ac.total | currency }}</td>
+              <td class="text-center">
+                <button class="btn btn-sm btn-outline-dark" (click)="toggleAgent(ac)">
+                  {{ ac.expanded ? 'Ocultar' : 'Ver' }}
+                </button>
+              </td>
+              <td class="text-center">
+                <input type="checkbox" class="form-check-input" [(ngModel)]="ac.selected" (change)="toggleAgentSelection(ac)" [disabled]="!can_pay_commissions">
+              </td>
+            </tr>
+            @if (ac.expanded) {
+              <tr class="table-secondary">
+                <th class="ps-4">Concepto / ID</th>
+                <th class="text-end">Fecha Creación</th>
+                <th class="text-end">Monto</th>
+                @if (rest.user_permission.hades > 0) {
+                  <th class="text-center">Debug</th>
+                }
+                <th class="text-center"></th>
+              </tr>
+              @for (b of ac.bills; track b.bill_id) {
+                <tr class="table-light small align-middle">
+                  <td class="ps-4">
+                    {{ b.bill_name }}
+                    <div class="text-muted extra-small">ID: {{ b.bill_id }} | Pago Ref: {{ b.commission_payment_id }}</div>
+                  </td>
+                  <td class="text-end">{{ b.created | date:'short' }}</td>
+                  <td class="text-end">{{ b.total | currency }}</td>
+                  @if (rest.user_permission.hades > 0) {
+                    <td class="text-center">
+                      <button class="btn btn-sm btn-outline-info" (click)="debug(b)">
+                        Debug
+                      </button>
+                    </td>
+                  }
+                  <td class="text-center">
+                    <input type="checkbox" class="form-check-input" [(ngModel)]="b.selected" (change)="onBillSelectionChange(ac)" [disabled]="!can_pay_commissions">
+                  </td>
+                </tr>
+              }
+            }
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</div>
+
+<app-modal [show]="show_payment_modal" (close)="show_payment_modal=false">
+	<div class="p-3">
+		<div class="modal-header">
+			<h5 class="modal-title">Generar Documento de Pago</h5>
+		</div>
+		<div class="modal-body">
+			<div class="mb-3">
+				<label class="form-label">Cuenta Bancaria (Opcional)</label>
+				<select class="form-select" [(ngModel)]="selected_bank_account_id">
+					<option [ngValue]="null">-- Sin Cuenta / Efectivo --</option>
+					@for (account of bank_accounts; track account.id) {
+						<option [ngValue]="account.id">{{ account.name }} - {{ account.bank }}</option>
+					}
+				</select>
+			</div>
+			<div class="mb-3">
+				<label class="form-label">Tipo de Pago</label>
+				<select class="form-select" [(ngModel)]="selected_payment_type">
+					@for (type of payment_type_dic | keyvalue; track type.key) {
+						<option [ngValue]="type.key">{{ type.value }}</option>
+					}
+				</select>
+			</div>
+		</div>
+		<div class="modal-footer">
+			<button type="button" class="btn btn-secondary" (click)="show_payment_modal=false">Cancelar</button>
+			<button type="button" class="btn btn-primary" (click)="confirmGenerateBill()" [disabled]="!can_pay_commissions">Confirmar</button>
+		</div>
+	</div>
+</app-modal>
