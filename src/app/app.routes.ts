@@ -84,6 +84,7 @@ export const routes: Routes = [
 			{path: 'list-merma-totals', loadComponent: () => import('./pages/list-merma-totals/list-merma-totals.component').then(m => m.ListMermaTotalsComponent), canActivate: [authGuard]},
 			{path: 'weird', loadComponent: () => import('./pages/weird/weird.component').then(m => m.WeirdComponent), canActivate: [authGuard]},
 			{path: 'report-comex-sales', loadComponent: () => import('./pages/report-comex-sales/report-comex-sales.component').then(m => m.ReportComexSalesComponent), canActivate: [authGuard]},
+			{path: 'item-sales-by-client-report', loadComponent: () => import('./pages/item-sales-by-client-report/item-sales-by-client-report.component').then(m => m.ItemSalesByClientReportComponent), canActivate: [authGuard]},
 			{path: 'commission-report', loadComponent: () => import('./pages/commission-report/commission-report.component').then(m => m.CommissionReportComponent), canActivate: [authGuard]},
 			{path: 'payment-commission-report', loadComponent: () => import('./pages/payment-commission-report/payment-commission-report.component').then(m => m.PaymentCommissionReportComponent), canActivate: [authGuard]},
 			{path: 'pending-commissions-report', loadComponent: () => import('./pages/pending-commissions-report/pending-commissions-report.component').then(m => m.PendingCommissionsReportComponent), canActivate: [authGuard]},
