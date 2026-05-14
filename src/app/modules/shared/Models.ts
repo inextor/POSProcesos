@@ -1,4 +1,4 @@
-import { Address, Attachment, Batch_Record, Bill, Cash_Close, Cash_Count, Bank_Movement, Bank_Movement_Order, Category, Delivery_Assignment, File_Type, Item, Item_Exception, Item_Option, Item_Option_Value, Offer, Order, Order_Item, Order_Item_Exception, Order_Item_Serial, Payment, Period, Price, Price_Type, Process, Production, Production_Area, Purchase, Purchase_Detail, Requisition, Requisition_Item, Reservation, Reservation_Item, Reservation_Item_Serial, Return_Assignment, Serial, Serial_Image, Shipping, Shipping_Item, Stock_Record, Store, Task, Transformation, Transformation_Input, Transformation_Output, User } from "./RestModels";
+import { Address, Attachment, Bank_Account, Bank_Movement_Bill, Batch_Record, Bill, Cash_Close, Cash_Count, Bank_Movement, Bank_Movement_Order, Category, Delivery_Assignment, File_Type, Item, Item_Exception, Item_Option, Item_Option_Value, Offer, Order, Order_Item, Order_Item_Exception, Order_Item_Serial, Payment, Period, Price, Price_Type, Process, Production, Production_Area, Purchase, Purchase_Detail, Requisition, Requisition_Item, Reservation, Reservation_Item, Reservation_Item_Serial, Return_Assignment, Serial, Serial_Image, Shipping, Shipping_Item, Stock_Record, Store, Task, Transformation, Transformation_Input, Transformation_Output, User } from "./RestModels";
 
 interface CSerial extends Serial
 {
@@ -266,6 +266,33 @@ export interface PaymentInfo
 {
 	payment:Payment;
 	movements:MovementInfo[];
+}
+
+export interface BankMovementBillInfo
+{
+	bank_movement_bill?:Bank_Movement_Bill;
+	bill?:Bill;
+}
+
+export interface BillBankMovementInfo
+{
+	bank_movement:Bank_Movement;
+	bank_movement_bill?:BankMovementBillInfo;
+}
+
+export interface BillInfo
+{
+	bill:Bill;
+	provider?:User | null;
+	store?:Store | null;
+	bank_account?:Bank_Account | null;
+	invoice_attachment?:Attachment | null;
+	receipt_attachment?:Attachment | null;
+	pdf_attachment?:Attachment | null;
+	invoice_file_type?:File_Type | null;
+	bank_movements_info:BillBankMovementInfo[];
+	paid_by_user?:User | null;
+	approved_by_user?:User | null;
 }
 
 export interface AttachmentInfo
