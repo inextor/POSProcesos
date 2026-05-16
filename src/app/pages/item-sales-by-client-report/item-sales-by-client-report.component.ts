@@ -83,7 +83,7 @@ export class ItemSalesByClientReportComponent extends BaseComponent implements O
 		const start_timestamp = this.start_date.replace('T', ' ') + ':00';
 		const end_timestamp = this.end_date.replace('T', ' ') + ':59';
 
-		this.rest.httpPost('reports/getVentasDeArticulosPorClienteFacturado.php', {
+		this.rest.getReportByPath('getVentasDeArticulosPorClienteFacturado', {
 			start_timestamp,
 			end_timestamp,
 			store_id: this.store_id
