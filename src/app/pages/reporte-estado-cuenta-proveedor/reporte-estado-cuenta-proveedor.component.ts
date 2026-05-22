@@ -24,6 +24,8 @@ interface ReporteItem {
 	abono: number;
 	saldo: number;
 	dias_vencimiento: number;
+	purchase_id?: number | null;
+	payment_id?: number | null;
 }
 
 interface Balance {
@@ -51,6 +53,8 @@ export class ReporteEstadoCuentaProveedorComponent extends BaseComponent impleme
 	total_cargos: number = 0;
 	total_abonos: number = 0;
 
+	external_base_url: string = '';
+
 	report_items: ReporteItem[] = [];
 	bills_in_range: BillInfo[] = [];
 
@@ -69,6 +73,7 @@ export class ReporteEstadoCuentaProveedorComponent extends BaseComponent impleme
 
 	ngOnInit(): void {
 		this.path = '/reporte-estado-cuenta-proveedor';
+		this.external_base_url = this.rest.getExternalAppUrl();
 
 		this.sink = this.getParamsAndQueriesObservable().pipe
 		(
@@ -197,7 +202,9 @@ export class ReporteEstadoCuentaProveedorComponent extends BaseComponent impleme
 						abono: 0,
 						type: 'bill',
 						bill_id: bi.bill.id,
-						is_first_of_bill: false
+						is_first_of_bill: false,
+						purchase_id: bi.bill.purchase_id,
+						payment_id: null
 					});
 				}
 
@@ -221,7 +228,9 @@ export class ReporteEstadoCuentaProveedorComponent extends BaseComponent impleme
 					abono: 0,
 					type: 'bill',
 					bill_id: bi.bill.id,
-					is_first_of_bill: true
+					is_first_of_bill: true,
+					purchase_id: bi.bill.purchase_id,
+					payment_id: null
 				});
 			}
 		}
@@ -300,7 +309,9 @@ export class ReporteEstadoCuentaProveedorComponent extends BaseComponent impleme
 				abono: entry.amount,
 				type: 'payment',
 				bill_id: bill_ids_arr[0] || 0,
-				is_first_of_bill: false
+				is_first_of_bill: false,
+				purchase_id: null,
+				payment_id: entry.bank_movement?.payment_id ?? null
 			});
 		}
 
