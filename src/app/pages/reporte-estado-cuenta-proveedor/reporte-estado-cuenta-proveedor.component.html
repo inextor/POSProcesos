@@ -115,7 +115,15 @@
 								@for (item of report_items; track item) {
 									<tr style="border: 1px solid black;">
 										<td style="border: 1px solid black; padding: 8px;">{{item.fecha | date:'dd/MM/yyyy'}}</td>
-										<td style="border: 1px solid black; padding: 8px;">{{item.folio}}</td>
+										<td style="border: 1px solid black; padding: 8px;">
+											@if (item.purchase_id) {
+												<a [attr.href]="external_base_url + '/#/purchase/edit/' + item.purchase_id">{{item.folio}}</a>
+											} @else if (item.payment_id) {
+												<a [attr.href]="external_base_url + '/#/view-payment/' + item.payment_id">{{item.folio}}</a>
+											} @else {
+												{{item.folio}}
+											}
+										</td>
 										<td style="border: 1px solid black; padding: 8px;">{{item.concepto}}</td>
 										<td style="border: 1px solid black; padding: 8px;">{{item.producto}}</td>
 										<td style="border: 1px solid black; padding: 8px; text-align: right;">{{item.cantidad}}</td>
