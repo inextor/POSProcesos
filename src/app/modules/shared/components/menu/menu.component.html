@@ -113,6 +113,14 @@
 										<span>Pagos a Crédito</span>
 									</a>
 								</li>
+								<li class="side-nav-item">
+									<a routerLink="/item-sales-by-client-report" class="side-nav-link" aria-expanded="false" routerLinkActive="active">
+										<i class="svg-icon">
+											<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><path fill="currentColor" d="M12 2l-5.5 9h11z" fill="currentColor"/><circle cx="17.5" cy="17.5" r="4.5" fill="currentColor"/><path d="M3 13.5h8v8H3z" fill="currentColor"/></svg>
+										</i>
+										<span>Ventas Artículos por Cliente</span>
+									</a>
+								</li>
 							}
 
 							@if (rest.user_permission.edit_billing_data || rest.user_permission.view_facturas) {

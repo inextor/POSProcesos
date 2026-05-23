@@ -1,46 +1,96 @@
-<div class="container-fluid pt-4">
-	<div class="row">
-		<div class="col-12">
-			<div class="card shadow-sm">
-				<div class="card-header bg-primary text-white">
-					<h4 class="mb-0">Ventas de Artículos por Cliente Facturado</h4>
-				</div>
-				<div class="card-body">
-					<div class="row g-3">
-						<div class="col-md-3">
-							<label class="form-label">Fecha Inicio</label>
-							<input type="datetime-local" class="form-control" [(ngModel)]="start_date">
-						</div>
-						<div class="col-md-3">
-							<label class="form-label">Fecha Fin</label>
-							<input type="datetime-local" class="form-control" [(ngModel)]="end_date">
-						</div>
-						<div class="col-md-4">
-							<label class="form-label">Sucursal</label>
-							<select class="form-select" [(ngModel)]="store_id">
-								<option [ngValue]="null">Todas las sucursales</option>
-								<option *ngFor="let s of store_list" [ngValue]="s.id">{{s.name}}</option>
-							</select>
-						</div>
-						<div class="col-md-2 d-flex align-items-end">
-							<button class="btn btn-primary w-100" (click)="generateReport()" [disabled]="is_loading">
-								<span *ngIf="is_loading" class="spinner-border spinner-border-sm me-2"></span>
-								Generar Excel
-							</button>
-						</div>
-					</div>
+<app-loading [is_loading]="is_loading"></app-loading>
 
-					<div *ngIf="is_loading" class="mt-4">
-						<div class="progress">
-							<div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar"
-								[style.width.%]="progress" aria-valuenow="progress" aria-valuemin="0" aria-valuemax="100">
-								{{progress}}%
-							</div>
-						</div>
-						<p class="text-center mt-2">{{progress_message}}</p>
-					</div>
-				</div>
-			</div>
+<div class="container-fluid">
+	<div class="row align-items-center mx-0">
+		<div class="col p-0">
+			<h1 class="my-3">Ventas de Artículos por Cliente Facturado</h1>
+		</div>
+		<div class="col-auto">
+			@if (reportData.length > 0) {
+				<button class="btn btn-primary lift" (click)="exportToExcel()">
+					<svg xmlns="http://www.w3.org/2000/svg" width="1.1em" height="1.1em" viewBox="0 0 16 16" class="me-1"><path fill="currentColor" d="M14 14V4.5L9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2zM9.5 3A1.5 1.5 0 0 0 11 4.5h2V14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5v2zM5.184 7.14c.12-.506.273-.808.53-1.01.258-.204.577-.32.957-.32a2.3 2.3 0 0 1 .806.143c.273.1.506.254.698.463c.193.209.332.472.418.79h-1.254c-.058-.173-.133-.305-.224-.396c-.09-.09-.224-.136-.401-.136c-.198 0-.348.077-.45.232c-.102.155-.153.391-.153.709c0 .315.051.554.153.717c.102.163.252.244.45.244c.18 0 .313-.048.401-.144c.09-.096.166-.234.224-.414h1.254a1.86 1.86 0 0 1-.418.825c-.192.21-.425.367-.7.472a2.23 2.23 0 0 1-.803.156c-.383 0-.701-.118-.953-.355c-.253-.237-.406-.547-.46-.93H5.184zm2.14 0h1.164v3.522h-1.164V7.14z"/></svg>
+					Exportar
+				</button>
+			}
 		</div>
 	</div>
+
+	<div class="card p-3">
+		<form (submit)="generateReport()" class="row align-items-end">
+			<div class="col-12 col-md-4">
+				<div class="form-group mb-0">
+					<label>Sucursal</label>
+					<select name="store_id" class="form-control" [(ngModel)]="store_id">
+						<option [ngValue]="null">Todas</option>
+						@for (s of store_list; track s) {
+							<option [ngValue]="s.id">{{s.name | titlecase}}</option>
+						}
+					</select>
+				</div>
+			</div>
+			<div class="col-12 col-md-3">
+				<div class="form-group mb-0">
+					<label>Fecha Inicial</label>
+					<input type="datetime-local" class="form-control" name="start_date" [(ngModel)]="start_date">
+				</div>
+			</div>
+			<div class="col-12 col-md-3">
+				<div class="form-group mb-0">
+					<label>Fecha Final</label>
+					<input type="datetime-local" class="form-control" name="end_date" [(ngModel)]="end_date">
+				</div>
+			</div>
+			<div class="col-12 col-md-2">
+				<button type="submit" class="btn btn-primary w-100" [disabled]="is_loading">
+					<svg xmlns="http://www.w3.org/2000/svg" width="1.2em" height="1.2em" viewBox="0 0 512 512" class="me-1"><path fill="currentColor" d="M505 442.7L405.3 343c-4.5-4.5-10.6-7-17-7H372c27.6-35.3 44-79.7 44-128C416 93.1 322.9 0 208 0S0 93.1 0 208s93.1 208 208 208c48.3 0 92.7-16.4 128-44v16.3c0 6.4 2.5 12.5 7 17l99.7 99.7c9.4 9.4 24.6 9.4 33.9 0l28.3-28.3c9.4-9.4 9.4-24.6.1-34zM208 336c-70.7 0-128-57.2-128-128c0-70.7 57.2-128 128-128c70.7 0 128 57.2 128 128c0 70.7-57.2 128-128 128z"/></svg>
+					Buscar
+				</button>
+			</div>
+		</form>
+	</div>
+
+	@if (reportData.length > 0) {
+		<div class="card p-3 mt-3">
+			<div class="table-responsive">
+				<table class="table table-sm table-nowrap mb-0 table-hover">
+					<thead class="thead-light">
+						<tr>
+							<th>Agente</th>
+							<th>Sucursal</th>
+							<th>Cliente</th>
+							<th>Producto</th>
+							<th class="text-end">Total Art.</th>
+							<th class="text-center">Órdenes</th>
+							<th class="text-end">Cant. Art.</th>
+							<th class="text-end">Subtotal</th>
+							<th class="text-end">Total</th>
+							<th class="text-center">Medida</th>
+						</tr>
+					</thead>
+					<tbody>
+						@for (item of reportData; track item) {
+							<tr>
+								<td>{{item.agente}}</td>
+								<td>{{item.sucursal}}</td>
+								<td>
+									<small class="text-muted d-block">{{item.codigo_cliente}}</small>
+									<span class="text-primary">{{item.nombre_cliente}}</span>
+								</td>
+								<td>
+									<small class="text-muted d-block">{{item.cve_prod}}</small>
+									{{item.nombre_producto}}
+								</td>
+								<td class="text-end">{{item.total_articulo | number:'1.2-2'}}</td>
+								<td class="text-center">{{item.cantidad_ordenes}}</td>
+								<td class="text-end">{{item.cant_articulos | number:'1.2-2'}}</td>
+								<td class="text-end">{{item.subtotal_fact | currency}}</td>
+								<td class="text-end">{{item.total_fact | currency}}</td>
+								<td class="text-center">{{item.unidad_med}}</td>
+							</tr>
+						}
+					</tbody>
+				</table>
+			</div>
+		</div>
+	}
 </div>

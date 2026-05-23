@@ -63,7 +63,14 @@ function array2xlsx(array,filename,headers)
 {
 	let ws = XLSX.utils.json_to_sheet(array, {header: headers });
 	let wb = XLSX.utils.book_new();
-	XLSX.utils.book_append_sheet(wb, ws, filename );
+	
+	// Excel sheet names cannot exceed 31 characters
+	let sheetName = filename.replace(".xlsx", "");
+	if (sheetName.length > 31) {
+		sheetName = sheetName.substring(0, 31);
+	}
+	
+	XLSX.utils.book_append_sheet(wb, ws, sheetName );
 	let x = XLSX.writeFile( wb, filename );
 	console.log( x );
 }

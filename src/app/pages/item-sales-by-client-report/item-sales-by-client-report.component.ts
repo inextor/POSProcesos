@@ -7,6 +7,7 @@ import { Utils } from '../../modules/shared/Utils';
 import { FormsModule } from '@angular/forms';
 import { ExcelUtils } from '../../classes/ExcelUtils';
 import { CommonModule } from '@angular/common';
+import { LoadingComponent } from '../../components/loading/loading.component';
 
 interface VentasArticuloClienteFacturado {
 	agente: string;
@@ -39,7 +40,7 @@ const headers = [
 	templateUrl: './item-sales-by-client-report.component.html',
 	styleUrls: [],
 	standalone: true,
-	imports: [FormsModule, CommonModule]
+	imports: [FormsModule, CommonModule, LoadingComponent]
 })
 export class ItemSalesByClientReportComponent extends BaseComponent implements OnInit {
 
@@ -47,6 +48,7 @@ export class ItemSalesByClientReportComponent extends BaseComponent implements O
 	start_date: string = '';
 	end_date: string = '';
 	store_id: number | null = null;
+	reportData: VentasArticuloClienteFacturado[] = [];
 
 	progress: number = 0;
 	progress_message: string = '';
@@ -79,6 +81,7 @@ export class ItemSalesByClientReportComponent extends BaseComponent implements O
 
 	generateReport() {
 		this.is_loading = true;
+		this.reportData = [];
 
 		const start_timestamp = this.start_date.replace('T', ' ') + ':00';
 		const end_timestamp = this.end_date.replace('T', ' ') + ':59';
@@ -89,24 +92,30 @@ export class ItemSalesByClientReportComponent extends BaseComponent implements O
 			store_id: this.store_id
 		}).subscribe({
 			next: (data: any) => {
-				const reportData: VentasArticuloClienteFacturado[] = Array.isArray(data) ? data : (data.data || []);
+				this.reportData = Array.isArray(data) ? data : (data.data || []);
 				
-				if (reportData.length === 0) {
+				if (this.reportData.length === 0) {
 					this.showError('No se encontraron datos para el reporte.');
-					this.is_loading = false;
-					return;
+				} else {
+					this.showSuccess('Reporte generado exitosamente.');
 				}
-
-				this.progress = 100;
-				const today = new Date().toISOString().slice(0, 10);
-				ExcelUtils.array2xlsx(reportData, `ventas_articulo_cliente_${today}.xlsx`, headers);
 				this.is_loading = false;
-				this.showSuccess('Reporte generado exitosamente.');
+				this.progress = 100;
 			},
 			error: (error) => {
 				this.showError(error);
 				this.is_loading = false;
 			}
 		});
+	}
+
+	exportToExcel() {
+		if (this.reportData.length === 0) {
+			this.showError('No hay datos para exportar.');
+			return;
+		}
+
+		const today = new Date().toISOString().slice(0, 10);
+		ExcelUtils.array2xlsx(this.reportData, `ventas_articulo_cliente_${today}.xlsx`, headers);
 	}
 }
