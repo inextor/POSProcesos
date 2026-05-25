@@ -330,7 +330,10 @@ export interface ItemMovement
 	total_merma:number,
 	total_sold:number,
 	sold_amount:number,
-	total_produced:number
+	total_produced:number,
+	not_received_qty?:number,
+	received_percentage?:number,
+	attendance_percent?:number
 }
 
 export interface TransformationInfo
