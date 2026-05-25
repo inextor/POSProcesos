@@ -17,6 +17,9 @@ interface CItemMovement extends ItemMovement
 	total_gain: string|number;
 	total_loss: string|number;
 	category: Category | null;
+	not_received_qty: number;
+	received_percentage: number;
+	attendance_percent: number;
 }
 
 interface ItemMovementRequest
@@ -52,6 +55,23 @@ export class ItemMovementReportComponent extends BaseComponent implements OnInit
 	get totalRequested(): number
 	{
 		return this.item_movement_list.reduce((sum, item) => sum + (item.total_requested || 0), 0);
+	}
+
+	get totalNotReceived(): number
+	{
+		return this.item_movement_list.reduce((sum, item) => sum + (item.not_received_qty || 0), 0);
+	}
+
+	get totalReceivedPercentage(): number
+	{
+		let totalRequested = this.totalRequested;
+		return totalRequested ? (this.totalReceived / totalRequested * 100) : 0;
+	}
+
+	get totalAttendancePercent(): number
+	{
+		let totalRequested = this.totalRequested;
+		return totalRequested ? (this.totalReceived / totalRequested * 100) : 0;
 	}
 
 	get totalMerma(): number
@@ -190,7 +210,10 @@ export class ItemMovementReportComponent extends BaseComponent implements OnInit
 					let category = response.category.data.find(c=>c.id==x.category_id);
 					let total_loss = x.total_merma*x.reference_price;
 					let total_gain = x.sold_amount-(x.total_merma+x.total_sold)*x.reference_price;
-					return { ...x, category: category || null, total_loss, total_gain };
+					let not_received_qty = x.not_received_qty !== undefined ? x.not_received_qty : (x.total_requested - x.total_received);
+					let received_percentage = x.received_percentage !== undefined ? x.received_percentage : (x.total_requested ? (x.total_received / x.total_requested * 100) : 0);
+					let attendance_percent = x.attendance_percent !== undefined ? x.attendance_percent : (x.total_requested ? (x.total_received / x.total_requested * 100) : 0);
+					return { ...x, category: category || null, total_loss, total_gain, not_received_qty, received_percentage, attendance_percent };
 				});
 
 				this.is_loading = false;
@@ -245,6 +268,18 @@ export class ItemMovementReportComponent extends BaseComponent implements OnInit
 				case 'total_requested':
 					aValue = a.total_requested || 0;
 					bValue = b.total_requested || 0;
+					break;
+				case 'not_received_qty':
+					aValue = a.not_received_qty || 0;
+					bValue = b.not_received_qty || 0;
+					break;
+				case 'received_percentage':
+					aValue = a.received_percentage || 0;
+					bValue = b.received_percentage || 0;
+					break;
+				case 'attendance_percent':
+					aValue = a.attendance_percent || 0;
+					bValue = b.attendance_percent || 0;
 					break;
 				case 'total_merma':
 					aValue = a.total_merma || 0;
