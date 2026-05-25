@@ -27,6 +27,7 @@ interface ItemMovementRequest
 	start_timestamp: Date;
 	end_timestamp: Date;
 	store_id: number;
+	requisitions_or_shippings?: number;
 }
 
 @Component({
@@ -130,13 +131,24 @@ export class ItemMovementReportComponent extends BaseComponent implements OnInit
 				this.path = '/item-movement-report';
 				this.is_loading = true;
 
-				this.item_movement_search = this.getSearch(param_map, ['store_id','start_timestamp','end_timestamp']);
+				this.item_movement_search = this.getSearch(param_map, ['store_id','start_timestamp','end_timestamp','requisitions_or_shippings']);
 
 				// Si el usuario tiene un store_id asignado y no se ha especificado uno en los parámetros, usarlo por defecto
 				if (!this.item_movement_search.eq.store_id && this.rest.user?.store_id)
 				{
 					this.item_movement_search.eq.store_id = this.rest.user.store_id;
 				}
+
+				let requisitions_or_shippings = this.item_movement_search.eq['requisitions_or_shippings'];
+				if (requisitions_or_shippings === undefined || requisitions_or_shippings === null)
+				{
+					requisitions_or_shippings = 0;
+				}
+				else
+				{
+					requisitions_or_shippings = Number(requisitions_or_shippings);
+				}
+				this.item_movement_search.eq['requisitions_or_shippings'] = requisitions_or_shippings;
 
 				let start: Date = new Date();
 				let end: Date = new Date();
@@ -172,6 +184,7 @@ export class ItemMovementReportComponent extends BaseComponent implements OnInit
 					start_timestamp: start,
 					end_timestamp: end,
 					store_id: this.item_movement_search.eq['store_id'],
+					requisitions_or_shippings: requisitions_or_shippings,
 				}) as Observable<RestResponse<ItemMovement>>
 			})
 			,mergeMap((report)=>
