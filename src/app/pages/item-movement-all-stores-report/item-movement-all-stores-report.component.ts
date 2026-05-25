@@ -6,7 +6,7 @@ import { mergeMap } from 'rxjs/operators';
 import { Utils } from '../../modules/shared/Utils';
 import { RestResponse, RestSimple, SearchObject } from '../../modules/shared/services/Rest';
 import { BaseComponent } from '../../modules/shared/base/base.component';
-import { Category } from '../../modules/shared/RestModels';
+import { Category, Store } from '../../modules/shared/RestModels';
 import { ItemMovement } from '../../modules/shared/Models';
 import { forkJoin, Observable, of } from 'rxjs';
 
@@ -16,12 +16,16 @@ interface CItemMovement extends ItemMovement
 	total_gain: number;
 	production_cost: number;
 	text_danger: boolean;
+	not_received_qty: number;
+	received_percentage: number;
 }
 
 interface ItemMovementRequest
 {
 	start_timestamp: Date;
 	end_timestamp: Date;
+	store_id?: number | null;
+	requisitions_or_shippings?: number;
 }
 
 @Component({
@@ -37,6 +41,8 @@ export class ItemMovementAllStoresReportComponent extends BaseComponent implemen
 	start_date: string = '';
 	end_date: string = '';
 	rest_category: RestSimple<Category> = this.rest.initRestSimple('category', ['id']);
+	rest_store: RestSimple<Store> = this.rest.initRestSimple('store', ['id', 'name', 'created', 'updated']);
+	stores: Store[] = [];
 	sortColumn: string = '';
 	sortDirection: 'asc' | 'desc' = 'asc';
 
@@ -61,7 +67,35 @@ export class ItemMovementAllStoresReportComponent extends BaseComponent implemen
 				this.path = '/item-movement-all-stores-report';
 				this.is_loading = true;
 
-				this.item_movement_search = this.getSearch(param_map, ['start_timestamp', 'end_timestamp']);
+				let store_obs = this.stores.length
+					? of({total: this.stores.length, data: this.stores})
+					: this.rest_store.search({ eq: { status: 'ACTIVE', sales_enabled: 1 }, limit: 999999 });
+
+				return forkJoin
+				({
+					stores: store_obs,
+					param_map: of(param_map),
+				})
+			}),
+			mergeMap((response) =>
+			{
+				this.stores = response.stores.data;
+
+				let param_map = response.param_map;
+
+				this.item_movement_search = this.getSearch(param_map, ['start_timestamp', 'end_timestamp', 'requisitions_or_shippings']);
+				this.item_movement_search.eq['store_id'] = null;
+
+				let requisitions_or_shippings = this.item_movement_search.eq['requisitions_or_shippings'];
+				if (requisitions_or_shippings === undefined || requisitions_or_shippings === null)
+				{
+					requisitions_or_shippings = 0;
+				}
+				else
+				{
+					requisitions_or_shippings = Number(requisitions_or_shippings);
+				}
+				this.item_movement_search.eq['requisitions_or_shippings'] = requisitions_or_shippings;
 
 				let start: Date = new Date();
 				let end: Date = new Date();
@@ -95,6 +129,7 @@ export class ItemMovementAllStoresReportComponent extends BaseComponent implemen
 				{
 					start_timestamp: start,
 					end_timestamp: end,
+					requisitions_or_shippings: requisitions_or_shippings,
 				}) as Observable<RestResponse<ItemMovement>>
 			}),
 			mergeMap((report) =>
@@ -133,7 +168,9 @@ export class ItemMovementAllStoresReportComponent extends BaseComponent implemen
 					let category = response.category.data.find(c => c.id == x.category_id);
 					let production_cost = x.total_produced*x.reference_price;
 					let total_gain = x.sold_amount-(x.total_merma+x.total_sold)*x.reference_price;
-					return { ...x, category: category || null, production_cost, total_gain,text_danger: total_gain<0 }
+					let not_received_qty = x.not_received_qty !== undefined ? x.not_received_qty : (x.total_requested - x.total_received);
+					let received_percentage = x.received_percentage !== undefined ? x.received_percentage : (x.total_requested ? (x.total_received / x.total_requested * 100) : 0);
+					return { ...x, category: category || null, production_cost, total_gain, text_danger: total_gain<0, not_received_qty, received_percentage }
 				});
 
 
@@ -152,6 +189,26 @@ export class ItemMovementAllStoresReportComponent extends BaseComponent implemen
 				this.is_loading = false;
 			},
 		});
+	}
+
+	onStoreChange(store_id: any)
+	{
+		if (store_id !== null && store_id !== undefined)
+		{
+			this.router.navigate(['/item-movement-report'], {
+				queryParams: {
+					'eq.store_id': store_id,
+					'eq.start_timestamp': Utils.getUTCMysqlStringFromDate(this.item_movement_search.eq['start_timestamp'] as Date),
+					'eq.end_timestamp': Utils.getUTCMysqlStringFromDate(this.item_movement_search.eq['end_timestamp'] as Date),
+					'eq.requisitions_or_shippings': this.item_movement_search.eq['requisitions_or_shippings'],
+				}
+			});
+		}
+	}
+
+	performSearch()
+	{
+		super.search(this.item_movement_search);
 	}
 
 	sortBy(column: string)
@@ -214,12 +271,20 @@ export class ItemMovementAllStoresReportComponent extends BaseComponent implemen
 					bValue = b.total_gain || 0;
 					break;
 
-				case 'total_produced':
-					aValue = a.total_produced || 0;
-					bValue = b.total_produced || 0;
-					break;
-				default:
-					return 0;
+			case 'total_produced':
+				aValue = a.total_produced || 0;
+				bValue = b.total_produced || 0;
+				break;
+			case 'reference_price':
+				aValue = a.reference_price || 0;
+				bValue = b.reference_price || 0;
+				break;
+			case 'total_loss':
+				aValue = (a.total_merma * a.reference_price) || 0;
+				bValue = (b.total_merma * b.reference_price) || 0;
+				break;
+			default:
+				return 0;
 			}
 
 			if (aValue < bValue) return this.sortDirection === 'asc' ? -1 : 1;

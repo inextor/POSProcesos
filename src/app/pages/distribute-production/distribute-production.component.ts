@@ -45,7 +45,7 @@ export class DistributeProductionComponent extends BaseComponent
 					items: this.rest_item_info.search({csv:{category_id:category_ids}, limit:999999}),
 					productions: response
 				});
-			}
+			})
 		)
 		.subscribe((response:any)=>
 		{

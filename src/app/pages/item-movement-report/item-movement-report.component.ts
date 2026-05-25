@@ -9,7 +9,6 @@ import { BaseComponent } from '../../modules/shared/base/base.component';
 import { Category, Store } from '../../modules/shared/RestModels';
 import { ItemMovement } from '../../modules/shared/Models';
 import { forkJoin,Observable, of } from 'rxjs';
-import {RouterLink} from '@angular/router';
 
 
 interface CItemMovement extends ItemMovement
@@ -34,7 +33,7 @@ interface ItemMovementRequest
 	selector: 'app-item-movement-report',
 	templateUrl: './item-movement-report.component.html',
 	styleUrl: './item-movement-report.component.css',
-	imports: [CommonModule, FormsModule, RouterLink],
+	imports: [CommonModule, FormsModule],
 })
 export class ItemMovementReportComponent extends BaseComponent implements OnInit
 {
@@ -132,6 +131,11 @@ export class ItemMovementReportComponent extends BaseComponent implements OnInit
 				this.is_loading = true;
 
 				this.item_movement_search = this.getSearch(param_map, ['store_id','start_timestamp','end_timestamp','requisitions_or_shippings']);
+
+				if (this.item_movement_search.eq.store_id as any === 'undefined' || this.item_movement_search.eq.store_id as any === 'null')
+				{
+					this.item_movement_search.eq.store_id = undefined;
+				}
 
 				// Si el usuario tiene un store_id asignado y no se ha especificado uno en los parámetros, usarlo por defecto
 				if (!this.item_movement_search.eq.store_id && this.rest.user?.store_id)
@@ -232,6 +236,20 @@ export class ItemMovementReportComponent extends BaseComponent implements OnInit
 				this.is_loading = false;
 			}
 		});
+	}
+
+	onStoreChange(store_id: any)
+	{
+		if (store_id === null || store_id === undefined)
+		{
+			this.router.navigate(['/item-movement-all-stores-report'], {
+				queryParams: {
+					'eq.start_timestamp': Utils.getUTCMysqlStringFromDate(this.item_movement_search.eq['start_timestamp'] as Date),
+					'eq.end_timestamp': Utils.getUTCMysqlStringFromDate(this.item_movement_search.eq['end_timestamp'] as Date),
+					'eq.requisitions_or_shippings': this.item_movement_search.eq['requisitions_or_shippings'],
+				}
+			});
+		}
 	}
 
 	performSearch()

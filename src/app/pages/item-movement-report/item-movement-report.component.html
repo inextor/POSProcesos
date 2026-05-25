@@ -1,21 +1,14 @@
 <div class="container-fluid">
-	<div class="row align-items-center">
-		<div class="col-10">
-			<h1 class="my-3">Reporte de Movimientos de Artículos</h1>
-		</div>
-		<div class="col-2 text-end">
-			<a routerLink="/item-movement-all-stores-report" class="btn btn-primary">Todas</a>
-		</div>
-	</div>
+	<h1 class="my-3">Reporte de Movimientos de Artículos</h1>
 	<div class="card p-3">
 		<div class="row">
 			<div class="col-md-3 col-sm-6">
 				<label>Sucursal</label>
-				<select name="store_id" class="form-control" [(ngModel)]="item_movement_search.eq['store_id']">
-					<option [value]="undefined">Todas las sucursales</option>
+				<select name="store_id" class="form-control" [(ngModel)]="item_movement_search.eq['store_id']" (ngModelChange)="onStoreChange($event)">
+					<option [ngValue]="null">Todas las sucursales</option>
 					@for(store of stores; track store.id)
 					{
-						<option [value]="store.id">{{store.name}}</option>
+						<option [ngValue]="store.id">{{store.name}}</option>
 					}
 				</select>
 			</div>
