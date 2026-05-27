@@ -56,6 +56,8 @@ export class ItemMovementAllStoresReportComponent extends BaseComponent implemen
 	total_qty_sold: number = 0;
 	total_gain: number = 0;
 	total_merma_cost: number = 0;
+	total_not_received: number = 0;
+	total_received_percentage: number = 0;
 
 	ngOnInit(): void
 	{
@@ -174,6 +176,18 @@ export class ItemMovementAllStoresReportComponent extends BaseComponent implemen
 				});
 
 
+				this.total_received = 0;
+				this.total_requested = 0;
+				this.total_merma = 0;
+				this.total_merma_cost = 0;
+				this.total_sold = 0;
+				this.total_produced = 0;
+				this.total_production_cost = 0;
+				this.total_sold_amount = 0;
+				this.total_gain = 0;
+				this.total_not_received = 0;
+				this.total_received_percentage = 0;
+
 				this.item_movement_list.forEach(x=>{
 					this.total_received += x.total_received || 0;
 					this.total_requested += x.total_requested || 0;
@@ -184,7 +198,10 @@ export class ItemMovementAllStoresReportComponent extends BaseComponent implemen
 					this.total_production_cost += x.production_cost || 0;
 					this.total_sold_amount += x.sold_amount || 0;
 					this.total_gain += x.total_gain || 0;
+					this.total_not_received += x.not_received_qty || 0;
 				});
+
+				this.total_received_percentage = this.total_requested ? (this.total_received / this.total_requested * 100) : 0;
 
 				this.is_loading = false;
 			},
@@ -253,6 +270,14 @@ export class ItemMovementAllStoresReportComponent extends BaseComponent implemen
 				case 'total_requested':
 					aValue = a.total_requested || 0;
 					bValue = b.total_requested || 0;
+					break;
+				case 'not_received_qty':
+					aValue = a.not_received_qty || 0;
+					bValue = b.not_received_qty || 0;
+					break;
+				case 'received_percentage':
+					aValue = a.received_percentage || 0;
+					bValue = b.received_percentage || 0;
 					break;
 				case 'total_merma':
 					aValue = a.total_merma || 0;

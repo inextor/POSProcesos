@@ -115,4 +115,9 @@ export class MenuComponent extends BaseComponent
 			this.rest.showSuccess('Datos de soporte actualizados');
 		},(error)=>this.rest.showError( error ));
 	}
+
+	goToReportsDashboard()
+	{
+		this.router.navigate(['/reports-dashboard']);
+	}
 }

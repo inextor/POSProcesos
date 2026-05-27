@@ -90,6 +90,7 @@ export const routes: Routes = [
 			{path: 'payment-commission-report', loadComponent: () => import('./pages/payment-commission-report/payment-commission-report.component').then(m => m.PaymentCommissionReportComponent), canActivate: [authGuard]},
 			{path: 'pending-commissions-report', loadComponent: () => import('./pages/pending-commissions-report/pending-commissions-report.component').then(m => m.PendingCommissionsReportComponent), canActivate: [authGuard]},
 			{path: 'paid-commissions-report', loadComponent: () => import('./pages/paid-commissions-report/paid-commissions-report.component').then(m => m.PaidCommissionsReportComponent), canActivate: [authGuard]},
+			{path: 'consecutivo-facturas-desglozado-report', loadComponent: () => import('./pages/consecutivo-facturas-desglozado-report/consecutivo-facturas-desglozado-report.component').then(m => m.ConsecutivoFacturasDesglozadoReportComponent), canActivate: [authGuard]},
 			{path: 'list-purchase', loadComponent: () => import('./pages/list-purchase/list-purchase.component').then(m => m.ListPurchaseComponent), canActivate: [authGuard]},
 			{path: 'purchase', loadComponent: () => import('./pages/save-purchase/save-purchase.component').then(m => m.SavePurchaseComponent), canActivate: [authGuard]},
 			{path: 'purchase/provider/:provider_id', loadComponent: () => import('./pages/save-purchase/save-purchase.component').then(m => m.SavePurchaseComponent), canActivate: [authGuard]},
@@ -105,7 +106,8 @@ export const routes: Routes = [
 			{path: 'edit-transformation/:id', loadComponent: () => import('./pages/save-transformation/save-transformation.component').then(m => m.SaveTransformationComponent), canActivate: [authGuard]},
 			{path: 'provider-resume', loadComponent: () => import('./pages/provider-resume/provider-resume.component').then(m => m.ProviderResumeComponent), canActivate: [authGuard]},
 			{path: 'list-batch-record', loadComponent: () => import('./pages/list-batch-record/list-batch-record.component').then(m => m.ListBatchRecordComponent), canActivate: [authGuard]},
-			{path: 'list-storage-record', loadComponent: () => import('./pages/list-storage-record/list-storage-record.component').then(m => m.ListStorageRecordComponent), canActivate: [authGuard]}
+			{path: 'list-storage-record', loadComponent: () => import('./pages/list-storage-record/list-storage-record.component').then(m => m.ListStorageRecordComponent), canActivate: [authGuard]},
+			{path: 'reports-dashboard', loadComponent: () => import('./pages/reports-dashboard/reports-dashboard.component').then(m => m.ReportsDashboardComponent), canActivate: [authGuard]}
 		]
 	},
 ];

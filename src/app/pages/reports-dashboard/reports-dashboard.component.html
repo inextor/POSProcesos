@@ -1,0 +1,285 @@
+<div class="container-fluid">
+	<h1 class="my-3">Reportes</h1>
+	<hr>
+
+	<div class="row">
+		<!-- Órdenes -->
+		<div class="col-md-6 col-lg-4 mb-4">
+			<h5 class="mb-2">Órdenes</h5>
+			<div class="card p-0">
+				<div class="list-group list-group-flush">
+					@if (rest.user_permission.add_user) {
+						<a [attr.href]="external_base_url + '/#/orders-report'" class="list-group-item list-group-item-action d-flex align-items-center">
+							<i class="svg-icon me-2">
+								<svg xmlns="http://www.w3.org/2000/svg" width="1.2em" height="1.2em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 1792 1792"><path d="M448 0q26 0 45 19t19 45v891l536-429q17-14 40-14q26 0 45 19t19 45v379l536-429q17-14 40-14q26 0 45 19t19 45v1152q0 26-19 45t-45 19H64q-26 0-45-19t-19-45V64q0-26 19-45T64 0h384z" fill="currentColor"/></svg>
+							</i>
+							Ordenes por Sucursal
+						</a>
+						<a routerLink="/list-ecommerce-order" class="list-group-item list-group-item-action d-flex align-items-center">
+							<i class="svg-icon me-2">
+								<svg xmlns="http://www.w3.org/2000/svg" width="1.2em" height="1.2em" viewBox="0 0 24 24"><path fill="currentColor" d="M17 18c-1.11 0-2-.89-2-2s.89-2 2-2s2 .89 2 2s-.89 2-2 2M7 18c-1.11 0-2-.89-2-2s.89-2 2-2s2 .89 2 2s-.89 2-2 2m2-7V9H7V7h2V5h2v2h2v2h-2v2h-2m10-4V7h-2V5h2V3h2v2h2v2h-2v2h-2M7 3a2 2 0 0 0-2 2v8c0 1.11.89 2 2 2h10a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2H7Z"/></svg>
+							</i>
+							Ordenes Ecommerce
+						</a>
+						<a [attr.href]="external_base_url + '/#/corte-x-folio'" class="list-group-item list-group-item-action d-flex align-items-center">
+							<i class="svg-icon me-2">
+								<svg xmlns="http://www.w3.org/2000/svg" width="1.2em" height="1.2em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 1792 1792"><path d="M448 0q26 0 45 19t19 45v891l536-429q17-14 40-14q26 0 45 19t19 45v379l536-429q17-14 40-14q26 0 45 19t19 45v1152q0 26-19 45t-45 19H64q-26 0-45-19t-19-45V64q0-26 19-45T64 0h384z" fill="currentColor"/></svg>
+							</i>
+							Ventas por folio
+						</a>
+					}
+					<a [attr.href]="external_base_url + '/#/list-sales-report'" class="list-group-item list-group-item-action d-flex align-items-center">
+						<i class="svg-icon me-2">
+							<svg xmlns="http://www.w3.org/2000/svg" width="1.2em" height="1.2em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 1792 1792"><path d="M448 0q26 0 45 19t19 45v891l536-429q17-14 40-14q26 0 45 19t19 45v379l536-429q17-14 40-14q26 0 45 19t19 45v1152q0 26-19 45t-45 19H64q-26 0-45-19t-19-45V64q0-26 19-45T64 0h384z" fill="currentColor"/></svg>
+						</i>
+						Cortes por sucursal
+					</a>
+					<a [attr.href]="external_base_url + '/#/cancelled-orders'" class="list-group-item list-group-item-action d-flex align-items-center">
+						<i class="svg-icon me-2">
+							<svg xmlns="http://www.w3.org/2000/svg" width="1.2em" height="1.2em" viewBox="0 0 24 24"><path fill="currentColor" d="M8.27 3L3 8.27v7.46L8.27 21h7.46L21 15.73V8.27L15.73 3M8.41 7L12 10.59L15.59 7L17 8.41L13.41 12L17 15.59L15.59 17L12 13.41L8.41 17L7 15.59L10.59 12L7 8.41"/></svg>
+						</i>
+						Cancelaciones
+					</a>
+					@if (rest.user_permission.reports) {
+						<a [attr.href]="external_base_url + '/#/list-returned-items'" class="list-group-item list-group-item-action d-flex align-items-center">
+							<i class="svg-icon me-2">
+								<svg xmlns="http://www.w3.org/2000/svg" width="1.2em" height="1.2em" viewBox="0 0 24 24"><path fill="currentColor" d="M8.27 3L3 8.27v7.46L8.27 21h7.46L21 15.73V8.27L15.73 3M8.41 7L12 10.59L15.59 7L17 8.41L13.41 12L17 15.59L15.59 17L12 13.41L8.41 17L7 15.59L10.59 12L7 8.41"/></svg>
+							</i>
+							Artículos Cancelados
+						</a>
+					}
+					<a [attr.href]="external_base_url + '/#/report-waiter-orders'" class="list-group-item list-group-item-action d-flex align-items-center">
+						<i class="svg-icon me-2">
+							<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512" width="1.2em" height="1.2em"><path fill="currentColor" d="M352 288h-16v-88c0-4.42-3.58-8-8-8h-13.58c-4.74 0-9.37 1.4-13.31 4.03l-15.33 10.22a7.994 7.994 0 0 0-2.22 11.09l8.88 13.31a7.994 7.994 0 0 0 11.09 2.22l.47-.31V288h-16c-4.42 0-8 3.58-8 8v16c0 4.42 3.58 8 8 8h64c4.42 0 8-3.58 8-8v-16c0-4.42-3.58-8-8-8zM608 64H32C14.33 64 0 78.33 0 96v320c0 17.67 14.33 32 32 32h576c17.67 0 32-14.33 32-32V96c0-17.67-14.33-32-32-32zM48 400v-64c35.35 0 64 28.65 64 64H48zm0-224v-64h64c0 35.35-28.65 64-64 64zm272 192c-53.02 0-96-50.15-96-112c0-61.86 42.98-112 96-112s96 50.14 96 112c0 61.87-43 112-96 112zm272 32h-64c0-35.35 28.65-64 64-64v64zm0-224c-35.35 0-64-28.65-64-64h64v64z"/></svg>
+						</i>
+						Ordenes Por Mesero
+					</a>
+					<a [attr.href]="external_base_url + '/#/report-ticket-avg'" class="list-group-item list-group-item-action d-flex align-items-center">
+						<i class="svg-icon me-2">
+							<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512" width="1.2em" height="1.2em"><path fill="currentColor" d="M352 288h-16v-88c0-4.42-3.58-8-8-8h-13.58c-4.74 0-9.37 1.4-13.31 4.03l-15.33 10.22a7.994 7.994 0 0 0-2.22 11.09l8.88 13.31a7.994 7.994 0 0 0 11.09 2.22l.47-.31V288h-16c-4.42 0-8 3.58-8 8v16c0 4.42 3.58 8 8 8h64c4.42 0 8-3.58 8-8v-16c0-4.42-3.58-8-8-8zM608 64H32C14.33 64 0 78.33 0 96v320c0 17.67 14.33 32 32 32h576c17.67 0 32-14.33 32-32V96c0-17.67-14.33-32-32-32zM48 400v-64c35.35 0 64 28.65 64 64H48zm0-224v-64h64c0 35.35-28.65 64-64 64zm272 192c-53.02 0-96-50.15-96-112c0-61.86 42.98-112 96-112s96 50.14 96 112c0 61.87-43 112-96 112zm272 32h-64c0-35.35 28.65-64 64-64v64zm0-224c-35.35 0-64-28.65-64-64h64v64z"/></svg>
+						</i>
+						Ticket Promedio
+					</a>
+				</div>
+			</div>
+		</div>
+
+		<!-- Ventas por Artículo -->
+		<div class="col-md-6 col-lg-4 mb-4">
+			<h5 class="mb-2">Ventas por Artículo</h5>
+			<div class="card p-0">
+				<div class="list-group list-group-flush">
+					<a routerLink="/report-comex-sales" class="list-group-item list-group-item-action d-flex align-items-center">
+						<i class="svg-icon me-2">
+							<svg xmlns="http://www.w3.org/2000/svg" width="1.2em" height="1.2em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 24 24"><path d="M12 2l-5.5 9h11z" fill="currentColor"/><circle cx="17.5" cy="17.5" r="4.5" fill="currentColor"/><path d="M3 13.5h8v8H3z" fill="currentColor"/></svg>
+						</i>
+						Detalle Ventas por ticket
+					</a>
+					<a [attr.href]="external_base_url + '/#/report-sells-by-category'" class="list-group-item list-group-item-action d-flex align-items-center">
+						<i class="svg-icon me-2">
+							<svg xmlns="http://www.w3.org/2000/svg" width="1.2em" height="1.2em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 24 24"><path d="M12 2l-5.5 9h11z" fill="currentColor"/><circle cx="17.5" cy="17.5" r="4.5" fill="currentColor"/><path d="M3 13.5h8v8H3z" fill="currentColor"/></svg>
+						</i>
+						Ventas por Categoría
+					</a>
+					<a [attr.href]="external_base_url + '/#/report-sells-by-item'" class="list-group-item list-group-item-action d-flex align-items-center">
+						<i class="svg-icon me-2">
+							<svg xmlns="http://www.w3.org/2000/svg" width="1.2em" height="1.2em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 24 24"><path d="M12 2l-5.5 9h11z" fill="currentColor"/><circle cx="17.5" cy="17.5" r="4.5" fill="currentColor"/><path d="M3 13.5h8v8H3z" fill="currentColor"/></svg>
+						</i>
+						Ventas por Artículos
+					</a>
+					@if (rest.user_permission.reports) {
+						<a [attr.href]="external_base_url + '/#/report-sells-by-production-area'" class="list-group-item list-group-item-action d-flex align-items-center">
+							<i class="svg-icon me-2">
+								<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" width="1.2em" height="1.2em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 24 24"><path d="M12 2l-5.5 9h11z" fill="currentColor"/><circle cx="17.5" cy="17.5" r="4.5" fill="currentColor"/><path d="M3 13.5h8v8H3z" fill="currentColor"/></svg>
+							</i>
+							Ventas por Área de Producción
+						</a>
+					}
+					<a [attr.href]="external_base_url + '/#/report-sells-by-price'" class="list-group-item list-group-item-action d-flex align-items-center">
+						<i class="svg-icon me-2">
+							<svg xmlns="http://www.w3.org/2000/svg" width="1.2em" height="1.2em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 24 24"><path d="M12 2l-5.5 9h11z" fill="currentColor"/><circle cx="17.5" cy="17.5" r="4.5" fill="currentColor"/><path d="M3 13.5h8v8H3z" fill="currentColor"/></svg>
+						</i>
+						Ventas por Precios
+					</a>
+					@if( rest.user_permission.reports ) {
+						<a routerLink="/item-sales-by-client-report" class="list-group-item list-group-item-action d-flex align-items-center">
+							<i class="svg-icon me-2">
+								<svg xmlns="http://www.w3.org/2000/svg" width="1.2em" height="1.2em" viewBox="0 0 24 24"><path d="M12 2l-5.5 9h11z" fill="currentColor"/><circle cx="17.5" cy="17.5" r="4.5" fill="currentColor"/><path d="M3 13.5h8v8H3z" fill="currentColor"/></svg>
+							</i>
+							Ventas Artículos por Cliente
+						</a>
+					}
+				</div>
+			</div>
+		</div>
+
+		<!-- Inventario y Costos -->
+		<div class="col-md-6 col-lg-4 mb-4">
+			<h5 class="mb-2">Inventario y Costos</h5>
+			<div class="card p-0">
+				<div class="list-group list-group-flush">
+					@if( rest.user_permission.reports ) {
+						<a routerLink="/item-movement-report" class="list-group-item list-group-item-action d-flex align-items-center">
+							<i class="svg-icon me-2">
+								<svg xmlns="http://www.w3.org/2000/svg" width="1.2em" height="1.2em" viewBox="0 0 48 48"><path fill="currentColor" fill-rule="evenodd" d="M18.94 6.127a1.5 1.5 0 0 0-.437.325c-2.018 2.19-5.781 7.447-7.711 10.255a2 2 0 1 1-3.297-2.266c1.9-2.763 5.822-8.263 8.066-10.7c.945-1.024 2.174-1.57 3.387-1.769c1.95-.32 5.855-.793 9.578-.157c1.718.294 3.107 1.271 4.098 2.41l.948 1.096l.486-.242c2.367-1.178 5.196.79 4.681 3.515c-.363 1.923-.93 4.679-1.608 7.068c-.336 1.188-.717 2.35-1.136 3.291c-.21.47-.451.94-.735 1.348c-.258.373-.68.888-1.313 1.204c-.563.28-1.168.349-1.606.369c-.48.02-.997-.01-1.509-.067c-1.027-.113-2.224-.351-3.427-.635c-2.417-.57-5.068-1.378-6.854-1.95c-2.483-.796-3.036-3.957-1.112-5.599l.03-.026l2.29-1.876zm22.783 9.696a2 2 0 1 0-3.604 1.735c1.478 3.068 4.169 8.941 5.065 11.775q.064.198.066.435l-6.269-.296l-.513-2.919l-.005-.023c-.466-2.481-3.479-3.574-5.407-1.836c-1.39 1.254-3.418 3.135-5.123 4.934c-.85.896-1.655 1.81-2.268 2.639a10 10 0 0 0-.814 1.27c-.202.389-.446.948-.484 1.578c-.043.71.196 1.333.391 1.741c.214.45.502.893.805 1.307c.61.833 1.429 1.74 2.294 2.625c1.74 1.778 3.853 3.644 5.345 4.92c2.08 1.778 5.224.373 5.385-2.297l.032-.528c.472-.087.971-.182 1.423-.268c1.483-.284 3.03-.992 4.146-2.33c2.417-2.892 3.96-6.499 4.655-8.34c.435-1.15.576-2.488.155-3.818c-.997-3.154-3.821-9.285-5.276-12.304m-39.048 10.9c-.16.448-.325.921-.475 1.35c-.496 1.426-.653 3.117-.047 4.752c1.309 3.53 3.675 6.664 4.929 8.184c.782.949 1.872 1.736 3.233 2.036c3.24.717 9.985 1.348 13.34 1.604a2 2 0 0 0 .303-3.988c-3.407-.26-9.864-.876-12.78-1.521a1.5 1.5 0 0 1-.294-.1l3.317-5.322l2.73 1.029l.043.016c2.36.827 4.85-1.197 4.294-3.763c-.395-1.826-1.018-4.516-1.73-6.885c-.355-1.18-.747-2.332-1.163-3.275a10 10 0 0 0-.698-1.337c-.237-.37-.6-.858-1.127-1.204c-.591-.389-1.248-.494-1.7-.53a8.4 8.4 0 0 0-1.536.04c-1.027.11-2.226.362-3.428.666c-2.416.611-5.096 1.499-6.95 2.147c-2.602.91-2.938 4.34-.704 5.809z" clip-rule="evenodd"/></svg>
+							</i>
+							Movimiento de artículos
+						</a>
+					}
+					@if (rest.user_permission.add_stock) {
+						<a [attr.href]="external_base_url + '/#/item-in-sales-report'" class="list-group-item list-group-item-action d-flex align-items-center">
+							<i class="svg-icon me-2">
+								<svg xmlns="http://www.w3.org/2000/svg" width="1.2em" height="1.2em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 24 24"><path d="M12 2l-5.5 9h11z" fill="currentColor"/><circle cx="17.5" cy="17.5" r="4.5" fill="currentColor"/><path d="M3 13.5h8v8H3z" fill="currentColor"/></svg>
+							</i>
+							Artículos Utilizados
+						</a>
+					}
+					<a [attr.href]="external_base_url + '/#/report-item-bom-price'" class="list-group-item list-group-item-action d-flex align-items-center">
+						<i class="svg-icon me-2">
+							<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512" width="1.2em" height="1.2em"><path fill="currentColor" d="M352 288h-16v-88c0-4.42-3.58-8-8-8h-13.58c-4.74 0-9.37 1.4-13.31 4.03l-15.33 10.22a7.994 7.994 0 0 0-2.22 11.09l8.88 13.31a7.994 7.994 0 0 0 11.09 2.22l.47-.31V288h-16c-4.42 0-8 3.58-8 8v16c0 4.42 3.58 8 8 8h64c4.42 0 8-3.58 8-8v-16c0-4.42-3.58-8-8-8zM608 64H32C14.33 64 0 78.33 0 96v320c0 17.67 14.33 32 32 32h576c17.67 0 32-14.33 32-32V96c0-17.67-14.33-32-32-32zM48 400v-64c35.35 0 64 28.65 64 64H48zm0-224v-64h64c0 35.35-28.65 64-64 64zm272 192c-53.02 0-96-50.15-96-112c0-61.86 42.98-112 96-112s96 50.14 96 112c0 61.87-43 112-96 112zm272 32h-64c0-35.35 28.65-64 64-64v64zm0-224c-35.35 0-64-28.65-64-64h64v64z"/></svg>
+						</i>
+						Costo de artículos
+					</a>
+					<a [attr.href]="external_base_url + '/#/report-order-item-profit'" class="list-group-item list-group-item-action d-flex align-items-center">
+						<i class="svg-icon me-2">
+							<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512" width="1.2em" height="1.2em"><path fill="currentColor" d="M352 288h-16v-88c0-4.42-3.58-8-8-8h-13.58c-4.74 0-9.37 1.4-13.31 4.03l-15.33 10.22a7.994 7.994 0 0 0-2.22 11.09l8.88 13.31a7.994 7.994 0 0 0 11.09 2.22l.47-.31V288h-16c-4.42 0-8 3.58-8 8v16c0 4.42 3.58 8 8 8h64c4.42 0 8-3.58 8-8v-16c0-4.42-3.58-8-8-8zM608 64H32C14.33 64 0 78.33 0 96v320c0 17.67 14.33 32 32 32h576c17.67 0 32-14.33 32-32V96c0-17.67-14.33-32-32-32zM48 400v-64c35.35 0 64 28.65 64 64H48zm0-224v-64h64c0 35.35-28.65 64-64 64zm272 192c-53.02 0-96-50.15-96-112c0-61.86 42.98-112 96-112s96 50.14 96 112c0 61.87-43 112-96 112zm272 32h-64c0-35.35 28.65-64 64-64v64zm0-224c-35.35 0-64-28.65-64-64h64v64z"/></svg>
+						</i>
+						Utilidad de artículos por venta
+					</a>
+					<a [attr.href]="external_base_url + '/#/reports-item-profit'" class="list-group-item list-group-item-action d-flex align-items-center">
+						<i class="svg-icon me-2">
+							<svg xmlns="http://www.w3.org/2000/svg" width="1.2em" height="1.2em" viewBox="0 0 48 48"><path fill="currentColor" fill-rule="evenodd" d="M24.039 6c-4.517 0-8.632 1.492-11.067 2.711c-.22.11-.425.218-.616.322c-.378.206-.7.398-.956.567l2.77 4.078l1.304.519c5.096 2.571 11.93 2.571 17.027 0l1.48-.768L36.6 9.6a15.515 15.515 0 0 0-1.689-.957C32.488 7.437 28.471 6 24.04 6m-6.442 4.616a24.574 24.574 0 0 1-2.901-.728C16.978 8.875 20.377 7.8 24.04 7.8c2.537 0 4.936.516 6.92 1.17c-2.325.327-4.806.882-7.17 1.565c-1.86.538-4.034.48-6.192.081m15.96 5.064l-.246.124c-5.606 2.828-13.042 2.828-18.648 0l-.233-.118C6.008 24.927-.422 41.997 24.039 41.997S41.913 24.61 33.557 15.68M23 24a2 2 0 1 0 0 4zm2-2v-1h-2v1a4 4 0 0 0 0 8v4c-.87 0-1.611-.555-1.887-1.333a1 1 0 1 0-1.885.666A4.001 4.001 0 0 0 23 36v1h2v-1a4 4 0 0 0 0-8v-4c.87 0 1.611.555 1.887 1.333a1 1 0 1 0 1.885-.666A4.001 4.001 0 0 0 25 22m0 8v4a2 2 0 1 0 0-4" clip-rule="evenodd"/></svg>
+						</i>
+						Ganancia por artículo
+					</a>
+				</div>
+			</div>
+		</div>
+
+		<!-- Finanzas e Impuestos -->
+		<div class="col-md-6 col-lg-4 mb-4">
+			<h5 class="mb-2">Finanzas e Impuestos</h5>
+			<div class="card p-0">
+				<div class="list-group list-group-flush">
+					@if( rest.user_permission.reports ) {
+						<a routerLink="/report-credit-payments" class="list-group-item list-group-item-action d-flex align-items-center">
+							<i class="svg-icon me-2">
+								<svg xmlns="http://www.w3.org/2000/svg" width="1.2em" height="1.2em" viewBox="0 0 24 24"><path fill="currentColor" d="M12 12.5a3.5 3.5 0 1 0 0 7a3.5 3.5 0 0 0 0-7M10.5 16a1.5 1.5 0 1 1 3 0a1.5 1.5 0 0 1-3 0"/><path fill="currentColor" d="M17.526 5.116L14.347.659L2.658 9.997L2.01 9.99V10H1.5v12h21V10h-.962l-1.914-5.599zM19.425 10H9.397l7.469-2.546l1.522-.487zM15.55 5.79L7.84 8.418l6.106-4.878zM3.5 20v-8h17v8z"/></svg>
+							</i>
+							Pagos a Crédito
+						</a>
+					}
+					@if (rest.user_permission.edit_billing_data || rest.user_permission.view_facturas) {
+						<a [attr.href]="external_base_url +'/list-order-facturas'" class="list-group-item list-group-item-action d-flex align-items-center">
+							<i class="svg-icon me-2">
+								<svg xmlns="http://www.w3.org/2000/svg" width="1.2em" height="1.2em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 1792 1792"><path d="M448 0q26 0 45 19t19 45v891l536-429q17-14 40-14q26 0 45 19t19 45v379l536-429q17-14 40-14q26 0 45 19t19 45v1152q0 26-19 45t-45 19H64q-26 0-45-19t-19-45V64q0-26 19-45T64 0h384z" fill="currentColor"/></svg>
+							</i>
+							Relacion de Facturas
+						</a>
+						<a [attr.href]="external_base_url +'/list-sat-factura'" class="list-group-item list-group-item-action d-flex align-items-center">
+							<i class="svg-icon me-2">
+								<svg xmlns="http://www.w3.org/2000/svg" width="1.2em" height="1.2em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 640 512"><path d="M608 32H32C14.33 32 0 46.33 0 64v384c0 17.67 14.33 32 32 32h576c17.67 0 32-14.33 32-32V64c0-17.67-14.33-32-32-32zM176 327.88V344c0 4.42-3.58 8-8 8h-16c-4.42 0-8-3.58-8-8v-16.29c-11.29-.58-22.27-4.52-31.37-11.35c-3.9-2.93-4.1-8.77-.57-12.14l11.75-11.21c2.77-2.64 6.89-2.76 10.13-.73c3.87 2.42 8.26 3.72 12.82 3.72h28.11c6.5 0 11.8-5.92 11.8-13.19c0-5.95-3.61-11.19-8.77-12.73l-45-13.5c-18.59-5.58-31.58-23.42-31.58-43.39c0-24.52 19.05-44.44 42.67-45.07V152c0-4.42 3.58-8 8-8h16c4.42 0 8 3.58 8 8v16.29c11.29.58 22.27 4.51 31.37 11.35c3.9 2.93 4.1 8.77.57 12.14l-11.75 11.21c-2.77 2.64-6.89 2.76-10.13.73c-3.87-2.43-8.26-3.72-12.82-3.72h-28.11c-6.5 0-11.8 5.92-11.8 13.19c0 5.95 3.61 11.19 8.77 12.73l45 13.5c18.59 5.58 31.58 23.42 31.58 43.39c0 24.53-19.05 44.44-42.67 45.07zM416 312c0 4.42-3.58 8-8 8H296c-4.42 0-8-3.58-8-8v-16c0-4.42 3.58-8 8-8h112c4.42 0 8 3.58 8 8v16zm160 0c0 4.42-3.58 8-8 8h-80c-4.42 0-8-3.58-8-8v-16c0-4.42 3.58-8 8-8h80c4.42 0 8 3.58 8 8v16zm0-96c0 4.42-3.58 8-8 8H296c-4.42 0-8-3.58-8-8v-16c0-4.42 3.58-8 8-8h272c4.42 0 8 3.58 8 8v16z" fill="currentColor"/></svg>
+							</i>
+							Facturas
+						</a>
+					}
+					<a [attr.href]="external_base_url + '/#/facturacion-periodo'" class="list-group-item list-group-item-action d-flex align-items-center">
+						<i class="svg-icon me-2">
+							<svg xmlns="http://www.w3.org/2000/svg" width="1.2em" height="1.2em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 15 15"><path fill="currentColor" d="M10 7.995V9H8V7.995h2ZM10 6v.995H8V6h2ZM7 6H5v.995h2V6Zm0 1.995H5V9h2V7.995Z"/><path fill="currentColor" fill-rule="evenodd" d="M1 1.5A1.5 1.5 0 0 1 2.5 0h8.207L14 3.293V13.5a1.5 1.5 0 0 1-1.5 1.5h-10A1.5 1.5 0 0 1 1 13.5v-12ZM4 4h3V3H4v1Zm7 1H4v5h7V5Zm0 7H8v-1h3v1Z" clip-rule="evenodd"/></svg>
+						</i>
+						Facturación por Periodo
+					</a>
+					<a [attr.href]="external_base_url + '/#/report-client-refunds'" class="list-group-item list-group-item-action d-flex align-items-center">
+						<i class="svg-icon me-2">
+							<svg xmlns="http://www.w3.org/2000/svg" width="1.2em" height="1.2em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 1792 1792"><path d="M448 0q26 0 45 19t19 45v891l536-429q17-14 40-14q26 0 45 19t19 45v379l536-429q17-14 40-14q26 0 45 19t19 45v1152q0 26-19 45t-45 19H64q-26 0-45-19t-19-45V64q0-26 19-45T64 0h384z" fill="currentColor"/></svg>
+						</i>
+						Devoluciones Por Cliente
+					</a>
+					<a [attr.href]="external_base_url + '/#/report-income-by-type'" class="list-group-item list-group-item-action d-flex align-items-center">
+						<i class="svg-icon me-2">
+							<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512" width="1.2em" height="1.2em"><path fill="currentColor" d="M352 288h-16v-88c0-4.42-3.58-8-8-8h-13.58c-4.74 0-9.37 1.4-13.31 4.03l-15.33 10.22a7.994 7.994 0 0 0-2.22 11.09l8.88 13.31a7.994 7.994 0 0 0 11.09 2.22l.47-.31V288h-16c-4.42 0-8 3.58-8 8v16c0 4.42 3.58 8 8 8h64c4.42 0 8-3.58 8-8v-16c0-4.42-3.58-8-8-8zM608 64H32C14.33 64 0 78.33 0 96v320c0 17.67 14.33 32 32 32h576c17.67 0 32-14.33 32-32V96c0-17.67-14.33-32-32-32zM48 400v-64c35.35 0 64 28.65 64 64H48zm0-224v-64h64c0 35.35-28.65 64-64 64zm272 192c-53.02 0-96-50.15-96-112c0-61.86 42.98-112 96-112s96 50.14 96 112c0 61.87-43 112-96 112zm272 32h-64c0-35.35 28.65-64 64-64v64zm0-224c-35.35 0-64-28.65-64-64h64v64z"/></svg>
+						</i>
+						Tipos de Ingresos
+					</a>
+					@if (rest.preferences.default_cash_close_type === 'DETAILED' ) {
+						<a routerLink="/report-cash-count-totals" class="list-group-item list-group-item-action d-flex align-items-center">
+							<i class="svg-icon me-2">
+								<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512" width="1.2em" height="1.2em"><path fill="currentColor" d="M352 288h-16v-88c0-4.42-3.58-8-8-8h-13.58c-4.74 0-9.37 1.4-13.31 4.03l-15.33 10.22a7.994 7.994 0 0 0-2.22 11.09l8.88 13.31a7.994 7.994 0 0 0 11.09 2.22l.47-.31V288h-16c-4.42 0-8 3.58-8 8v16c0 4.42 3.58 8 8 8h64c4.42 0 8-3.58 8-8v-16c0-4.42-3.58-8-8-8zM608 64H32C14.33 64 0 78.33 0 96v320c0 17.67 14.33 32 32 32h576c17.67 0 32-14.33 32-32V96c0-17.67-14.33-32-32-32zM48 400v-64c35.35 0 64 28.65 64 64H48zm0-224v-64h64c0 35.35-28.65 64-64 64zm272 192c-53.02 0-96-50.15-96-112c0-61.86 42.98-112 96-112s96 50.14 96 112c0 61.87-43 112-96 112zm272 32h-64c0-35.35 28.65-64 64-64v64zm0-224c-35.35 0-64-28.65-64-64h64v64z"/></svg>
+							</i>
+							Recuento de Efectivo en Cortes
+						</a>
+					}
+				</div>
+			</div>
+		</div>
+
+		<!-- Operación y Restaurante -->
+		<div class="col-md-6 col-lg-4 mb-4">
+			<h5 class="mb-2">Operación y Restaurante</h5>
+			<div class="card p-0">
+				<div class="list-group list-group-flush">
+					<a [attr.href]="external_base_url + '/#/reports-occupancy'" class="list-group-item list-group-item-action d-flex align-items-center">
+						<i class="svg-icon me-2">
+							<svg xmlns="http://www.w3.org/2000/svg" width="1.2em" height="1.2em" viewBox="0 0 256 256"><path fill="currentColor" d="M230.4 219.19A8 8 0 0 1 224 232H32a8 8 0 0 1-6.4-12.8A67.88 67.88 0 0 1 53 197.51a40 40 0 1 1 53.93 0a67.42 67.42 0 0 1 21 14.29a67.42 67.42 0 0 1 21-14.29a40 40 0 1 1 53.93 0a67.85 67.85 0 0 1 27.54 21.68M27.2 126.4a8 8 0 0 0 11.2-1.6a52 52 0 0 1 83.2 0a8 8 0 0 0 12.8 0a52 52 0 0 1 83.2 0a8 8 0 0 0 12.8-9.61A67.85 67.85 0 0 0 203 93.51a40 40 0 1 0-53.93 0a67.42 67.42 0 0 0-21 14.29a67.42 67.42 0 0 0-21-14.29a40 40 0 1 0-53.93 0A67.88 67.88 0 0 0 25.6 115.2a8 8 0 0 0 1.6 11.2"/></svg>
+						</i>
+						Ocupación
+					</a>
+					<a [attr.href]="external_base_url + '/#/report-occupancy'" class="list-group-item list-group-item-action d-flex align-items-center">
+						<i class="svg-icon me-2">
+							<svg xmlns="http://www.w3.org/2000/svg" width="1.25em" height="1.2em" viewBox="0 0 640 512"><path fill="currentColor" d="M211.2 96a64 64 0 1 0-128 0a64 64 0 1 0 128 0M32 256c0 17.7 14.3 32 32 32h85.6c10.1-39.4 38.6-71.5 75.8-86.6c-9.7-6-21.2-9.4-33.4-9.4H96c-35.3 0-64 28.7-64 64m461.6 32H576c17.7 0 32-14.3 32-32c0-35.3-28.7-64-64-64h-96c-11.7 0-22.7 3.1-32.1 8.6c38.1 14.8 67.4 47.3 77.7 87.4m-102.4-61.6c-6.9-1.6-14.2-2.4-21.6-2.4h-96c-8.5 0-16.7 1.1-24.5 3.1c-30.8 8.1-55.6 31.1-66.1 60.9c-3.5 10-5.5 20.8-5.5 32c0 17.7 14.3 32 32 32h224c17.7 0 32-14.3 32-32c0-11.2-1.9-22-5.5-32c-10.8-30.7-36.8-54.2-68.9-61.6zM563.2 96a64 64 0 1 0-128 0a64 64 0 1 0 128 0m-241.6 96a80 80 0 1 0 0-160a80 80 0 1 0 0 160M32 416c-17.7 0-32 14.3-32 32s14.3 32 32 32h576c17.7 0 32-14.3 32-32s-14.3-32-32-32z"/></svg>
+						</i>
+						Ocupación Mesas
+					</a>
+				</div>
+			</div>
+		</div>
+
+		<!-- Comisiones y Afiliados -->
+		@if (rest.user_permission.view_commissions || rest.user_permission.pay_commissions || rest.user_permission.approve_commissions) {
+			<div class="col-md-6 col-lg-4 mb-4">
+				<h5 class="mb-2">Comisiones y Afiliados</h5>
+				<div class="card p-0">
+					<div class="list-group list-group-flush">
+						<a [attr.href]="external_base_url + '/#/affiliates-sales'" class="list-group-item list-group-item-action d-flex align-items-center">
+							<i class="svg-icon me-2">
+								<svg xmlns="http://www.w3.org/2000/svg" width="1.2em" height="1.2em" viewBox="0 0 24 24"><path fill="currentColor" d="M8.27 3L3 8.27v7.46L8.27 21h7.46L21 15.73V8.27L15.73 3M8.41 7L12 10.59L15.59 7L17 8.41L13.41 12L17 15.59L15.59 17L12 13.41L8.41 17L7 15.59L10.59 12L7 8.41"/></svg>
+							</i>
+							Reporte para comisiones
+						</a>
+						<a routerLink="/commission-report" class="list-group-item list-group-item-action d-flex align-items-center">
+							<i class="svg-icon me-2">
+								<svg xmlns="http://www.w3.org/2000/svg" width="1.2em" height="1.2em" viewBox="0 0 24 24"><path fill="currentColor" d="M8.27 3L3 8.27v7.46L8.27 21h7.46L21 15.73V8.27L15.73 3M8.41 7L12 10.59L15.59 7L17 8.41L13.41 12L17 15.59L15.59 17L12 13.41L8.41 17L7 15.59L10.59 12L7 8.41"/></svg>
+							</i>
+							Comisiones por Agente
+						</a>
+						<a routerLink="/payment-commission-report" class="list-group-item list-group-item-action d-flex align-items-center">
+							<i class="svg-icon me-2">
+								<svg xmlns="http://www.w3.org/2000/svg" width="1.2em" height="1.2em" viewBox="0 0 24 24"><path fill="currentColor" d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm.31-8.86c-1.77-.45-2.34-.94-2.34-1.67 0-.84.79-1.41 2.1-1.41 1.47 0 2.01.73 2.06 1.6h1.75c-.05-1.79-1.13-2.91-2.85-3.32V5h-2v1.35c-1.59.34-2.87 1.38-2.87 3.07 0 1.9 1.57 2.85 3.87 3.4 2.45.59 2.82 1.41 2.82 2.3 0 1.05-.9 1.76-2.43 1.76-1.75 0-2.43-.81-2.52-1.86h-1.75c.1 1.9 1.39 2.92 3.1 3.32V19h2v-1.38c1.64-.31 2.97-1.3 2.97-3.1 0-2.2-1.92-2.95-4.41-3.38z"/></svg>
+							</i>
+							Comisiones por Pagos
+						</a>
+						<a routerLink="/pending-commissions-report" class="list-group-item list-group-item-action d-flex align-items-center">
+							<i class="svg-icon me-2">
+								<svg xmlns="http://www.w3.org/2000/svg" width="1.2em" height="1.2em" viewBox="0 0 24 24"><path fill="currentColor" d="M13 10V4h-2v6H5v2h6v6h2v-6h6v-2h-6z"/></svg>
+							</i>
+							Pagos Pendientes Comisiones
+						</a>
+						<a routerLink="/paid-commissions-report" class="list-group-item list-group-item-action d-flex align-items-center">
+							<i class="svg-icon me-2">
+								<svg xmlns="http://www.w3.org/2000/svg" width="1.2em" height="1.2em" viewBox="0 0 24 24"><path fill="currentColor" d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm4.59-12.42L10 14.17l-2.59-2.58L6 13l4 4l8-8z"/></svg>
+							</i>
+							Comisiones Pagadas
+						</a>
+						<a routerLink="/consecutivo-facturas-desglozado-report" class="list-group-item list-group-item-action d-flex align-items-center">
+							<i class="svg-icon me-2">
+								<svg xmlns="http://www.w3.org/2000/svg" width="1.2em" height="1.2em" viewBox="0 0 24 24"><path fill="currentColor" d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2m0 16H5V5h14v14z"/><path fill="currentColor" d="M7 12h10v2H7zm0-4h10v2H7z"/></svg>
+							</i>
+							Reporte Detallado de Facturas
+						</a>
+					</div>
+				</div>
+			</div>
+		}
+
+	</div>
+</div>
