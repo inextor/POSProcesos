@@ -40,7 +40,12 @@ export class UsersCheckingClockComponent extends BaseComponent implements OnInit
 				this.is_loading = true;
 				let search_obj = this.rest_user.getSearchObject(param_map);
 				search_obj.eq.type = 'USER';
-				search_obj.eq.production_area_id = this.rest.user?.production_area_id;
+				search_obj.nn = ['production_area_id'];
+
+				if( this.rest.user?.production_area_id )
+				{
+					search_obj.eq.production_area_id = this.rest.user.production_area_id;
+				}
 
 				return this.rest_user.search(search_obj);
 			}),

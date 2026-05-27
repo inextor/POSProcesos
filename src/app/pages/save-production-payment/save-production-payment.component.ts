@@ -131,7 +131,7 @@ export class SaveProductionPaymentComponent extends BaseComponent implements OnI
 			this.user_work_logs_list = result.work_log;
 
 			this.buildUserProductionReport(result.users?.data ?? [], result.work_log, result.production, result.items?.data ?? [], this.payment_total);
-			//console.log('Cuser_production_report', this.Cuser_production_report_list);
+			console.log('Cuser_production_report', this.Cuser_production_report_list);
 		});
 	}
 
