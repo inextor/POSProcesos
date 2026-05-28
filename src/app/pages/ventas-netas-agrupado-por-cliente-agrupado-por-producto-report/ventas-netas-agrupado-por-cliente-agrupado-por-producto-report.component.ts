@@ -29,7 +29,7 @@ export class VentasNetasAgrupadoPorClienteAgrupadoPorProductoReportComponent ext
 	ngOnInit(): void {
 		this.start_date = this.getFirstDayOfMonth();
 		this.end_date = this.getLastDayOfMonth();
-		this.setTitle('ventas_netas_agrupado_por_cliente_agrupado_por_producto.tsv');
+		this.setTitle('Ventas Netas Agrupado por Cliente y Producto');
 		this.external_base_url = this.rest.getExternalAppUrl();
 
 		if (this.store_list.length === 0) {

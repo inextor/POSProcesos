@@ -29,7 +29,7 @@ export class ReporteConsecutivoDeFacturasReportComponent extends BaseComponent i
 	ngOnInit(): void {
 		this.start_date = this.getFirstDayOfMonth();
 		this.end_date = this.getLastDayOfMonth();
-		this.setTitle('reporte_consecutivo_de_facturas.tsv');
+		this.setTitle('Reporte Consecutivo de Facturas');
 		this.external_base_url = this.rest.getExternalAppUrl();
 
 		if (this.store_list.length === 0) {
