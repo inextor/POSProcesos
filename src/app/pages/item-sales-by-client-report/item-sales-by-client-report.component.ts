@@ -56,6 +56,7 @@ export class ItemSalesByClientReportComponent extends BaseComponent implements O
 	rest_store: Rest<Store, Store> = this.rest.initRest('store');
 
 	ngOnInit(): void {
+		this.setTitle('Ventas Artículos por Cliente');
 		this.start_date = this.getFirstDayOfMonth();
 		this.end_date = this.getLastDayOfMonth();
 

@@ -170,13 +170,13 @@
 						</a>
 					}
 					@if (rest.user_permission.edit_billing_data || rest.user_permission.view_facturas) {
-						<a [attr.href]="external_base_url +'/list-order-facturas'" class="list-group-item list-group-item-action d-flex align-items-center">
+						<a [attr.href]="external_base_url + '/#/list-order-facturas'" class="list-group-item list-group-item-action d-flex align-items-center">
 							<i class="svg-icon me-2">
 								<svg xmlns="http://www.w3.org/2000/svg" width="1.2em" height="1.2em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 1792 1792"><path d="M448 0q26 0 45 19t19 45v891l536-429q17-14 40-14q26 0 45 19t19 45v379l536-429q17-14 40-14q26 0 45 19t19 45v1152q0 26-19 45t-45 19H64q-26 0-45-19t-19-45V64q0-26 19-45T64 0h384z" fill="currentColor"/></svg>
 							</i>
 							Relacion de Facturas
 						</a>
-						<a [attr.href]="external_base_url +'/list-sat-factura'" class="list-group-item list-group-item-action d-flex align-items-center">
+						<a [attr.href]="external_base_url + '/#/list-sat-factura'" class="list-group-item list-group-item-action d-flex align-items-center">
 							<i class="svg-icon me-2">
 								<svg xmlns="http://www.w3.org/2000/svg" width="1.2em" height="1.2em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 640 512"><path d="M608 32H32C14.33 32 0 46.33 0 64v384c0 17.67 14.33 32 32 32h576c17.67 0 32-14.33 32-32V64c0-17.67-14.33-32-32-32zM176 327.88V344c0 4.42-3.58 8-8 8h-16c-4.42 0-8-3.58-8-8v-16.29c-11.29-.58-22.27-4.52-31.37-11.35c-3.9-2.93-4.1-8.77-.57-12.14l11.75-11.21c2.77-2.64 6.89-2.76 10.13-.73c3.87 2.42 8.26 3.72 12.82 3.72h28.11c6.5 0 11.8-5.92 11.8-13.19c0-5.95-3.61-11.19-8.77-12.73l-45-13.5c-18.59-5.58-31.58-23.42-31.58-43.39c0-24.52 19.05-44.44 42.67-45.07V152c0-4.42 3.58-8 8-8h16c4.42 0 8 3.58 8 8v16.29c11.29.58 22.27 4.51 31.37 11.35c3.9 2.93 4.1 8.77.57 12.14l-11.75 11.21c-2.77 2.64-6.89 2.76-10.13.73c-3.87-2.43-8.26-3.72-12.82-3.72h-28.11c-6.5 0-11.8 5.92-11.8 13.19c0 5.95 3.61 11.19 8.77 12.73l45 13.5c18.59 5.58 31.58 23.42 31.58 43.39c0 24.53-19.05 44.44-42.67 45.07zM416 312c0 4.42-3.58 8-8 8H296c-4.42 0-8-3.58-8-8v-16c0-4.42 3.58-8 8-8h112c4.42 0 8 3.58 8 8v16zm160 0c0 4.42-3.58 8-8 8h-80c-4.42 0-8-3.58-8-8v-16c0-4.42 3.58-8 8-8h80c4.42 0 8 3.58 8 8v16zm0-96c0 4.42-3.58 8-8 8H296c-4.42 0-8-3.58-8-8v-16c0-4.42 3.58-8 8-8h272c4.42 0 8 3.58 8 8v16z" fill="currentColor"/></svg>
 							</i>
@@ -200,6 +200,24 @@
 							<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512" width="1.2em" height="1.2em"><path fill="currentColor" d="M352 288h-16v-88c0-4.42-3.58-8-8-8h-13.58c-4.74 0-9.37 1.4-13.31 4.03l-15.33 10.22a7.994 7.994 0 0 0-2.22 11.09l8.88 13.31a7.994 7.994 0 0 0 11.09 2.22l.47-.31V288h-16c-4.42 0-8 3.58-8 8v16c0 4.42 3.58 8 8 8h64c4.42 0 8-3.58 8-8v-16c0-4.42-3.58-8-8-8zM608 64H32C14.33 64 0 78.33 0 96v320c0 17.67 14.33 32 32 32h576c17.67 0 32-14.33 32-32V96c0-17.67-14.33-32-32-32zM48 400v-64c35.35 0 64 28.65 64 64H48zm0-224v-64h64c0 35.35-28.65 64-64 64zm272 192c-53.02 0-96-50.15-96-112c0-61.86 42.98-112 96-112s96 50.14 96 112c0 61.87-43 112-96 112zm272 32h-64c0-35.35 28.65-64 64-64v64zm0-224c-35.35 0-64-28.65-64-64h64v64z"/></svg>
 						</i>
 						Tipos de Ingresos
+					</a>
+					<a routerLink="/consecutivo-facturas-desglozado-report" class="list-group-item list-group-item-action d-flex align-items-center">
+						<i class="svg-icon me-2">
+							<svg xmlns="http://www.w3.org/2000/svg" width="1.2em" height="1.2em" viewBox="0 0 24 24"><path fill="currentColor" d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2m0 16H5V5h14v14z"/><path fill="currentColor" d="M7 12h10v2H7zm0-4h10v2H7z"/></svg>
+						</i>
+						consecutivo de facturas desglozado
+					</a>
+					<a routerLink="/reporte-consecutivo-de-facturas-report" class="list-group-item list-group-item-action d-flex align-items-center">
+						<i class="svg-icon me-2">
+							<svg xmlns="http://www.w3.org/2000/svg" width="1.2em" height="1.2em" viewBox="0 0 24 24"><path fill="currentColor" d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2m0 16H5V5h14v14z"/><path fill="currentColor" d="M7 12h10v2H7zm0-4h10v2H7z"/></svg>
+						</i>
+						reporte consecutivo de facturas
+					</a>
+					<a routerLink="/ventas-netas-agrupado-por-cliente-agrupado-por-producto-report" class="list-group-item list-group-item-action d-flex align-items-center">
+						<i class="svg-icon me-2">
+							<svg xmlns="http://www.w3.org/2000/svg" width="1.2em" height="1.2em" viewBox="0 0 24 24"><path fill="currentColor" d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2m0 16H5V5h14v14z"/><path fill="currentColor" d="M7 12h10v2H7zm0-4h10v2H7z"/></svg>
+						</i>
+						ventas netas agrupado por cliente agrupado por producto
 					</a>
 					@if (rest.preferences.default_cash_close_type === 'DETAILED' ) {
 						<a routerLink="/report-cash-count-totals" class="list-group-item list-group-item-action d-flex align-items-center">
@@ -269,12 +287,6 @@
 								<svg xmlns="http://www.w3.org/2000/svg" width="1.2em" height="1.2em" viewBox="0 0 24 24"><path fill="currentColor" d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm4.59-12.42L10 14.17l-2.59-2.58L6 13l4 4l8-8z"/></svg>
 							</i>
 							Comisiones Pagadas
-						</a>
-						<a routerLink="/consecutivo-facturas-desglozado-report" class="list-group-item list-group-item-action d-flex align-items-center">
-							<i class="svg-icon me-2">
-								<svg xmlns="http://www.w3.org/2000/svg" width="1.2em" height="1.2em" viewBox="0 0 24 24"><path fill="currentColor" d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2m0 16H5V5h14v14z"/><path fill="currentColor" d="M7 12h10v2H7zm0-4h10v2H7z"/></svg>
-							</i>
-							Reporte Detallado de Facturas
 						</a>
 					</div>
 				</div>

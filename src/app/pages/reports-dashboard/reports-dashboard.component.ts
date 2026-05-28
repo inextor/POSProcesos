@@ -13,6 +13,6 @@ export class ReportsDashboardComponent extends BaseComponent {
 	external_base_url: string = this.rest.getExternalAppUrl();
 
 	ngOnInit() {
-		// Initialization if needed
+		this.setTitle('Reportes');
 	}
 }
