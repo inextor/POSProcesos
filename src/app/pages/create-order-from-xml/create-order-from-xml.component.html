@@ -1,0 +1,186 @@
+<div class="container-fluid py-4">
+	<div class="row">
+		<div class="col-12">
+			<div class="card shadow-sm">
+				<div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+					<h4 class="mb-0">
+						<i class="bi bi-file-earmark-xml me-2"></i>
+						Crear Pedido desde XML
+					</h4>
+				</div>
+				<div class="card-body">
+
+					<!-- Step 1: Client and Store Configuration -->
+					<div class="row mb-4">
+						<div class="col-md-6 mb-3">
+							<h5 class="text-secondary mb-3">1. Seleccionar Cliente</h5>
+							<app-search-users 
+								[type]="'CLIENT'" 
+								(user_selected)="onClientSelected($event)" 
+								[reset_on_search]="false"
+								[null_user_string]="'Buscar y seleccionar un cliente...'">
+							</app-search-users>
+							@if (selected_client) {
+								<div class="alert alert-success mt-2 mb-0 py-1 px-2">
+									<i class="bi bi-check-circle me-1"></i>
+									Cliente seleccionado: <strong>{{ selected_client.name | titlecase }}</strong> (ID: {{ selected_client.id }})
+								</div>
+							}
+							@if (!selected_client && factura_metadata) {
+								<div class="alert alert-warning mt-2 mb-0 py-2 px-3 d-flex justify-content-between align-items-center">
+									<div>
+										<i class="bi bi-exclamation-triangle-fill me-2 text-warning"></i>
+										Cliente no seleccionado. ¿Registrar a <strong>{{ factura_metadata.receptor }}</strong>?
+									</div>
+									<button type="button" class="btn btn-sm btn-primary" (click)="createClientFromXml()">
+										<i class="bi bi-person-plus-fill me-1"></i> Registrar y Seleccionar
+									</button>
+								</div>
+							}
+						</div>
+
+						<div class="col-md-6 mb-3">
+							<h5 class="text-secondary mb-3">2. Seleccionar Sucursal</h5>
+							<select class="form-select" [(ngModel)]="selected_store_id">
+								<option [ngValue]="null">Seleccione una sucursal...</option>
+								<option *ngFor="let store of store_list" [ngValue]="store.id">
+									{{ store.name | titlecase }}
+								</option>
+							</select>
+						</div>
+					</div>
+
+					<hr>
+
+					<!-- Step 2: XML Upload -->
+					<div class="row mb-4">
+						<div class="col-md-12">
+							<h5 class="text-secondary mb-3">3. Cargar Archivo XML Factura</h5>
+							<app-attachment-uploader
+								[default_message]="'Seleccionar archivo XML'"
+								[displayUploadedAttachmentName]="true"
+								[containerClasses]="{}"
+								[imageClasses]="{}"
+								(attachmentChange)="onXmlAttachmentChange($event)"
+							></app-attachment-uploader>
+							@if (xml_attachment_id) {
+								<div class="alert alert-success mt-2 mb-0 py-1 px-2 d-inline-block">
+									<i class="bi bi-cloud-check me-1"></i>
+									XML cargado exitosamente (ID: {{ xml_attachment_id }})
+								</div>
+							}
+						</div>
+					</div>
+
+					<!-- Step 3: XML Concept Matching Grid -->
+					@if (cfdi_conceptos.length > 0) {
+						<hr>
+						<div class="row mb-4">
+							<div class="col-12">
+								<h5 class="text-secondary mb-3">4. Relación de Artículos de la Factura</h5>
+								<div class="table-responsive">
+									<table class="table table-striped table-bordered table-sm align-middle">
+										<thead class="table-dark">
+											<tr>
+												<th>Descripción XML</th>
+												<th class="text-end">Cant.</th>
+												<th class="text-end">P. Unit.</th>
+												<th class="text-end">Importe</th>
+												<th class="text-end">IVA</th>
+												<th class="text-end">IEPS</th>
+												<th class="text-end">ISR Ret.</th>
+												<th class="text-end">Total</th>
+												<th>Artículo Coincidente</th>
+												<th>Acción</th>
+											</tr>
+										</thead>
+										<tbody>
+											<tr *ngFor="let concepto of cfdi_conceptos">
+												<td>
+													<strong>{{ concepto.descripcion }}</strong><br>
+													<span class="badge bg-secondary">{{ concepto.unidad || 'Unidad' }}</span>
+												</td>
+												<td class="text-end">{{ concepto.cantidad | number }}</td>
+												<td class="text-end">{{ concepto.valorUnitario | currency:'MXN' }}</td>
+												<td class="text-end">{{ concepto.importe | currency:'MXN' }}</td>
+												<td class="text-end text-success">{{ concepto.totalIva | currency:'MXN' }}</td>
+												<td class="text-end text-info">{{ concepto.totalIeps | currency:'MXN' }}</td>
+												<td class="text-end text-danger">{{ concepto.totalRetenciones | currency:'MXN' }}</td>
+												<td class="text-end fw-bold">{{ (concepto.importe + concepto.totalTraslados - concepto.totalRetenciones) | currency:'MXN' }}</td>
+												<td>
+													<div *ngIf="concepto.matched_item" class="d-flex align-items-center">
+														<img [src]="rest.getImagePath(concepto.matched_item.item.image_id, concepto.matched_item.category?.image_id, rest.preferences.default_product_image_id)"
+															style="height:32px;width:32px;" class="me-2 rounded">
+														<span>{{ concepto.matched_item.item.name }}</span>
+													</div>
+													<div *ngIf="!concepto.matched_item" class="text-warning">
+														<i class="bi bi-exclamation-triangle me-1"></i>
+														Sin coincidencia
+													</div>
+												</td>
+												<td>
+													<button type="button" class="btn btn-sm btn-outline-danger" *ngIf="concepto.matched_item" (click)="clearConceptoMatch(concepto)">
+														Cambiar
+													</button>
+													<div *ngIf="!concepto.matched_item" style="min-width: 250px;">
+														<app-search-items [(search_str)]="concepto.search_str" (item_selected)="selectItemForConcepto(concepto, $event)"></app-search-items>
+													</div>
+												</td>
+											</tr>
+										</tbody>
+										<tfoot class="table-light fw-bold">
+											<tr>
+												<td colspan="7" class="text-end">Total Calculado:</td>
+												<td class="text-end">{{ getTotalXml() | currency:'MXN' }}</td>
+												<td colspan="2"></td>
+											</tr>
+										</tfoot>
+									</table>
+								</div>
+							</div>
+						</div>
+
+						<div class="row">
+							<div class="col-12 d-flex justify-content-between align-items-center">
+								<div>
+									<span class="badge bg-success p-2 me-2">
+										<i class="bi bi-check-circle me-1"></i>
+										{{ getMatchedCount() }} coincidencias
+									</span>
+									<span class="badge bg-warning p-2" *ngIf="getUnmatchedCount() > 0">
+										<i class="bi bi-exclamation-circle me-1"></i>
+										{{ getUnmatchedCount() }} sin coincidir
+									</span>
+								</div>
+								<div>
+									<button class="btn btn-secondary btn-lg me-2" (click)="reset()" [disabled]="is_saving">
+										Cancelar
+									</button>
+									<button class="btn btn-success btn-lg" (click)="createOrder()" [disabled]="getUnmatchedCount() > 0 || !selected_client || is_saving">
+										@if (is_saving) {
+											<span class="spinner-border spinner-border-sm me-2"></span>
+											Creando pedido...
+										} @else {
+											<i class="bi bi-cart-plus me-2"></i>
+											Crear Pedido
+										}
+									</button>
+								</div>
+							</div>
+						</div>
+					}
+
+					@if (!xml_attachment_id && !loading_cfdi) {
+						<div class="alert alert-info mt-3">
+							<i class="bi bi-info-circle me-2"></i>
+							Por favor cargue un archivo XML de una factura para poder parsear los conceptos y crear un pedido.
+						</div>
+					}
+
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<app-loading *ngIf="loading_cfdi || is_saving"></app-loading>

@@ -1,0 +1,7 @@
+/* Custom styles for create-order-from-xml page */
+.table th, .table td {
+	vertical-align: middle;
+}
+code {
+	font-size: 0.9em;
+}
