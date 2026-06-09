@@ -144,7 +144,7 @@ export class ViewConsignmentDeliveredComponent extends BaseComponent implements 
 			)
 			.pipe(
 				filter((r) => r.accepted),
-				mergeMap(() => this.rest.updatePath('consignment_delivered_info.php?action=settle', payload))
+				mergeMap(() => this.rest.updatePath('consignment_delivered_settle', payload))
 			)
 		.subscribe({
 			next: (response: any) =>
