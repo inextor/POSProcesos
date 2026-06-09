@@ -1,0 +1,200 @@
+<div>
+	<app-loading [is_loading]="is_loading"></app-loading>
+
+	@if (!is_loading && info)
+	{
+		<div class="d-flex justify-content-between align-items-center mb-3">
+			<h1 class="mb-0">Consignación Entregada #{{info.consignment_delivered.id}}</h1>
+			<div>
+				@if (linked_order_info)
+				{
+					<a [routerLink]="['/view-order', linked_order_info.order.id]" class="btn btn-primary me-2">
+						Ver Orden #{{linked_order_info.order.id}}
+					</a>
+				}
+				<a routerLink="/list-consignment-delivered" class="btn btn-secondary">
+					Volver
+				</a>
+			</div>
+		</div>
+
+		<div class="card mb-3">
+			<div class="card-body">
+				<div class="row mb-3">
+					<div class="col-md-4">
+						<label class="text-muted small">Vendedor</label>
+						<p class="fw-bold mb-0">{{info.seller?.name || 'N/A'}}</p>
+					</div>
+					<div class="col-md-4">
+						<label class="text-muted small">Sucursal</label>
+						<p class="fw-bold mb-0">{{info.store?.name || 'N/A'}}</p>
+					</div>
+					<div class="col-md-4">
+						<label class="text-muted small">Total</label>
+						<p class="fw-bold mb-0">{{info.consignment_delivered.total | currency}}</p>
+					</div>
+				</div>
+
+				<div class="row mb-3">
+					<div class="col-md-3">
+						<label class="text-muted small">Estado</label>
+						<p class="mb-0">
+							<span [class]="'badge ' + (info.consignment_delivered.status == 'ACTIVE' ? 'bg-success' : info.consignment_delivered.status == 'SETTLED' ? 'bg-secondary' : 'bg-danger')">
+								{{getStatusText()}}
+							</span>
+						</p>
+					</div>
+					<div class="col-md-3">
+						<label class="text-muted small">Fecha</label>
+						<p class="fw-bold mb-0">{{info.consignment_delivered.created | date:'short'}}</p>
+					</div>
+					@if (info.consignment_delivered.closed_timestamp)
+					{
+						<div class="col-md-3">
+							<label class="text-muted small">Fecha de Liquidación</label>
+							<p class="fw-bold mb-0">{{info.consignment_delivered.closed_timestamp | date:'short'}}</p>
+						</div>
+					}
+				</div>
+			</div>
+		</div>
+
+		@if (show_settle_form)
+		{
+			<div class="card mb-3 border-primary">
+				<div class="card-header bg-primary text-white">
+					<h5 class="mb-0">Liquidar Consignación</h5>
+				</div>
+				<div class="card-body">
+					<div class="alert alert-info">
+						Para cada artículo, indique cuánto <strong>vendió</strong> el consignatario y cuánto <strong>devuelve</strong> al inventario de la tienda.
+					</div>
+
+					<div class="table-responsive">
+						<table class="table table-bordered">
+							<thead>
+								<tr>
+									<th>Artículo</th>
+									<th class="text-end">Cantidad</th>
+									<th class="text-end">Precio Unit.</th>
+									<th class="text-end" style="width: 120px;">Vendidos</th>
+									<th class="text-end" style="width: 120px;">Devueltos</th>
+									<th class="text-end">Diferencia</th>
+									<th class="text-end">Total Venta</th>
+								</tr>
+							</thead>
+							<tbody>
+								@for (item of settle_items; track item.id)
+								{
+									<tr>
+										<td>{{item.item_name}}</td>
+										<td class="text-end">{{item.qty}}</td>
+										<td class="text-end">{{item.unitary_price | currency}}</td>
+										<td class="text-end">
+											<input type="number" class="form-control form-control-sm text-end"
+												[(ngModel)]="item.sold_qty" [max]="item.qty"
+												[min]="item.partial_sale == 'YES' ? 0.001 : 1"
+												step="1"
+												[attr.inputmode]="item.partial_sale == 'YES' ? 'decimal' : 'numeric'"
+												[disabled]="is_settling">
+										</td>
+										<td class="text-end">
+											<input type="number" class="form-control form-control-sm text-end"
+												[(ngModel)]="item.returned_qty" [max]="item.qty"
+												[min]="item.partial_sale == 'YES' ? 0.001 : 1"
+												step="1"
+												[attr.inputmode]="item.partial_sale == 'YES' ? 'decimal' : 'numeric'"
+												[disabled]="is_settling">
+										</td>
+										<td class="text-end">
+											<span [class]="'fw-bold ' + (getItemRemaining(item) < 0 ? 'text-danger' : getItemRemaining(item) == 0 ? 'text-success' : 'text-warning')">
+												{{getItemRemaining(item)}}
+											</span>
+										</td>
+										<td class="text-end">{{item.sold_qty * item.unitary_price | currency}}</td>
+									</tr>
+								}
+							</tbody>
+							<tfoot>
+								<tr>
+									<th colspan="6" class="text-end">Total vendido</th>
+									<th class="text-end">{{getSoldTotal() | currency}}</th>
+								</tr>
+							</tfoot>
+						</table>
+					</div>
+
+					<div class="mt-3 text-end">
+						<button class="btn btn-secondary me-2" (click)="cancelSettle()" [disabled]="is_settling">
+							Cancelar
+						</button>
+						<button class="btn btn-primary" (click)="settle()" [disabled]="!isSettleValid() || is_settling">
+							@if (is_settling) { Procesando... } @else { Liquidar }
+						</button>
+					</div>
+				</div>
+			</div>
+		}
+
+		<div class="card">
+			<div class="card-body">
+				<h5>Artículos</h5>
+				<hr>
+				<div class="table-responsive">
+					<table class="table table-bordered">
+						<thead>
+							<tr>
+								<th>Artículo</th>
+								<th class="text-end">Cantidad</th>
+								<th class="text-end">Precio Unitario</th>
+								<th class="text-end">Total</th>
+								@if (info.consignment_delivered.status == 'SETTLED')
+								{
+									<th class="text-end">Vendidos</th>
+									<th class="text-end">Devueltos</th>
+								}
+							</tr>
+						</thead>
+						<tbody>
+							@for (item of info.items; track item.consignment_delivered_item.item_id)
+							{
+								<tr>
+									<td>{{item.item.name}}</td>
+									<td class="text-end">{{item.consignment_delivered_item.qty}}</td>
+									<td class="text-end">{{item.consignment_delivered_item.unitary_price | currency}}</td>
+									<td class="text-end">{{item.consignment_delivered_item.qty * item.consignment_delivered_item.unitary_price | currency}}</td>
+									@if (info.consignment_delivered.status == 'SETTLED')
+									{
+										<td class="text-end">{{item.consignment_delivered_item.sold_qty}}</td>
+										<td class="text-end">{{item.consignment_delivered_item.returned_qty}}</td>
+									}
+								</tr>
+							}
+						</tbody>
+						<tfoot>
+							<tr>
+								<th colspan="3" class="text-end">Total</th>
+								<th class="text-end">{{info.consignment_delivered.total | currency}}</th>
+								@if (info.consignment_delivered.status == 'SETTLED')
+								{
+									<th></th>
+									<th></th>
+								}
+							</tr>
+						</tfoot>
+					</table>
+				</div>
+			</div>
+		</div>
+
+		@if (!show_settle_form && info.consignment_delivered.status == 'ACTIVE')
+		{
+			<div class="mt-3 text-end">
+				<button class="btn btn-primary" (click)="openSettleForm()">
+				<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M8 10a2 2 0 1 0 0-4 2 2 0 0 0 0 4"/><path d="M0 4a1 1 0 0 1 1-1h14a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H1a1 1 0 0 1-1-1zm3 0a2 2 0 0 1-2 2v4a2 2 0 0 1 2 2h10a2 2 0 0 1 2-2V6a2 2 0 0 1-2-2z"/></svg>
+				Liquidar
+			</button>
+			</div>
+		}
+	}
+</div>

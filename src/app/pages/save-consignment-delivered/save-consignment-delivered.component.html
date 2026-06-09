@@ -1,0 +1,105 @@
+<div class="container-fluid">
+	<app-loading [is_loading]="is_loading"></app-loading>
+	<h1>{{isEditing ? 'Editar' : 'Nueva'}} Consignación Entregada</h1>
+
+	@if (!is_loading)
+	{
+		<div class="card">
+			<div class="card-body">
+				<hr>
+				<div class="row mb-3">
+					<div class="col-md-6">
+						<label class="form-label">Vendedor</label>
+						<input class="form-control" [(ngModel)]="seller_search" (ngModelChange)="searchSeller($event)" placeholder="Buscar vendedor...">
+						@if (seller_list.length > 0)
+						{
+							<ul class="list-group mt-1">
+								@for (s of seller_list; track s.id)
+								{
+									<li class="list-group-item list-group-item-action pointer" (click)="selectSeller(s)">{{s.name}}</li>
+								}
+							</ul>
+						}
+						@if (info.seller)
+						{
+							<small class="text-success mt-1 d-block">Seleccionado: {{info.seller.name}}</small>
+						}
+					</div>
+					<div class="col-md-6">
+						<label class="form-label">Sucursal</label>
+						<select class="form-select" [(ngModel)]="info.consignment_delivered.store_id">
+							@for (store of store_list; track store.id)
+							{
+								<option [ngValue]="store.id">{{store.name}}</option>
+							}
+						</select>
+					</div>
+				</div>
+
+				<h5>Artículos</h5>
+				<hr>
+
+				<div class="mb-3">
+					<app-search-items (item_selected)="onItemSelected($event)"></app-search-items>
+				</div>
+
+				<div class="table-responsive">
+					<table class="table table-bordered">
+						<thead>
+							<tr>
+								<th>Artículo</th>
+								<th class="text-end">Cantidad</th>
+								<th class="text-end">Precio Unitario</th>
+								<th class="text-end">Total</th>
+								<th></th>
+							</tr>
+						</thead>
+						<tbody>
+							@for (item of info.items; track item.consignment_delivered_item.item_id; let i = $index)
+							{
+								<tr>
+									<td>{{item.item.name}}</td>
+									<td class="text-end">
+										<input type="number" class="form-control form-control-sm text-end" [(ngModel)]="item.consignment_delivered_item.qty" (ngModelChange)="updateTotal()" style="width:100px">
+									</td>
+									<td class="text-end">
+										<input type="number" class="form-control form-control-sm text-end" [(ngModel)]="item.consignment_delivered_item.unitary_price" (ngModelChange)="updateTotal()" style="width:120px">
+									</td>
+									<td class="text-end">{{item.consignment_delivered_item.qty * item.consignment_delivered_item.unitary_price | currency}}</td>
+									<td>
+										<button class="btn btn-sm btn-danger" (click)="removeItem(i)">
+											<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+												<path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0z"/>
+												<path d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4zM2.5 3h11V2h-11z"/>
+											</svg>
+										</button>
+									</td>
+								</tr>
+							}
+							@if (info.items.length == 0)
+							{
+								<tr>
+									<td colspan="5" class="text-center">No hay artículos agregados</td>
+								</tr>
+							}
+						</tbody>
+						<tfoot>
+							<tr>
+								<th colspan="3" class="text-end">Total</th>
+								<th class="text-end">{{getTotal() | currency}}</th>
+								<th></th>
+							</tr>
+						</tfoot>
+					</table>
+				</div>
+
+				<div class="text-end">
+					<a routerLink="/list-consignment-delivered" class="btn btn-secondary me-2">Cancelar</a>
+					<button class="btn btn-primary" (click)="save()" [disabled]="is_saving">
+						@if (is_saving) { Guardando... } @else { Guardar }
+					</button>
+				</div>
+			</div>
+		</div>
+	}
+</div>

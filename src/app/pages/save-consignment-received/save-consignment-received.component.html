@@ -1,0 +1,111 @@
+<div>
+	<app-loading [is_loading]="is_loading"></app-loading>
+
+	@if (!is_loading)
+	{
+		<div class="card">
+			<div class="card-body">
+				<h4>{{isEditing ? 'Editar' : 'Nueva'}} Consignación Recibida</h4>
+				<hr>
+
+			<div class="row mb-3">
+				<div class="col-md-4 dropdown">
+					<label class="form-label">Proveedor</label>
+					<input type="text" class="form-control" [ngModel]="provider_search" (ngModelChange)="searchProvider($event)" placeholder="Buscar proveedor..." required>
+					@if (show_provider_list)
+					{
+						<ul class="dropdown-menu show" style="width:100%">
+							@if (provider_search)
+							{
+								<li (click)="addNewProvider(provider_search)">
+									<button type="button" class="dropdown-item">Registrar Proveedor</button>
+								</li>
+							}
+							@for (user of provider_user_list; track user.id)
+							{
+								<li (click)="userProviderSelected(user)">
+									<span class="dropdown-item">{{user.id}} - {{user.name | titlecase}}</span>
+								</li>
+							}
+						</ul>
+					}
+				</div>
+				<div class="col-md-4">
+					<label class="form-label">Sucursal</label>
+					<select class="form-select" [(ngModel)]="info.consignment_received.store_id">
+						@for (store of store_list; track store.id)
+						{
+							<option [ngValue]="store.id">{{store.name}}</option>
+						}
+					</select>
+				</div>
+				<div class="col-md-4">
+					<label class="form-label">Referencia</label>
+					<input class="form-control" [(ngModel)]="info.consignment_received.reference" placeholder="Factura/nota">
+				</div>
+			</div>
+
+				<h5>Artículos</h5>
+				<hr>
+
+				<div class="mb-3">
+					<app-search-items (item_selected)="onItemSelected($event)"></app-search-items>
+				</div>
+
+				<div class="table-responsive">
+					<table class="table table-bordered">
+						<thead>
+							<tr>
+								<th>Artículo</th>
+								<th class="text-end">Cantidad</th>
+								<th class="text-end">Costo Unitario</th>
+								<th class="text-end">Total</th>
+								<th></th>
+							</tr>
+						</thead>
+						<tbody>
+							@for (item of info.items; track item.consignment_received_item.item_id; let i = $index)
+							{
+								<tr>
+									<td>{{item.item.name}}</td>
+									<td class="text-end">
+										<input type="number" class="form-control form-control-sm text-end" [(ngModel)]="item.consignment_received_item.qty" (ngModelChange)="updateTotal()" style="width:100px">
+									</td>
+									<td class="text-end">
+										<input type="number" class="form-control form-control-sm text-end" [(ngModel)]="item.consignment_received_item.unitary_cost" (ngModelChange)="updateTotal()" style="width:120px">
+									</td>
+									<td class="text-end">{{item.consignment_received_item.qty * item.consignment_received_item.unitary_cost | currency}}</td>
+									<td>
+										<button class="btn btn-sm btn-danger" (click)="removeItem(i)">
+											<i class="bi bi-trash"></i>
+										</button>
+									</td>
+								</tr>
+							}
+							@if (info.items.length == 0)
+							{
+								<tr>
+									<td colspan="5" class="text-center">No hay artículos agregados</td>
+								</tr>
+							}
+						</tbody>
+						<tfoot>
+							<tr>
+								<th colspan="3" class="text-end">Total</th>
+								<th class="text-end">{{getTotal() | currency}}</th>
+								<th></th>
+							</tr>
+						</tfoot>
+					</table>
+				</div>
+
+				<div class="text-end">
+					<a routerLink="/list-consignment-received" class="btn btn-secondary me-2">Cancelar</a>
+					<button class="btn btn-primary" (click)="save()" [disabled]="is_saving">
+						@if (is_saving) { Guardando... } @else { Guardar }
+					</button>
+				</div>
+			</div>
+		</div>
+	}
+</div>
