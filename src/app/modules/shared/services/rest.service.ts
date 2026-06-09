@@ -300,10 +300,7 @@ export class RestService
 	updatePath(path:string,data:any):Observable<any>
 	{
 		let obj = Utils.transformDatesToString(data);
-		let endpoint = path.includes('.php') || path.includes('?')
-			? path
-			: `updates/${path}.php`;
-		let url = `${this.domain_configuration.domain}/${this.url_base}/${endpoint}`;
+		let url = `${this.domain_configuration.domain}/${this.url_base}/updates/${path}.php`;
 		return this.http.post<any>(`${url}`, obj , { withCredentials: true, headers: this.getSessionHeaders() });
 	}
 
