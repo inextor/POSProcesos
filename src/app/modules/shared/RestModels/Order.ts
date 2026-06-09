@@ -9,6 +9,7 @@ export interface Order{
 	cancellation_timestamp:Date | null;
 	cancelled_by_user_id:number | null;
 	cashier_user_id:number | null;
+	consignment_delivered_id:number | null;
 	city:string | null;
 	client_name:string | null;
 	client_user_id:number | null;
