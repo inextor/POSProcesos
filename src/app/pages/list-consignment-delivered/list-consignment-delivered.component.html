@@ -1,0 +1,69 @@
+<div class="container-fluid">
+	<div class="row w-100 my-3 mx-0 align-items-center">
+		<div class="col-8 col-md-10">
+			<h1 class="mb-0">Consignaciones Entregadas</h1>
+		</div>
+		<div class="col-4 col-md-2 text-end px-0">
+			<a routerLink="/save-consignment-delivered" class="btn btn-secondary">
+				Nueva Consignación
+			</a>
+		</div>
+	</div>
+
+	<app-loading [is_loading]="is_loading"></app-loading>
+
+	@if (!is_loading)
+	{
+		<div class="card">
+			<div class="card-body">
+				<div class="table-responsive">
+					<table class="table table-hover">
+						<thead>
+							<tr>
+								<th>ID</th>
+								<th>Vendedor</th>
+								<th>Sucursal</th>
+								<th>Total</th>
+								<th>Estado</th>
+								<th>Fecha</th>
+								<th>Acciones</th>
+							</tr>
+						</thead>
+						<tbody>
+							@for (cd of list; track cd.consignment_delivered.id)
+							{
+								<tr>
+									<td>{{cd.consignment_delivered.id}}</td>
+									<td>{{cd.seller?.name || 'N/A'}}</td>
+									<td>{{cd.store?.name || 'N/A'}}</td>
+									<td>{{cd.consignment_delivered.total | currency}}</td>
+									<td>
+										<span [class]="'badge ' + (cd.consignment_delivered.status == 'ACTIVE' ? 'bg-success' : cd.consignment_delivered.status == 'SETTLED' ? 'bg-secondary' : 'bg-danger')">
+											{{cd.consignment_delivered.status == 'ACTIVE' ? 'Activa' : cd.consignment_delivered.status == 'SETTLED' ? 'Liquidada' : 'Eliminada'}}
+										</span>
+									</td>
+									<td>{{cd.consignment_delivered.created | date:'short'}}</td>
+									<td>
+								<a [routerLink]="['/view-consignment-delivered', cd.consignment_delivered.id]" class="btn btn-sm btn-outline-primary">
+									<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24">
+										<path d="M0 0h24v24H0z" fill="none" />
+										<path fill="currentColor" d="M12 9a3 3 0 0 0-3 3a3 3 0 0 0 3 3a3 3 0 0 0 3-3a3 3 0 0 0-3-3m0 8a5 5 0 0 1-5-5a5 5 0 0 1 5-5a5 5 0 0 1 5 5a5 5 0 0 1-5 5m0-12.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5" />
+									</svg> Ver
+								</a>
+									</td>
+								</tr>
+							}
+							@if (list.length == 0)
+							{
+								<tr>
+									<td colspan="7" class="text-center">No hay consignaciones entregadas</td>
+								</tr>
+							}
+						</tbody>
+					</table>
+				</div>
+				<app-pagination [current_page]="current_page" [total_pages]="total_pages" (selectedPage)="onPageChange($event)"></app-pagination>
+			</div>
+		</div>
+	}
+</div>

@@ -1,0 +1,83 @@
+<div class="container-fluid">
+
+	<div class="row my-3">
+		<div class="col-8">
+			<h1 class="mb-0">Consignaciones Recibidas</h1>
+		</div>
+		<div class="col-4 align-items-end text-end">
+			<a routerLink="/save-consignment-received" class="btn btn-primary">
+				<i class="bi bi-plus-lg"></i> Nueva Consignación
+			</a>
+		</div>
+	</div>
+
+	<app-loading [is_loading]="is_loading"></app-loading>
+
+	@if (!is_loading)
+	{
+
+		<div class="card">
+			<div class="table-responsive">
+				<table class="table table-hover">
+					<thead>
+						<tr>
+							<th>ID</th>
+							<th>Proveedor</th>
+							<th>Sucursal</th>
+							<th>Referencia</th>
+							<th>Total</th>
+							<th>Estado</th>
+							<th>Inventario</th>
+							<th>Fecha</th>
+							<th>Acciones</th>
+						</tr>
+					</thead>
+					<tbody>
+						@for (cr of list; track cr.consignment_received.id)
+						{
+							<tr>
+								<td>{{cr.consignment_received.id}}</td>
+								<td>{{cr.provider?.name || 'N/A'}}</td>
+								<td>{{cr.store?.name || 'N/A'}}</td>
+								<td>{{cr.consignment_received.reference || '-'}}</td>
+								<td>{{cr.consignment_received.total | currency}}</td>
+								<td>
+									<span [class]="'badge ' + (cr.consignment_received.status == 'ACTIVE' ? 'bg-success' : cr.consignment_received.status == 'SETTLED' ? 'bg-secondary' : 'bg-danger')">
+										{{cr.consignment_received.status == 'ACTIVE' ? 'Activa' : cr.consignment_received.status == 'SETTLED' ? 'Liquidada' : 'Eliminada'}}
+									</span>
+								</td>
+								<td>
+									<span [class]="'badge ' + (cr.consignment_received.stock_status == 'ADDED_TO_STOCK' ? 'bg-info' : 'bg-warning')">
+										{{cr.consignment_received.stock_status == 'ADDED_TO_STOCK' ? 'En inventario' : 'Pendiente'}}
+									</span>
+								</td>
+								<td>{{cr.consignment_received.created | date:'short'}}</td>
+				<td>
+					@if (cr.consignment_received.status == 'ACTIVE')
+					{
+						@if (cr.consignment_received.stock_status == 'PENDING')
+						{
+							<button class="btn btn-sm btn-info me-1" (click)="addToStock(cr)">
+								<i class="bi bi-box"></i> Agregar Inventario
+							</button>
+						}
+					}
+					<a [routerLink]="['/view-consignment-received', cr.consignment_received.id]" class="btn btn-sm btn-outline-primary">
+						<i class="bi bi-eye"></i>
+					</a>
+				</td>
+							</tr>
+						}
+						@if (list.length == 0)
+						{
+							<tr>
+								<td colspan="9" class="text-center">No hay consignaciones recibidas</td>
+							</tr>
+						}
+					</tbody>
+				</table>
+			</div>
+			<app-pagination [current_page]="current_page" [total_pages]="total_pages" (selectedPage)="onPageChange($event)"></app-pagination>
+		</div>
+	}
+</div>
