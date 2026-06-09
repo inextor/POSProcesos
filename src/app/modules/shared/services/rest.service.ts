@@ -291,6 +291,22 @@ export class RestService
 		return this.httpPost('replay_sat_factura.php',{sat_factura_id}) as Observable<Sat_Factura>;
 	}
 
+	getPendingComplements():Observable<any[]>
+	{
+		let url = `${this.domain_configuration.domain}/${this.url_base}/updates/get_pending_complements.php`;
+		return this.http.get<any[]>(url, { headers: this.getSessionHeaders(), withCredentials: true });
+	}
+
+	updatePath(path:string,data:any):Observable<any>
+	{
+		let obj = Utils.transformDatesToString(data);
+		let endpoint = path.includes('.php') || path.includes('?')
+			? path
+			: `updates/${path}.php`;
+		let url = `${this.domain_configuration.domain}/${this.url_base}/${endpoint}`;
+		return this.http.post<any>(`${url}`, obj , { withCredentials: true, headers: this.getSessionHeaders() });
+	}
+
 	update<T>(method:string,data:any):Observable<T>
 	{
 		let obj = Utils.transformDatesToString(data);
@@ -896,4 +912,3 @@ export class RestService
 		return this.http.post(url, payload, { responseType: 'blob' })
 	}
 }
-

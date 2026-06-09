@@ -75,16 +75,23 @@
 								<div class="fw-bold">{{ cancel_user.name }}</div>
 							</div>
 						}
-						@if(order_info.order.cancellation_reason){
-							<div class="col-6 col-md-4 py-2" >
-								<label class="">Motivo de Cancelación:</label>
-								<div class="fw-bold">{{ order_info.order.cancellation_reason }}</div>
-							</div>
-						}
-						@if(rest.current_permission.cancel_closed_orders && order_info.order.status == 'CLOSED' || order_info.order.status == 'PENDING'){
-							<div class="col-6 col-md-3 py-2" >
-								<div>
-									<button class="btn btn-primary w-100" type="button" (click)="show_confirm_cancel=true">Cancelar Orden</button>
+							@if(order_info.order.cancellation_reason){
+								<div class="col-6 col-md-4 py-2" >
+									<label class="">Motivo de Cancelación:</label>
+									<div class="fw-bold">{{ order_info.order.cancellation_reason }}</div>
+								</div>
+							}
+							@if(order_info.order.consignment_delivered_id){
+								<div class="col-6 col-md-3 py-2" >
+									<a class="btn btn-primary w-100" [routerLink]="['/view-consignment-delivered', order_info.order.consignment_delivered_id]">
+										Ver Consignación
+									</a>
+								</div>
+							}
+							@if(rest.current_permission.cancel_closed_orders && order_info.order.status == 'CLOSED' || order_info.order.status == 'PENDING'){
+								<div class="col-6 col-md-3 py-2" >
+									<div>
+										<button class="btn btn-primary w-100" type="button" (click)="show_confirm_cancel=true">Cancelar Orden</button>
 								</div>
 							</div>
 						}

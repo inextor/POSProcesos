@@ -840,6 +840,14 @@
 										<span>Asignar Factura SAT</span>
 									</a>
 								</li>
+								<li class="side-nav-item">
+									<a class="side-nav-link" routerLink="/create-order-from-xml" aria-expanded="false" routerLinkActive="active">
+										<i class="svg-icon">
+											<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><path fill="currentColor" d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6m2 16H8v-2h8v2m0-4H8v-2h8v2m-3-5V3.5L18.5 9H13z"/></svg>
+										</i>
+										<span>Crear Pedido desde XML</span>
+									</a>
+								</li>
 							}
 							@if (rest.user_permission.view_commandas || rest.user_permission.add_commandas) {
 								<li class="side-nav-item">
@@ -979,7 +987,50 @@
 					</div>
 				</li>
 			}
-			@if (show_menu_production)
+			@if (show_menu_consignments) {
+			<li class="side-nav-item">
+				<span class="side-nav-link d-flex justify-content-between align-items-center pointer" data-bs-toggle="collapse" data-bs-target="#show_consignments">
+					<span>
+						<i class="svg-icon">
+							<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><path fill="currentColor" d="M20 6h-2v2h2v10H4V8h2V6H4a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2m-8 8l-4-4h3V2h2v8h3M2 2h14v2H2Z"/></svg>
+						</i>
+						<span>Consignaciones</span>
+					</span>
+					<span style="font-size:12px" class="link-arrow">
+						<svg aria-hidden="true" width="1em" height="1em" focusable="false" data-prefix="fas" data-icon="chevron-right" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><path fill="currentColor" d="M285.476 272.971L91.132 467.314c-9.373 9.373-24.569 9.373-33.941 0l-22.667-22.667c-9.357-9.357-9.375-24.522-.04-33.901L188.505 256 34.484 101.255c-9.335-9.379-9.317-24.544.04-33.901l22.667-22.667c9.373-9.373 24.569-9.373 33.941 0L285.475 239.03c9.373 9.372 9.373 24.568.001 33.941z" fill="currentColor"></path></svg>
+					</span>
+				</span>
+				<div id="show_consignments" class="collapse ps-3" data-bs-parent="#collapse_parent">
+					<ul class="flex-column nav">
+						<li class="side-nav-item">
+							<a routerLink="/list-consignment-received" class="side-nav-link" routerLinkActive="active">
+								<i class="svg-icon">
+									<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><path fill="currentColor" d="M11 9h2V6h3V4h-3V1h-2v3H8v2h3M7 11v2h10v-2m-8 8a2 2 0 0 1-2 2a2 2 0 0 1-2-2a2 2 0 0 1 2-2a2 2 0 0 1 2 2m10 0a2 2 0 0 1-2 2a2 2 0 0 1-2-2a2 2 0 0 1 2-2a2 2 0 0 1 2 2Z"/></svg>
+								</i>
+								<span>Recibidas</span>
+							</a>
+						</li>
+						<li class="side-nav-item">
+							<a routerLink="/list-consignment-delivered" class="side-nav-link" routerLinkActive="active">
+								<i class="svg-icon">
+									<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><path fill="currentColor" d="M12 2c-1.1 0-2 .9-2 2v.29C7.12 5.14 5 7.82 5 11v6l-2 2v1h18v-1l-2-2v-6c0-3.18-2.12-5.86-5-6.71V4c0-1.1-.9-2-2-2m0 3c2.21 0 4 1.79 4 4v6h-8v-6c0-2.21 1.79-4 4-4m-1 14h2a2 2 0 0 1-2 2a2 2 0 0 1-2-2Z"/></svg>
+								</i>
+								<span>Entregadas</span>
+							</a>
+						</li>
+						<li class="side-nav-item">
+							<a routerLink="/consignment-report" class="side-nav-link" routerLinkActive="active">
+								<i class="svg-icon">
+									<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><path fill="currentColor" d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2M9 17H7v-7h2v7m4 0h-2V7h2v10m4 0h-2v-4h2v4Z"/></svg>
+								</i>
+								<span>Reporte</span>
+							</a>
+						</li>
+					</ul>
+				</div>
+			</li>
+		}
+		@if (show_menu_production)
 			{
 				<li class="side-nav-item">
 					<span class="side-nav-link d-flex justify-content-between align-items-center pointer" data-bs-toggle="collapse" data-bs-target="#show_production">

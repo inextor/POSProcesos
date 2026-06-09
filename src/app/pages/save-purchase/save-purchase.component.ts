@@ -248,6 +248,7 @@ export class SavePurchaseComponent extends BaseComponent implements OnInit
 	{
 		let purchase:Purchase = {
 			stock_status: 'PENDING',
+			consignment_received_id: null,
 			order_id: null,
 			store_id: this.rest?.user?.store_id	|| 0,
 			created: new Date(),

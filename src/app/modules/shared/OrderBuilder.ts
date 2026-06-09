@@ -141,6 +141,7 @@ export class OrderBuilder
 			version_updated: version_created,
 			address: null,
 			authorized_by: null,
+			consignment_delivered_id: null,
 			billing_address_id: null,
 			city: null,
 			client_name: null,

@@ -76,6 +76,7 @@ export const routes: Routes = [
 			{path: 'factura-asis/:order_id', loadComponent: () => import('./pages/factura-asis/factura-asis.component').then(m => m.FacturaAsisComponent), canActivate: [authGuard]},
 			{path: 'test', loadComponent: () => import('./pages/test/test.component').then(m => m.TestComponent), canActivate: [authGuard]},
 			{path: 'list-sat-factura', loadComponent: () => import('./pages/list-sat-factura/list-sat-factura.component').then(m => m.ListSatFacturaComponent), canActivate: [authGuard]},
+			{path: 'list-pending-complements', loadComponent: () => import('./pages/list-pending-complements/list-pending-complements.component').then(m => m.ListPendingComplementsComponent), canActivate: [authGuard]},
 			{path: 'assign-sat-factura', loadComponent: () => import('./pages/assign-sat-factura/assign-sat-factura.component').then(m => m.AssignSatFacturaComponent), canActivate: [authGuard]},
 			{path: 'assign-sat-factura/:order_id', loadComponent: () => import('./pages/assign-sat-factura/assign-sat-factura.component').then(m => m.AssignSatFacturaComponent), canActivate: [authGuard]},
 			{path: 'assign-sat-factura-payment', loadComponent: () => import('./pages/assign-sat-factura-payment/assign-sat-factura-payment.component').then(m => m.AssignSatFacturaPaymentComponent), canActivate: [authGuard]},
@@ -107,9 +108,20 @@ export const routes: Routes = [
 			{path: 'add-transformation', loadComponent: () => import('./pages/save-transformation/save-transformation.component').then(m => m.SaveTransformationComponent), canActivate: [authGuard]},
 			{path: 'edit-transformation/:id', loadComponent: () => import('./pages/save-transformation/save-transformation.component').then(m => m.SaveTransformationComponent), canActivate: [authGuard]},
 			{path: 'provider-resume', loadComponent: () => import('./pages/provider-resume/provider-resume.component').then(m => m.ProviderResumeComponent), canActivate: [authGuard]},
+			{path: 'list-provider-bills/:id', loadComponent: () => import('./pages/list-provider-bills/list-provider-bills.component').then(m => m.ListProviderBillsComponent), canActivate: [authGuard]},
 			{path: 'list-batch-record', loadComponent: () => import('./pages/list-batch-record/list-batch-record.component').then(m => m.ListBatchRecordComponent), canActivate: [authGuard]},
 			{path: 'list-storage-record', loadComponent: () => import('./pages/list-storage-record/list-storage-record.component').then(m => m.ListStorageRecordComponent), canActivate: [authGuard]},
-			{path: 'reports-dashboard', loadComponent: () => import('./pages/reports-dashboard/reports-dashboard.component').then(m => m.ReportsDashboardComponent), canActivate: [authGuard]}
+			{path: 'reports-dashboard', loadComponent: () => import('./pages/reports-dashboard/reports-dashboard.component').then(m => m.ReportsDashboardComponent), canActivate: [authGuard]},
+			{path: 'create-order-from-xml', loadComponent: () => import('./pages/create-order-from-xml/create-order-from-xml.component').then(m => m.CreateOrderFromXmlComponent), canActivate: [authGuard]},
+		{path: 'list-consignment-received', loadComponent: () => import('./pages/list-consignment-received/list-consignment-received.component').then(m => m.ListConsignmentReceivedComponent), canActivate: [authGuard]},
+		{path: 'save-consignment-received', loadComponent: () => import('./pages/save-consignment-received/save-consignment-received.component').then(m => m.SaveConsignmentReceivedComponent), canActivate: [authGuard]},
+		{path: 'save-consignment-received/:id', loadComponent: () => import('./pages/save-consignment-received/save-consignment-received.component').then(m => m.SaveConsignmentReceivedComponent), canActivate: [authGuard]},
+		{path: 'view-consignment-received/:id', loadComponent: () => import('./pages/view-consignment-received/view-consignment-received.component').then(m => m.ViewConsignmentReceivedComponent), canActivate: [authGuard]},
+		{path: 'list-consignment-delivered', loadComponent: () => import('./pages/list-consignment-delivered/list-consignment-delivered.component').then(m => m.ListConsignmentDeliveredComponent), canActivate: [authGuard]},
+		{path: 'save-consignment-delivered', loadComponent: () => import('./pages/save-consignment-delivered/save-consignment-delivered.component').then(m => m.SaveConsignmentDeliveredComponent), canActivate: [authGuard]},
+		{path: 'save-consignment-delivered/:id', loadComponent: () => import('./pages/save-consignment-delivered/save-consignment-delivered.component').then(m => m.SaveConsignmentDeliveredComponent), canActivate: [authGuard]},
+		{path: 'view-consignment-delivered/:id', loadComponent: () => import('./pages/view-consignment-delivered/view-consignment-delivered.component').then(m => m.ViewConsignmentDeliveredComponent), canActivate: [authGuard]},
+		{path: 'consignment-report', loadComponent: () => import('./pages/consignment-report/consignment-report.component').then(m => m.ConsignmentReportComponent), canActivate: [authGuard]}
 		]
 	},
 ];

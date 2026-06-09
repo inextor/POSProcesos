@@ -1,4 +1,4 @@
-import { Address, Attachment, Bank_Account, Bank_Movement_Bill, Batch_Record, Bill, Cash_Close, Cash_Count, Bank_Movement, Bank_Movement_Order, Category, Delivery_Assignment, File_Type, Item, Item_Exception, Item_Option, Item_Option_Value, Offer, Order, Order_Item, Order_Item_Exception, Order_Item_Serial, Payment, Period, Price, Price_Type, Process, Production, Production_Area, Purchase, Purchase_Detail, Requisition, Requisition_Item, Reservation, Reservation_Item, Reservation_Item_Serial, Return_Assignment, Serial, Serial_Image, Shipping, Shipping_Item, Stock_Record, Store, Task, Transformation, Transformation_Input, Transformation_Output, User } from "./RestModels";
+import { Address, Attachment, Bank_Account, Bank_Movement_Bill, Batch_Record, Bill, Cash_Close, Cash_Count, Bank_Movement, Bank_Movement_Order, Category, Consignment_Received, Consignment_Received_Item, Consignment_Delivered, Consignment_Delivered_Item, Delivery_Assignment, File_Type, Item, Item_Exception, Item_Option, Item_Option_Value, Offer, Order, Order_Item, Order_Item_Exception, Order_Item_Serial, Payment, Period, Price, Price_Type, Process, Production, Production_Area, Purchase, Purchase_Detail, Requisition, Requisition_Item, Reservation, Reservation_Item, Reservation_Item_Serial, Return_Assignment, Serial, Serial_Image, Shipping, Shipping_Item, Stock_Record, Store, Task, Transformation, Transformation_Input, Transformation_Output, User } from "./RestModels";
 
 interface CSerial extends Serial
 {
@@ -351,4 +351,42 @@ export interface BatchRecordInfo
 	store: Store;
 	user: User | null;
 	category: Category | null;
+}
+
+export interface ConsignmentReceivedItemInfo
+{
+	consignment_received_item: Consignment_Received_Item;
+	item: Item;
+	category: Category | null;
+}
+
+export interface ConsignmentReceivedInfo
+{
+	consignment_received: Consignment_Received;
+	items: ConsignmentReceivedItemInfo[];
+	provider: User | null;
+	store: Store | null;
+}
+
+export interface ConsignmentDeliveredItemInfo
+{
+	consignment_delivered_item: Consignment_Delivered_Item;
+	item: Item;
+	category: Category | null;
+}
+
+export interface ConsignmentDeliveredInfo
+{
+	consignment_delivered: Consignment_Delivered;
+	items: ConsignmentDeliveredItemInfo[];
+	seller: User | null;
+	store: Store | null;
+}
+
+export interface ConsignmentReport
+{
+	received: Consignment_Received[];
+	received_items: Consignment_Received_Item[];
+	delivered: Consignment_Delivered[];
+	delivered_items: Consignment_Delivered_Item[];
 }
