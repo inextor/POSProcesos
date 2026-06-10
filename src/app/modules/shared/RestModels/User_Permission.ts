@@ -2,6 +2,8 @@ export interface User_Permission {
   add_asistance: any;
   add_bills: any;
   add_commandas: any;
+  add_consignment_delivered: any;
+  add_consignment_received: any;
   add_credit_limit: any;
   add_credit_sales: any;
   add_items: any;
@@ -74,6 +76,8 @@ export interface User_Permission {
   user_id: number;
   view_asistance: any;
   view_commandas: any;
+  view_consignment_delivered: any;
+  view_consignment_received: any;
   view_facturas: any;
   view_payroll: any;
   view_responses: any;

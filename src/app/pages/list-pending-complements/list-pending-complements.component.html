@@ -1,0 +1,159 @@
+<div class="container-fluid py-4">
+	<app-loading [is_loading]="is_loading"></app-loading>
+
+	<!-- Header Banner -->
+	<div class="row mb-4">
+		<div class="col-12">
+			<div class="card border-0 shadow-lg" style="background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%); color: #ffffff; border-radius: 16px; overflow: hidden; position: relative;">
+				<div class="card-body p-4 p-md-5">
+					<div class="d-flex align-items-center justify-content-between">
+						<div>
+							<h1 class="display-6 fw-bold m-0" style="font-family: 'Outfit', sans-serif;">Complementos de Pago Pendientes</h1>
+							<p class="lead mb-0 mt-2 text-white-50" style="font-family: 'Inter', sans-serif;">Lista órdenes facturadas con abonos que aún no tienen su complemento de pago SAT timbrado.</p>
+						</div>
+						<div class="d-none d-lg-block">
+							<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="text-white-50"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- Empty state -->
+	@if (!is_loading && pending_complements.length === 0) {
+		<div class="row">
+			<div class="col-12 text-center py-5">
+				<div class="card border-0 shadow-sm p-5" style="border-radius: 16px;">
+					<div class="py-4">
+						<svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="#2a5298" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="mb-3 opacity-50"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+						<h3 class="fw-bold" style="font-family: 'Outfit', sans-serif; color: #1e3c72;">¡Todo al día!</h3>
+						<p class="text-muted" style="font-family: 'Inter', sans-serif;">No hay abonos pendientes de timbrar complemento de pago en este momento.</p>
+					</div>
+				</div>
+			</div>
+		</div>
+	}
+
+	<!-- Data Table -->
+	@if (pending_complements.length > 0) {
+		<div class="row">
+			<div class="col-12">
+				<div class="card border-0 shadow-sm" style="border-radius: 16px; overflow: hidden;">
+					<div class="card-header bg-white border-0 py-3 d-flex align-items-center justify-content-between">
+						<h5 class="m-0 fw-bold" style="font-family: 'Outfit', sans-serif; color: #1e3c72;">Registros Pendientes</h5>
+						<span class="badge rounded-pill bg-danger px-3 py-2" style="font-family: 'Inter', sans-serif;">{{ pending_complements.length }} abonos</span>
+					</div>
+					<div class="table-responsive">
+						<table class="table table-hover align-middle mb-0">
+							<thead class="table-light" style="font-family: 'Outfit', sans-serif; font-size: 0.9rem; color: #495057;">
+								<tr>
+									<th class="ps-4">Folio Orden</th>
+									<th>RFC / Razón Social Receptor</th>
+									<th>Fecha de Pago</th>
+									<th class="text-end">Monto Abono</th>
+									<th class="text-end">Total Orden</th>
+									<th class="pe-4 text-center">Acción</th>
+								</tr>
+							</thead>
+							<tbody style="font-family: 'Inter', sans-serif; font-size: 0.95rem;">
+								@for (item of pending_complements; track item.payment_id) {
+									<tr class="hover-row">
+										<!-- Order ID / Consecutive -->
+										<td class="ps-4">
+											<a [attr.href]="external_base_url + '/#/view-order/' + item.order_id" class="d-block fw-bold text-decoration-none" style="color: #1e3c72;">
+												#{{ item.order_id }}
+												<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="ms-1"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+											</a>
+											<small class="text-muted">
+												Folio: {{ item.sat_serie }}{{ item.sat_serie_consecutive || item.store_consecutive }}
+											</small>
+										</td>
+										<!-- Client Details -->
+										<td>
+											<div class="fw-bold text-dark">{{ item.sat_razon_social || 'Cliente General' }}</div>
+											<small class="text-muted">{{ item.sat_receptor_rfc }}</small>
+										</td>
+										<!-- Payment Date -->
+										<td>
+											<div>{{ item.payment_date || item.payment_created | date:'d/MMM/y h:mma' }}</div>
+											<small class="text-muted">ID Pago: #{{ item.payment_id }}</small>
+										</td>
+										<!-- Payment Amount -->
+										<td class="text-end fw-bold text-success">
+											{{ item.payment_amount | currency }}
+										</td>
+										<!-- Order Total -->
+										<td class="text-end fw-semibold text-muted">
+											{{ item.order_total - (item.order_discount || 0) | currency }}
+										</td>
+										<!-- Action Button -->
+										<td class="pe-4 text-center">
+											<button class="btn btn-primary btn-sm px-3 py-2 fw-semibold" style="border-radius: 8px; font-family: 'Outfit', sans-serif; transition: all 0.2s ease-in-out; box-shadow: 0 4px 6px rgba(30, 60, 114, 0.15);" (click)="showFacturarPago(item)">
+												<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-receipt-cutoff me-1" viewBox="0 0 16 16">
+													<path d="M3 4.5a.5.5 0 0 1 .5-.5h6a.5.5 0 1 1 0 1h-6a.5.5 0 0 1-.5-.5m0 2a.5.5 0 0 1 .5-.5h6a.5.5 0 1 1 0 1h-6a.5.5 0 0 1-.5-.5m0 2a.5.5 0 0 1 .5-.5h6a.5.5 0 1 1 0 1h-6a.5.5 0 0 1-.5-.5m0 2a.5.5 0 0 1 .5-.5h6a.5.5 0 0 1 0 1h-6a.5.5 0 0 1-.5-.5m0 2a.5.5 0 0 1 .5-.5h6a.5.5 0 0 1 0 1h-6a.5.5 0 0 1-.5-.5M11.5 4a.5.5 0 0 0 0 1h1a.5.5 0 0 0 0-1zm0 2a.5.5 0 0 0 0 1h1a.5.5 0 0 0 0-1zm0 2a.5.5 0 0 0 0 1h1a.5.5 0 0 0 0-1zm0 2a.5.5 0 0 0 0 1h1a.5.5 0 0 0 0-1zm0 2a.5.5 0 0 0 0 1h1a.5.5 0 0 0 0-1z"/>
+													<path d="M2.354.646a.5.5 0 0 0-.801.13l-.5 1A.5.5 0 0 0 1 2v13H.5a.5.5 0 0 0 0 1h15a.5.5 0 0 0 0-1H15V2a.5.5 0 0 0-.053-.224l-.5-1a.5.5 0 0 0-.8-.13L13 1.293l-.646-.647a.5.5 0 0 0-.708 0L11 1.293l-.646-.647a.5.5 0 0 0-.708 0L9 1.293 8.354.646a.5.5 0 0 0-.708 0L7 1.293 6.354.646a.5.5 0 0 0-.708 0L5 1.293 4.354.646a.5.5 0 0 0-.708 0L3 1.293zm-.217 1.198.51.51a.5.5 0 0 0 .707 0L4 1.707l.646.647a.5.5 0 0 0 .708 0L6 1.707l.646.647a.5.5 0 0 0 .708 0L8 1.707l.646.647a.5.5 0 0 0 .708 0L10 1.707l.646.647a.5.5 0 0 0 .708 0L12 1.707l.646.647a.5.5 0 0 0 .708 0l.509-.51.137.274V15H2V2.118z"/>
+												</svg>
+												Facturar Pago
+											</button>
+										</td>
+									</tr>
+								}
+							</tbody>
+						</table>
+					</div>
+				</div>
+			</div>
+		</div>
+	}
+</div>
+
+<!-- Modal Facturar Pago -->
+<app-modal [(show)]="show_facturar_pago">
+	@if (selected_pago) {
+		<div class="container-fluid p-3" style="font-family: 'Inter', sans-serif;">
+			<h2 class="fw-bold mb-3" style="font-family: 'Outfit', sans-serif; color: #1e3c72;">Facturar el Pago</h2>
+			<div class="alert alert-light border shadow-sm p-3 mb-4" style="border-radius: 12px;">
+				<div class="row">
+					<div class="col-6 mb-2">
+						<small class="text-muted d-block">Folio Orden:</small>
+						<span class="fw-bold">#{{ selected_pago.order_id }}</span>
+					</div>
+					<div class="col-6 mb-2">
+						<small class="text-muted d-block">Monto Abono:</small>
+						<span class="fw-bold text-success">{{ selected_pago.payment_amount | currency }}</span>
+					</div>
+					<div class="col-12">
+						<small class="text-muted d-block">RFC Receptor:</small>
+						<span class="fw-bold text-dark">{{ selected_pago.sat_razon_social }} ({{ selected_pago.sat_receptor_rfc }})</span>
+					</div>
+				</div>
+			</div>
+			
+			<form name="facturar_tfp" (submit)="facturarElPago($event)" ngNativeValidate>
+				<div class="row g-3">
+					<div class="col-12">
+						<label class="form-label fw-semibold text-muted">Fecha de pago</label>
+						<input type="datetime-local" class="form-control px-3 py-2" style="border-radius: 8px;" name="fecha_pago" [(ngModel)]="fecha_pago" required>
+					</div>
+					<div class="col-12">
+						<label class="form-label fw-semibold text-muted">Serie</label>
+						<input type="text" class="form-control px-3 py-2" style="border-radius: 8px;" name="sat_serie" [(ngModel)]="sat_serie" minlength="1" maxlength="25" required>
+					</div>
+					<div class="col-12">
+						<label class="form-label fw-semibold text-muted">Correo Electrónico</label>
+						<input type="email" name="pago_factura_email" [(ngModel)]="pago_factura_email" style="border-radius: 8px;" class="form-control px-3 py-2" required>
+					</div>
+				</div>
+				<div class="row py-3 mt-3">
+					<div class="col-6">
+						<button type="button" class="btn btn-outline-secondary w-100 py-2 fw-semibold" style="border-radius: 8px;" (click)="show_facturar_pago=false" [disabled]="is_loading">Cancelar</button>
+					</div>
+					<div class="col-6">
+						<button type="submit" class="btn btn-primary w-100 py-2 fw-semibold" style="border-radius: 8px; background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%); border: none;" [disabled]="is_loading">Facturar Pago</button>
+					</div>
+				</div>
+			</form>
+		</div>
+	}
+</app-modal>

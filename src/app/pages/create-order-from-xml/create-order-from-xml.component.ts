@@ -31,6 +31,7 @@ interface CfdiConcepto {
 	totalIeps: number;
 	totalTraslados: number;
 	totalRetenciones: number;
+	note: string;
 }
 
 @Component({
@@ -209,7 +210,8 @@ export class CreateOrderFromXmlComponent extends BaseComponent implements OnInit
 				totalIva,
 				totalIeps,
 				totalTraslados,
-				totalRetenciones
+				totalRetenciones,
+				note: descripcion
 			});
 		}
 
@@ -348,7 +350,7 @@ export class CreateOrderFromXmlComponent extends BaseComponent implements OnInit
 					concepto.cantidad,
 					concepto.valorUnitario,
 					this.factura_metadata?.moneda || 'MXN',
-					concepto.descripcion,
+					concepto.note || concepto.descripcion,
 					'NO'
 				);
 			}

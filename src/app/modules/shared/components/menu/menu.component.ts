@@ -42,6 +42,7 @@ export class MenuComponent extends BaseComponent
     show_menu_reports: Falseable = false;
 	show_menu_commissions: Falseable = false;
 	show_menu_rentals: Falseable = false; //Permisos por añadir
+	show_menu_consignments: Falseable = false;
 	// add_clients
 	//
 
@@ -82,6 +83,10 @@ export class MenuComponent extends BaseComponent
 
 
 				this.show_menu_rentals = this.rest.user_permission.pos;
+				this.show_menu_consignments = this.rest.user_permission.add_consignment_received
+					|| this.rest.user_permission.view_consignment_received
+					|| this.rest.user_permission.add_consignment_delivered
+					|| this.rest.user_permission.view_consignment_delivered;
 
 				this.subs.sink = this.rest_form.search({limit:9999})
 				.subscribe

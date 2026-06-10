@@ -1,0 +1,93 @@
+<div>
+	<app-loading [is_loading]="is_loading"></app-loading>
+
+	@if (!is_loading)
+	{
+		<div class="card">
+			<div class="card-body">
+				<h4>Reporte de Consignaciones</h4>
+				<hr>
+
+				<div class="row mb-3">
+					<div class="col-md-4">
+						<label class="form-label">Sucursal</label>
+						<select class="form-select" [(ngModel)]="filter_store_id">
+							<option [ngValue]="null">Todas</option>
+							@for (store of store_list; track store.id)
+							{
+								<option [ngValue]="store.id">{{store.name}}</option>
+							}
+						</select>
+					</div>
+					<div class="col-md-3">
+						<label class="form-label">Desde</label>
+						<input type="date" class="form-control" [(ngModel)]="filter_start">
+					</div>
+					<div class="col-md-3">
+						<label class="form-label">Hasta</label>
+						<input type="date" class="form-control" [(ngModel)]="filter_end">
+					</div>
+					<div class="col-md-2 d-flex align-items-end">
+						<button class="btn btn-primary w-100" (click)="search()">Buscar</button>
+					</div>
+				</div>
+
+				<hr>
+
+				<h5>Consignaciones Recibidas ({{report?.received?.length || 0}})</h5>
+				<div class="table-responsive">
+					<table class="table table-sm table-hover">
+						<thead>
+							<tr>
+								<th>ID</th>
+								<th>Proveedor</th>
+								<th>Total</th>
+								<th>Estado</th>
+								<th>Fecha</th>
+							</tr>
+						</thead>
+						<tbody>
+							@for (r of report?.received || []; track r.id)
+							{
+								<tr>
+									<td>{{r.id}}</td>
+									<td>{{r.provider_user_id}}</td>
+									<td>{{r.total | currency}}</td>
+									<td>{{r.status}}</td>
+									<td>{{r.created | date:'short'}}</td>
+								</tr>
+							}
+						</tbody>
+					</table>
+				</div>
+
+				<h5 class="mt-4">Consignaciones Entregadas ({{report?.delivered?.length || 0}})</h5>
+				<div class="table-responsive">
+					<table class="table table-sm table-hover">
+						<thead>
+							<tr>
+								<th>ID</th>
+								<th>Vendedor</th>
+								<th>Total</th>
+								<th>Estado</th>
+								<th>Fecha</th>
+							</tr>
+						</thead>
+						<tbody>
+							@for (d of report?.delivered || []; track d.id)
+							{
+								<tr>
+									<td>{{d.id}}</td>
+									<td>{{d.seller_user_id}}</td>
+									<td>{{d.total | currency}}</td>
+									<td>{{d.status}}</td>
+									<td>{{d.created | date:'short'}}</td>
+								</tr>
+							}
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+	}
+</div>

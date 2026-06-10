@@ -26,6 +26,7 @@ export function order_info(rest: RestService, store: Store, price_type: Price_Ty
 		sat_pdf_attachment_id: null,
 		sat_razon_social: null,
 		authorized_by: null,
+		consignment_delivered_id: null,
 		cancellation_timestamp: null,
 		billing_data_id: null,
 		billing_address_id: null,

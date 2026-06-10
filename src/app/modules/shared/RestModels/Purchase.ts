@@ -1,5 +1,6 @@
 export interface Purchase {
   id: number;
+  consignment_received_id: number | null;
   created_by_user_id: number | null;
   created: Date;
   order_id: number | null;
