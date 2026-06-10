@@ -83,7 +83,10 @@ export class MenuComponent extends BaseComponent
 
 
 				this.show_menu_rentals = this.rest.user_permission.pos;
-			this.show_menu_consignments = this.rest.user_permission.add_stock || this.rest.user_permission.add_purchases;
+				this.show_menu_consignments = this.rest.user_permission.add_consignment_received
+					|| this.rest.user_permission.view_consignment_received
+					|| this.rest.user_permission.add_consignment_delivered
+					|| this.rest.user_permission.view_consignment_delivered;
 
 				this.subs.sink = this.rest_form.search({limit:9999})
 				.subscribe

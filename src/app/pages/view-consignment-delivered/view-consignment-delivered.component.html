@@ -12,6 +12,12 @@
 						Ver Orden #{{linked_order_info.order.id}}
 					</a>
 				}
+				@if (info.consignment_delivered.status == 'ACTIVE' && rest.user_permission.add_consignment_delivered)
+				{
+					<a [routerLink]="['/save-consignment-delivered', info.consignment_delivered.id]" class="btn btn-primary me-2">
+						Editar
+					</a>
+				}
 				<a routerLink="/list-consignment-delivered" class="btn btn-secondary">
 					Volver
 				</a>
@@ -59,7 +65,7 @@
 			</div>
 		</div>
 
-		@if (show_settle_form)
+		@if (show_settle_form && rest.user_permission.add_consignment_delivered)
 		{
 			<div class="card mb-3 border-primary">
 				<div class="card-header bg-primary text-white">
@@ -187,7 +193,7 @@
 			</div>
 		</div>
 
-		@if (!show_settle_form && info.consignment_delivered.status == 'ACTIVE')
+		@if (!show_settle_form && info.consignment_delivered.status == 'ACTIVE' && rest.user_permission.add_consignment_delivered)
 		{
 			<div class="mt-3 text-end">
 				<button class="btn btn-primary" (click)="openSettleForm()">

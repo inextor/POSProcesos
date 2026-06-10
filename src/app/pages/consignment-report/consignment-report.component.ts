@@ -43,9 +43,9 @@ export class ConsignmentReportComponent extends BaseComponent implements OnInit
 	override search()
 	{
 		this.is_loading = true;
-		let rest_ca = this.rest.initRestSimple<any>('consignment_actions');
+		let rest_ca = this.rest.initRestSimple<any>('reports/consignment_report');
 
-		let params: any = { action: 'getConsignmentReport' };
+		let params: any = {};
 
 		if (this.filter_store_id)
 			params.store_id = this.filter_store_id;
@@ -59,7 +59,7 @@ export class ConsignmentReportComponent extends BaseComponent implements OnInit
 		this.subs.sink = rest_ca.search(params)
 		.subscribe((response: any) =>
 		{
-			this.report = response.data;
+			this.report = Array.isArray(response.data) ? response.data[0] : response.data;
 			this.is_loading = false;
 		}, (error: any) =>
 		{

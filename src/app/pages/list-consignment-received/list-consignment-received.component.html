@@ -5,7 +5,7 @@
 			<h1 class="mb-0">Consignaciones Recibidas</h1>
 		</div>
 		<div class="col-4 align-items-end text-end">
-			<a routerLink="/save-consignment-received" class="btn btn-primary">
+			<a *ngIf="rest.user_permission.add_consignment_received" routerLink="/save-consignment-received" class="btn btn-primary">
 				<i class="bi bi-plus-lg"></i> Nueva Consignación
 			</a>
 		</div>
@@ -53,7 +53,7 @@
 								</td>
 								<td>{{cr.consignment_received.created | date:'short'}}</td>
 				<td>
-					@if (cr.consignment_received.status == 'ACTIVE')
+					@if (cr.consignment_received.status == 'ACTIVE' && rest.user_permission.add_consignment_received)
 					{
 						@if (cr.consignment_received.stock_status == 'PENDING')
 						{
@@ -62,7 +62,13 @@
 							</button>
 						}
 					}
-					<a [routerLink]="['/view-consignment-received', cr.consignment_received.id]" class="btn btn-sm btn-outline-primary">
+					@if (cr.consignment_received.status == 'ACTIVE' && cr.consignment_received.stock_status == 'PENDING' && rest.user_permission.add_consignment_received)
+					{
+						<a [routerLink]="['/save-consignment-received', cr.consignment_received.id]" class="btn btn-sm btn-outline-secondary me-1">
+							<i class="bi bi-pencil"></i>
+						</a>
+					}
+					<a *ngIf="rest.user_permission.add_consignment_received || rest.user_permission.view_consignment_received" [routerLink]="['/view-consignment-received', cr.consignment_received.id]" class="btn btn-sm btn-outline-primary">
 						<i class="bi bi-eye"></i>
 					</a>
 				</td>
