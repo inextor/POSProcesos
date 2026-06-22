@@ -113,6 +113,7 @@ export const routes: Routes = [
 			{path: 'list-storage-record', loadComponent: () => import('./pages/list-storage-record/list-storage-record.component').then(m => m.ListStorageRecordComponent), canActivate: [authGuard]},
 			{path: 'reports-dashboard', loadComponent: () => import('./pages/reports-dashboard/reports-dashboard.component').then(m => m.ReportsDashboardComponent), canActivate: [authGuard]},
 			{path: 'create-order-from-xml', loadComponent: () => import('./pages/create-order-from-xml/create-order-from-xml.component').then(m => m.CreateOrderFromXmlComponent), canActivate: [authGuard]},
+			{path: 'create-order-from-xml/:order_id', loadComponent: () => import('./pages/create-order-from-xml/create-order-from-xml.component').then(m => m.CreateOrderFromXmlComponent), canActivate: [authGuard]},
 		{path: 'list-consignment-received', loadComponent: () => import('./pages/list-consignment-received/list-consignment-received.component').then(m => m.ListConsignmentReceivedComponent), canActivate: [authGuard]},
 		{path: 'save-consignment-received', loadComponent: () => import('./pages/save-consignment-received/save-consignment-received.component').then(m => m.SaveConsignmentReceivedComponent), canActivate: [authGuard]},
 		{path: 'save-consignment-received/:id', loadComponent: () => import('./pages/save-consignment-received/save-consignment-received.component').then(m => m.SaveConsignmentReceivedComponent), canActivate: [authGuard]},
@@ -125,5 +126,4 @@ export const routes: Routes = [
 		]
 	},
 ];
-
 
