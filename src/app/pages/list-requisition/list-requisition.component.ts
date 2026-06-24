@@ -456,6 +456,37 @@ export class ListRequisitionComponent extends BaseComponent implements OnInit
 		});
 	}
 
+	onSpecialOrderProductionCreated(event:{production:Production, item:Item})
+	{
+		let requisition_item = this.requsition_obj_list.find(row => row.item.id == event.production.item_id);
+
+		if( requisition_item )
+		{
+			requisition_item.production = requisition_item.production || {
+				item_id: event.production.item_id,
+				produced: 0,
+				production_merma_qty: 0
+			};
+			requisition_item.production.produced += event.production.qty;
+			requisition_item.production.production_merma_qty += event.production.merma_qty || 0;
+		}
+		else
+		{
+			this.requsition_obj_list.push({
+				item: event.item,
+				production: {
+					item_id: event.production.item_id,
+					produced: event.production.qty,
+					production_merma_qty: event.production.merma_qty || 0
+				},
+				input_production: GetEmpty.production(),
+				requisition: null
+			});
+		}
+
+		this.calculateTotalPending(this.requsition_obj_list);
+	}
+
 	getItemProductions(store_id:number, production_area_id:number, start_time: Date|null, endtime: Date|null):Observable<ItemProductions[]>
 	{
 		start_time = start_time || new Date();

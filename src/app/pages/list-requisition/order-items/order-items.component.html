@@ -1,26 +1,79 @@
 @if (order_info_list.length) {
   <div class="card p-3">
     <table class="w-100">
-      @for (oi of order_info_list; track oi) {
-        @for (oii of oi.structured_items; track oii; let i = $index) {
-          <tr [ngClass]="{'border-bottom': i==oi.structured_items.length-1}">
-            <td>{{oi.order.id}} - {{oi.order.client_name }}</td>
-            <td>{{oi.order.note}}</td>
-            <td>{{oii.item.name}}</td>
-            <td>{{oii.order_item.qty}}</td>
-            <td>{{oii.order_item.note}}</td>
-            <td>{{oii.order_item.commanda_status == 'DISMISSED' ? 'LISTO' : 'PENDIENTE'}}</td>
+      @for (row of special_order_item_rows; track row.order_item.order_item.id) {
+          <tr class="border-bottom">
+            <td>{{row.order_info.order.id}} - {{row.order_info.order.client_name }}</td>
+            <td>{{row.order_info.order.note}}</td>
+            <td>{{row.order_item.item.name}}</td>
+            <td>{{row.order_item.order_item.qty}}</td>
+            <td>{{row.order_item.order_item.note}}</td>
+            <td>{{row.order_item.order_item.commanda_status == 'DISMISSED' ? 'LISTO' : 'PENDIENTE'}}</td>
             <td>
-              @if (oii.order_item.commanda_status != 'DISMISSED') {
-                <button (click)="setAsReady(oii)" class="btn btn-primary">Listo</button>
+              <button type="button" (click)="showItemDetails(row.order_item)" class="btn btn-secondary me-1">
+                Detalles
+              </button>
+              @if (row.order_item.order_item.commanda_status != 'DISMISSED') {
+                <button (click)="setAsReady(row.order_info, row.order_item)" class="btn btn-primary" [disabled]="is_loading">Listo</button>
               }
-              @if (oii.order_item.commanda_status == 'DISMISSED') {
-                <button (click)="setAsPending(oii)" class="btn btn-primary">Pendiente</button>
+              @if (row.order_item.order_item.commanda_status == 'DISMISSED') {
+                <button (click)="setAsPending(row.order_item)" class="btn btn-primary">Pendiente</button>
               }
             </td>
           </tr>
-        }
       }
     </table>
   </div>
 }
+
+<app-modal [(show)]="show_item_details" [biggest_posible]="true">
+  @if (selected_item_details; as item_details) {
+    <div class="p-3">
+      <h3>Detalles del artículo</h3>
+      <div><strong>Artículo:</strong> {{item_details.item.id}} - {{item_details.item.name}}</div>
+      <div><strong>Nota:</strong> {{item_details.order_item.note || 'Sin nota'}}</div>
+
+      <div class="mt-3">
+        <strong>Opciones:</strong>
+        @if (item_details.childs.length == 0) {
+          <span> Sin opciones</span>
+        }
+        @for (child of item_details.childs; track child.order_item.id) {
+          <div class="ms-3">
+            {{child.item.name}} — Cantidad: {{child.order_item.qty}}
+            @if (child.order_item.note) {
+              — {{child.order_item.note}}
+            }
+          </div>
+        }
+      </div>
+
+      <div class="mt-3">
+        <strong>Excepciones seleccionadas:</strong>
+        @if (item_details.order_item_exceptions.length == 0) {
+          <span> Sin excepciones</span>
+        }
+        @for (exception of item_details.order_item_exceptions; track exception.id) {
+          <div class="ms-3">{{exception.description || ('Excepción #' + exception.item_exception_id)}}</div>
+        }
+      </div>
+
+      <div class="mt-3">
+        <strong>Configuración de excepciones:</strong>
+        @if (item_details.exceptions.length == 0) {
+          <span> Sin configuración</span>
+        }
+        @for (exception of item_details.exceptions; track exception.id) {
+          <div class="ms-3">{{exception.description}} — Cantidad de inventario: {{exception.stock_qty}}</div>
+        }
+      </div>
+
+      @if (item_details.serials_string) {
+        <div class="mt-3">
+          <strong>Series:</strong>
+          <pre class="mb-0">{{item_details.serials_string}}</pre>
+        </div>
+      }
+    </div>
+  }
+</app-modal>

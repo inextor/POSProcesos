@@ -1,0 +1,20 @@
+<div class="container-fluid py-4">
+	<div class="card shadow-sm">
+		<div class="card-header bg-primary text-white">
+			<h4 class="mb-0">Generar PDF desde XML</h4>
+		</div>
+		<div class="card-body">
+			<app-loading [is_loading]="is_loading || is_generating_pdf"></app-loading>
+			@if (order_info && xml_attachment_id) {
+				<p>Orden #{{ order_info.order.id }}</p>
+				<button type="button" class="btn btn-primary" (click)="downloadFacturaPdfFromXml()" [disabled]="is_generating_pdf">
+					@if (is_generating_pdf) {
+						Generando PDF...
+					} @else {
+						Generar PDF nuevamente
+					}
+				</button>
+			}
+		</div>
+	</div>
+</div>

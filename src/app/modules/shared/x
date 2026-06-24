@@ -418,7 +418,7 @@ export interface Item{
 	commanda_type_id:number | null;
 	commission:number | null;
 	commission_currency_id:string | null;
-	commission_type:'NONE'|'AMOUNT'|'PERCENT';
+	commission_type:'NONE'|'AMOUNT'|'PERCENT'|'STORE_PRICE_TYPE_PERCENT';
 	created:Date;
 	created_by_user_id:number | null;
 	currency_id:string | null;

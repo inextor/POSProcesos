@@ -164,9 +164,7 @@
 								<a target="_blank" class="btn btn-primary w-100" [href]="getPdfUrl(order_info.order.id)">Ver Factura</a>
 							</div>
 							<div class="col-12 col-sm-6 mb-1" >
-								<button type="button" class="btn btn-primary w-100" (click)="downloadFacturaPdfFromXml()">
-									Factura con agente
-								</button>
+								<a class="btn btn-primary w-100" [routerLink]="['/generate-pdf-from-xml', order_info.order.id]">Factura con agente</a>
 							</div>
 						}
 						@if(cancelar_factura_enabled){
