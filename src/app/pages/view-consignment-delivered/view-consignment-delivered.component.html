@@ -8,7 +8,7 @@
 			<div>
 				@if (linked_order_info)
 				{
-					<a [routerLink]="['/view-order', linked_order_info.order.id]" class="btn btn-primary me-2">
+					<a [href]="rest.getExternalAppUrl() + '/#/view-order/' + linked_order_info.order.id" class="btn btn-primary me-2">
 						Ver Orden #{{linked_order_info.order.id}}
 					</a>
 				}

@@ -60,6 +60,13 @@ export class ConsignmentReportComponent extends BaseComponent implements OnInit
 		.subscribe((response: any) =>
 		{
 			this.report = Array.isArray(response.data) ? response.data[0] : response.data;
+			if (this.report)
+			{
+				if (!Array.isArray(this.report.received)) this.report.received = [];
+				if (!Array.isArray(this.report.received_items)) this.report.received_items = [];
+				if (!Array.isArray(this.report.delivered)) this.report.delivered = [];
+				if (!Array.isArray(this.report.delivered_items)) this.report.delivered_items = [];
+			}
 			this.is_loading = false;
 		}, (error: any) =>
 		{
