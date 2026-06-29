@@ -9,7 +9,7 @@ import { BaseComponent } from '../../modules/shared/base/base.component';
 import { Category, Store } from '../../modules/shared/RestModels';
 import { ItemMovement } from '../../modules/shared/Models';
 import { forkJoin, Observable, of } from 'rxjs';
-
+import { CategorySearchComponent } from '../../modules/shared/components/category-search/category-search.component';
 interface CItemMovement extends ItemMovement
 {
 	category: Category | null;
@@ -25,6 +25,7 @@ interface ItemMovementRequest
 	start_timestamp: Date;
 	end_timestamp: Date;
 	store_id?: number | null;
+	category_id?: number | null;
 	requisitions_or_shippings?: number;
 }
 
@@ -32,7 +33,7 @@ interface ItemMovementRequest
 	selector: 'app-item-movement-all-stores-report',
 	templateUrl: './item-movement-all-stores-report.component.html',
 	styleUrl: './item-movement-all-stores-report.component.css',
-	imports: [CommonModule, FormsModule]
+	imports: [CommonModule, FormsModule, CategorySearchComponent]
 })
 export class ItemMovementAllStoresReportComponent extends BaseComponent implements OnInit
 {
@@ -85,7 +86,7 @@ export class ItemMovementAllStoresReportComponent extends BaseComponent implemen
 
 				let param_map = response.param_map;
 
-				this.item_movement_search = this.getSearch(param_map, ['start_timestamp', 'end_timestamp', 'requisitions_or_shippings']);
+				this.item_movement_search = this.getSearch(param_map, ['start_timestamp', 'end_timestamp', 'requisitions_or_shippings', 'category_id']);
 				this.item_movement_search.eq['store_id'] = null;
 
 				let requisitions_or_shippings = this.item_movement_search.eq['requisitions_or_shippings'];
@@ -132,6 +133,7 @@ export class ItemMovementAllStoresReportComponent extends BaseComponent implemen
 					start_timestamp: start,
 					end_timestamp: end,
 					requisitions_or_shippings: requisitions_or_shippings,
+					category_id: this.item_movement_search.eq['category_id'],
 				}) as Observable<RestResponse<ItemMovement>>
 			}),
 			mergeMap((report) =>

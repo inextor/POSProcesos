@@ -1,0 +1,38 @@
+@if (use_select) {
+	<select class="form-control" [(ngModel)]="value" (ngModelChange)="valueChange.emit($event)">
+		<option [ngValue]="null">{{nullLabel}}</option>
+		@for(category of all_categories; track category.id) {
+			<option [ngValue]="category.id">{{category.name}}</option>
+		}
+	</select>
+} @else {
+	<div class="category-search-container">
+		<div class="input-group">
+			<input type="text"
+				class="form-control"
+				[placeholder]="placeholder"
+				autocomplete="off"
+				[ngModel]="search_str"
+				(ngModelChange)="onInputChange($event)"
+				(focus)="onSearchFocus()"
+				(blur)="onSearchBlur()"
+				(keydown)="onSearchKeydown($event)">
+			@if (value) {
+				<button type="button" class="btn btn-outline-secondary" (mousedown)="$event.preventDefault(); onClearSearch()">
+					<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><path fill="currentColor" d="M19 6.41L17.59 5L12 10.59L6.41 5L5 6.41L10.59 12L5 17.59L6.41 19L12 13.41L17.59 19L19 17.59L13.41 12z"/></svg>
+				</button>
+			}
+		</div>
+		@if (show_dropdown && filtered_categories.length) {
+			<div class="category-dropdown border bg-white">
+				@for(category of filtered_categories; track category.id; let i = $index) {
+					<div class="category-item px-2 py-1 border-bottom"
+						[class.active]="selected_index === i"
+						(mousedown)="$event.preventDefault(); onSelectCategory(category)">
+						{{category.name}}
+					</div>
+				}
+			</div>
+		}
+	</div>
+}

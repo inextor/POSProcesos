@@ -125,6 +125,12 @@
 							</i>
 							Movimiento de artículos
 						</a>
+						<a routerLink="/item-movement-by-category-report" class="list-group-item list-group-item-action d-flex align-items-center">
+							<i class="svg-icon me-2">
+								<svg xmlns="http://www.w3.org/2000/svg" width="1.2em" height="1.2em" viewBox="0 0 24 24"><path fill="currentColor" d="M12 2l-5.5 9h11z" fill="currentColor"/><circle cx="17.5" cy="17.5" r="4.5" fill="currentColor"/><path d="M3 13.5h8v8H3z" fill="currentColor"/></svg>
+							</i>
+							Movimiento por Categoría
+						</a>
 					}
 					@if (rest.user_permission.add_stock) {
 						<a [attr.href]="external_base_url + '/#/item-in-sales-report'" class="list-group-item list-group-item-action d-flex align-items-center">
