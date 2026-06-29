@@ -56,6 +56,7 @@ export function user_permission(): User_Permission {
 		global_stats: 0,
 		hades: 0,
 		is_provider: 0,
+		list_orders: 0,
 		open_cashier_box_anytime: 0,
 		order_delivery: 0,
 		pay_bills: 0,

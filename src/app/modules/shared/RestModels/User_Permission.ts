@@ -50,6 +50,7 @@ export interface User_Permission {
   global_stats: any;
   hades: any;
   is_provider: any;
+  list_orders: any;
   order_delivery: any;
   open_cashier_box_anytime: any;
   pay_bills: any;
