@@ -9,7 +9,7 @@ export interface Item {
   code: string | null;
   commanda_type_id: number | null;
   commission_currency_id: string;
-  commission_type: 'NONE' | 'AMOUNT' | 'PERCENT' | 'STORE_PRICE_TYPE_PERCENT';
+  commission_type: 'NONE' | 'AMOUNT' | 'PERCENT' | 'RULE_PERCENT';
   commission: number;
   created: Date;
   created_by_user_id: number | null;
