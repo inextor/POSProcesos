@@ -2,9 +2,10 @@ import { Component, OnInit, Injector } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
-import { forkJoin } from 'rxjs';
+import { catchError, forkJoin, of } from 'rxjs';
 import { BaseComponent } from '../../modules/shared/base/base.component';
 import { ConsignmentReport, ConsignmentDeliveredInfo, ConsignmentReceivedInfo } from '../../modules/shared/Models';
+import { RestResponse } from '../../modules/shared/services/Rest';
 import { Store } from '../../modules/shared/RestModels';
 import { LoadingComponent } from '../../components/loading/loading.component';
 
@@ -50,9 +51,19 @@ export class ConsignmentReportComponent extends BaseComponent implements OnInit
 
 		let search_params = { limit: 99999, sort_order: ['id_DESC'] };
 
+		let empty_response: RestResponse<any> = { total: 0, data: [] };
+
+		let received$ = rest_received.search(search_params).pipe(
+			catchError(() => of(empty_response))
+		);
+
+		let delivered$ = rest_delivered.search(search_params).pipe(
+			catchError(() => of(empty_response))
+		);
+
 		this.subs.sink = forkJoin({
-			received_response: rest_received.search(search_params),
-			delivered_response: rest_delivered.search(search_params)
+			received_response: received$,
+			delivered_response: delivered$
 		})
 		.subscribe({
 			next: ({ received_response, delivered_response }) =>

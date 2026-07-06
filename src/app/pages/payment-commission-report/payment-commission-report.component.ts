@@ -26,6 +26,7 @@ interface CommissionSale {
 	order_total: number;
 	payment_id: string;
 	amount_paid_in_period: number;
+	commission_id: number | null;
 	commission_bill_id: number | null;
 	total_cost: number;
 	total_sale: number;
@@ -75,6 +76,7 @@ export class PaymentCommissionReportComponent extends BaseComponent implements O
 		this.setTitle('Reporte de Comisiones por Pagos');
 		this.external_base_url = this.rest.getExternalAppUrl();
 	}
+
 
 	getFirstDayOfMonth(): string {
 		const now = new Date();
@@ -184,7 +186,6 @@ export class PaymentCommissionReportComponent extends BaseComponent implements O
 
 				const salesData = Array.isArray(data) ? data : (data.data || []);
 				
-				// Map sales back to their agents
 				agentsToLoad.forEach(agent => {
 					agent.sales = salesData.filter((s: any) => s.agent_id == agent.agent_id || agent_ids.length === 1)
 						.map((s: any) => ({ ...s, expanded: false, items: [], loading_items: false, selected: true }));
@@ -196,7 +197,7 @@ export class PaymentCommissionReportComponent extends BaseComponent implements O
 		}
 
 		const selections = this.summaries.flatMap(a => a.sales || [])
-			.filter(s => s.selected && !s.commission_bill_id)
+			.filter(s => s.selected && !s.commission_id)
 			.map(s => ({ order_id: s.order_id, payment_id: s.payment_id }));
 
 		if (selections.length === 0) {
@@ -211,9 +212,9 @@ export class PaymentCommissionReportComponent extends BaseComponent implements O
 		this.is_loading = true;
 		this.rest.httpPost('generate_commission_bills.php', { selections })
 			.subscribe({
-				next: (response) => {
+				next: () => {
 					alert('Comisiones procesadas exitosamente');
-					this.generateReport(); // Refresh the list
+					this.generateReport();
 				},
 				error: (error) => {
 					this.showError(error);

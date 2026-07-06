@@ -35,8 +35,9 @@
           </button>
         </div>
       }
-    </div>
-  </form>
+	    </div>
+	  </form>
+
 
   @if (summaries.length > 0) {
     <div class="table-responsive">
@@ -90,9 +91,9 @@
                   <tr class="table-secondary align-middle">
                     <td class="ps-4">
                       {{ sale.client_name }}
-                      @if (sale.commission_bill_id) {
-                        <span class="badge bg-success ms-2">Generada #{{ sale.commission_bill_id }}</span>
-                      }
+	                      @if (sale.commission_id) {
+	                        <span class="badge bg-success ms-2">Generada{{ sale.commission_bill_id ? ' #' + sale.commission_bill_id : '' }}</span>
+	                      }
                     </td>
                     <td style="width: 100px;"><a [attr.href]="external_base_url + '/#/view-order/' + sale.order_id" target="_blank">{{ sale.order_id }}</a></td>
                     <td class="text-end">{{ sale.proportional_sale | currency }}</td>
@@ -107,9 +108,9 @@
                       </button>
                     </td>
                     <td class="text-center">
-                      <input type="checkbox" class="form-check-input" [(ngModel)]="sale.selected" 
-                             (change)="onSaleSelectionChange(agent)"
-                             [disabled]="!!sale.commission_bill_id">
+	                      <input type="checkbox" class="form-check-input" [(ngModel)]="sale.selected" 
+	                             (change)="onSaleSelectionChange(agent)"
+	                             [disabled]="!!sale.commission_id">
                     </td>
                   </tr>
                   @if (sale.expanded) {

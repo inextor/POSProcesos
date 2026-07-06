@@ -1,0 +1,106 @@
+<div class="container-fluid">
+	<h1>Comisiones Manuales</h1>
+	<p class="text-muted">Cree ajustes manuales de comisión y genere su factura cuando estén listos para pago.</p>
+	<hr>
+
+	<form (ngSubmit)="saveManualAdjustment()" class="row g-2 align-items-end mb-4" ngNativeValidate>
+		<div class="col-md-2">
+			<label class="form-label">Agente</label>
+			@if (agent_users.length <= 50) {
+				<select name="manual_agent_user_id" class="form-select" [(ngModel)]="manual_form.agent_user_id" required>
+					<option [ngValue]="0" disabled>Seleccionar agente</option>
+					@for (u of agent_users; track u.id) {
+						<option [ngValue]="u.id">{{ u.name }}</option>
+					}
+				</select>
+			} @else {
+				<div class="dropdown" [class.show]="show_agent_dropdown">
+					<input type="text" name="agent_search" class="form-control" [(ngModel)]="agent_search"
+						placeholder="Buscar agente..." autocomplete="off"
+						(focus)="onAgentSearchFocus()" (blur)="onAgentSearchBlur()"
+						(input)="filterAgentUsers()" required>
+					<input type="hidden" name="manual_agent_user_id" [(ngModel)]="manual_form.agent_user_id">
+					@if (show_agent_dropdown && filtered_agent_users.length > 0) {
+						<ul class="dropdown-menu d-block w-100" style="max-height:200px;overflow-y:auto">
+							@for (u of filtered_agent_users; track u.id) {
+								<li><a class="dropdown-item" href="#" (mousedown)="selectAgent(u)">{{ u.name }} (#{{ u.id }})</a></li>
+							}
+						</ul>
+					}
+				</div>
+			}
+		</div>
+		<div class="col-md-2">
+			<label class="form-label">Tienda</label>
+			<select name="manual_store_id" class="form-select" [(ngModel)]="manual_form.store_id" required>
+				<option [ngValue]="0" disabled>Seleccionar tienda</option>
+				@for (s of stores; track s.id) {
+					<option [ngValue]="s.id">{{ s.name }}</option>
+				}
+			</select>
+		</div>
+		<div class="col-md-2">
+			<label class="form-label">Importe</label>
+			<input type="number" name="manual_amount" class="form-control" [(ngModel)]="manual_form.amount" min="0.01" step="0.01" required>
+		</div>
+		<div class="col-md-2">
+			<label class="form-label">Moneda</label>
+			<input type="text" name="manual_currency_id" class="form-control" [(ngModel)]="manual_form.currency_id" required>
+		</div>
+		<div class="col-md-3">
+			<label class="form-label">Concepto</label>
+			<input type="text" name="manual_concept" class="form-control" [(ngModel)]="manual_form.concept" required>
+		</div>
+		<div class="col-md-1">
+			<button type="submit" class="btn btn-primary w-100" [disabled]="is_loading">{{ editing_manual_id ? 'Guardar' : 'Crear' }}</button>
+		</div>
+		<div class="col-md-11">
+			<label class="form-label">Nota</label>
+			<input type="text" name="manual_note" class="form-control" [(ngModel)]="manual_form.note">
+		</div>
+		<div class="col-md-1">
+			<button type="button" class="btn btn-outline-secondary w-100" (click)="resetManualForm()" [disabled]="is_loading">Limpiar</button>
+		</div>
+	</form>
+
+	@if (manual_adjustments.length > 0) {
+		<div class="table-responsive">
+			<table class="table table-sm table-hover mb-0">
+				<thead class="table-dark">
+					<tr>
+						<th>Agente</th>
+						<th>Concepto</th>
+						<th>Nota</th>
+						<th class="text-end">Importe</th>
+						<th>Estado</th>
+						<th class="text-end">Acciones</th>
+					</tr>
+				</thead>
+				<tbody>
+					@for (adjustment of manual_adjustments; track adjustment.id) {
+						<tr>
+							<td>{{ adjustment.agent_name }} (#{{ adjustment.agent_user_id }})</td>
+							<td>{{ adjustment.concept }}</td>
+							<td>{{ adjustment.note }}</td>
+							<td class="text-end">{{ adjustment.amount | currency }} {{ adjustment.currency_id }}</td>
+							<td>
+								@if (adjustment.bill_id) {
+									<span class="badge bg-success">Generada #{{ adjustment.bill_id }}</span>
+								} @else {
+									<span class="badge bg-warning text-dark">Pendiente</span>
+								}
+							</td>
+							<td class="text-end manual-commissions-actions">
+								<button type="button" class="btn btn-sm btn-outline-primary me-1" (click)="editManualAdjustment(adjustment)" [disabled]="!!adjustment.bill_id">Editar</button>
+								<button type="button" class="btn btn-sm btn-success me-1" (click)="generateManualAdjustment(adjustment)" [disabled]="!!adjustment.bill_id || is_loading">Generar</button>
+								<button type="button" class="btn btn-sm btn-outline-danger" (click)="deleteManualAdjustment(adjustment)" [disabled]="!!adjustment.bill_id">Eliminar</button>
+							</td>
+						</tr>
+					}
+				</tbody>
+			</table>
+		</div>
+	} @else {
+		<div class="alert alert-info">No hay comisiones manuales registradas.</div>
+	}
+</div>

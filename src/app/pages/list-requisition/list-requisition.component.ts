@@ -2,7 +2,7 @@ import { Component,OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Rest, RestResponse, SearchObject} from '../../modules/shared/services/Rest';
 import { RouterModule } from '@angular/router';
-import { Observable, filter, forkJoin,mergeMap, of } from 'rxjs';
+import { filter, forkJoin,mergeMap, of } from 'rxjs';
 import { RestSimple } from '../../modules/shared/services/Rest';
 import { FormsModule } from '@angular/forms';
 import { Store,Check_In, User, Production, Serial, Item, Production_Area, Requisition } from '../../modules/shared/RestModels';
@@ -34,12 +34,6 @@ interface CProduction
 	production_merma_qty:number;
 }
 
-interface ItemProductions
-{
-	item_info:ItemInfo;
-	production_list:Production[];
-}
-
 interface CRequisitionItem
 {
 	item: Item;
@@ -65,7 +59,6 @@ export class ListRequisitionComponent extends BaseComponent implements OnInit
 	rest_production:RestSimple<Production> = this.rest.initRestSimple('production',['id','created_by_user_id','produced_by_user_id','verified_by_user_id']);
 	rest_serial_info:Rest<Serial,SerialInfo> = this.rest.initRest('serial_info');
 	rest_users:RestSimple<User> = this.rest.initRestSimple('user',['id']);
-	rest_item_info: Rest<Item, ItemInfo> = this.rest.initRest('item_info');
 	rest_production_area:RestSimple<Production_Area> = this.rest.initRestSimple('production_area',['id','name','created','updated']);
 	start_timestamp: Date = new Date();
 
@@ -84,6 +77,7 @@ export class ListRequisitionComponent extends BaseComponent implements OnInit
 
 	search_str:string = '';
 	search_by_code:boolean = false;
+	pending_sort_desc: boolean = true;
 	rest_requisition:Rest<Requisition, RequisitionInfo> = this.rest.initRest('requisition');
 
 	ngOnInit()
@@ -117,6 +111,10 @@ export class ListRequisitionComponent extends BaseComponent implements OnInit
 				this.is_loading = true;
 				let fields = ['required_by_store_id', 'end_timestamp', 'start_timestamp']
 				this.search_requisition = this.getSearch(param_map, [], fields)
+				if( this.search_requisition.sort_order.length == 0 )
+				{
+					this.search_requisition.sort_order = ['sort_weight_DESC'];
+				}
 				let start = new Date();
 				let end = new Date();
 
@@ -141,13 +139,10 @@ export class ListRequisitionComponent extends BaseComponent implements OnInit
 					this.search_requisition.search_extra['required_by_store_id'] = null;
 				}
 
-				let production_area_id: number = this.rest.user?.production_area_id as number;
+				let production_area_id: number | null = this.rest.user?.production_area_id ?? null;
 
 				let store_id: number = this.rest?.user?.store_id as number;
 
-
-				let start_time = this.search_requisition.search_extra['start_timestamp'] as Date;
-				let endtime = this.search_requisition.search_extra['end_timestamp'] as Date;
 
 				let requisition_item_search =
 				{
@@ -161,9 +156,8 @@ export class ListRequisitionComponent extends BaseComponent implements OnInit
 				return forkJoin
 				({
 					stores: this.rest_store.search({limit:999999, eq:{status:'ACTIVE', sales_enabled: 1}}),
-					requisition: this.rest.getReport('requisitionItems', requisition_item_search),
+					requisition: this.rest.getReportByPath('requisitionItems', requisition_item_search),
 					production_areas: this.rest_production_area.search({eq:{store_id},limit:999999}),
-					item_production: this.getItemProductions(store_id, production_area_id, start_time, endtime),
 					users: this.rest_check_in.search({eq:{current:1},limit:999999}).pipe
 					(
 						mergeMap((response)=>
@@ -191,28 +185,9 @@ export class ListRequisitionComponent extends BaseComponent implements OnInit
 						cri.requisition.required_by_store = this.store_list.find(s=>cri.requisition?.required_by_store_id) || null;
 
 					cri.input_production = GetEmpty.production();
-					cri.production = { item_id: cri.item.id, produced:0, production_merma_qty:0};
+					cri.production = cri.production || { item_id: cri.item.id, produced:0, production_merma_qty:0};
 					return cri;
 				});
-
-				for(let production of response.item_production)
-				{
-					let cRequisition_item:CRequisitionItem| undefined = this.requsition_obj_list.find(cri=>cri.item.id == production.item_info.item.id);
-
-					if( !cRequisition_item )
-					{
-						cRequisition_item= {
-							item: production.item_info.item,
-							production: {item_id: production.item_info.item.id, produced:0, production_merma_qty:0},
-							input_production: GetEmpty.production(),
-							requisition: null
-						};
-
-						this.requsition_obj_list.push(cRequisition_item);
-					}
-					cRequisition_item.production.produced += production.production_list.reduce((prev,curr)=>prev + curr.qty,0);
-					cRequisition_item.production.production_merma_qty += production.production_list.reduce((prev,curr)=>prev + curr.merma_qty,0);
-				}
 				//console.log(this.requsition_obj_list);
 
 				//calculando el total de requeridos que proviene de cri.requisition.sum_qty
@@ -330,6 +305,17 @@ export class ListRequisitionComponent extends BaseComponent implements OnInit
 	{
 		let input = evt.target as HTMLInputElement;
 		input.select();
+	}
+
+	sortByPendientes()
+	{
+		this.pending_sort_desc = !this.pending_sort_desc;
+		this.requsition_obj_list = [...this.requsition_obj_list].sort((a, b) =>
+		{
+			let pa = (a.requisition?.sum_qty || 0) - (a.production?.produced || 0);
+			let pb = (b.requisition?.sum_qty || 0) - (b.production?.produced || 0);
+			return this.pending_sort_desc ? pb - pa : pa - pb;
+		});
 	}
 
 	changeSearch()
@@ -487,56 +473,4 @@ export class ListRequisitionComponent extends BaseComponent implements OnInit
 		this.calculateTotalPending(this.requsition_obj_list);
 	}
 
-	getItemProductions(store_id:number, production_area_id:number, start_time: Date|null, endtime: Date|null):Observable<ItemProductions[]>
-	{
-		start_time = start_time || new Date();
-
-		let eq:Record<string, any> = { store_id };
-
-		if( production_area_id )
-			eq['production_area_id'] = production_area_id;
-
-		let production_search=
-		{
-			eq,
-			lg:{ created: endtime},
-			gt:{ created: start_time},
-			limit:999999
-		};
-
-		return this.rest_production.search(production_search).pipe
-		(
-			mergeMap((production_response)=>
-			{
-				let item_ids = production_response.data.map((pr)=>pr.item_id);
-
-				if( item_ids.length == 0 )
-				{
-					return forkJoin
-					({
-						production: of(production_response),
-						items: of({total:0, data:[]} as RestResponse<ItemInfo>)
-					});
-				}
-
-				return forkJoin
-				({
-					production: of(production_response),
-					items: this.rest_item_info.search({csv:{id:item_ids},limit:999999})
-				})
-			}),
-			mergeMap((response)=>
-			{
-				let item_productions = response.items.data.map((item_info)=>{
-					let x:ItemProductions = {
-						item_info: item_info,
-						production_list: response.production.data.filter((pr)=>pr.item_id == item_info.item.id)
-					};
-					return x;
-				});
-
-				return of(item_productions);
-			})
-		);
-	}
 }

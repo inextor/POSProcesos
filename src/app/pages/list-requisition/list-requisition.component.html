@@ -97,39 +97,55 @@
 </div>
 <hr>
   <div class="row d-none d-md-flex fw-bold border-bottom align-items-end">
+    <div class="col-1 text-end pointer" style="cursor: pointer;" (click)="sort('sort_weight', search_requisition)"><abbr title="Priority">P</abbr></div>
     <div class="col-2 px-2" style="cursor: pointer;" (click)="sort('item_name', search_requisition)">Artículo</div>
-    <div class="col-2 text-end pointer" style="cursor: pointer;" (click)="sort('sum_qty', search_requisition)">Req/Pendientes</div>
+    <div class="col-2 text-end">
+      <div class="row">
+        <div class="col-6 pointer" style="cursor: pointer;" (click)="sort('sum_qty', search_requisition)">Req</div>
+        <div class="col-6 pointer" style="cursor: pointer;" (click)="sortByPendientes()">Pendientes</div>
+      </div>
+    </div>
     <div class="col-2 text-end">Agregar</div>
-    <div class="col-2 text-end">Merma</div>
+    <div class="col-1 text-end">Merma</div>
     <div class="col-2 text-end">Tipo de merma</div>
     <div class="col-2 text-end">Acciones</div>
   </div>
   @for (cri of requsition_obj_list; track cri) {
     <div class="row border-bottom align-items-center">
+      <div class="d-md-none col-6"><abbr title="Priority">P</abbr></div>
+      <div class="col-6 col-md-1 text-start text-md-end fw-bold">
+        {{cri.item.sort_weight}}
+      </div>
       <div class="col-12 col-md-2 fw-bold">
         {{cri.requisition?.category_name | titlecase }} - {{cri.item.name }}
         <span style="color: gray;">
           {{cri.item.code}}
         </span>
       </div>
-      <div class="d-md-none col-6">Req/Pedientes</div>
+      <div class="d-md-none col-6">Req/Pendientes</div>
       <div class="col-6 col-md-2 text-start text-md-end fw-bold">
-        {{ (cri.requisition ? cri.requisition.sum_qty : 0 ) + ' / '}}
-        @if (cri.requisition) {
-          <span [ngClass]="{'text-danger': cri.requisition.sum_qty > (cri?.production?.produced||0), 'text-success': cri.requisition.sum_qty <= (cri?.production?.produced || 0)}">
-            {{ (cri.requisition.sum_qty - (cri?.production?.produced||0)) >= 0 ? (cri.requisition.sum_qty - (cri?.production?.produced||0)) : 0 | number}}
-          </span>
-        }
-        @if (!cri.requisition && cri.production) {
-          {{ cri.production.produced || 0}}
-        }
+        <div class="row">
+          <div class="col-6">
+            {{ cri.requisition ? cri.requisition.sum_qty : 0 }}
+          </div>
+          <div class="col-6">
+            @if (cri.requisition) {
+              <span [ngClass]="{'text-danger': cri.requisition.sum_qty > (cri?.production?.produced||0), 'text-success': cri.requisition.sum_qty <= (cri?.production?.produced || 0)}">
+                {{ (cri.requisition.sum_qty - (cri?.production?.produced||0)) >= 0 ? (cri.requisition.sum_qty - (cri?.production?.produced||0)) : 0 | number}}
+              </span>
+            }
+            @if (!cri.requisition && cri.production) {
+              {{ cri.production.produced || 0}}
+            }
+          </div>
+        </div>
       </div>
       <div class="d-md-none col-6">Agregar</div>
       <div class="col-6 col-md-2 text-start text-md-end fw-bold">
         <input type="number" class="form-control text-start text-md-end" name="input_production_new_qty" [(ngModel)]="cri.input_production.qty" [min]="0" (click)="selectText($event)" required>
       </div>
       <div class="d-md-none col-6">Merma</div>
-      <div class="col-6 col-md-2 text-start text-md-end fw-bold">
+      <div class="col-6 col-md-1 text-start text-md-end fw-bold">
         <input type="number" class="form-control text-start text-md-end" name="input_production_new_merma_qty" [(ngModel)]="cri.input_production.merma_qty" [min]="0" (click)="selectText($event)">
       </div>
       <div class="d-md-none col-6">Tipo de merma</div>
