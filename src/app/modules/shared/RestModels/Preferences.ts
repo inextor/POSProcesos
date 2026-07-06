@@ -87,5 +87,3 @@ export interface Preferences {
   user_attachments: 'ENABLED' | 'DISABLED';
   default_cash_close_type: 'SIMPLE' | 'DETAILED';
 }
-
-

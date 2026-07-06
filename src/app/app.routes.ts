@@ -89,6 +89,7 @@ export const routes: Routes = [
 			{path: 'item-sales-by-client-report', loadComponent: () => import('./pages/item-sales-by-client-report/item-sales-by-client-report.component').then(m => m.ItemSalesByClientReportComponent), canActivate: [authGuard]},
 			{path: 'commission-report', loadComponent: () => import('./pages/commission-report/commission-report.component').then(m => m.CommissionReportComponent), canActivate: [authGuard]},
 			{path: 'payment-commission-report', loadComponent: () => import('./pages/payment-commission-report/payment-commission-report.component').then(m => m.PaymentCommissionReportComponent), canActivate: [authGuard]},
+			{path: 'manual-commissions', loadComponent: () => import('./pages/manual-commissions/manual-commissions.component').then(m => m.ManualCommissionsComponent), canActivate: [authGuard]},
 			{path: 'pending-commissions-report', loadComponent: () => import('./pages/pending-commissions-report/pending-commissions-report.component').then(m => m.PendingCommissionsReportComponent), canActivate: [authGuard]},
 			{path: 'paid-commissions-report', loadComponent: () => import('./pages/paid-commissions-report/paid-commissions-report.component').then(m => m.PaidCommissionsReportComponent), canActivate: [authGuard]},
 			{path: 'consecutivo-facturas-desglozado-report', loadComponent: () => import('./pages/consecutivo-facturas-desglozado-report/consecutivo-facturas-desglozado-report.component').then(m => m.ConsecutivoFacturasDesglozadoReportComponent), canActivate: [authGuard]},
