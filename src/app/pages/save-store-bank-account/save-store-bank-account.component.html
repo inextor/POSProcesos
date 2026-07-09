@@ -1,0 +1,54 @@
+<div class="container-fluid">
+	<h1 class="my-3 text-capitalize">{{record.id ? 'Actualizar':'Agregar'}} cuenta bancaria a tienda</h1>
+	<form ngNativeValidate (submit)="save()">
+		<div class="card p-3">
+			<div class="row p-3">
+
+				<div class="col-12 col-md-6">
+					<label class="">Tienda *</label>
+					<select name="store_id" [(ngModel)]="record.store_id" class="form-control" required>
+						<option [ngValue]="0" disabled>Seleccione una tienda</option>
+						@for (s of store_list; track s.id) {
+							<option [value]="s.id">{{ s.name }}</option>
+						}
+					</select>
+				</div>
+
+				<div class="col-12 col-md-6">
+					<label class="">Cuenta bancaria *</label>
+					<select name="bank_account_id" [(ngModel)]="record.bank_account_id" class="form-control" required>
+						<option [ngValue]="0" disabled>Seleccione una cuenta</option>
+						@for (b of bank_account_list; track b.id) {
+							<option [value]="b.id">{{ b.alias || b.name || b.account }} {{ b.bank ? '(' + b.bank + ')' : '' }}</option>
+						}
+					</select>
+				</div>
+
+			</div>
+			<div class="row p-3">
+
+				<div class="col-12 col-md-6">
+					<label class="">Nombre</label>
+					<input type="text" name="name" [(ngModel)]="record.name" class="form-control" placeholder="Nombre opcional para esta asignación">
+				</div>
+
+				<div class="col-12 col-md-6">
+					<label class="">Tipo de transacción por defecto</label>
+					<select name="default_transaction_type" [(ngModel)]="record.default_transaction_type" class="form-control">
+						<option [ngValue]="null">Ninguno</option>
+						@for (t of transaction_types; track t) {
+							<option [value]="t">{{ t }}</option>
+						}
+					</select>
+				</div>
+
+			</div>
+			<div class="row p-3">
+				<div class="col-12 text-right">
+					<button type="submit" [disabled]="is_loading" class="btn btn-primary">Guardar</button>
+					<button type="button" class="btn btn-secondary ml-2" (click)="location.back()">Cancelar</button>
+				</div>
+			</div>
+		</div>
+	</form>
+</div>

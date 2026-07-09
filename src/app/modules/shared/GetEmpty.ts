@@ -1,4 +1,5 @@
 // Import all empty factory functions from Empties directory
+import { account } from './Empties/Account';
 import { item_info } from './Empties/Item_Info';
 import { role } from './Empties/Role';
 import { role_item_price } from './Empties/Role_Item_Price';
@@ -41,12 +42,14 @@ import { transformation_input } from './Empties/Transformation_Input';
 import { transformation_output } from './Empties/Transformation_Output';
 import { transformation_info } from './Empties/Transformation_Info';
 import { storage_type } from './Empties/Storage_Type';
+import { store_bank_account } from './Empties/Store_Bank_Account';
 
 /**
  * GetEmpty class provides static methods for creating empty/default instances of models.
  * This class acts as a facade that delegates to individual factory functions in the Empties/ directory.
  */
 export class GetEmpty {
+	static account = account;
 	static item_info = item_info;
 	static role = role;
 	static role_item_price = role_item_price;
@@ -90,4 +93,5 @@ export class GetEmpty {
 	static transformation_output = transformation_output;
 	static transformation_info = transformation_info;
 	static storage_type = storage_type;
+	static store_bank_account = store_bank_account;
 }

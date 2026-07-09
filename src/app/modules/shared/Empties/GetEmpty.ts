@@ -1,5 +1,5 @@
 import { ExtendedReservation, ItemInfo, OrderInfo, OrderItemInfo, ReservationInfo, ReservationItemInfo, ShippingInfo } from "./Models";
-import { User_Permission,Preferences,Production_Area,Process, Production, Shipping, Store, Payroll, User_Extra_Fields, User, Production_Area_Item, Item, Category, Reservation, Reservation_Item, Period, Order, Price_Type, Order_Item, Price, Item_Exception, Role, Role_Item_Price, Ecommerce_Item_Role, Address, Payroll_Value, Item_Online, Work_Log_Rules } from "./RestModels";
+import { Account, User_Permission,Preferences,Production_Area,Process, Production, Shipping, Store, Payroll, User_Extra_Fields, User, Production_Area_Item, Item, Category, Reservation, Reservation_Item, Period, Order, Price_Type, Order_Item, Price, Item_Exception, Role, Role_Item_Price, Ecommerce_Item_Role, Address, Payroll_Value, Item_Online, Work_Log_Rules } from "./RestModels";
 import { RestService } from "./services/rest.service";
 
 export class GetEmpty
@@ -18,6 +18,21 @@ export class GetEmpty
 			serials: [],
 			item_options: []
 		};
+	}
+	static account(): Account
+	{
+		return {
+			id: 0,
+			status: 'ACTIVE',
+			balance: 0,
+			created: new Date(),
+			created_by_user_id: 0,
+			currency_id: 'MXN',
+			is_main: null,
+			updated: new Date(),
+			updated_by_user_id: 0,
+			user_id: null
+		}
 	}
 	static role(): Role
 	{

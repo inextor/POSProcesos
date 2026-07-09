@@ -72,7 +72,7 @@
                   </td>
                   <td class="text-end">{{ b.created | date:'short' }}</td>
                   <td class="text-end">{{ b.total | currency }}</td>
-                  @if (rest.user_permission.hades > 0) {
+                  @if (rest.has_hades) {
                     <td class="text-center">
                       <button class="btn btn-sm btn-outline-info" (click)="debug(b)">
                         Debug

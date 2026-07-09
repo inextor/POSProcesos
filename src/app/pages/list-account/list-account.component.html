@@ -1,0 +1,38 @@
+<div class="container-fluid">
+  <div class="row align-items-center">
+    <div class="col-8">
+      <h1 class="my-3">Cuentas</h1>
+    </div>
+    <div class="col-4 text-end">
+      <button type="button" class="ml-2 btn btn-secondary lift" [routerLink]="['/add-account']">Agregar Nuevo</button>
+    </div>
+  </div>
+  <div class="card px-1 px-md-2 py-3 mt-3">
+    <table class="table table-striped w-100">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Moneda</th>
+          <th>Balance</th>
+          <th>Estatus</th>
+          <th>Modificado</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (account of account_list; track account) {
+          <tr>
+            <td>{{ account.id }}</td>
+            <td>{{ account.currency_id }}</td>
+            <td>{{ account.balance | number:'1.2-2' }}</td>
+            <td>{{ account.status }}</td>
+            <td>{{ account.updated | shortDate: 'relative' }}</td>
+            <td>
+              <a [routerLink]="['/edit-account', account.id]">Editar</a>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+</div>

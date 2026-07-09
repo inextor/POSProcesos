@@ -1,0 +1,35 @@
+<div class="container-fluid">
+	<div class="row">
+		<div class="col-6">
+			<h1 class="my-3">{{account.id ? 'Actualizar':'Agregar'}} Cuenta</h1>
+		</div>
+	</div>
+	<app-loading [is_loading]="is_loading"></app-loading>
+	<div class="card p-3 mt-3">
+		<form (submit)="save($event)" ngNativeValidate>
+			<div class="row my-2">
+				<div class="col-12 col-md-6 form-group">
+					<label for="currency_id">Moneda</label>
+					<input type="text" id="currency_id" name="currency_id" class="form-control" [(ngModel)]="account.currency_id" required>
+				</div>
+				<div class="col-12 col-md-6 form-group">
+					<label for="status">Estatus</label>
+					<select id="status" name="status" class="form-select" [(ngModel)]="account.status" required>
+						<option value="ACTIVE">ACTIVE</option>
+						<option value="DELETED">DELETED</option>
+					</select>
+				</div>
+			</div>
+			<div class="row my-2" *ngIf="account.id">
+				<div class="col-12 form-group">
+					<label for="balance">Balance</label>
+					<input type="text" id="balance" name="balance" class="form-control" [value]="account.balance | number:'1.2-2'" readonly disabled>
+				</div>
+			</div>
+			<div class="text-end">
+				<button type="button" class="btn btn-secondary me-2" (click)="location.back()">Cancelar</button>
+				<button type="submit" class="btn btn-primary">Guardar</button>
+			</div>
+		</form>
+	</div>
+</div>
