@@ -1,5 +1,6 @@
 // Import all empty factory functions from Empties directory
 import { account } from './Empties/Account';
+import { bank_account } from './Empties/Bank_Account';
 import { item_info } from './Empties/Item_Info';
 import { role } from './Empties/Role';
 import { role_item_price } from './Empties/Role_Item_Price';
@@ -50,6 +51,7 @@ import { store_bank_account } from './Empties/Store_Bank_Account';
  */
 export class GetEmpty {
 	static account = account;
+	static bank_account = bank_account;
 	static item_info = item_info;
 	static role = role;
 	static role_item_price = role_item_price;

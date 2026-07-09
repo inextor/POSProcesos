@@ -1,0 +1,46 @@
+<div class="container-fluid">
+	<div class="row align-items-center">
+		<div class="col-8">
+			<h1 class="my-3">Cuentas Bancarias</h1>
+		</div>
+		<div class="col-4 text-end">
+			<button type="button" class="ml-2 btn btn-secondary lift" [routerLink]="['/add-bank-account']">Agregar Nuevo</button>
+		</div>
+	</div>
+	<div class="card px-1 px-md-2 py-3 mt-3">
+		<div class="d-none d-md-flex row fw-bold border-bottom pb-2 mb-2">
+			<div class="col-1">ID</div>
+			<div class="col-2">Nombre</div>
+			<div class="col-2">Banco</div>
+			<div class="col-2">Cuenta</div>
+			<div class="col-2">Alias</div>
+			<div class="col-1">Moneda</div>
+			<div class="col-2">Acciones</div>
+		</div>
+		@for (ba of bank_account_list; track ba) {
+			<div class="row border-bottom py-2 align-items-center">
+				<div class="col-6 col-md-1">
+					<span class="d-md-none fw-bold">ID: </span>{{ ba.id }}
+				</div>
+				<div class="col-6 col-md-2">
+					<span class="d-md-none fw-bold">Nombre: </span>{{ ba.name }}
+				</div>
+				<div class="col-6 col-md-2">
+					<span class="d-md-none fw-bold">Banco: </span>{{ ba.bank }}
+				</div>
+				<div class="col-6 col-md-2">
+					<span class="d-md-none fw-bold">Cuenta: </span>{{ ba.account }}
+				</div>
+				<div class="col-6 col-md-2">
+					<span class="d-md-none fw-bold">Alias: </span>{{ ba.alias || '-' }}
+				</div>
+				<div class="col-6 col-md-1">
+					<span class="d-md-none fw-bold">Moneda: </span>{{ ba.currency }}
+				</div>
+				<div class="col-12 col-md-2 mt-2 mt-md-0">
+					<a class="btn btn-primary btn-sm" [routerLink]="['/edit-bank-account', ba.id]">Editar</a>
+				</div>
+			</div>
+		}
+	</div>
+</div>

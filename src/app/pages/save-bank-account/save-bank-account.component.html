@@ -1,0 +1,47 @@
+<div class="container-fluid">
+	<div class="row">
+		<div class="col-6">
+			<h1 class="my-3">{{bank_account.id ? 'Actualizar':'Agregar'}} Cuenta Bancaria</h1>
+		</div>
+	</div>
+	<app-loading [is_loading]="is_loading"></app-loading>
+	<div class="card p-3 mt-3">
+		<form (submit)="save($event)" ngNativeValidate>
+			<div class="row my-2">
+				<div class="col-12 col-md-6 form-group">
+					<label for="name">Nombre</label>
+					<input type="text" id="name" name="name" class="form-control" [(ngModel)]="bank_account.name" required>
+				</div>
+				<div class="col-12 col-md-6 form-group">
+					<label for="alias">Alias</label>
+					<input type="text" id="alias" name="alias" class="form-control" [(ngModel)]="bank_account.alias">
+				</div>
+			</div>
+			<div class="row my-2">
+				<div class="col-12 col-md-6 form-group">
+					<label for="bank">Banco</label>
+					<input type="text" id="bank" name="bank" class="form-control" [(ngModel)]="bank_account.bank" required>
+				</div>
+				<div class="col-12 col-md-6 form-group">
+					<label for="bank_rfc">RFC del Banco</label>
+					<input type="text" id="bank_rfc" name="bank_rfc" class="form-control" [(ngModel)]="bank_account.bank_rfc">
+				</div>
+			</div>
+			<div class="row my-2">
+				<div class="col-12 col-md-6 form-group">
+					<label for="account">Cuenta</label>
+					<input type="text" id="account" name="account" class="form-control" [(ngModel)]="bank_account.account" required>
+				</div>
+				<div class="col-12 col-md-6 form-group">
+					<label for="currency">Moneda</label>
+					<input type="text" id="currency" name="currency" class="form-control" [(ngModel)]="bank_account.currency" required>
+				</div>
+			</div>
+
+			<div class="text-end">
+				<button type="button" class="btn btn-secondary me-2" (click)="location.back()">Cancelar</button>
+				<button type="submit" class="btn btn-primary">Guardar</button>
+			</div>
+		</form>
+	</div>
+</div>
