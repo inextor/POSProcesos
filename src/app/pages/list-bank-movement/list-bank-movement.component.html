@@ -1,0 +1,71 @@
+<div class="container-fluid">
+	<div class="row align-items-center">
+		<div class="col-8">
+			<h1 class="my-3">Movimientos Bancarios @if (bank_account_id) { - Cuenta #{{ bank_account_id }} }</h1>
+		</div>
+		<div class="col-4 text-end">
+			<button type="button" class="btn btn-secondary lift" (click)="location.back()">Volver</button>
+		</div>
+	</div>
+	<div class="row mt-3">
+		<div class="col-md-4">
+			<select name="bank_account_id" [(ngModel)]="search_bank_movement.eq.bank_account_id" class="form-control">
+				<option [ngValue]="null">Todas las cuentas</option>
+				@for (ba of bank_account_list; track ba.id) {
+					<option [ngValue]="ba.id">{{ ba.name }} - {{ ba.bank }}</option>
+				}
+			</select>
+		</div>
+		<div class="col-md-2">
+			<button type="button" class="btn btn-primary w-100" (click)="search(search_bank_movement)">Buscar</button>
+		</div>
+	</div>
+	<div class="card px-1 px-md-2 py-3 mt-3">
+		<div class="d-none d-md-flex row fw-bold border-bottom pb-2 mb-2">
+			<div class="col-1">ID</div>
+			<div class="col-1">Tipo</div>
+			<div class="col-1">Total</div>
+			<div class="col-1">Saldo</div>
+			<div class="col-1">Tipo</div>
+			<div class="col-1">Referencia</div>
+			<div class="col-2">Cuenta</div>
+			<div class="col-1">Moneda</div>
+			<div class="col-2">Fecha</div>
+			<div class="col-1">Corte</div>
+		</div>
+		@for (m of movement_list; track m) {
+			<div class="row border-bottom py-2 align-items-center">
+				<div class="col-6 col-md-1">
+					<span class="d-md-none fw-bold">ID: </span>{{ m.id }}
+				</div>
+				<div class="col-6 col-md-1">
+					<span class="d-md-none fw-bold">Tipo: </span>{{ m.type === 'income' ? 'Ingreso' : 'Egreso' }}
+				</div>
+				<div class="col-6 col-md-1">
+					<span class="d-md-none fw-bold">Total: </span>{{ m.total | number:'1.2-2' }}
+				</div>
+				<div class="col-6 col-md-1">
+					<span class="d-md-none fw-bold">Saldo: </span>{{ m.balance | number:'1.2-2' }}
+				</div>
+				<div class="col-6 col-md-1">
+					<span class="d-md-none fw-bold">Tipo: </span>{{ m.transaction_type_label || '-' }}
+				</div>
+				<div class="col-6 col-md-1">
+					<span class="d-md-none fw-bold">Referencia: </span>{{ m.reference || '-' }}
+				</div>
+				<div class="col-6 col-md-2">
+					<span class="d-md-none fw-bold">Cuenta: </span>{{ m.bank_account?.name || m.bank_account?.alias || m.bank_account?.bank || '-' }}
+				</div>
+				<div class="col-6 col-md-1">
+					<span class="d-md-none fw-bold">Moneda: </span>{{ m.currency_id || '-' }}
+				</div>
+				<div class="col-6 col-md-2">
+					<span class="d-md-none fw-bold">Fecha: </span>{{ m.paid_date | shortDate:'date' }}
+				</div>
+				<div class="col-6 col-md-1">
+					<span class="d-md-none fw-bold">Corte: </span>{{ m.is_checkpoint ? 'Si' : '-' }}
+				</div>
+			</div>
+		}
+	</div>
+</div>

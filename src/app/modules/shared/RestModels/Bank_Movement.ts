@@ -1,6 +1,8 @@
 export interface Bank_Movement{
 	amount_received:number;
+	balance:number;
 	bank_account_id:number | null;
+	is_checkpoint:number | null;
 	card_ending:string | null;
 	client_user_id:number | null;
 	created:Date;

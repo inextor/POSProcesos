@@ -1,56 +1,63 @@
 <div class="container-fluid">
-	<h1 class="my-3">Cuentas bancarias por tienda</h1>
-
-	<div class="mb-3">
-		<a routerLink="/add-store-bank-account" class="btn btn-primary">Add New</a>
+	<div class="row align-items-center">
+		<div class="col-8">
+			<h1 class="my-3">Cuentas bancarias por tienda</h1>
+		</div>
+		<div class="col-4 text-end">
+			<button type="button" class="ml-2 btn btn-secondary lift" [routerLink]="['/add-store-bank-account']">Agregar Nuevo</button>
+		</div>
 	</div>
 
-	<div class="card-body">
+	<div class="card px-1 px-md-2 py-3 mt-3">
 		<form (submit)="search()" class="mb-3">
 			<div class="row">
 				<div class="col-md-4">
 					<div class="form-group">
-						<label for="store_id">Store ID</label>
+						<label for="store_id">Tienda ID</label>
 						<input type="number" class="form-control" id="store_id" name="store_id" [(ngModel)]="search_object.eq.store_id">
 					</div>
 				</div>
 				<div class="col-md-4">
 					<div class="form-group">
-						<label for="bank_account_id">Bank Account ID</label>
+						<label for="bank_account_id">Cuenta Bancaria ID</label>
 						<input type="number" class="form-control" id="bank_account_id" name="bank_account_id" [(ngModel)]="search_object.eq.bank_account_id">
 					</div>
 				</div>
 				<div class="col-md-4">
-					<button type="submit" class="btn btn-primary mt-4">Search</button>
+					<button type="submit" class="btn btn-primary mt-4">Buscar</button>
 				</div>
 			</div>
 		</form>
 
-		<div class="table-responsive">
-			<table class="table table-bordered table-striped">
-				<thead>
-					<tr>
-						<th>ID</th>
-						<th>Store</th>
-						<th>Bank Account</th>
-						<th>Transaction Type</th>
-						<th>Name</th>
-						<th>Actions</th>
-					</tr>
-				</thead>
-				<tbody>
-					<tr *ngFor="let i of records">
-						<td>{{ i.store_bank_account.id }}</td>
-						<td>{{ getStoreName(i.store_bank_account.store_id) }}</td>
-						<td>{{ getBankAccountName(i.store_bank_account.bank_account_id) }}</td>
-						<td>{{ i.store_bank_account.default_transaction_type || '-' }}</td>
-						<td>{{ i.store_bank_account.name || '-' }}</td>
-						<td>
-							<a [routerLink]="['/edit-store-bank-account', i.store_bank_account.id]" class="btn btn-sm btn-warning">Edit</a>
-						</td>
-					</tr>
-				</tbody>
-			</table>
+		<div class="d-none d-md-flex row fw-bold border-bottom pb-2 mb-2">
+			<div class="col-1">ID</div>
+			<div class="col-2">Tienda</div>
+			<div class="col-2">Cuenta Bancaria</div>
+			<div class="col-2">Tipo Transacción</div>
+			<div class="col-3">Nombre</div>
+			<div class="col-2 text-end">Acciones</div>
 		</div>
+		@for (i of records; track i) {
+			<div class="row border-bottom py-2 align-items-center">
+				<div class="col-6 col-md-1">
+					<span class="d-md-none fw-bold">ID: </span>{{ i.store_bank_account.id }}
+				</div>
+				<div class="col-6 col-md-2">
+					<span class="d-md-none fw-bold">Tienda: </span>{{ getStoreName(i.store_bank_account.store_id) }}
+				</div>
+				<div class="col-6 col-md-2">
+					<span class="d-md-none fw-bold">Cuenta: </span>{{ getBankAccountName(i.store_bank_account.bank_account_id) }}
+				</div>
+				<div class="col-6 col-md-2">
+					<span class="d-md-none fw-bold">Tipo: </span>{{ i.store_bank_account.default_transaction_type || '-' }}
+				</div>
+				<div class="col-6 col-md-3">
+					<span class="d-md-none fw-bold">Nombre: </span>{{ i.store_bank_account.name || '-' }}
+				</div>
+				<div class="col-12 col-md-2 mt-2 mt-md-0 text-md-end">
+					<a class="btn btn-primary btn-sm" [routerLink]="['/edit-store-bank-account', i.store_bank_account.id]">Editar</a>
+				</div>
+			</div>
+		}
 	</div>
 </div>

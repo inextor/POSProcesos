@@ -13,9 +13,9 @@
 			<div class="col-2">Nombre</div>
 			<div class="col-2">Banco</div>
 			<div class="col-2">Cuenta</div>
-			<div class="col-2">Alias</div>
+			<div class="col-1">Alias</div>
 			<div class="col-1">Moneda</div>
-			<div class="col-2">Acciones</div>
+			<div class="col-3 text-end">Acciones</div>
 		</div>
 		@for (ba of bank_account_list; track ba) {
 			<div class="row border-bottom py-2 align-items-center">
@@ -31,14 +31,15 @@
 				<div class="col-6 col-md-2">
 					<span class="d-md-none fw-bold">Cuenta: </span>{{ ba.account }}
 				</div>
-				<div class="col-6 col-md-2">
+				<div class="col-6 col-md-1">
 					<span class="d-md-none fw-bold">Alias: </span>{{ ba.alias || '-' }}
 				</div>
 				<div class="col-6 col-md-1">
 					<span class="d-md-none fw-bold">Moneda: </span>{{ ba.currency }}
 				</div>
-				<div class="col-12 col-md-2 mt-2 mt-md-0">
-					<a class="btn btn-primary btn-sm" [routerLink]="['/edit-bank-account', ba.id]">Editar</a>
+				<div class="col-12 col-md-3 mt-2 mt-md-0 text-md-end">
+					<a class="btn btn-primary btn-sm me-1" [routerLink]="['/edit-bank-account', ba.id]">Editar</a>
+					<a class="btn btn-info btn-sm" [routerLink]="['/list-bank-movement']" [queryParams]="{ bank_account_id: ba.id }">Movimientos</a>
 				</div>
 			</div>
 		}
