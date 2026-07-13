@@ -1,0 +1,30 @@
+/* Cortinas (details/summary): flecha indicadora y hover */
+details > summary
+{
+	list-style: none;
+	display: flex;
+	align-items: center;
+}
+
+details > summary::-webkit-details-marker
+{
+	display: none;
+}
+
+details > summary::before
+{
+	content: '▸';
+	margin-right: .5rem;
+	transition: transform .15s ease;
+	display: inline-block;
+}
+
+details[open] > summary::before
+{
+	transform: rotate(90deg);
+}
+
+details > summary:hover
+{
+	background-color: rgba(0, 0, 0, .03);
+}
