@@ -37,6 +37,7 @@ export class ReportCashCountTotalsComponent extends BaseComponent implements OnI
 	usd_rate_used:number = 0;
 	gastos_rows:{ currency_id:string, total_gastos:number, total_movimientos:number }[] = [];
 	gastos_total_mxn:number = 0;
+	neto_total_mxn:number = 0;
 
 	// Orden fijo de conceptos para el resumen tipo corte (forma de pago).
 	readonly concept_order:string[] = ['Efectivo', 'Tarjeta de crédito', 'Tarjeta de débito', 'Transferencia', 'Cheque'];
@@ -221,6 +222,9 @@ export class ReportCashCountTotalsComponent extends BaseComponent implements OnI
 			let rate = g.currency_id === 'MXN' ? 1 : this.getRateForCurrency(g.currency_id);
 			return acc + amount * rate;
 		}, 0);
+
+		// Total neto = subtotal (ingresos por concepto) menos gastos/retiros.
+		this.neto_total_mxn = this.grand_total_mxn - this.gastos_total_mxn;
 	}
 
 	calculateCashierSummary()
