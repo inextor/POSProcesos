@@ -84,6 +84,10 @@
 								<td colspan="2" class="text-end">Total general (MXN)</td>
 								<td class="text-end">${{grand_total_mxn | number:'1.2-2'}}</td>
 							</tr>
+							<tr class="fw-bold text-danger">
+								<td colspan="2" class="text-end">Gastos / Retiros (MXN)</td>
+								<td class="text-end">{{gastos_total_mxn ? '−' : ''}}${{gastos_total_mxn | number:'1.2-2'}}</td>
+							</tr>
 						</tfoot>
 					</table>
 				</div>
