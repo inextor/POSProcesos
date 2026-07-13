@@ -2,7 +2,7 @@
 	<h1 class="my-3">Totales de Recuento de Efectivo</h1>
 	<div class="card p-3">
 		<div class="row">
-			<div class="col-4">
+			<div class="col-md-4 col-6">
 				<label>Sucursal</label>
 				<select name="store_id" class="form-control" [(ngModel)]="cash_count_search.eq['store_id']">
 					<option [ngValue]="null">Todas</option>
@@ -11,11 +11,35 @@
 					}
 				</select>
 			</div>
-			<div class="col-4">
+			<div class="col-md-4 col-6">
+				<label>Cajero</label>
+				<select name="created_by_user_id" class="form-control" [(ngModel)]="cash_count_search.eq['created_by_user_id']">
+					<option [ngValue]="null">Todas</option>
+					@for (c of cashier_list; track c.user_id) {
+						<option [value]="c.user_id">{{c.user_name | titlecase}}</option>
+					}
+				</select>
+			</div>
+			<div class="col-md-4 col-6">
+				<label>Moneda</label>
+				<select name="currency_id" class="form-control" [(ngModel)]="cash_count_search.eq['currency_id']">
+					<option [ngValue]="null">Todas</option>
+					<option value="MXN">MXN</option>
+					<option value="USD">USD</option>
+				</select>
+			</div>
+			<div class="col-md-4 col-6">
+				<label>Mostrar</label>
+				<select name="include_reference" class="form-control" [(ngModel)]="include_reference">
+					<option value="0">Solo efectivo físico</option>
+					<option value="1">Físico + tarjetas y referencias</option>
+				</select>
+			</div>
+			<div class="col-md-4 col-6">
 				<label>Fecha Inicial</label>
 				<input type="datetime-local" name="start_date" class="form-control" [(ngModel)]="start_date" (ngModelChange)="onDateChange($event, cash_count_search.search_extra, 'initial_date')">
 			</div>
-			<div class="col-4">
+			<div class="col-md-4 col-6">
 				<label>Fecha Final</label>
 				<input type="datetime-local" name="end_date" class="form-control" [(ngModel)]="end_date" (ngModelChange)="onDateChange($event, cash_count_search.search_extra, 'final_date', '', 59)">
 			</div>
@@ -30,7 +54,46 @@
 		</div>
 	</div>
 
+	<!-- 1) Resumen por concepto (colapsable) -->
+	@if (concept_totals.length)
+	{
+		<div class="card mt-3">
+			<details open>
+				<summary class="p-3 h5 mb-0 user-select-none" style="cursor:pointer;">Resumen por concepto (forma de pago)</summary>
+				<div class="px-3 pb-3">
+					<table class="table table-bordered mb-0">
+						<thead>
+							<tr>
+								<th>Concepto</th>
+								<th>Moneda</th>
+								<th class="text-end">Total</th>
+							</tr>
+						</thead>
+						<tbody>
+							@for (ct of concept_totals; track ct.concept + '_' + ct.currency_id)
+							{
+								<tr>
+									<td>{{ct.concept}}</td>
+									<td>{{ct.currency_id}}</td>
+									<td class="text-end">${{ct.total_amount | number:'1.2-2'}}</td>
+								</tr>
+							}
+						</tbody>
+						<tfoot>
+							<tr class="fw-bold table-secondary">
+								<td colspan="2" class="text-end">Total general (MXN)</td>
+								<td class="text-end">${{grand_total_mxn | number:'1.2-2'}}</td>
+							</tr>
+						</tfoot>
+					</table>
+				</div>
+			</details>
+		</div>
+	}
+
+	<!-- 2) Detalle por denominación -->
 	<div class="card p-3 mt-3">
+		<h5 class="mb-3">Detalle por denominación</h5>
 		<table class="table table-bordered">
 			<thead>
 				<tr>
@@ -47,12 +110,95 @@
 					<tr>
 						<td>{{c.currency_id}}</td>
 						<td>{{getTranslatedType(c.type)}}</td>
-						<td class="text-end">${{c.denomination | number:'1.2-2'}}</td>
+						<td class="text-end">
+							@if (c.denomination !== null)
+							{
+								${{c.denomination | number:'1.2-2'}}
+							}
+							@else
+							{
+								<span class="text-muted">—</span>
+							}
+						</td>
 						<td class="text-end">{{c.total_quantity | number}}</td>
 						<td class="text-end">${{c.total_amount | number:'1.2-2'}}</td>
 					</tr>
 				}
 			</tbody>
+			@if (cash_count_list.length)
+			{
+				<tfoot>
+					@for (t of totals_by_currency; track t.currency_id)
+					{
+						<tr class="fw-bold table-light">
+							<td colspan="4" class="text-end">Total {{t.currency_id}}</td>
+							<td class="text-end">${{t.total_amount | number:'1.2-2'}}</td>
+						</tr>
+					}
+					<tr class="fw-bold table-secondary">
+						<td colspan="4" class="text-end">
+							Total general (MXN)
+							@if (usd_rate_used)
+							{
+								<small class="text-muted fw-normal">— USD convertido a {{usd_rate_used | number:'1.2-4'}}</small>
+							}
+						</td>
+						<td class="text-end">${{grand_total_mxn | number:'1.2-2'}}</td>
+					</tr>
+				</tfoot>
+			}
 		</table>
+		@if (!cash_count_list.length && !is_loading)
+		{
+			<p class="text-center text-muted my-3">Sin resultados para los filtros seleccionados.</p>
+		}
 	</div>
+
+	<!-- 3) Totales por cajero (colapsable) -->
+	@if (cashier_summary.length)
+	{
+		<div class="card mt-3">
+			<details>
+				<summary class="p-3 h5 mb-0 user-select-none" style="cursor:pointer;">Totales por cajero</summary>
+				<div class="px-3 pb-3">
+					<table class="table table-bordered mb-0">
+						<thead>
+							<tr>
+								<th>Cajero</th>
+								<th>Concepto</th>
+								<th>Moneda</th>
+								<th class="text-end">Total</th>
+							</tr>
+						</thead>
+						@for (cs of cashier_summary; track cs.user_id)
+						{
+							<tbody>
+								@for (c of cs.concepts; track c.concept + '_' + c.currency_id; let first = $first)
+								{
+									<tr>
+										@if (first)
+										{
+											<td [attr.rowspan]="cs.concepts.length + 1" class="fw-bold align-middle">
+											<a [attr.href]="cs.corte_url" target="_blank" rel="noopener" title="Ver los cortes de este cajero en el POS">
+												{{cs.user_name | titlecase}}
+												<svg xmlns="http://www.w3.org/2000/svg" width="0.8em" height="0.8em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="ms-1"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+											</a>
+										</td>
+										}
+										<td>{{c.concept}}</td>
+										<td>{{c.currency_id}}</td>
+										<td class="text-end">${{c.total_amount | number:'1.2-2'}}</td>
+									</tr>
+								}
+								<tr class="fw-bold table-light">
+									<td colspan="2" class="text-end">Total {{cs.user_name | titlecase}} (MXN)</td>
+									<td class="text-end">${{cs.total_mxn | number:'1.2-2'}}</td>
+								</tr>
+							</tbody>
+						}
+					</table>
+				</div>
+			</details>
+		</div>
+	}
 </div>

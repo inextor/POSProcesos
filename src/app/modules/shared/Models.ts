@@ -247,13 +247,25 @@ export interface ReservationInfo
 export interface CashCountInfo
 {
 	currency_id: string;
-	denomination: number;
+	denomination: number | null;
 	type: string;
+	only_reference?: number;
 	total_quantity: number;
 	total_amount: number;
 	total_cash_closes: number;
 	first_date: string;
 	last_date: string;
+}
+
+export interface CashierCountInfo
+{
+	user_id: number;
+	user_name: string;
+	currency_id: string;
+	type: string;
+	only_reference?: number;
+	total_quantity: number;
+	total_amount: number;
 }
 
 export interface MovementInfo
