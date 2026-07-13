@@ -64,8 +64,11 @@ export class ReportCashCountTotalsComponent extends BaseComponent implements OnI
 
 				if (this.cash_count_search.search_extra['initial_date'])
 				{
-					start = new Date(this.cash_count_search.search_extra['initial_date'] as string);
-				} 
+					// La fecha viaja en la URL como UTC (search() usa getUTCMysqlStringFromDate);
+					// hay que releerla como UTC, no con new Date() que la interpreta como local
+					// (eso adelantaba las horas en cada Buscar).
+					start = Utils.getDateFromUTCMysqlString(this.cash_count_search.search_extra['initial_date'] as string);
+				}
 				else
 				{
 					start = new Date();
@@ -75,7 +78,7 @@ export class ReportCashCountTotalsComponent extends BaseComponent implements OnI
 
 				if (this.cash_count_search.search_extra['final_date'])
 				{
-					end = new Date(this.cash_count_search.search_extra['final_date'] as string);
+					end = Utils.getDateFromUTCMysqlString(this.cash_count_search.search_extra['final_date'] as string);
 				}
 				else
 				{
