@@ -101,6 +101,10 @@ export class ValidateProductionComponent extends BaseComponent
 
 				this.search_production.eq.status = 'ACTIVE';
 
+				//trae TODAS las producciones del rango, no solo la primera pagina (page_size=50).
+				//sin esto la validacion "sale en partes" y reaparecen las mismas cantidades al recargar.
+				this.search_production.limit = 9999;
+
 				let search_production_area:SearchObject<Production_Area> = this.getEmptySearch();
 
 				search_production_area.limit = 9999;
@@ -215,16 +219,20 @@ export class ValidateProductionComponent extends BaseComponent
 			return;
 		}
 
+		//A3: se bloquea el item ANTES de abrir el confirm. Asi, si se da doble click mientras
+		//el dialogo esta abierto, el segundo click no pasa el has() de arriba y no dispara
+		//una segunda validacion (que crearia produccion/inventario duplicado).
+		this.validating_item_ids.add( pi.item_id );
+
 		this.subs.sink = this.confirmation.showConfirmAlert(pi,'Validar?' ,'¿Estás seguro de validar la producción?')
 		.subscribe((response)=>
 		{
 			if( !response.accepted )
 			{
+				//el usuario cancelo: se libera el item para poder validarlo despues
+				this.validating_item_ids.delete( pi.item_id );
 				return;
 			}
-
-			//bloquea el boton de este item mientras se procesa
-			this.validating_item_ids.add( pi.item_id );
 
 			//producciones aun no validadas (se marcaran como DELETED al final)
 			let production_info_list = pi.production_list.filter(p => !p.production.verified_by_user_id);
