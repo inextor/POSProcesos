@@ -79,7 +79,7 @@
 						</div>
 						<div class="col-12 col-md-3">
 							<label class="">Método de Pago</label>
-							<select name="transaction_type" [(ngModel)]="transaction_type"
+							<select name="transaction_type" [ngModel]="transaction_type" (ngModelChange)="transaction_type = $event; loadStoreBankAccounts()"
 								class="form-control" [disabled]="purchase_info.bank_movements_info.length > 0">
 								<option [ngValue]="null">Seleccionar</option>
 								<option value="CASH">Efectivo</option>
@@ -87,6 +87,16 @@
 								<option value="CHECK">Cheque</option>
 								<option value="CREDIT_CARD">Tarjeta de crédito</option>
 								<option value="DEBIT_CARD">Tarjeta de débito</option>
+							</select>
+						</div>
+						<div class="col-12 col-md-3">
+							<label class="">Cuenta Bancaria</label>
+							<select [(ngModel)]="selected_bank_account_id" name="bank_account_id" class="form-control"
+								[disabled]="purchase_info.bank_movements_info.length > 0">
+								<option [ngValue]="null">Seleccionar cuenta</option>
+								<option *ngFor="let sba of store_bank_accounts" [ngValue]="sba.store_bank_account.bank_account_id">
+									{{ sba.bank_account?.name || sba.bank_account?.alias }} - {{ sba.bank_account?.bank }}
+								</option>
 							</select>
 						</div>
 						<div class="col-12 col-md-3">

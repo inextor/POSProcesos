@@ -13,8 +13,13 @@
 			<div class="row">
 				<div class="col-md-4">
 					<div class="form-group">
-						<label for="store_id">Tienda ID</label>
-						<input type="number" class="form-control" id="store_id" name="store_id" [(ngModel)]="search_object.eq.store_id">
+						<label for="store_id">Tienda</label>
+						<select class="form-control" id="store_id" name="store_id" [(ngModel)]="search_object.eq.store_id">
+							<option [ngValue]="null">Todas las tiendas</option>
+							@for (s of store_list; track s.id) {
+								<option [ngValue]="s.id">{{ s.name }}</option>
+							}
+						</select>
 					</div>
 				</div>
 				<div class="col-md-4">

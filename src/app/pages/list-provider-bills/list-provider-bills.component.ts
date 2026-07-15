@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { BaseComponent } from '../../modules/shared/base/base.component';
-import { Bill, Currency_Rate, Store, User, Payment } from '../../modules/shared/RestModels';
+import { Bank_Account, Bill, Currency_Rate, Payment, Store, Store_Bank_Account, User } from '../../modules/shared/RestModels';
 import { BillInfo, PaymentInfo, BankMovementBillInfo } from '../../modules/shared/Models';
 import { GetEmpty } from '../../modules/shared/GetEmpty';
 import { Utils } from '../../modules/shared/Utils';
@@ -41,6 +41,10 @@ export class ListProviderBillsComponent extends BaseComponent implements OnInit
 	show_make_payment: boolean = false;
 	payment_amount: number = 0;
 	selected_bill_info_list: BillInfo[] = [];
+
+	store_bank_accounts: any[] = [];
+	selected_bank_account_id: number | null = null;
+	selected_transaction_type: string | null = null;
 
 	// Map to track checked/unchecked bills across pages (key is bill ID)
 	selected_bills_map: Map<number, boolean> = new Map();
@@ -142,6 +146,7 @@ export class ListProviderBillsComponent extends BaseComponent implements OnInit
 				// Recalculate dynamic pay totals for currently checked bills
 				this.calculateTotals();
 
+				this.loadStoreBankAccounts();
 				this.is_loading = false;
 			},
 			error: (error) => {
@@ -179,6 +184,31 @@ export class ListProviderBillsComponent extends BaseComponent implements OnInit
 		return default_currency_id === bill_currency
 			? currency_rate.rate
 			: 1 / currency_rate.rate;
+	}
+
+	loadStoreBankAccounts()
+	{
+		const store_id = this.rest.user?.store_id || 1;
+
+		let rest_sba = this.rest.initRest<Store_Bank_Account, any>('store_bank_account');
+		let rest_ba = this.rest.initRestSimple<Bank_Account>('bank_account');
+
+		this.subs.sink = rest_sba.searchWithRelations(
+			{ eq: { store_id }, limit: 9999 },
+			[rest_ba.getRelation('bank_account_id')]
+		)
+		.subscribe({
+			next: (response) =>
+			{
+				this.store_bank_accounts = response.data.filter((sba: any) =>
+				{
+					if (sba.store_bank_account.default_transaction_type == null)
+						return true;
+					return sba.store_bank_account.default_transaction_type == this.selected_transaction_type;
+				});
+			},
+			error: (error) => this.showError(error)
+		});
 	}
 
 	calculateTotals()
@@ -326,7 +356,7 @@ export class ListProviderBillsComponent extends BaseComponent implements OnInit
 		const bm: any = {
 			bank_movement: {
 				amount_received: this.payment_amount,
-				bank_account_id: null,
+				bank_account_id: this.selected_bank_account_id,
 				card_ending: '',
 				client_user_id: null,
 				created: new Date(),
@@ -344,7 +374,7 @@ export class ListProviderBillsComponent extends BaseComponent implements OnInit
 				status: 'ACTIVE',
 				exchange_rate: 1,
 				total: this.payment_amount,
-				transaction_type: null,
+				transaction_type: this.selected_transaction_type,
 				type: 'expense',
 				updated: new Date()
 			},

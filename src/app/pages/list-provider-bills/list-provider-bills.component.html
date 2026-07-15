@@ -129,6 +129,26 @@
 						Máximo posible: {{ total_to_pay | number: '1.2-2' }} {{ total_to_pay_currency_id }}
 					</div>
 				</div>
+				<div class="mb-4">
+					<label>Metodo de Pago</label>
+					<select [(ngModel)]="selected_transaction_type" name="transaction_type" class="form-control" (ngModelChange)="loadStoreBankAccounts()">
+						<option [ngValue]="null">Seleccionar</option>
+						<option value="CASH">Efectivo</option>
+						<option value="TRANSFER">Transferencia</option>
+						<option value="CHECK">Cheque</option>
+						<option value="CREDIT_CARD">Tarjeta de credito</option>
+						<option value="DEBIT_CARD">Tarjeta de debito</option>
+					</select>
+				</div>
+				<div class="mb-4">
+					<label>Cuenta Bancaria</label>
+					<select [(ngModel)]="selected_bank_account_id" name="bank_account_id" class="form-control">
+						<option [ngValue]="null">Sin cuenta / Efectivo</option>
+						<option *ngFor="let sba of store_bank_accounts" [ngValue]="sba.store_bank_account.bank_account_id">
+							{{ sba.bank_account?.name }} - {{ sba.bank_account?.bank }}
+						</option>
+					</select>
+				</div>
 				<div class="row g-2 justify-content-end">
 					<div class="col-6 col-md-3">
 						<button type="button" class="btn btn-outline-secondary w-100 py-2" (click)="show_make_payment = false">

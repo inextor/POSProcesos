@@ -1,7 +1,7 @@
 import { Component, OnInit, Injector } from '@angular/core';
 import { BaseComponent } from '../../modules/shared/base/base.component';
 import { ItemInfo, PurchaseDetailInfo, PurchaseInfo} from '../../modules/shared/Models';
-import { Currency, Currency_Rate, Purchase, Purchase_Detail, Store, User} from '../../modules/shared/RestModels';
+import { Bank_Account, Currency, Currency_Rate, Purchase, Purchase_Detail, Store, Store_Bank_Account, User} from '../../modules/shared/RestModels';
 import { forkJoin, of } from 'rxjs';
 import { mergeMap } from 'rxjs/operators';
 import { Utils } from '../../modules/shared/Utils';
@@ -55,6 +55,9 @@ export class SavePurchaseComponent extends BaseComponent implements OnInit
 	paid_date:string = '';
 	reference:string = '';
 	transaction_type: "CASH" | "TRANSFER" | "CREDIT_CARD" | "DEBIT_CARD" | "CHECK" | "COUPON" | "DISCOUNT" | "RETURN_DISCOUNT" | "PAYPAL" = "CASH";
+
+	store_bank_accounts: any[] = [];
+	selected_bank_account_id: number | null = null;
 
 	constructor(injector: Injector)
 	{
@@ -129,6 +132,7 @@ export class SavePurchaseComponent extends BaseComponent implements OnInit
 				}
 
 				this.updateTotal();
+				this.loadStoreBankAccounts();
 			},
 			error:(error)=>this.showError( error )
 		});
@@ -477,6 +481,32 @@ export class SavePurchaseComponent extends BaseComponent implements OnInit
 		this.purchase_info.bill.paid_status = this.purchase_info.bill.paid_status == 'PAID' ? 'PENDING' : 'PAID';
 	}
 
+	loadStoreBankAccounts()
+	{
+		const store_id = this.purchase_info.purchase.store_id;
+		if (!store_id) return;
+
+		let rest_sba = this.rest.initRest<Store_Bank_Account, any>('store_bank_account');
+		let rest_ba = this.rest.initRestSimple<Bank_Account>('bank_account');
+
+		this.subs.sink = rest_sba.searchWithRelations(
+			{ eq: { store_id }, limit: 9999 },
+			[rest_ba.getRelation('bank_account_id')]
+		)
+		.subscribe({
+			next: (response) =>
+			{
+				this.store_bank_accounts = response.data.filter((sba: any) =>
+				{
+					if (sba.store_bank_account.default_transaction_type == null)
+						return true;
+					return sba.store_bank_account.default_transaction_type == this.transaction_type;
+				});
+			},
+			error: (error) => this.showError(error)
+		});
+	}
+
 	markAsPaid()
 	{
 		this.purchase_info.bill.amount_paid = this.purchase_info.bill.total;
@@ -490,7 +520,7 @@ export class SavePurchaseComponent extends BaseComponent implements OnInit
 			bank_movement:{
 				id: null,
 				amount_received: this.purchase_info.bill.total,
-				bank_account_id: null,
+				bank_account_id: this.selected_bank_account_id,
 				card_ending: null,
 				client_user_id: null,
 				created: new Date(),
