@@ -93,6 +93,7 @@ export const routes: Routes = [
 			{path: 'assign-sat-factura-payment/:payment_id', loadComponent: () => import('./pages/assign-sat-factura-payment/assign-sat-factura-payment.component').then(m => m.AssignSatFacturaPaymentComponent), canActivate: [authGuard]},
 			{path: 'list-order-sat-factura/:order_id', loadComponent: () => import('./pages/list-object-sat-factura/list-object-sat-factura.component').then(m => m.ListObjectSatFacturaComponent)},
 			{path: 'list-payment-sat-factura/:payment_id', loadComponent: () => import('./pages/list-object-sat-factura/list-object-sat-factura.component').then(m => m.ListObjectSatFacturaComponent)},
+		{path: 'view-payment/:id', loadComponent: () => import('./pages/view-payment/view-payment.component').then(m => m.ViewPaymentComponent), canActivate: [authGuard]},
 			{path: 'list-merma-totals', loadComponent: () => import('./pages/list-merma-totals/list-merma-totals.component').then(m => m.ListMermaTotalsComponent), canActivate: [authGuard]},
 			{path: 'weird', loadComponent: () => import('./pages/weird/weird.component').then(m => m.WeirdComponent), canActivate: [authGuard]},
 			{path: 'report-comex-sales', loadComponent: () => import('./pages/report-comex-sales/report-comex-sales.component').then(m => m.ReportComexSalesComponent), canActivate: [authGuard]},
