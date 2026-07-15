@@ -1,0 +1,239 @@
+<div>
+	<app-loading [is_loading]="is_loading"></app-loading>
+
+	@if (!is_loading && info)
+	{
+		<div class="d-flex justify-content-between align-items-center mb-3">
+			<h4 class="mb-0">Pago #{{info.payment.id}}</h4>
+			<div>
+				<a href="{{rest.getExternalAppUrl()}}/#/view-payment/{{info.payment.id}}" class="btn btn-secondary">
+					<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg> Imprimir
+				</a>
+			</div>
+		</div>
+
+		<div class="card mb-3">
+			<div class="card-body">
+				<h5>Información del Pago</h5>
+				<hr>
+				<div class="row mb-3">
+					<div class="col-md-4">
+						<label class="text-muted small">Tipo</label>
+						<p class="fw-bold mb-0">
+							<span [class]="'badge ' + (info.payment.type == 'income' ? 'bg-success' : 'bg-warning')">
+								{{getPaymentTypeLabel()}}
+							</span>
+						</p>
+					</div>
+					<div class="col-md-4">
+						<label class="text-muted small">Monto</label>
+						<p class="fw-bold mb-0">{{info.payment.payment_amount | currency}}</p>
+					</div>
+					<div class="col-md-4">
+						<label class="text-muted small">Recibido</label>
+						<p class="fw-bold mb-0">{{info.payment.received_amount | currency}}</p>
+					</div>
+				</div>
+
+				<div class="row mb-3">
+					<div class="col-md-4">
+						<label class="text-muted small">Cambio</label>
+						<p class="fw-bold mb-0">{{info.payment.change_amount | currency}}</p>
+					</div>
+					<div class="col-md-4">
+						<label class="text-muted small">Moneda</label>
+						<p class="fw-bold mb-0">{{info.payment.currency_id}}</p>
+					</div>
+					<div class="col-md-4">
+						<label class="text-muted small">Tipo de Cambio</label>
+						<p class="fw-bold mb-0">{{info.payment.exchange_rate}}</p>
+					</div>
+				</div>
+
+				<div class="row mb-3">
+					<div class="col-md-4">
+						<label class="text-muted small">Estado</label>
+						<p class="mb-0">
+							<span [class]="'badge ' + (info.payment.status == 'ACTIVE' ? 'bg-success' : 'bg-danger')">
+								{{getStatusLabel()}}
+							</span>
+						</p>
+					</div>
+					<div class="col-md-4">
+						<label class="text-muted small">Facturado</label>
+						<p class="fw-bold mb-0">{{getFacturadoLabel()}}</p>
+					</div>
+					<div class="col-md-4">
+						<label class="text-muted small">Concepto</label>
+						<p class="fw-bold mb-0">{{info.payment.concept || '-'}}</p>
+					</div>
+				</div>
+
+				<div class="row mb-3">
+					<div class="col-md-4">
+						<label class="text-muted small">Tag</label>
+						<p class="fw-bold mb-0">{{info.payment.tag || '-'}}</p>
+					</div>
+					<div class="col-md-4">
+						<label class="text-muted small">Creado por</label>
+						<p class="fw-bold mb-0">{{created_by_user?.name || 'N/A'}}</p>
+					</div>
+					<div class="col-md-4">
+						<label class="text-muted small">Pagado por</label>
+						<p class="fw-bold mb-0">{{paid_by_user?.name || 'N/A'}}</p>
+					</div>
+				</div>
+
+				<div class="row mb-3">
+					<div class="col-md-4">
+						<label class="text-muted small">Fecha de creación</label>
+						<p class="fw-bold mb-0">{{info.payment.created | date:'short'}}</p>
+					</div>
+					<div class="col-md-4">
+						<label class="text-muted small">Fecha de actualización</label>
+						<p class="fw-bold mb-0">{{info.payment.updated | date:'short'}}</p>
+					</div>
+					<div class="col-md-4">
+						<label class="text-muted small">Tienda</label>
+						<p class="fw-bold mb-0">{{store?.name || 'N/A'}}</p>
+					</div>
+				</div>
+
+				@if (info.payment.cancellation_timestamp)
+				{
+					<div class="row mb-3">
+						<div class="col-md-4">
+							<label class="text-muted small">Cancelado por</label>
+							<p class="fw-bold mb-0">{{cancelled_by_user?.name || 'N/A'}}</p>
+						</div>
+						<div class="col-md-4">
+							<label class="text-muted small">Fecha de cancelación</label>
+							<p class="fw-bold mb-0">{{info.payment.cancellation_timestamp | date:'short'}}</p>
+						</div>
+						<div class="col-md-4">
+							<label class="text-muted small">Motivo de cancelación</label>
+							<p class="fw-bold mb-0">{{info.payment.cancellation_reason || '-'}}</p>
+						</div>
+					</div>
+				}
+			</div>
+		</div>
+
+		@if (info.payment.sat_factura_id || info.payment.sat_uuid)
+		{
+			<div class="card mb-3">
+				<div class="card-body">
+					<h5>Facturación SAT</h5>
+					<hr>
+					<div class="row mb-3">
+						<div class="col-md-4">
+							<label class="text-muted small">UUID</label>
+							<p class="fw-bold mb-0" style="font-size:0.85rem;">{{info.payment.sat_uuid || '-'}}</p>
+						</div>
+						<div class="col-md-4">
+							<label class="text-muted small">SAT Factura ID</label>
+							<p class="fw-bold mb-0">
+								@if (info.payment.sat_factura_id)
+								{
+									<a [routerLink]="['/list-payment-sat-factura', info.payment.id]" class="btn btn-sm btn-primary">
+										#{{info.payment.sat_factura_id}}
+									</a>
+								}
+								@else { - }
+							</p>
+						</div>
+						<div class="col-md-4">
+							<label class="text-muted small">Facturado</label>
+							<p class="fw-bold mb-0">{{getFacturadoLabel()}}</p>
+						</div>
+					</div>
+				</div>
+			</div>
+		}
+
+		<div class="card mb-3">
+			<div class="card-body">
+				<div class="d-flex justify-content-between align-items-center mb-2">
+					<h5 class="mb-0">Movimientos Bancarios</h5>
+					<span class="badge bg-secondary">{{info.movements.length}}</span>
+				</div>
+				<hr>
+				@if (info.movements.length == 0)
+				{
+					<p class="text-muted mb-0">Sin movimientos</p>
+				}
+				@else
+				{
+					<div class="table-responsive">
+						<table class="table table-bordered">
+							<thead>
+								<tr>
+									<th>ID</th>
+									<th>Tipo</th>
+									<th>Transacción</th>
+									<th class="text-end">Total</th>
+									<th>Cuenta Bancaria</th>
+									<th>Referencia</th>
+									<th>Nota</th>
+									<th>Estado</th>
+									<th>Órdenes</th>
+									<th class="text-center">Acciones</th>
+								</tr>
+							</thead>
+							<tbody>
+								@for (mov of info.movements; track mov.bank_movement.id)
+								{
+									<tr>
+										<td>{{mov.bank_movement.id}}</td>
+										<td>
+											<span [class]="'badge ' + (mov.bank_movement.type == 'income' ? 'bg-success' : 'bg-warning')">
+												{{mov.bank_movement.type == 'income' ? 'Ingreso' : 'Gasto'}}
+											</span>
+										</td>
+										<td>{{getTransactionTypeLabel(mov.bank_movement.transaction_type)}}</td>
+										<td class="text-end">{{mov.bank_movement.total | currency}}</td>
+										<td>
+											<a [routerLink]="['/edit-bank-account', mov.bank_movement.bank_account_id]" class="text-decoration-none">
+												{{getBankAccountName(mov.bank_movement.bank_account_id)}}
+											</a>
+										</td>
+										<td>{{mov.bank_movement.reference || '-'}}</td>
+										<td>{{mov.bank_movement.note || '-'}}</td>
+										<td>
+											<span [class]="'badge ' + (mov.bank_movement.status == 'ACTIVE' ? 'bg-success' : 'bg-danger')">
+												{{getMovementStatusLabel(mov.bank_movement.status)}}
+											</span>
+										</td>
+										<td>
+											@if (mov.bank_movement_orders.length > 0)
+											{
+												@for (bmo of mov.bank_movement_orders; track bmo.id)
+												{
+													<div class="mb-1">
+														<a [routerLink]="['/view-order', bmo.order_id]" class="btn btn-sm btn-primary me-1">
+															Orden #{{bmo.order_id}}
+														</a>
+														<small class="text-muted">{{bmo.amount | currency}}</small>
+													</div>
+												}
+											}
+											@else
+											{
+												<span class="text-muted">-</span>
+											}
+										</td>
+										<td class="text-center">
+											<a [routerLink]="['/edit-bank-account', mov.bank_movement.bank_account_id]" class="btn btn-sm btn-outline-primary me-1" title="Ver Cuenta Bancaria">
+												<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.83 0 0 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></svg>
+											</a>
+										</td>
+									</tr>
+								}
+							</tbody>
+						</table>
+					</div>
+				}
+			</div>
+		</div>
+	}
+</div>
