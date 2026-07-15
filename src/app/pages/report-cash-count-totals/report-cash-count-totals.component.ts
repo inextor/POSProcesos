@@ -35,6 +35,9 @@ export class ReportCashCountTotalsComponent extends BaseComponent implements OnI
 	concept_totals:{ concept:string, currency_id:string, total_amount:number }[] = [];
 	grand_total_mxn:number = 0;
 	usd_rate_used:number = 0;
+	gastos_rows:{ currency_id:string, total_gastos:number, total_movimientos:number }[] = [];
+	gastos_total_mxn:number = 0;
+	neto_total_mxn:number = 0;
 
 	// Orden fijo de conceptos para el resumen tipo corte (forma de pago).
 	readonly concept_order:string[] = ['Efectivo', 'Tarjeta de crédito', 'Tarjeta de débito', 'Transferencia', 'Cheque'];
@@ -64,8 +67,11 @@ export class ReportCashCountTotalsComponent extends BaseComponent implements OnI
 
 				if (this.cash_count_search.search_extra['initial_date'])
 				{
-					start = new Date(this.cash_count_search.search_extra['initial_date'] as string);
-				} 
+					// La fecha viaja en la URL como UTC (search() usa getUTCMysqlStringFromDate);
+					// hay que releerla como UTC, no con new Date() que la interpreta como local
+					// (eso adelantaba las horas en cada Buscar).
+					start = Utils.getDateFromUTCMysqlString(this.cash_count_search.search_extra['initial_date'] as string);
+				}
 				else
 				{
 					start = new Date();
@@ -75,7 +81,7 @@ export class ReportCashCountTotalsComponent extends BaseComponent implements OnI
 
 				if (this.cash_count_search.search_extra['final_date'])
 				{
-					end = new Date(this.cash_count_search.search_extra['final_date'] as string);
+					end = Utils.getDateFromUTCMysqlString(this.cash_count_search.search_extra['final_date'] as string);
 				}
 				else
 				{
@@ -110,6 +116,7 @@ export class ReportCashCountTotalsComponent extends BaseComponent implements OnI
 				this.cash_count_list = response[2].data;
 				this.cashier_list = response[2].cashiers || [];
 				this.cashier_rows = response[2].by_cashier || [];
+				this.gastos_rows = response[2].gastos || [];
 				this.calculateTotals();
 				this.calculateCashierSummary();
 				this.is_loading = false;
@@ -207,6 +214,17 @@ export class ReportCashCountTotalsComponent extends BaseComponent implements OnI
 				this.grand_total_mxn += by_currency[currency_id] * rate;
 			}
 		}
+
+		// Total de gastos/retiros en MXN (convierte otras monedas con su tipo de cambio).
+		this.gastos_total_mxn = this.gastos_rows.reduce((acc, g) =>
+		{
+			let amount = Number(g.total_gastos) || 0;
+			let rate = g.currency_id === 'MXN' ? 1 : this.getRateForCurrency(g.currency_id);
+			return acc + amount * rate;
+		}, 0);
+
+		// Total neto = subtotal (ingresos por concepto) menos gastos/retiros.
+		this.neto_total_mxn = this.grand_total_mxn - this.gastos_total_mxn;
 	}
 
 	calculateCashierSummary()

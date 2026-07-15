@@ -134,9 +134,6 @@
                 {{ (cri.requisition.sum_qty - (cri?.production?.produced||0)) >= 0 ? (cri.requisition.sum_qty - (cri?.production?.produced||0)) : 0 | number}}
               </span>
             }
-            @if (!cri.requisition && cri.production) {
-              {{ cri.production.produced || 0}}
-            }
           </div>
         </div>
       </div>
