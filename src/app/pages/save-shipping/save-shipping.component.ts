@@ -101,7 +101,7 @@ export class SaveShippingComponent extends BaseComponent
 						({
 							requisitions: ids.length > 0 ? this.rest_requisition_info.search(search_requisition) : of( null ),
 							shippings: ids.length > 0 ? this.rest_shipping_info.searchAsPost({ csv:{id:ids}, eq:{from_store_id: Number(this.from_store_id), to_store_id: Number(this.to_store_id), date: this.fecha_requisitions }, limit:9999}) : of( null ),
-							production: ids.length > 0 ? this.rest_production.searchAsPost({csv:{id:ids}, limit: 999999}) : of( null ),
+							production: of( null ), //no se usa; production.php trata el POST como ALTA (no busqueda) y truena con 500
 							item_stock: ids.length > 0 ? of(itemResponse) : of( null ),
 							store: of(store!),
 						});
@@ -130,7 +130,7 @@ export class SaveShippingComponent extends BaseComponent
 
 					let shippings = response.shippings?.data;
 					let item_stock_list = response.item_stock?.data;
-					let productions_list = response.production?.data;
+					let productions_list:Production[] = [];
 
 					this.initializeCRequisitionInfo(ri, shippings, item_stock_list, productions_list, response.store);
 				}
@@ -153,7 +153,9 @@ export class SaveShippingComponent extends BaseComponent
 			{
 				this.is_loading = true;
 				this.to_store_id = parseInt(params.get('store_id') as string) || 0;
-				this.from_store_id = parseInt(this.rest.user?.store_id?.toString() || '');
+				//origen: si viene from_store_id (de list-shipping, tienda del area de produccion), usarlo; si no, la del usuario
+				let from_store_qp = this.route.snapshot.queryParamMap.get('from_store_id');
+				this.from_store_id = parseInt(from_store_qp || '') || parseInt(this.rest.user?.store_id?.toString() || '');
 				let shipping_id = params.has('id') ? parseInt(params.get('id') ?? '') : null;
 
 				let start = new Date();

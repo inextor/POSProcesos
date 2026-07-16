@@ -4,7 +4,7 @@
       <h1 class="my-3">Envíos</h1>
     </div>
     <div class="col-12 col-md-6 text-end">
-      <a class="btn btn-secondary my-3" type="button" [routerLink]="['/add-shipping']">Envío entre sucursales</a>
+      <a class="btn btn-secondary my-3" type="button" [routerLink]="['/add-shipping']" [queryParams]="{from_store_id: selected_from_store_id}">Envío entre sucursales</a>
     </div>
   </div>
   <div class="card p-3 mb-2">
@@ -18,11 +18,11 @@
         </select>
       </div>
       <div class="col-12 col-md-3">
-        <label>Fecha y Hora Inicial</label>
+        <label>Fecha y Hora Inicial <span class="help-icon" title="Para cuándo se REQUIERE la mercancía (fecha de la requisición) y de los envíos. No es la fecha en que se produjo.">?</span></label>
         <input type="datetime-local" class="form-control" [(ngModel)]="fecha_inicial" (ngModelChange)="fechaInicialChange($event)">
       </div>
       <div class="col-12 col-md-3">
-        <label>Fecha y Hora Final</label>
+        <label>Fecha y Hora Final <span class="help-icon" title="Para cuándo se REQUIERE la mercancía (fecha de la requisición) y de los envíos. No es la fecha en que se produjo.">?</span></label>
         <input type="datetime-local" class="form-control" [(ngModel)]="fecha_final" (ngModelChange)="fechaFinalChange($event)">
       </div>
       <div class="col-12 col-md-3">
@@ -98,7 +98,7 @@
     <div class="row border-bottom align-items-center">
       <div class="col-8 col-md-3 fw-bold">{{creq.store.name}}</div>
       <div class="col-4 col-md-12 fw-bold d-lg-none order-md-3 text-end text-md">
-        <a class="btn btn-primary my-1" type="button" [routerLink]="['/add-shipping',creq.store.id, 0]">
+        <a class="btn btn-primary my-1" type="button" [routerLink]="['/add-shipping',creq.store.id, 0]" [queryParams]="{from_store_id: selected_from_store_id}">
           <svg class="d-inline d-md-none"  xmlns="http://www.w3.org/2000/svg" width="1.2em" height="1.2em" viewBox="0 0 24 24"><path fill="currentColor" d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6z"/></svg>
           <span class="d-none d-md-inline">Crear envío</span>
         </a>
@@ -114,7 +114,7 @@
           <div class="d-md-none col-6">Pendientes</div>
           <div class="col-6 col-md-2 col-lg-2 text-end">{{creq.pending > 0 ? creq.pending : 0}}</div>
           <div class="d-none d-lg-block col-md-4 text-end">
-            <a class="btn btn-primary my-1 text-end" type="button" [routerLink]="['/add-shipping',creq.store.id]">Crear Envio</a>
+            <a class="btn btn-primary my-1 text-end" type="button" [routerLink]="['/add-shipping',creq.store.id]" [queryParams]="{from_store_id: selected_from_store_id}">Crear Envio</a>
           </div>
         </div>
       </div>

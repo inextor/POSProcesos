@@ -30,8 +30,8 @@ interface SpecialOrderItemRow
 export class OrderItemsComponent extends BaseComponent implements OnChanges
 {
 
-	@Input() start_timestamp: Date = new Date();
-	@Input() end_timestamp: Date | null = null;
+	@Input() start_timestamp: string | number | Date | null = new Date();
+	@Input() end_timestamp: string | number | Date | null = null;
 	@Output() productionCreated = new EventEmitter<{production:Production, item:Item}>();
 
 	rest_order_info:Rest<Order,OrderInfo> = this.rest.initRest('order_info');
@@ -60,18 +60,14 @@ export class OrderItemsComponent extends BaseComponent implements OnChanges
 		});
 	}
 
-	loadData(start_timestamp:Date | null = null, end_timestamp:Date | null = null): Observable<any[]>
+	loadData(start_timestamp:string | number | Date | null = null, end_timestamp:string | number | Date | null = null): Observable<any[]>
 	{
-		if( start_timestamp === null )
-			start_timestamp = new Date();
+		//coercion defensiva: los @Input pueden venir como Date o como string (del filtro de fechas del padre)
+		let start:Date = start_timestamp ? new Date(start_timestamp) : new Date();
+		//si no viene end, ventana corta de 3 dias (NO 231) para no arrastrar entregas de meses
+		let end:Date = end_timestamp ? new Date(end_timestamp) : new Date(start.getTime() + 3*24*60*60*1000);
 
-		if( end_timestamp === null )
-		{
-			end_timestamp = new Date();
-			end_timestamp.setTime( start_timestamp.getTime() + 20006400000 );
-		}
-
-		return this.rest.getReportByPath('getProductionOrderItems', { start_timestamp , end_timestamp })
+		return this.rest.getReportByPath('getProductionOrderItems', { start_timestamp: start, end_timestamp: end })
 		.pipe
 		(
 			mergeMap((response:any[]) =>
