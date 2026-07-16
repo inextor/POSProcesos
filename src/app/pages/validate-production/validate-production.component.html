@@ -11,11 +11,11 @@
         </select>
       </div>
       <div class="col-12 col-md-4">
-        <label>Fecha Inicial</label>
+        <label>Fecha Inicial <span class="help-icon" title="Fecha en que se PRODUJO (se registró la producción). No es la fecha para cuándo se requiere.">?</span></label>
         <input type="datetime-local" name="search_start_date" class="form-control" [(ngModel)]="search_start_date" (ngModelChange)="onDateChange($event, search_production.ge, 'created'); search(search_production)">
       </div>
       <div class="col-12 col-md-4">
-        <label>Fecha Final</label>
+        <label>Fecha Final <span class="help-icon" title="Fecha en que se PRODUJO (se registró la producción). No es la fecha para cuándo se requiere.">?</span></label>
         <input type="datetime-local" name="search_end_date" class="form-control" [(ngModel)]="search_end_date" (ngModelChange)="onDateChange($event, search_production.le, 'created','', 59); search(search_production)">
       </div>
     </div>
