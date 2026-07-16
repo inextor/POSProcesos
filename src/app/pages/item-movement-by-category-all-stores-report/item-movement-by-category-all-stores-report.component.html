@@ -66,13 +66,19 @@
 									<span>{{ sortDirection === 'asc' ? '▲' : '▼' }}</span>
 								}
 							</th>
-							<th class="sortable text-end" (click)="sortBy('received_percentage')">
-								%
-								@if (sortColumn === 'received_percentage') {
-									<span>{{ sortDirection === 'asc' ? '▲' : '▼' }}</span>
-								}
-							</th>
-							@if (item_movement_search.eq['requisitions_or_shippings'] != 1) {
+						<th class="sortable text-end" (click)="sortBy('received_percentage')">
+							%
+							@if (sortColumn === 'received_percentage') {
+								<span>{{ sortDirection === 'asc' ? '▲' : '▼' }}</span>
+							}
+						</th>
+						<th class="sortable text-end" (click)="sortBy('total_produced')">
+							Producido
+							@if (sortColumn === 'total_produced') {
+								<span>{{ sortDirection === 'asc' ? '▲' : '▼' }}</span>
+							}
+						</th>
+						@if (item_movement_search.eq['requisitions_or_shippings'] != 1) {
 								<th class="sortable text-end" (click)="sortBy('total_sold')">
 									Venta
 									@if (sortColumn === 'total_sold') {
@@ -115,8 +121,9 @@
 								</td>
 								<td class="text-end">{{row.total_requested|number}}</td>
 								<td class="text-end">{{row.total_received|number}}</td>
-								<td class="text-end">{{row.received_percentage|number:'1.0-2'}}%</td>
-								@if (item_movement_search.eq['requisitions_or_shippings'] != 1) {
+							<td class="text-end">{{row.received_percentage|number:'1.0-2'}}%</td>
+							<td class="text-end">{{row.total_produced|number}}</td>
+							@if (item_movement_search.eq['requisitions_or_shippings'] != 1) {
 									<td class="text-end">{{row.total_sold|number}}</td>
 									<td class="text-end">{{row.sold_amount|currency}}</td>
 									<td class="text-end">{{row.total_merma|number}}</td>
@@ -127,7 +134,7 @@
 						}
 						@empty {
 							<tr>
-								<td class="text-center" [attr.colspan]="item_movement_search.eq['requisitions_or_shippings'] == 1 ? 4 : 9">No se encontraron resultados</td>
+								<td class="text-center" [attr.colspan]="item_movement_search.eq['requisitions_or_shippings'] == 1 ? 5 : 10">No se encontraron resultados</td>
 							</tr>
 						}
 					</tbody>
@@ -136,8 +143,9 @@
 							<td rowspan=2 class="text-end">TOTALES:</td>
 							<td class="text-end">{{totalRequested|number}}</td>
 							<td class="text-end">{{totalReceived|number}}</td>
-							<td class="text-end">{{totalReceivedPercentage|number:'1.0-2'}}%</td>
-							@if (item_movement_search.eq['requisitions_or_shippings'] != 1) {
+						<td class="text-end">{{totalReceivedPercentage|number:'1.0-2'}}%</td>
+						<td class="text-end">{{totalProduced|number}}</td>
+						@if (item_movement_search.eq['requisitions_or_shippings'] != 1) {
 								<td class="text-end">{{totalSold|number}}</td>
 								<td class="text-end">{{totalAmount|currency}}</td>
 								<td class="text-end">{{totalMerma|number}}</td>
@@ -149,6 +157,7 @@
 							<td class="text-end">Requeridos</td>
 							<td class="text-end">Recibidos</td>
 							<td class="text-end">% Recibido</td>
+							<td class="text-end">Producido</td>
 							@if (item_movement_search.eq['requisitions_or_shippings'] != 1) {
 								<td class="text-end">Vendidos</td>
 								<td class="text-end">Ingresos</td>

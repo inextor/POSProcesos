@@ -24,6 +24,7 @@ interface CategoryMovementSummary
 	total_sold: number;
 	sold_amount: number;
 	total_gain: number;
+	total_produced: number;
 }
 
 interface ItemMovementRequest
@@ -97,6 +98,11 @@ export class ItemMovementByCategoryReportComponent extends BaseComponent impleme
 	get totalGain(): number
 	{
 		return this.category_summaries.reduce((sum, row) => sum + (row.total_gain || 0), 0);
+	}
+
+	get totalProduced(): number
+	{
+		return this.category_summaries.reduce((sum, row) => sum + (row.total_produced || 0), 0);
 	}
 
 	ngOnInit(): void
@@ -244,8 +250,9 @@ export class ItemMovementByCategoryReportComponent extends BaseComponent impleme
 							total_merma: 0,
 							total_merma_amount: 0,
 							total_sold: 0,
-							sold_amount: 0,
-							total_gain: 0,
+						sold_amount: 0,
+						total_gain: 0,
+						total_produced: 0,
 						});
 					}
 					let g = grouped.get(catId)!;
@@ -254,9 +261,10 @@ export class ItemMovementByCategoryReportComponent extends BaseComponent impleme
 					g.not_received_qty += not_received_qty || 0;
 					g.total_merma += x.total_merma || 0;
 					g.total_merma_amount += total_merma_amount;
-					g.total_sold += x.total_sold || 0;
-					g.sold_amount += x.sold_amount || 0;
-					g.total_gain += total_gain;
+				g.total_sold += x.total_sold || 0;
+				g.sold_amount += x.sold_amount || 0;
+				g.total_gain += total_gain;
+				g.total_produced += x.total_produced || 0;
 				});
 
 				grouped.forEach((g) =>
@@ -362,10 +370,14 @@ export class ItemMovementByCategoryReportComponent extends BaseComponent impleme
 					aValue = a.total_merma_amount || 0;
 					bValue = b.total_merma_amount || 0;
 					break;
-				case 'total_gain':
-					aValue = a.total_gain || 0;
-					bValue = b.total_gain || 0;
-					break;
+			case 'total_gain':
+				aValue = a.total_gain || 0;
+				bValue = b.total_gain || 0;
+				break;
+			case 'total_produced':
+				aValue = a.total_produced || 0;
+				bValue = b.total_produced || 0;
+				break;
 				default:
 					return 0;
 			}

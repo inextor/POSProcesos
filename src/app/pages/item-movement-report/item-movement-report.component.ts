@@ -104,6 +104,11 @@ export class ItemMovementReportComponent extends BaseComponent implements OnInit
 		return this.item_movement_list.reduce((sum, item) => sum + (item.sold_amount || 0), 0);
 	}
 
+	get totalProduced(): number
+	{
+		return this.item_movement_list.reduce((sum, item) => sum + (item.total_produced || 0), 0);
+	}
+
 
 	ngOnInit(): void
 	{
@@ -339,10 +344,14 @@ export class ItemMovementReportComponent extends BaseComponent implements OnInit
 				aValue = (typeof a.total_loss === 'number' ? a.total_loss : parseFloat(a.total_loss as string)) || 0;
 				bValue = (typeof b.total_loss === 'number' ? b.total_loss : parseFloat(b.total_loss as string)) || 0;
 				break;
-			case 'total_gain':
-				aValue = (typeof a.total_gain === 'number' ? a.total_gain : parseFloat(a.total_gain as string)) || 0;
-				bValue = (typeof b.total_gain === 'number' ? b.total_gain : parseFloat(b.total_gain as string)) || 0;
-				break;
+		case 'total_gain':
+			aValue = (typeof a.total_gain === 'number' ? a.total_gain : parseFloat(a.total_gain as string)) || 0;
+			bValue = (typeof b.total_gain === 'number' ? b.total_gain : parseFloat(b.total_gain as string)) || 0;
+			break;
+		case 'total_produced':
+			aValue = a.total_produced || 0;
+			bValue = b.total_produced || 0;
+			break;
 
 
 
