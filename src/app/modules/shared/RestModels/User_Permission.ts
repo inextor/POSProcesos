@@ -32,6 +32,7 @@ export interface User_Permission {
   currency_rates: any;
   discounts: any;
   edit_billing_data: any;
+  edit_purchase_order_with_stock: any;
   add_form: any;
   fullfill_orders: any;
   global_add_stock: any;
@@ -80,6 +81,7 @@ export interface User_Permission {
   view_consignment_delivered: any;
   view_consignment_received: any;
   view_facturas: any;
+  view_global_stocktake: any;
   view_payroll: any;
   view_responses: any;
   view_stock: any;

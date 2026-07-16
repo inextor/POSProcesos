@@ -1692,6 +1692,7 @@ export interface User_Permission{
 	currency_rates:number;
 	discounts:number;
 	edit_billing_data:number;
+	edit_purchase_order_with_stock:number;
 	fullfill_orders:number;
 	global_add_stock:number;
 	global_bills:number;
@@ -1728,6 +1729,7 @@ export interface User_Permission{
 	user_id:number;
 	view_asistance:number;
 	view_commandas:number;
+	view_global_stocktake:number;
 	view_payroll:number;
 	view_responses:number;
 	view_stock:number;
