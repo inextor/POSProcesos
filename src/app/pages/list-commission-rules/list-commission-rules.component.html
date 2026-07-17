@@ -1,0 +1,39 @@
+<div class="container-fluid">
+  <div class="row align-items-center">
+    <div class="col-8">
+      <h1 class="my-3">Reglas de Comisión</h1>
+    </div>
+    <div class="col-4 text-end">
+      <button type="button" class="ml-2 btn btn-secondary lift" [routerLink]="['/add-commission-rules']">Agregar Nuevo</button>
+    </div>
+  </div>
+
+  <div class="card px-1 px-md-2 py-3 mt-3">
+    <table class="table table-striped w-100">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Porcentaje Base</th>
+          <th>Reducción por Descuento</th>
+          <th>Estatus</th>
+          <th>Modificado</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (rule of commission_rule_list; track rule) {
+          <tr>
+            <td>{{ rule.id }}</td>
+            <td>{{ rule.base_percent }}%</td>
+            <td>{{ rule.discount_reduction_per_percent }}%</td>
+            <td>{{ rule.status }}</td>
+            <td>{{ rule.updated | shortDate: 'relative' }}</td>
+            <td>
+              <a [routerLink]="['/edit-commission-rules', rule.id]">Editar</a>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+</div>

@@ -30,6 +30,7 @@ export * from './RestModels/Category_Type';
 export * from './RestModels/Check_In_Raw';
 export * from './RestModels/Check_In';
 export * from './RestModels/Commanda';
+export * from './RestModels/Commission_Rule';
 export * from './RestModels/Commanda_Type';
 export * from './RestModels/Consumption';
 export * from './RestModels/Consumption_User';

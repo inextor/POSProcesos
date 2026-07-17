@@ -42,6 +42,7 @@ import { transformation } from './Empties/Transformation';
 import { transformation_input } from './Empties/Transformation_Input';
 import { transformation_output } from './Empties/Transformation_Output';
 import { transformation_info } from './Empties/Transformation_Info';
+import { commission_rule } from './Empties/Commission_Rule';
 import { storage_type } from './Empties/Storage_Type';
 import { store_bank_account } from './Empties/Store_Bank_Account';
 
@@ -95,5 +96,6 @@ export class GetEmpty {
 	static transformation_output = transformation_output;
 	static transformation_info = transformation_info;
 	static storage_type = storage_type;
+	static commission_rule = commission_rule;
 	static store_bank_account = store_bank_account;
 }
