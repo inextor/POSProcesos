@@ -21,11 +21,11 @@
         </select>
       </div>
       <div class="col-12 col-md-3">
-        <label>Fecha Inicial</label>
+        <label>Fecha Inicial <span class="help-icon" title="Para cuándo se REQUIERE la mercancía (fecha de la requisición). No es cuándo se creó la requisición ni cuándo se produjo.">?</span></label>
         <input type="datetime-local" class="form-control" name="fecha_inicial" [(ngModel)]="fecha_inicial" (ngModelChange)="onDateChange($event,search_requisition.search_extra,'start_timestamp')">
       </div>
       <div class="col-12 col-md-3">
-        <label>Fecha Final</label>
+        <label>Fecha Final <span class="help-icon" title="Para cuándo se REQUIERE la mercancía (fecha de la requisición). No es cuándo se creó la requisición ni cuándo se produjo.">?</span></label>
         <input type="datetime-local" class="form-control" name="fecha_final" [(ngModel)]="fecha_final" (ngModelChange)="onDateChange($event,search_requisition.search_extra,'end_timestamp','',59)">
       </div>
       <div class="col-12 col-md-3">
@@ -37,7 +37,8 @@
 </div>
 <h4 class="my-3">Ordenes Especiales</h4>
 <app-order-items
-  [start_timestamp]="start_timestamp"
+  [start_timestamp]="search_requisition.search_extra['start_timestamp']"
+  [end_timestamp]="search_requisition.search_extra['end_timestamp']"
   (productionCreated)="onSpecialOrderProductionCreated($event)">
 </app-order-items>
 <h4 class="my-3">Artículos requeridos</h4>

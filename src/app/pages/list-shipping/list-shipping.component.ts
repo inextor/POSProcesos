@@ -59,7 +59,7 @@ export class ListShippingComponent extends BaseComponent
 				}
 				else
 				{
-					this.production_search.eq.production_area_id = 1;
+					this.production_search.eq.production_area_id = this.rest.user?.production_area_id ?? 1;
 				}
 
 				if(paramMap.has('ge.created'))
@@ -125,6 +125,13 @@ export class ListShippingComponent extends BaseComponent
 				this.showError("Ocurrio un error obteniendo el reporte:" + error.message);
 			}
 		});
+	}
+
+	//tienda origen del envio = la tienda del area de produccion seleccionada en el filtro
+	get selected_from_store_id(): number | null
+	{
+		let area = this.production_area_list.find(a => a.id == this.production_search.eq.production_area_id);
+		return area?.store_id ?? null;
 	}
 
 	fechaInicialChange(fecha: string)
