@@ -4,7 +4,7 @@
       <h1 class="my-3">Reglas de Comisión</h1>
     </div>
     <div class="col-4 text-end">
-      <button type="button" class="ml-2 btn btn-secondary lift" [routerLink]="['/add-commission-rules']">Agregar Nuevo</button>
+      <button type="button" class="ml-2 btn btn-secondary lift" [routerLink]="['/add-commission-rule']">Agregar Nuevo</button>
     </div>
   </div>
 
@@ -29,7 +29,8 @@
             <td>{{ rule.status }}</td>
             <td>{{ rule.updated | shortDate: 'relative' }}</td>
             <td>
-              <a [routerLink]="['/edit-commission-rules', rule.id]">Editar</a>
+              <a [routerLink]="['/edit-commission-rule', rule.id]" class="btn btn-primary btn-sm me-1">Editar</a>
+              <button type="button" class="btn btn-danger btn-sm" (click)="delete(rule)">Eliminar</button>
             </td>
           </tr>
         }

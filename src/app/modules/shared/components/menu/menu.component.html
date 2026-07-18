@@ -1234,11 +1234,11 @@
 					<div id="show_commissions" class="collapse ps-3" data-bs-parent="#collapse_parent">
 						<ul class="flex-column nav">
 							<li class="side-nav-item">
-								<a [attr.href]="external_base_url + '/#/affiliates-sales'" class="side-nav-link" aria-expanded="false" >
+								<a routerLink="/payment-commission-report" class="side-nav-link" aria-expanded="false">
 									<i class="svg-icon">
-										<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="currentColor" d="M8.27 3L3 8.27v7.46L8.27 21h7.46L21 15.73V8.27L15.73 3M8.41 7L12 10.59L15.59 7L17 8.41L13.41 12L17 15.59L15.59 17L12 13.41L8.41 17L7 15.59L10.59 12L7 8.41"/></svg>
+										<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="currentColor" d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm.31-8.86c-1.77-.45-2.34-.94-2.34-1.67 0-.84.79-1.41 2.1-1.41 1.47 0 2.01.73 2.06 1.6h1.75c-.05-1.79-1.13-2.91-2.85-3.32V5h-2v1.35c-1.59.34-2.87 1.38-2.87 3.07 0 1.9 1.57 2.85 3.87 3.4 2.45.59 2.82 1.41 2.82 2.3 0 1.05-.9 1.76-2.43 1.76-1.75 0-2.43-.81-2.52-1.86h-1.75c.1 1.9 1.39 2.92 3.1 3.32V19h2v-1.38c1.64-.31 2.97-1.3 2.97-3.1 0-2.2-1.92-2.95-4.41-3.38z"/></svg>
 									</i>
-									<span>Reporte para comisiones</span>
+									<span>Generar Comisiones</span>
 								</a>
 							</li>
 							<li class="side-nav-item">
@@ -1246,19 +1246,11 @@
 								<i class="svg-icon">
 									<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="currentColor" d="M8.27 3L3 8.27v7.46L8.27 21h7.46L21 15.73V8.27L15.73 3M8.41 7L12 10.59L15.59 7L17 8.41L13.41 12L17 15.59L15.59 17L12 13.41L8.41 17L7 15.59L10.59 12L7 8.41"/></svg>
 								</i>
-								<span>Comisiones por Agente</span>
-							</a>
-							</li>
-							<li class="side-nav-item">
-<a routerLink="/payment-commission-report" class="side-nav-link" aria-expanded="false">
-								<i class="svg-icon">
-									<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="currentColor" d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm.31-8.86c-1.77-.45-2.34-.94-2.34-1.67 0-.84.79-1.41 2.1-1.41 1.47 0 2.01.73 2.06 1.6h1.75c-.05-1.79-1.13-2.91-2.85-3.32V5h-2v1.35c-1.59.34-2.87 1.38-2.87 3.07 0 1.9 1.57 2.85 3.87 3.4 2.45.59 2.82 1.41 2.82 2.3 0 1.05-.9 1.76-2.43 1.76-1.75 0-2.43-.81-2.52-1.86h-1.75c.1 1.9 1.39 2.92 3.1 3.32V19h2v-1.38c1.64-.31 2.97-1.3 2.97-3.1 0-2.2-1.92-2.95-4.41-3.38z"/></svg>
-								</i>
-								<span>Comisiones por Pagos</span>
+								<span>Reporte de comisiones</span>
 							</a>
 							</li>
 						<li class="side-nav-item">
-							<a routerLink="/list-commission-rules" class="side-nav-link" aria-expanded="false">
+							<a routerLink="/list-commission-rule" class="side-nav-link" aria-expanded="false">
 								<i class="svg-icon">
 									<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="currentColor" d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8zm1 13h-4v4H9v-4H5v-2h4V9h2v4h4z"/></svg>
 								</i>
@@ -1278,7 +1270,7 @@
 									<i class="svg-icon">
 										<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="currentColor" d="M13 10V4h-2v6H5v2h6v6h2v-6h6v-2h-6z"/></svg>
 									</i>
-									<span>Pagos Pendientes Comisiones</span>
+									<span>Comisiones pendientes de pago</span>
 								</a>
 							</li>
 							<li class="side-nav-item">
@@ -1286,15 +1278,7 @@
 									<i class="svg-icon">
 										<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="currentColor" d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm4.59-12.42L10 14.17l-2.59-2.58L6 13l4 4l8-8z"/></svg>
 									</i>
-									<span>Comisiones Pagadas</span>
-								</a>
-							</li>
-							<li class="side-nav-item">
-								<a routerLink="/consecutivo-facturas-desglozado-report" class="side-nav-link" aria-expanded="false">
-									<i class="svg-icon">
-										<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="currentColor" d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2m0 16H5V5h14v14z"/><path fill="currentColor" d="M7 12h10v2H7zm0-4h10v2H7z"/></svg>
-									</i>
-									<span>Reporte Detallado de Facturas</span>
+									<span>Comisiones pagadas</span>
 								</a>
 							</li>
 						</ul>

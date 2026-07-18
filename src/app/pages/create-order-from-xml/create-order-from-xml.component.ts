@@ -10,7 +10,6 @@ import { LoadingComponent } from '../../components/loading/loading.component';
 import { AttachmentUploaderComponent } from '../../components/attachment-uploader/attachment-uploader.component';
 import { SearchItemsComponent } from '../../components/search-items/search-items.component';
 import { SearchUsersComponent } from '../../components/search-users/search-users.component';
-import { ModalComponent } from '../../components/modal/modal.component';
 import { FacturaMetaData } from '../../modules/shared/FacturaMetaData';
 import { GetEmpty } from '../../modules/shared/GetEmpty';
 import { OrderBuilder } from '../../modules/shared/OrderBuilder';
@@ -45,8 +44,7 @@ interface CfdiConcepto {
 		LoadingComponent,
 		AttachmentUploaderComponent,
 		SearchItemsComponent,
-		SearchUsersComponent,
-		ModalComponent
+		SearchUsersComponent
 	]
 })
 export class CreateOrderFromXmlComponent extends BaseComponent implements OnInit {

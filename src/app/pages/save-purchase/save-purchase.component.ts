@@ -10,7 +10,6 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ModalComponent } from '../../components/modal/modal.component';
 import { SearchItemsComponent } from '../../components/search-items/search-items.component';
-import { AttachmentUploaderComponent } from '../../components/attachment-uploader/attachment-uploader.component';
 
 declare function txt2html(str:string):string;
 declare function printHtml(html_body:string,title:string):any;
@@ -28,7 +27,7 @@ interface CPurchaseInfo extends PurchaseInfo
 @Component({
 	selector: 'app-save-purchase',
 	standalone: true,
-	imports: [CommonModule, FormsModule, ModalComponent, SearchItemsComponent, AttachmentUploaderComponent],
+	imports: [CommonModule, FormsModule, ModalComponent, SearchItemsComponent],
 	templateUrl: './save-purchase.component.html',
 	styleUrls: ['./save-purchase.component.css']
 })
