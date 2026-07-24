@@ -1,7 +1,14 @@
 <div class="container-fluid">
 	<div class="row align-items-center">
-		<div class="col-12">
+		<div class="col">
 			<h1 class="my-3">Reporte de Pagos a Crédito</h1>
+		</div>
+		<div class="col-auto">
+			@if (credit_payment_list.length > 0) {
+				<button type="button" class="btn btn-primary lift p-2 lh-1" (click)="exportToExcel()" title="Exportar a Excel" aria-label="Exportar a Excel">
+					<svg xmlns="http://www.w3.org/2000/svg" width="1.5em" height="1.5em" viewBox="0 0 24 24"><path d="M0 0h24v24H0z" fill="none"/><path fill="currentColor" d="m2.859 2.877l12.57-1.795a.5.5 0 0 1 .571.494v20.848a.5.5 0 0 1-.57.494L2.858 21.123a1 1 0 0 1-.859-.99V3.867a1 1 0 0 1 .859-.99M17 3h4a1 1 0 0 1 1 1v16a1 1 0 0 1-1 1h-4zm-6.8 9L13 8h-2.4L9 10.286L7.4 8H5l2.8 4L5 16h2.4L9 13.714L10.6 16H13z"/></svg>
+				</button>
+			}
 		</div>
 	</div>
 	<div class="card p-3">

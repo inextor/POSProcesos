@@ -9,6 +9,7 @@ import { BaseComponent } from '../../modules/shared/base/base.component';
 import { Store, User } from '../../modules/shared/RestModels';
 import { forkJoin, Observable, of } from 'rxjs';
 import { ShortDatePipe } from '../../modules/shared/pipes/short-date.pipe';
+import { ExcelUtils } from '../../classes/ExcelUtils';
 
 interface CreditPaymentRecord {
 	payment_id: number;
@@ -194,6 +195,34 @@ export class ReportCreditPaymentsComponent extends BaseComponent implements OnIn
 		this.credit_payment_search.eq.start_date = this.start_date as any;
 		this.credit_payment_search.eq.end_date = this.end_date as any;
 		super.search(this.credit_payment_search);
+	}
+
+	exportToExcel()
+	{
+		if (this.credit_payment_list.length === 0)
+		{
+			this.showError('No hay datos para exportar.');
+			return;
+		}
+
+		// Se arma un arreglo con encabezados legibles (mismas columnas que la tabla y el tipo de pago traducido)
+		const rows = this.credit_payment_list.map(item => ({
+			'Pago ID': item.payment_id,
+			'Orden': item.order_id,
+			'Cliente': item.client_name,
+			'Sucursal': item.store_name,
+			'Total Orden': item.order_total,
+			'Monto Aplicado': item.amount_applied,
+			'Fecha': item.order_local_date,
+			'Fecha Pago': item.payment_local_date,
+			'Días': item.days_difference,
+			'Tipo Pago': this.getPaymentMethodName(item.transaction_type),
+			'Referencia': item.reference,
+		}));
+
+		const headers = ['Pago ID', 'Orden', 'Cliente', 'Sucursal', 'Total Orden', 'Monto Aplicado', 'Fecha', 'Fecha Pago', 'Días', 'Tipo Pago', 'Referencia'];
+		const filename = `pagos_credito_${this.start_date}_${this.end_date}.xlsx`;
+		ExcelUtils.array2xlsx(rows, filename, headers);
 	}
 
 	getExternalLink(path: string, id: number): string
