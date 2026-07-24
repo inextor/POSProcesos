@@ -93,8 +93,19 @@ export class CloseShiftComponent extends BaseComponent implements OnInit
 				let ids = response.user.data.map((i:User)=>i.id);
 				let search_object = this.rest_check_in.getEmptySearch();
 
+				// Cargar TODOS los check-ins del día (abiertos y ya cerrados), no solo los
+				// que están en rojo (current=1). Al hacer Check OUT el backend pone current=0
+				// en todos, así que filtrar por current=1 perdía el tiempo de quien ya salió.
+				let day_start = Utils.getLocalDateFromMysqlString( this.start_date_string ) as Date;
+				let day_end = new Date( day_start );
+				day_end.setDate( day_end.getDate() + 1 );
+
 				search_object.csv['user_id'] = ids;
-				search_object.eq.current = 1;
+				// Date (no string): getString() lo convierte a UTC con toISOString(), que es como el backend
+					// compara los TIMESTAMP (conexión +00:00). Con string en hora local, los check-ins de la
+					// tarde/noche caen en el día UTC siguiente y se pierden del filtro.
+					(search_object.ge as any).start_timestamp = day_start;
+				(search_object.lt as any).start_timestamp = day_end;
 
 				return forkJoin
 				({
@@ -115,14 +126,26 @@ export class CloseShiftComponent extends BaseComponent implements OnInit
 
 				for(let user of response.users.data)
 				{
-					let work_log:Work_Log | undefined = response.work_logs.data.find((wl)=>wl.user_id == user.id );
+					let saved:Work_Log | undefined = response.work_logs.data.find((wl)=>wl.user_id == user.id );
 
 					let ws_funct = (ws:Workshift)=>ws.id == user.workshift_id;
 					let workshift:Workshift | undefined = response.workshift.data.find( ws_funct );
 					let check_ins	= response.check_ins.data.filter(checkin=>user.id == checkin.user_id );
 
-					if( !work_log )
-						work_log = this.getWorkLog( user, check_ins, workshift );
+					//Siempre recalcular desde los check-ins del día: así, al reabrir un cierre ya guardado,
+					//se reflejan las sesiones nuevas (nuevos check-in/out del mismo día).
+					let work_log = this.getWorkLog( user, check_ins, workshift );
+
+					if( saved )
+					{
+						//conservar lo capturado a mano o por otros flujos (no proviene de los check-ins)
+						work_log.id					= saved.id;
+						work_log.docking_pay		= saved.docking_pay;
+						work_log.on_time			= saved.on_time;
+						work_log.total_payment		= saved.total_payment;
+						work_log.disciplinary_actions	= saved.disciplinary_actions;
+						work_log.json_values		= saved.json_values;
+					}
 
 					result.push
 					({
@@ -151,14 +174,18 @@ export class CloseShiftComponent extends BaseComponent implements OnInit
 
 	getWorkLog(user:User,check_in_list:Check_In[], workshift:Workshift | undefined):Work_Log
 	{
-		let min_time_func = (p:number |null,check_in:Check_In) => p == null
-			? check_in.start_timestamp.getTime()
-			: Math.min(p, check_in.end_timestamp.getTime());
+		// null-safe: el intervalo abierto (aún en rojo) tiene end_timestamp = null -> se toma "ahora"
+		let min_time_func = (p:number |null,check_in:Check_In) =>
+		{
+			let start = check_in.start_timestamp ? check_in.start_timestamp.getTime() : Date.now();
+			return p == null ? start : Math.min( p, start );
+		};
 
 		let max_time_func = (p:number |null,check_in:Check_In) =>
-			p == null || check_in.end_timestamp== null
-			? p
-			: Math.max( p, check_in.end_timestamp.getTime() );
+		{
+			let end = check_in.end_timestamp ? check_in.end_timestamp.getTime() : Date.now();
+			return p == null ? end : Math.max( p, end );
+		};
 
 
 		let min_time	= check_in_list.reduce( min_time_func, null);
