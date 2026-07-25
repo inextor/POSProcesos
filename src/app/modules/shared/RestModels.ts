@@ -143,6 +143,7 @@ export * from './RestModels/Storage_Serial';
 export * from './RestModels/Storage';
 export * from './RestModels/Storage_Type';
 export * from './RestModels/Store_Bank_Account';
+export * from './RestModels/Transfer';
 export * from './RestModels/Store_Sale_Report';
 export * from './RestModels/Store';
 export * from './RestModels/Table';

@@ -5,6 +5,9 @@
 		</div>
 		<div class="col-4 text-end">
 			<button type="button" class="btn btn-secondary lift" (click)="location.back()">Volver</button>
+			@if (bank_account_id) {
+				<a class="btn btn-success lift ms-2" routerLink="/add-transfer" [queryParams]="{ bank_account_id: bank_account_id }">Traspaso</a>
+			}
 		</div>
 	</div>
 	<div class="row mt-3">
@@ -32,6 +35,7 @@
 			<div class="col-1">Moneda</div>
 			<div class="col-2">Fecha</div>
 			<div class="col-1">Corte</div>
+			<div class="col-1"></div>
 		</div>
 		@for (m of movement_list; track m) {
 			<div class="row border-bottom py-2 align-items-center">
@@ -65,7 +69,26 @@
 				<div class="col-6 col-md-1">
 					<span class="d-md-none fw-bold">Corte: </span>{{ m.is_checkpoint ? 'Si' : '-' }}
 				</div>
+				<div class="col-6 col-md-1 text-end">
+					<button type="button" class="btn btn-sm btn-outline-secondary" (click)="startEdit(m)" title="Establecer saldo">Editar</button>
+				</div>
 			</div>
+			@if (editing_movement_id === m.id) {
+				<div class="row border-bottom py-2 bg-light align-items-center">
+					<div class="col-md-3">
+						<label class="form-label small">Saldo</label>
+						<input type="number" class="form-control form-control-sm" [(ngModel)]="editing_balance" step="0.01" placeholder="Saldo" />
+					</div>
+					<div class="col-md-3">
+						<label class="form-label small">Fecha</label>
+						<input type="datetime-local" class="form-control form-control-sm" [(ngModel)]="editing_paid_date" />
+					</div>
+					<div class="col-md-6 d-flex align-items-end gap-2 mt-2 mt-md-0">
+						<button type="button" class="btn btn-sm btn-primary" (click)="setCheckpoint(m.id)">Guardar</button>
+						<button type="button" class="btn btn-sm btn-secondary" (click)="cancelEdit()">Cancelar</button>
+					</div>
+				</div>
+			}
 		}
 	</div>
 </div>

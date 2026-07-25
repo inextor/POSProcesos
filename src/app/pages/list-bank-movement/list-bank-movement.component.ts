@@ -33,6 +33,10 @@ export class ListBankMovementComponent extends BaseComponent implements OnInit {
 	movement_list: MovementWithLabel[] = [];
 	bank_account_list: Bank_Account[] = [];
 
+	editing_movement_id: number | null = null;
+	editing_balance: number | null = null;
+	editing_paid_date: string | null = null;
+
 	rest_bank_movement: RestSimple<Bank_Movement> = this.rest.initRestSimple('bank_movement', ['id', 'type', 'total', 'balance', 'amount_received', 'transaction_type', 'reference', 'note', 'paid_date', 'status', 'bank_account_id', 'is_checkpoint']);
 	rest_bank_account: RestSimple<Bank_Account> = this.rest.initRestSimple('bank_account', ['id', 'name', 'bank']);
 	search_bank_movement: SearchObject<Bank_Movement> = this.rest_bank_movement.getEmptySearch();
@@ -63,6 +67,54 @@ export class ListBankMovementComponent extends BaseComponent implements OnInit {
 			}));
 			this.bank_account_list = response.bank_accounts.data;
 			this.setPages(this.current_page, response.movements.total);
+		});
+	}
+
+	loadMovements(): void {
+		this.is_loading = true;
+		this.subs.sink = this.rest_bank_movement.searchWithRelations(this.search_bank_movement, [this.rest_bank_account.getRelation('bank_account_id')]).subscribe(response => {
+			this.is_loading = false;
+			this.movement_list = response.data.map((m: any) => ({
+				...m.bank_movement,
+				bank_account: m.bank_account,
+				transaction_type_label: TRANSACTION_LABELS[m.bank_movement.transaction_type] || m.bank_movement.transaction_type,
+			}));
+			this.setPages(this.current_page, response.total);
+		});
+	}
+
+	startEdit(m: MovementWithLabel): void {
+		this.editing_movement_id = m.id;
+		this.editing_balance = m.balance;
+		this.editing_paid_date = m.paid_date ? m.paid_date.substring(0, 16) : null;
+	}
+
+	cancelEdit(): void {
+		this.editing_movement_id = null;
+		this.editing_balance = null;
+		this.editing_paid_date = null;
+	}
+
+	setCheckpoint(movement_id: number): void {
+		const payload: any = { id: movement_id };
+		if (this.editing_balance !== null) {
+			payload.balance = this.editing_balance;
+		}
+		if (this.editing_paid_date) {
+			payload.paid_date = this.editing_paid_date;
+		}
+
+		this.is_loading = true;
+		this.subs.sink = this.rest.updatePath('set_bank_movement_checkpoint', payload).subscribe({
+			next: () => {
+				this.cancelEdit();
+				this.loadMovements();
+				this.rest.showSuccess('Saldo establecido correctamente.');
+			},
+			error: (err: any) => {
+				this.is_loading = false;
+				this.showError(err);
+			}
 		});
 	}
 

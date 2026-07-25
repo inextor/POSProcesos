@@ -20,7 +20,8 @@ export interface Bank_Movement{
 	reference:string | null;
 	status:'ACTIVE'|'DELETED';
 	total:number;
-	transaction_type:'CASH'|'CREDIT_CARD'|'DEBIT_CARD'|'CHECK'|'COUPON'|'TRANSFER'|'DISCOUNT'|'RETURN_DISCOUNT'|'PAYPAL';
+	transaction_type:'CASH'|'CREDIT_CARD'|'DEBIT_CARD'|'CHECK'|'COUPON'|'TRANSFER'|'DISCOUNT'|'RETURN_DISCOUNT'|'PAYPAL'|'INTERNAL_TRANSFER';
+	transfer_id:number | null;
 	type:'expense'|'income';
 	updated:Date;
 }

@@ -45,6 +45,7 @@ import { transformation_info } from './Empties/Transformation_Info';
 import { commission_rule } from './Empties/Commission_Rule';
 import { storage_type } from './Empties/Storage_Type';
 import { store_bank_account } from './Empties/Store_Bank_Account';
+import { transfer } from './Empties/Transfer';
 
 /**
  * GetEmpty class provides static methods for creating empty/default instances of models.
@@ -98,4 +99,5 @@ export class GetEmpty {
 	static storage_type = storage_type;
 	static commission_rule = commission_rule;
 	static store_bank_account = store_bank_account;
+	static transfer = transfer;
 }

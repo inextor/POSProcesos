@@ -1,0 +1,52 @@
+<div class="container-fluid">
+	<div class="row">
+		<div class="col-6">
+			<h1 class="my-3">Traspaso entre Cuentas</h1>
+		</div>
+	</div>
+	<app-loading [is_loading]="is_loading"></app-loading>
+	<div class="card p-3 mt-3">
+		<form (submit)="save($event)" ngNativeValidate>
+			<div class="row my-2">
+				<div class="col-12 col-md-6 form-group">
+					<label for="source_bank_account_id">Cuenta Origen</label>
+					<select id="source_bank_account_id" name="source_bank_account_id" class="form-control" [(ngModel)]="source_bank_account_id" required (change)="onSourceChange()">
+						<option [ngValue]="null" disabled>Seleccione una cuenta</option>
+						@for (ba of bank_account_list; track ba.id) {
+							<option [ngValue]="ba.id">{{ ba.name || ba.alias || ba.bank }} — {{ ba.bank }} ({{ ba.currency }})</option>
+						}
+					</select>
+				</div>
+				<div class="col-12 col-md-6 form-group">
+					<label for="dest_bank_account_id">Cuenta Destino</label>
+					<select id="dest_bank_account_id" name="dest_bank_account_id" class="form-control" [(ngModel)]="dest_bank_account_id" required>
+						<option [ngValue]="null" disabled>Seleccione una cuenta</option>
+						@for (ba of dest_accounts; track ba.id) {
+							<option [ngValue]="ba.id">{{ ba.name || ba.alias || ba.bank }} — {{ ba.bank }} ({{ ba.currency }})</option>
+						}
+					</select>
+				</div>
+			</div>
+			<div class="row my-2">
+				<div class="col-12 col-md-6 form-group">
+					<label for="amount">Monto</label>
+					<input type="number" id="amount" name="amount" class="form-control" [(ngModel)]="amount" required min="0.01" step="0.01">
+				</div>
+				<div class="col-12 col-md-6 form-group">
+					<label for="paid_date">Fecha</label>
+					<input type="datetime-local" id="paid_date" name="paid_date" class="form-control" [(ngModel)]="paid_date">
+				</div>
+			</div>
+			<div class="row my-2">
+				<div class="col-12 form-group">
+					<label for="note">Nota / Descripción</label>
+					<textarea id="note" name="note" class="form-control" [(ngModel)]="note" rows="2"></textarea>
+				</div>
+			</div>
+			<div class="text-end">
+				<button type="button" class="btn btn-secondary me-2" (click)="location.back()">Cancelar</button>
+				<button type="submit" class="btn btn-primary">Realizar Traspaso</button>
+			</div>
+		</form>
+	</div>
+</div>
