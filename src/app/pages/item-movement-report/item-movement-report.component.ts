@@ -10,6 +10,7 @@ import { Category, Store } from '../../modules/shared/RestModels';
 import { ItemMovement } from '../../modules/shared/Models';
 import { forkJoin,Observable, of } from 'rxjs';
 import { CategorySearchComponent } from '../../modules/shared/components/category-search/category-search.component';
+import { ItemSearchComponent } from '../../modules/shared/components/item-search/item-search.component';
 
 interface CItemMovement extends ItemMovement
 {
@@ -27,6 +28,7 @@ interface ItemMovementRequest
 	end_timestamp: Date;
 	store_id: number;
 	category_id?: number | null;
+	item_id?: number | null;
 	requisitions_or_shippings?: number;
 }
 
@@ -34,7 +36,7 @@ interface ItemMovementRequest
 	selector: 'app-item-movement-report',
 	templateUrl: './item-movement-report.component.html',
 	styleUrl: './item-movement-report.component.css',
-	imports: [CommonModule, FormsModule, CategorySearchComponent],
+	imports: [CommonModule, FormsModule, CategorySearchComponent, ItemSearchComponent],
 })
 export class ItemMovementReportComponent extends BaseComponent implements OnInit
 {
@@ -45,6 +47,8 @@ export class ItemMovementReportComponent extends BaseComponent implements OnInit
 	rest_store: RestSimple<Store> = this.rest.initRestSimple('store', ['id', 'name', 'created', 'updated']);
 	stores: Store[] = [];
 	rest_category: RestSimple<Category> = this.rest.initRestSimple('category', ['id']);
+	//Texto libre del buscador de articulos: filtra por nombre/codigo parcial cuando no se eligio uno de la lista
+	item_search_str: string = '';
 	sortColumn: string = '';
 	sortDirection: 'asc' | 'desc' = 'asc';
 
@@ -136,7 +140,7 @@ export class ItemMovementReportComponent extends BaseComponent implements OnInit
 				this.path = '/item-movement-report';
 				this.is_loading = true;
 
-				this.item_movement_search = this.getSearch(param_map, ['store_id','start_timestamp','end_timestamp','requisitions_or_shippings','category_id']);
+				this.item_movement_search = this.getSearch(param_map, ['store_id','start_timestamp','end_timestamp','requisitions_or_shippings','category_id','item_id'], ['item_search']);
 
 				if (this.item_movement_search.eq.store_id as any === 'undefined' || this.item_movement_search.eq.store_id as any === 'null')
 				{
@@ -147,6 +151,13 @@ export class ItemMovementReportComponent extends BaseComponent implements OnInit
 				{
 					this.item_movement_search.eq.category_id = undefined;
 				}
+
+				if (this.item_movement_search.eq.item_id as any === 'undefined' || this.item_movement_search.eq.item_id as any === 'null')
+				{
+					this.item_movement_search.eq.item_id = undefined;
+				}
+
+				this.item_search_str = (this.item_movement_search.search_extra['item_search'] as string) || '';
 
 				// Si el usuario tiene un store_id asignado y no se ha especificado uno en los parámetros, usarlo por defecto
 				if (!this.item_movement_search.eq.store_id && this.rest.user?.store_id)
@@ -201,6 +212,9 @@ export class ItemMovementReportComponent extends BaseComponent implements OnInit
 					store_id: this.item_movement_search.eq['store_id'],
 					requisitions_or_shippings: requisitions_or_shippings,
 					category_id: this.item_movement_search.eq['category_id'],
+					item_id: this.item_movement_search.eq['item_id'],
+					//Solo aplica cuando no se eligio un articulo concreto (el back ignora item_search si viene item_id)
+					item_search: this.item_movement_search.eq['item_id'] ? null : this.item_search_str,
 				}) as Observable<RestResponse<ItemMovement>>
 			})
 			,mergeMap((report)=>
@@ -266,6 +280,11 @@ export class ItemMovementReportComponent extends BaseComponent implements OnInit
 
 	performSearch()
 	{
+		//Si ya hay un articulo elegido el texto sobra; si no, se manda como filtro parcial
+		this.item_movement_search.search_extra['item_search'] = this.item_movement_search.eq['item_id']
+			? null
+			: (this.item_search_str.trim() || null);
+
 		super.search(this.item_movement_search);
 	}
 

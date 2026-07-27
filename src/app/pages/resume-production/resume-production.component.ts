@@ -91,7 +91,9 @@ export class ResumeProductionComponent extends BaseComponent
 				let keys = query_params.keys;
 
 				let obj:SearchObject<Production> = this.rest_production_info.getEmptySearch();
-
+				//getEmptySearch deja limit en page_size (50) y esta vista no pagina: arma el resumen
+				//completo del rango, asi que hay que pedir todos los registros.
+				obj.limit = 999999;
 
 				if( query_params.has('start_date') )
 				{
