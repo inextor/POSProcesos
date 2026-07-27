@@ -1,0 +1,10 @@
+<div class="card">
+	<div class="card-body">
+		<app-loading [is_loading]="is_loading"></app-loading>
+		<p class="mb-3">Descarga todos los lotes vigentes (con existencia actual) incluyendo artículo, lote, caducidad y cantidades.</p>
+		<button class="btn btn-primary" (click)="downloadExcel()" [disabled]="is_loading">
+			<svg xmlns="http://www.w3.org/2000/svg" width="1.1em" height="1.1em" viewBox="0 0 16 16" class="me-1"><path fill="currentColor" d="M14 14V4.5L9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2zM9.5 3A1.5 1.5 0 0 0 11 4.5h2V14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5v2z"/></svg>
+			Descargar Lotes Vigentes (Excel)
+		</button>
+	</div>
+</div>
