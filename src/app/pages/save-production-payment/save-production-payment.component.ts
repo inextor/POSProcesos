@@ -60,6 +60,13 @@ export class SaveProductionPaymentComponent extends BaseComponent implements OnI
 	cost_total:number = 0;
 	payment_total:number = 0;
 
+	//Suma de la columna "Total Pago": es exactamente lo que submit() guarda en work_log.total_payment,
+	//por eso es un getter y no un campo (refleja tambien las ediciones manuales del input).
+	get total_to_pay():number
+	{
+		return this.Cuser_production_report_list.reduce((total, upr) => total + (upr.total_payment || 0), 0);
+	}
+
 	ngOnInit(): void {
 
 		this.route.queryParamMap
@@ -93,6 +100,11 @@ export class SaveProductionPaymentComponent extends BaseComponent implements OnI
 				search_production_obj.ge.created = start;
 				search_production_obj.le.created = end;
 				search_production_obj.nn = ['verified_by_user_id'];
+				//getEmptySearch deja limit en page_size (50). Aqui se suman totales del dia,
+				//no se pagina: con el limite por default el total se quedaba corto.
+				search_production_obj.limit = 999999;
+
+				this.search_work_log_obj.limit = 999999;
 
 				return forkJoin({
 					production: this.rest_production.search(search_production_obj),
