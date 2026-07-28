@@ -66,6 +66,11 @@ export class ShortDatePipe implements PipeTransform {
 				}
 				return '';
 			}
+
+			if( args.includes('relative') )
+			{
+				return Utils.getRelativeDateString( v );
+			}
 		}
 
 		return Utils.getFullRelativeDateString( v );

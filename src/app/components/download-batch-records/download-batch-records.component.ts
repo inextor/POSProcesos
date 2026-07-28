@@ -14,6 +14,7 @@ interface BatchRecordRow {
 	Categoría: string;
 	Lote: string;
 	Caducidad: string;
+	'ID Sucursal': number;
 	Sucursal: string;
 	Usuario: string;
 	'Cant. Previa': number;
@@ -27,7 +28,7 @@ interface BatchRecordRow {
 
 const headers = [
 	'ID', 'Artículo', 'Código', 'Categoría', 'Lote', 'Caducidad',
-	'Sucursal', 'Usuario', 'Cant. Previa', 'Movimiento', 'Cant. Final',
+	'ID Sucursal', 'Sucursal', 'Usuario', 'Cant. Previa', 'Movimiento', 'Cant. Final',
 	'Tipo', 'Vigente', 'Fecha', 'Descripción'
 ];
 
@@ -84,6 +85,7 @@ export class DownloadBatchRecordsComponent extends BaseComponent {
 					Categoría: info.category?.name || '',
 					Lote: info.batch_record.batch,
 					Caducidad: info.batch_record.expiration_date || '',
+					'ID Sucursal': info.batch_record.store_id,
 					Sucursal: info.store?.name || '',
 					Usuario: info.user?.name || '',
 					'Cant. Previa': info.batch_record.previous_qty,
