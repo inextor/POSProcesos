@@ -167,8 +167,9 @@ export class ListUserAttendanceComponent extends BaseComponent
 					({
 						user,
 						work_log: work_logs,
-						total_hours,
-						extra_hours,
+						//redondeo a 2 decimales: evita ruido de punto flotante al sumar (0.02+0.05+0.02 = 0.09000000000000001)
+						total_hours: Math.round( total_hours * 100 ) / 100,
+						extra_hours: Math.round( extra_hours * 100 ) / 100,
 						late_arrives
 					});
 					//current_check_in: response.check_ins.data.find(checkin=>i.id == checkin.user_id ) || null

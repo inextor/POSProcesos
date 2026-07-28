@@ -17,6 +17,16 @@
 				<app-category-search [value]="item_movement_search.eq['category_id']" (valueChange)="item_movement_search.eq['category_id'] = $event"></app-category-search>
 			</div>
 			<div class="col-lg-2 col-md-3 col-sm-6">
+				<label>Artículo</label>
+				<app-item-search
+					[value]="item_movement_search.eq['item_id']"
+					(valueChange)="item_movement_search.eq['item_id'] = $event"
+					[text]="item_search_str"
+					(textChange)="item_search_str = $event"
+					[nullLabel]="'Todos los artículos'">
+				</app-item-search>
+			</div>
+			<div class="col-lg-2 col-md-3 col-sm-6">
 				<label>Tipo de Movimiento</label>
 				<select name="requisitions_or_shippings" class="form-control" [(ngModel)]="item_movement_search.eq['requisitions_or_shippings']">
 					<option [value]="0">Todos</option>
@@ -31,7 +41,7 @@
 				<label>Fecha Final</label>
 				<input type="datetime-local" name="end_date" class="form-control" [(ngModel)]="end_date" (ngModelChange)="onDateChange($event, item_movement_search.eq, 'end_timestamp', '', 59)">
 			</div>
-			<div class="col-lg-2 col-md-3 col-sm-6 d-flex align-items-end">
+			<div class="col-lg-2 col-md-3 col-sm-6 d-flex align-items-end mt-2">
 				<button type="button" class="btn btn-primary px-4 d-flex align-items-center justify-content-center w-100" (click)="performSearch()">
 					<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" width="1.3em" height="1.3em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 512 512" class="me-2"><path d="M505 442.7L405.3 343c-4.5-4.5-10.6-7-17-7H372c27.6-35.3 44-79.7 44-128C416 93.1 322.9 0 208 0S0 93.1 0 208s93.1 208 208 208c48.3 0 92.7-16.4 128-44v16.3c0 6.4 2.5 12.5 7 17l99.7 99.7c9.4 9.4 24.6 9.4 33.9 0l28.3-28.3c9.4-9.4 9.4-24.6.1-34zM208 336c-70.7 0-128-57.2-128-128c0-70.7 57.2-128 128-128c70.7 0 128 57.2 128 128c0 70.7-57.2 128-128 128z" fill="currentColor"/></svg>
 					Buscar
@@ -82,9 +92,21 @@
 									<span>{{ sortDirection === 'asc' ? '▲' : '▼' }}</span>
 								}
 							</th>
+							<th class="sortable text-end" (click)="sortBy('total_produced')">
+								Producido
+								@if (sortColumn === 'total_produced') {
+									<span>{{ sortDirection === 'asc' ? '▲' : '▼' }}</span>
+								}
+							</th>
 							<th class="sortable text-end" (click)="sortBy('total_received')">
 								Recibidos
 								@if (sortColumn === 'total_received') {
+									<span>{{ sortDirection === 'asc' ? '▲' : '▼' }}</span>
+								}
+							</th>
+							<th class="sortable text-end" (click)="sortBy('received_percentage')">
+								% Recibido
+								@if (sortColumn === 'received_percentage') {
 									<span>{{ sortDirection === 'asc' ? '▲' : '▼' }}</span>
 								}
 							</th>
@@ -94,31 +116,7 @@
 									<span>{{ sortDirection === 'asc' ? '▲' : '▼' }}</span>
 								}
 							</th>
-						<th class="sortable text-end" (click)="sortBy('received_percentage')">
-							% Recibido
-							@if (sortColumn === 'received_percentage') {
-								<span>{{ sortDirection === 'asc' ? '▲' : '▼' }}</span>
-							}
-						</th>
-						<th class="sortable text-end" (click)="sortBy('total_produced')">
-							Producido
-							@if (sortColumn === 'total_produced') {
-								<span>{{ sortDirection === 'asc' ? '▲' : '▼' }}</span>
-							}
-						</th>
-						@if (item_movement_search.eq['requisitions_or_shippings'] != 1) {
-								<th class="sortable text-end" (click)="sortBy('total_sold')">
-									Venta
-									@if (sortColumn === 'total_sold') {
-										<span>{{ sortDirection === 'asc' ? '▲' : '▼' }}</span>
-									}
-								</th>
-								<th class="sortable text-end" (click)="sortBy('sold_amount')">
-									Venta$
-									@if (sortColumn === 'sold_amount') {
-										<span>{{ sortDirection === 'asc' ? '▲' : '▼' }}</span>
-									}
-								</th>
+							@if (item_movement_search.eq['requisitions_or_shippings'] != 1) {
 								<th class="sortable text-end" (click)="sortBy('total_merma')">
 									Merma
 									@if (sortColumn === 'total_merma') {
@@ -128,6 +126,18 @@
 								<th class="sortable text-end" (click)="sortBy('total_loss')">
 									Merma$
 									@if (sortColumn === 'total_loss') {
+										<span>{{ sortDirection === 'asc' ? '▲' : '▼' }}</span>
+									}
+								</th>
+								<th class="sortable text-end" (click)="sortBy('total_sold')">
+									Venta
+									@if (sortColumn === 'total_sold') {
+										<span>{{ sortDirection === 'asc' ? '▲' : '▼' }}</span>
+									}
+								</th>
+								<th class="sortable text-end" (click)="sortBy('sold_amount')">
+									Venta$
+									@if (sortColumn === 'sold_amount') {
 										<span>{{ sortDirection === 'asc' ? '▲' : '▼' }}</span>
 									}
 								</th>
@@ -149,15 +159,15 @@
 								<td>{{item.item_code}}</td>
 								<td class="text-end">{{item.reference_price|currency}}</td>
 								<td class="text-end">{{item.total_requested|number}}</td>
+								<td class="text-end">{{item.total_produced|number}}</td>
 								<td class="text-end">{{item.total_received| number}}</td>
+								<td class="text-end">{{item.received_percentage|number:'1.0-2'}}%</td>
 								<td class="text-end">{{item.not_received_qty|number}}</td>
-							<td class="text-end">{{item.received_percentage|number:'1.0-2'}}%</td>
-							<td class="text-end">{{item.total_produced|number}}</td>
-							@if (item_movement_search.eq['requisitions_or_shippings'] != 1) {
-									<td class="text-end">{{item.total_sold|number}} </td>
-									<td class="text-end">{{item.sold_amount|currency}}</td>
+								@if (item_movement_search.eq['requisitions_or_shippings'] != 1) {
 									<td class="text-end">{{item.total_merma|number}}</td>
 									<td class="text-end">{{item.total_merma*item.reference_price|currency}}</td>
+									<td class="text-end">{{item.total_sold|number}} </td>
+									<td class="text-end">{{item.sold_amount|currency}}</td>
 									<td class="text-end">{{item.total_gain |currency}}</td>
 								}
 							</tr>
@@ -172,29 +182,29 @@
 						<tr class="table-secondary fw-bold">
 							<td colspan=4 rowspan=2 class="text-end">TOTALES:</td>
 							<td class="text-end">{{totalRequested|number}}</td>
+							<td class="text-end">{{totalProduced|number}}</td>
 							<td class="text-end">{{totalReceived|number}}</td>
+							<td class="text-end">{{totalReceivedPercentage|number:'1.0-2'}}%</td>
 							<td class="text-end">{{totalNotReceived|number}}</td>
-						<td class="text-end">{{totalReceivedPercentage|number:'1.0-2'}}%</td>
-						<td class="text-end">{{totalProduced|number}}</td>
-						@if (item_movement_search.eq['requisitions_or_shippings'] != 1) {
-							<td class="text-end">{{totalSold|number}}</td>
-								<td class="text-end">{{totalAmount|currency}}</td>
+							@if (item_movement_search.eq['requisitions_or_shippings'] != 1) {
 								<td class="text-end">{{totalMerma|number}}</td>
 								<td class="text-end">{{totalMermaAmount|currency}}</td>
+								<td class="text-end">{{totalSold|number}}</td>
+								<td class="text-end">{{totalAmount|currency}}</td>
 								<td class="text-end">{{totalUtilidad|currency}}</td>
 							}
 						</tr>
 						<tr class="table-secondary fw-bold">
 							<td class="text-end">Requeridos</td>
-							<td class="text-end">Recibidos</td>
-							<td class="text-end">Faltante</td>
-							<td class="text-end">% Recibido</td>
 							<td class="text-end">Producido</td>
+							<td class="text-end">Recibidos</td>
+							<td class="text-end">% Recibido</td>
+							<td class="text-end">Faltante</td>
 							@if (item_movement_search.eq['requisitions_or_shippings'] != 1) {
-								<td class="text-end">Vendidos</td>
-								<td class="text-end">Ingresos</td>
 								<td class="text-end">Merma</td>
 								<td class="text-end">Costo Merma</td>
+								<td class="text-end">Vendidos</td>
+								<td class="text-end">Ingresos</td>
 								<td class="text-end">Utilidad</td>
 							}
 						</tr>

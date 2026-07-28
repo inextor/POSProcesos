@@ -60,6 +60,13 @@ export class SaveProductionPaymentComponent extends BaseComponent implements OnI
 	cost_total:number = 0;
 	payment_total:number = 0;
 
+	//Suma de la columna "Total Pago": es exactamente lo que submit() guarda en work_log.total_payment,
+	//por eso es un getter y no un campo (refleja tambien las ediciones manuales del input).
+	get total_to_pay():number
+	{
+		return this.Cuser_production_report_list.reduce((total, upr) => total + (upr.total_payment || 0), 0);
+	}
+
 	ngOnInit(): void {
 
 		this.route.queryParamMap
@@ -93,6 +100,11 @@ export class SaveProductionPaymentComponent extends BaseComponent implements OnI
 				search_production_obj.ge.created = start;
 				search_production_obj.le.created = end;
 				search_production_obj.nn = ['verified_by_user_id'];
+				//getEmptySearch deja limit en page_size (50). Aqui se suman totales del dia,
+				//no se pagina: con el limite por default el total se quedaba corto.
+				search_production_obj.limit = 999999;
+
+				this.search_work_log_obj.limit = 999999;
 
 				return forkJoin({
 					production: this.rest_production.search(search_production_obj),
@@ -195,17 +207,15 @@ export class SaveProductionPaymentComponent extends BaseComponent implements OnI
 			{
 				total_hours += work_log.hours;
 				total_extra_hours += work_log.extra_hours;
-				if (work_log.total_payment)
-				{
-					total_payment += work_log.total_payment;
-				}
 			});
 
 			//gettin the productions of this user
-			let user_productions = productions.filter((production) => production.produced_by_user_id == user.id);
+			//Si produced_by_user_id viene NULL, se atribuye a created_by_user_id (mismo fallback que el backend: production.php:124)
+			let user_productions = productions.filter((production) => (production.produced_by_user_id ?? production.created_by_user_id) == user.id);
 
 			let cost = 0;
 			let production_qty = 0;
+			let merma_qty = 0;
 			user_productions.forEach((production)=>
 			{
 				let item = items.find((ii)=>ii.item.id == production.item_id);
@@ -214,6 +224,7 @@ export class SaveProductionPaymentComponent extends BaseComponent implements OnI
 					cost += production.qty * item.item.reference_price;
 				}
 				production_qty += production.qty;
+				merma_qty += production.merma_qty;
 			});
 
 			let rules = this.json_rules_list.filter((rule)=>rule.store_id == user.store_id);
@@ -233,8 +244,10 @@ export class SaveProductionPaymentComponent extends BaseComponent implements OnI
 				total_extra_hours,
 				total_users,
 				total_prod: payment_total,
+				total_merma: this.merma_total,
 				individual_prod: production_qty,
-				individual_cost: cost
+				individual_cost: cost,
+				individual_merma: merma_qty
 			};
 
 			let json_values: Record<string, any> = {};
@@ -252,13 +265,12 @@ export class SaveProductionPaymentComponent extends BaseComponent implements OnI
 				}
 			});
 
-			//console.log('json_values', json_values);
-			if (total_payment == 0)
+			//Recalcular SIEMPRE el pago desde las reglas (automático): no quedarse pegado en lo ya guardado,
+			//así al reabrir el Registro de Pago refleja la producción actual del día.
+			total_payment = 0;
+			for (let key in json_values)
 			{
-				for (let key in json_values)
-				{
-					total_payment += json_values[key];
-				}
+				total_payment += json_values[key];
 			}
 
 			this.Cuser_production_report_list.push({ user, total_hours, total_extra_hours, production_qty, cost, json_values, total_payment });
