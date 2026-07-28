@@ -2,19 +2,35 @@
   <h1 class="my-3">Registro Diario de Pago</h1>
   <div class="card p-3">
     <div class="row">
-      <div class="col-6">
+      @if (show_production_area_filter) {
+        <div class="col-12 col-md-4">
+          <div class="form-group">
+            <label for="production_area_id">Área de Producción</label>
+            <select class="form-control" id="production_area_id" [(ngModel)]="production_area_id">
+              <option [ngValue]="null">Selecciona un área</option>
+              @for (pa of production_area_list; track pa.id) {
+                <option [ngValue]="pa.id">{{pa.name}}</option>
+              }
+            </select>
+          </div>
+        </div>
+      }
+      <div [class]="show_production_area_filter ? 'col-6 col-md-4' : 'col-6'">
         <div class="form-group">
           <label for="search_date">Fecha</label>
           <input type="date" [(ngModel)]="search_date" (ngModelChange)="onDateChange($event, search_work_log_obj.eq, 'date')" class="form-control" id="search_date">
         </div>
       </div>
-      <div class="col-6">
+      <div [class]="show_production_area_filter ? 'col-6 col-md-4' : 'col-6'">
         <div class="form-group">
           <label>&nbsp;</label>
-          <button class="btn btn-primary w-100" (click)="search(search_work_log_obj)" >Buscar</button>
+          <button class="btn btn-primary w-100" (click)="performSearch()" >Buscar</button>
         </div>
       </div>
     </div>
+    @if (show_production_area_filter && !production_area_id) {
+      <div class="alert alert-info mb-0 mt-2">Selecciona un área de producción para ver el registro del día.</div>
+    }
   </div>
   <app-loading [is_loading]="is_loading"></app-loading>
   <div class="card p-3 my-3">
