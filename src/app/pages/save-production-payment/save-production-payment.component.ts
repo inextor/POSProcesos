@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { BaseComponent } from '../../modules/shared/base/base.component';
 import { CommonModule } from '@angular/common';
-import { Item, Price, Production, User, User_Extra_Fields, Work_Log, Work_Log_Rules } from '../../modules/shared/RestModels';
+import { Item, Price, Production, Production_Area, User, User_Extra_Fields, Work_Log, Work_Log_Rules } from '../../modules/shared/RestModels';
 import { Utils } from '../../modules/shared/Utils';
 import { FormsModule } from '@angular/forms';
 import { forkJoin, mergeMap, of } from 'rxjs';
@@ -44,6 +44,13 @@ export class SaveProductionPaymentComponent extends BaseComponent implements OnI
 	rest_user:RestSimple<User> = this.rest.initRestSimple('user');
 	rest_work_log_rules:RestSimple<Work_Log_Rules> = this.rest.initRestSimple('work_log_rules');
 	rest_user_extra_fields:RestSimple<User_Extra_Fields> = this.rest.initRestSimple('user_extra_fields');
+	rest_production_area:RestSimple<Production_Area> = this.rest.initRestSimple('production_area');
+
+	production_area_list:Production_Area[] = [];
+	production_area_id:number | null = null;
+	//El filtro de area solo se le muestra a quien no esta asignado a ninguna (perfil de oficina):
+	//el que si tiene area asignada siempre ve la suya y no deberia poder cambiarla.
+	show_production_area_filter:boolean = false;
 
 	user_work_logs_list:Work_Log[] = [];
 	Cuser_production_report_list:CUser_production_report[] = [];
@@ -87,7 +94,23 @@ export class SaveProductionPaymentComponent extends BaseComponent implements OnI
 				}
 
 				let user = this.rest.user as User;
-				this.search_work_log_obj.search_extra = { production_area_id: user.production_area_id };
+				let permission = this.rest.user_permission;
+
+				this.show_production_area_filter = !user.production_area_id
+					&& !!( permission.add_payroll || permission.pay_commissions );
+
+				if( user.production_area_id )
+				{
+					//Usuario de produccion: siempre su area, sin importar lo que traiga la URL
+					this.production_area_id = user.production_area_id;
+				}
+				else
+				{
+					let param_area = params.get('search_extra.production_area_id');
+					this.production_area_id = param_area && param_area !== 'null' ? parseInt( param_area ) : null;
+				}
+
+				this.search_work_log_obj.search_extra = { production_area_id: this.production_area_id };
 
 				let start = new Date(this.search_work_log_obj.eq.date + ' 00:00:00');
 				let end = new Date(this.search_work_log_obj.eq.date + ' 23:59:59');
@@ -95,7 +118,7 @@ export class SaveProductionPaymentComponent extends BaseComponent implements OnI
 				this.search_date = Utils.getLocalMysqlStringFromDate(start).split(' ')[0];
 
 				let search_production_obj:SearchObject<Production> = this.getEmptySearch();
-				search_production_obj.eq.production_area_id = user.production_area_id;
+				search_production_obj.eq.production_area_id = this.production_area_id;
 				search_production_obj.eq.status = 'ACTIVE';
 				search_production_obj.ge.created = start;
 				search_production_obj.le.created = end;
@@ -106,10 +129,18 @@ export class SaveProductionPaymentComponent extends BaseComponent implements OnI
 
 				this.search_work_log_obj.limit = 999999;
 
+				//Sin area no se consulta nada: eq ignora los null, asi que la busqueda traeria
+				//la produccion de TODAS las areas mezclada, y esta pantalla guarda pagos.
+				let empty_production = of({ total: 0, data: [] as Production[] });
+				let empty_work_log = of({ total: 0, data: [] as Work_Log[] });
+
 				return forkJoin({
-					production: this.rest_production.search(search_production_obj),
-					work_log: this.rest_work_log.search(this.search_work_log_obj),
-					work_log_rules: this.rest_work_log_rules.search({})
+					production: this.production_area_id ? this.rest_production.search(search_production_obj) : empty_production,
+					work_log: this.production_area_id ? this.rest_work_log.search(this.search_work_log_obj) : empty_work_log,
+					work_log_rules: this.rest_work_log_rules.search({}),
+					production_area: this.show_production_area_filter
+						? this.rest_production_area.search({ eq: { status: 'ACTIVE' }, limit: 9999, sort_order: ['name_ASC'] })
+						: of(null)
 				});
 			}),
 			mergeMap((result)=>
@@ -122,6 +153,7 @@ export class SaveProductionPaymentComponent extends BaseComponent implements OnI
 					production: of(result.production.data),
 					work_log: of(result.work_log.data),
 					work_log_rules: of(result.work_log_rules.data),
+					production_area: of(result.production_area?.data ?? []),
 					extra_fields: users_ids.length > 0 ? this.rest_user_extra_fields.search({csv: { user_id: users_ids },limit: 999999}) : of(null),
 					users: users_ids.length > 0 ? this.rest_user.search({csv: { id: users_ids },limit: 999999}) : of(null),
 					items: item_ids.length > 0 ? this.rest_item_info.search({csv: { id: item_ids },limit: 999999}) : of(null),
@@ -131,6 +163,8 @@ export class SaveProductionPaymentComponent extends BaseComponent implements OnI
 		.subscribe((result)=>
 		{
 			this.is_loading = false;
+
+			this.production_area_list = result.production_area;
 
 			this.calculateTotals(result.production, result.items?.data ?? []);
 
@@ -300,6 +334,12 @@ export class SaveProductionPaymentComponent extends BaseComponent implements OnI
 		}
 
 		return results;
+	}
+
+	performSearch()
+	{
+		this.search_work_log_obj.search_extra = { production_area_id: this.production_area_id };
+		this.search( this.search_work_log_obj );
 	}
 
 	setValue(total:number, upr:CUser_production_report)
