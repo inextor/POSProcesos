@@ -174,6 +174,12 @@
 							</i>
 							Pagos a Crédito
 						</a>
+						<a routerLink="/report-store-payments" class="list-group-item list-group-item-action d-flex align-items-center">
+							<i class="svg-icon me-2">
+								<svg xmlns="http://www.w3.org/2000/svg" width="1.2em" height="1.2em" viewBox="0 0 24 24"><path fill="currentColor" d="M4 4h16a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2zm0 2v2h3V6H4zm5 0v2h11V6H9zm-5 6v2h3v-2H4zm5 0v2h11v-2H9zm-5 6v2h3v-2H4zm5 0v2h11v-2H9z"/></svg>
+							</i>
+							Pagos por Tienda
+						</a>
 					}
 					@if (rest.user_permission.edit_billing_data || rest.user_permission.view_facturas) {
 						<a [attr.href]="external_base_url + '/#/list-order-facturas'" class="list-group-item list-group-item-action d-flex align-items-center">

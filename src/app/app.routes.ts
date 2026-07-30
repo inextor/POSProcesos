@@ -122,6 +122,7 @@ export const routes: Routes = [
 			{path: 'add-printer', loadComponent: () => import('./pages/save-printer/save-printer.component').then(m => m.SavePrinterComponent), canActivate: [authGuard]},
 			{path: 'edit-printer/:id', loadComponent: () => import('./pages/save-printer/save-printer.component').then(m => m.SavePrinterComponent), canActivate: [authGuard]},
 			{path: 'report-credit-payments', loadComponent: () => import('./pages/report-credit-payments/report-credit-payments.component').then(m => m.ReportCreditPaymentsComponent), canActivate: [authGuard]},
+			{path: 'report-store-payments', loadComponent: () => import('./pages/report-store-payments/report-store-payments.component').then(m => m.ReportStorePaymentsComponent), canActivate: [authGuard]},
 			{path: 'list-transformation', loadComponent: () => import('./pages/list-transformation/list-transformation.component').then(m => m.ListTransformationComponent), canActivate: [authGuard]},
 			{path: 'add-transformation', loadComponent: () => import('./pages/save-transformation/save-transformation.component').then(m => m.SaveTransformationComponent), canActivate: [authGuard]},
 			{path: 'edit-transformation/:id', loadComponent: () => import('./pages/save-transformation/save-transformation.component').then(m => m.SaveTransformationComponent), canActivate: [authGuard]},
