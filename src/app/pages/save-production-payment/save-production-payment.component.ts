@@ -261,7 +261,18 @@ export class SaveProductionPaymentComponent extends BaseComponent implements OnI
 				merma_qty += production.merma_qty;
 			});
 
-			let rules = this.json_rules_list.filter((rule)=>rule.store_id == user.store_id);
+			//Las reglas se resuelven por AREA de produccion, que es la dimension con la que trabaja
+			//toda esta pantalla (la produccion, los usuarios listados y total_users salen del area).
+			let area_rules = this.json_rules_list
+				.filter((rule)=> rule.production_area_id != null && rule.production_area_id == this.production_area_id);
+
+			//Solo si el area no tiene regla propia se cae al esquema viejo por tienda, para no dejar
+			//sin pago a nadie durante la migracion. Es excluyente a proposito: si se acumularan, un
+			//usuario con regla de area Y regla de su tienda cobraria las dos. Cuando todas las reglas
+			//tengan area, esta segunda rama se puede borrar.
+			let rules = area_rules.length
+				? area_rules
+				: this.json_rules_list.filter((rule)=> rule.production_area_id == null && rule.store_id == user.store_id);
 
 			//tmp obj with all the rules to be evaluated
 			let props = {};
@@ -299,13 +310,18 @@ export class SaveProductionPaymentComponent extends BaseComponent implements OnI
 				}
 			});
 
-			//Recalcular SIEMPRE el pago desde las reglas (automático): no quedarse pegado en lo ya guardado,
-			//así al reabrir el Registro de Pago refleja la producción actual del día.
-			total_payment = 0;
+			//Lo que dictan las reglas hoy, que es lo que se muestra en las columnas de json_values
+			let calculated_payment = 0;
 			for (let key in json_values)
 			{
-				total_payment += json_values[key];
+				calculated_payment += json_values[key];
 			}
+
+			//El input arranca con lo YA GUARDADO si existe: antes se sobreescribia siempre con el
+			//calculo, asi que cualquier ajuste manual se perdia al recargar (y si ese dia no habia
+			//produccion validada, el monto capturado se veia como 0 aunque estuviera en la base).
+			let saved_payment = user_work_logs.reduce((total, work_log) => total + (work_log.total_payment || 0), 0);
+			total_payment = saved_payment > 0 ? saved_payment : calculated_payment;
 
 			this.Cuser_production_report_list.push({ user, total_hours, total_extra_hours, production_qty, cost, json_values, total_payment });
 		});
