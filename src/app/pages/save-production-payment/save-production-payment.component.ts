@@ -183,6 +183,13 @@ export class SaveProductionPaymentComponent extends BaseComponent implements OnI
 
 	calculateTotals(productions:Production[], ItemInfo:ItemInfo[])
 	{
+		//Reiniciar: estos totales se acumulan con +=, y la suscripcion a queryParamMap vuelve a
+		//emitir sin destruir el componente (navegar con las flechas del navegador, por ejemplo),
+		//asi que sin esto los montos se van sumando sobre los anteriores.
+		this.payment_total = 0;
+		this.merma_total = 0;
+		this.production_total = 0;
+
 		//gettin the total of items
 		this.items_total = ItemInfo.length ?? 0;
 
@@ -226,6 +233,10 @@ export class SaveProductionPaymentComponent extends BaseComponent implements OnI
 
 	buildUserProductionReport(users:User[], work_logs:Work_Log[], productions:Production[], items:ItemInfo[], payment_total:number)
 	{
+		//Reiniciar por lo mismo que calculateTotals: abajo se hace push y sin esto los renglones
+		//se duplican cada vez que se vuelve a cargar sin destruir el componente.
+		this.Cuser_production_report_list = [];
+
 		let total_users = users.length;
 
 		users.forEach((user)=>
