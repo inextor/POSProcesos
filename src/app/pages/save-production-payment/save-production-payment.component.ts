@@ -237,9 +237,17 @@ export class SaveProductionPaymentComponent extends BaseComponent implements OnI
 		//se duplican cada vez que se vuelve a cargar sin destruir el componente.
 		this.Cuser_production_report_list = [];
 
-		let total_users = users.length;
+		//Solo entra al reparto quien tiene horas registradas. El Cierre de Turno crea work_log para
+		//todos los del area, hayan checado o no, asi que sin este filtro los que no trabajaron cobran
+		//y ademas diluyen la parte de los que si (total_users es el divisor de la regla).
+		//Para incluir a alguien cuya checada fallo, se le capturan las horas en el Cierre de Turno.
+		let worked_users = users.filter((user) =>
+			work_logs.some((work_log) => work_log.user_id == user.id && work_log.hours > 0)
+		);
 
-		users.forEach((user)=>
+		let total_users = worked_users.length;
+
+		worked_users.forEach((user)=>
 		{
 			//primero encontrar todos los work_logs de este usuario (ya que pueden ser varios en el mismo dia)
 			let user_work_logs = work_logs.filter((work_log)=>work_log.user_id == user.id);
