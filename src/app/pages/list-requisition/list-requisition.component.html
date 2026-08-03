@@ -23,7 +23,7 @@
       <div class="col-12 col-md-3">
         <label>Solicitado a</label>
         <select name="requested_to_store_id" class="form-control" [(ngModel)]="search_requisition.search_extra['requested_to_store_id']">
-          <option [ngValue]="null">Todas</option>
+          <option [ngValue]="'TODAS'">Todas</option>
           @for (s of store_list; track s) {
             <option [value]="s.id">{{s.name | titlecase}}</option>
           }

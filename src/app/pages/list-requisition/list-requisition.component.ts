@@ -2,7 +2,7 @@ import { Component,OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Rest, RestResponse, SearchObject} from '../../modules/shared/services/Rest';
 import { RouterModule } from '@angular/router';
-import { filter, forkJoin,mergeMap, of } from 'rxjs';
+import { filter, forkJoin, mergeMap, of } from 'rxjs';
 import { RestSimple } from '../../modules/shared/services/Rest';
 import { FormsModule } from '@angular/forms';
 import { Store,Check_In, User, Production, Serial, Item, Production_Area, Requisition } from '../../modules/shared/RestModels';
@@ -139,19 +139,26 @@ export class ListRequisitionComponent extends BaseComponent implements OnInit
 					this.search_requisition.search_extra['required_by_store_id'] = null;
 				}
 
-				if( !param_map.has('search_extra.requested_to_store_id') )
-				{
-					this.search_requisition.search_extra['requested_to_store_id'] = null;
-				}
-
 				let production_area_id: number | null = this.rest.user?.production_area_id ?? null;
 
 				let store_id: number = this.rest?.user?.store_id as number;
 
+				let user_store_id: number | null = this.rest.user?.store_id ?? null;
+
+				//si no hay un requested_to_store_id en la url, se usa la tienda del usuario por defecto
+				//'TODAS' es el valor del select para ver todas las tiendas
+				if( !param_map.has('search_extra.requested_to_store_id') )
+				{
+					this.search_requisition.search_extra['requested_to_store_id'] = user_store_id != null ? ''+user_store_id : 'TODAS';
+				}
+
+				let requested_to_store_id:number | null = this.search_requisition.search_extra['requested_to_store_id'] === 'TODAS'
+					? null
+					: Number(this.search_requisition.search_extra['requested_to_store_id']);
 
 				let requisition_item_search =
 				{
-					requested_to_store_id: this.search_requisition.search_extra['requested_to_store_id'],
+					requested_to_store_id ,
 					required_by_store_id: this.search_requisition.search_extra['required_by_store_id'] ,
 					production_area_id ,
 					start_timestamp: this.search_requisition.search_extra['start_timestamp'],
