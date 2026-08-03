@@ -109,7 +109,7 @@ export class ListRequisitionComponent extends BaseComponent implements OnInit
 			{
 				this.path = 'list-requisition';
 				this.is_loading = true;
-				let fields = ['required_by_store_id', 'end_timestamp', 'start_timestamp']
+				let fields = ['requested_to_store_id','required_by_store_id', 'end_timestamp', 'start_timestamp']
 				this.search_requisition = this.getSearch(param_map, [], fields)
 				if( this.search_requisition.sort_order.length == 0 )
 				{
@@ -139,6 +139,11 @@ export class ListRequisitionComponent extends BaseComponent implements OnInit
 					this.search_requisition.search_extra['required_by_store_id'] = null;
 				}
 
+				if( !param_map.has('search_extra.requested_to_store_id') )
+				{
+					this.search_requisition.search_extra['requested_to_store_id'] = null;
+				}
+
 				let production_area_id: number | null = this.rest.user?.production_area_id ?? null;
 
 				let store_id: number = this.rest?.user?.store_id as number;
@@ -146,6 +151,7 @@ export class ListRequisitionComponent extends BaseComponent implements OnInit
 
 				let requisition_item_search =
 				{
+					requested_to_store_id: this.search_requisition.search_extra['requested_to_store_id'],
 					required_by_store_id: this.search_requisition.search_extra['required_by_store_id'] ,
 					production_area_id ,
 					start_timestamp: this.search_requisition.search_extra['start_timestamp'],
