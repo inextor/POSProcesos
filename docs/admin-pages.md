@@ -20,7 +20,7 @@ Admin-related pages in the application manage system configuration, production, 
 | `/resume-production` | ResumeProductionComponent | Production summary |
 | `/resume-production-day` | ResumeProductionDayComponent | Daily production summary |
 | `/save-production-payment` | SaveProductionPaymentComponent | Production payment |
-| `/production-report` | ProductionReportComponent | Production reports |
+| `/produccion-reportada-vs-validada-report` | ProduccionReportadaVsValidadaReportComponent | Reported vs validated production report |
 
 ## Inventory & Items
 

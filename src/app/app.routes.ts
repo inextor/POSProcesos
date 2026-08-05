@@ -141,7 +141,8 @@ export const routes: Routes = [
 		{path: 'save-consignment-delivered', loadComponent: () => import('./pages/save-consignment-delivered/save-consignment-delivered.component').then(m => m.SaveConsignmentDeliveredComponent), canActivate: [authGuard]},
 		{path: 'save-consignment-delivered/:id', loadComponent: () => import('./pages/save-consignment-delivered/save-consignment-delivered.component').then(m => m.SaveConsignmentDeliveredComponent), canActivate: [authGuard]},
 		{path: 'view-consignment-delivered/:id', loadComponent: () => import('./pages/view-consignment-delivered/view-consignment-delivered.component').then(m => m.ViewConsignmentDeliveredComponent), canActivate: [authGuard]},
-		{path: 'consignment-report', loadComponent: () => import('./pages/consignment-report/consignment-report.component').then(m => m.ConsignmentReportComponent), canActivate: [authGuard]}
+		{path: 'consignment-report', loadComponent: () => import('./pages/consignment-report/consignment-report.component').then(m => m.ConsignmentReportComponent), canActivate: [authGuard]},
+			{path: 'produccion-reportada-vs-validada-report', loadComponent: () => import('./pages/produccion-reportada-vs-validada-report/produccion-reportada-vs-validada-report.component').then(m => m.ProduccionReportadaVsValidadaReportComponent), canActivate: [authGuard]}
 		]
 	},
 ];
