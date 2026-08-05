@@ -10,8 +10,16 @@
 			}
 		</div>
 	</div>
-	<div class="row mt-3">
-		<div class="col-md-4">
+	<div class="row mt-3 align-items-end">
+		<div class="col-6 col-md-3">
+			<label class="form-label small">Registro Inicio</label>
+			<input type="datetime-local" name="created_from" class="form-control" [(ngModel)]="created_from" (ngModelChange)="onDateChange($event, search_bank_movement.ge, 'created')">
+		</div>
+		<div class="col-6 col-md-3">
+			<label class="form-label small">Registro Fin</label>
+			<input type="datetime-local" name="created_to" class="form-control" [(ngModel)]="created_to" (ngModelChange)="onDateChange($event, search_bank_movement.le, 'created', '', 59)">
+		</div>
+		<div class="col-6 col-md-4">
 			<label class="form-label small">Cuenta bancaria</label>
 			<select name="bank_account_id" [(ngModel)]="search_bank_movement.eq.bank_account_id" class="form-control">
 				<option [ngValue]="null">Todas las cuentas</option>
@@ -20,18 +28,8 @@
 				}
 			</select>
 		</div>
-		<div class="col-md-2 d-flex align-items-end">
+		<div class="col-6 col-md-2 d-flex align-items-end">
 			<button type="button" class="btn btn-primary w-100" (click)="search(search_bank_movement)">Buscar</button>
-		</div>
-	</div>
-	<div class="row mt-3">
-		<div class="col-md-3">
-			<label class="form-label small">Registro Inicio</label>
-			<input type="datetime-local" name="created_from" class="form-control" [(ngModel)]="created_from" (ngModelChange)="onDateChange($event, search_bank_movement.ge, 'created')">
-		</div>
-		<div class="col-md-3">
-			<label class="form-label small">Registro Fin</label>
-			<input type="datetime-local" name="created_to" class="form-control" [(ngModel)]="created_to" (ngModelChange)="onDateChange($event, search_bank_movement.le, 'created', '', 59)">
 		</div>
 	</div>
 	<app-pagination [path]="path" [pages]="pages" [total_pages]="total_pages" [current_page]="current_page"></app-pagination>
@@ -84,7 +82,7 @@
 				</div>
 				<div class="col-6 col-md-1">
 					<span class="d-md-none fw-bold">Registro: </span>
-					<span [title]="m.created | shortDate:'full'">{{ m.created | shortDate:'relative' }}</span>
+					<span>{{ m.created | shortDate:'full' }}</span>
 				</div>
 				<div class="col-6 col-md-1 text-end">
 					<button type="button" class="btn btn-sm btn-outline-secondary" (click)="startEdit(m)" title="Establecer saldo">Editar</button>
