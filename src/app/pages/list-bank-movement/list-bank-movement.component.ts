@@ -6,6 +6,8 @@ import { BaseComponent } from '../../modules/shared/base/base.component';
 import { RestSimple, SearchObject } from '../../modules/shared/services/Rest';
 import { Bank_Movement, Bank_Account } from '../../modules/shared/RestModels';
 import { ShortDatePipe } from '../../modules/shared/pipes/short-date.pipe';
+import { PaginationComponent } from '../../components/pagination/pagination.component';
+import { Utils } from '../../modules/shared/Utils';
 import { forkJoin, mergeMap } from 'rxjs';
 
 type MovementWithLabel = Bank_Movement & { transaction_type_label: string; bank_account?: Bank_Account | null };
@@ -24,7 +26,7 @@ const TRANSACTION_LABELS: Record<string, string> = {
 
 @Component({
 	selector: 'app-list-bank-movement',
-	imports: [CommonModule, RouterModule, FormsModule, ShortDatePipe],
+	imports: [CommonModule, RouterModule, FormsModule, ShortDatePipe, PaginationComponent],
 	templateUrl: './list-bank-movement.component.html',
 	styleUrl: './list-bank-movement.component.css'
 })
@@ -33,11 +35,14 @@ export class ListBankMovementComponent extends BaseComponent implements OnInit {
 	movement_list: MovementWithLabel[] = [];
 	bank_account_list: Bank_Account[] = [];
 
+	created_from: string = '';
+	created_to: string = '';
+
 	editing_movement_id: number | null = null;
 	editing_balance: number | null = null;
 	editing_paid_date: string | null = null;
 
-	rest_bank_movement: RestSimple<Bank_Movement> = this.rest.initRestSimple('bank_movement', ['id', 'type', 'total', 'balance', 'amount_received', 'transaction_type', 'reference', 'note', 'paid_date', 'status', 'bank_account_id', 'is_checkpoint']);
+	rest_bank_movement: RestSimple<Bank_Movement> = this.rest.initRestSimple('bank_movement', ['id', 'type', 'total', 'balance', 'amount_received', 'transaction_type', 'reference', 'note', 'paid_date', 'created', 'status', 'bank_account_id', 'is_checkpoint']);
 	rest_bank_account: RestSimple<Bank_Account> = this.rest.initRestSimple('bank_account', ['id', 'name', 'bank']);
 	search_bank_movement: SearchObject<Bank_Movement> = this.rest_bank_movement.getEmptySearch();
 
@@ -53,6 +58,8 @@ export class ListBankMovementComponent extends BaseComponent implements OnInit {
 				}
 				this.search_bank_movement.limit = this.page_size;
 				this.current_page = this.search_bank_movement.page;
+				this.created_from = this.toDateTimeLocal(this.search_bank_movement.ge.created);
+				this.created_to = this.toDateTimeLocal(this.search_bank_movement.le.created);
 				return forkJoin({
 					movements: this.rest_bank_movement.searchWithRelations(this.search_bank_movement, [this.rest_bank_account.getRelation('bank_account_id')]),
 					bank_accounts: this.rest_bank_account.search({ limit: 99999 })
@@ -68,6 +75,12 @@ export class ListBankMovementComponent extends BaseComponent implements OnInit {
 			this.bank_account_list = response.bank_accounts.data;
 			this.setPages(this.current_page, response.movements.total);
 		});
+	}
+
+	toDateTimeLocal(value: Date | string | null | undefined): string {
+		if (!value) return '';
+		if (value instanceof Date) return Utils.getLocalMysqlStringFromDate(value).substring(0, 16).replace(' ', 'T');
+		return ('' + value).replace(' ', 'T').substring(0, 16);
 	}
 
 	loadMovements(): void {

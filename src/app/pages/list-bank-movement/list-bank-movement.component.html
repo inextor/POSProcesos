@@ -12,6 +12,7 @@
 	</div>
 	<div class="row mt-3">
 		<div class="col-md-4">
+			<label class="form-label small">Cuenta bancaria</label>
 			<select name="bank_account_id" [(ngModel)]="search_bank_movement.eq.bank_account_id" class="form-control">
 				<option [ngValue]="null">Todas las cuentas</option>
 				@for (ba of bank_account_list; track ba.id) {
@@ -19,21 +20,33 @@
 				}
 			</select>
 		</div>
-		<div class="col-md-2">
+		<div class="col-md-2 d-flex align-items-end">
 			<button type="button" class="btn btn-primary w-100" (click)="search(search_bank_movement)">Buscar</button>
 		</div>
 	</div>
+	<div class="row mt-3">
+		<div class="col-md-3">
+			<label class="form-label small">Registro Inicio</label>
+			<input type="datetime-local" name="created_from" class="form-control" [(ngModel)]="created_from" (ngModelChange)="onDateChange($event, search_bank_movement.ge, 'created')">
+		</div>
+		<div class="col-md-3">
+			<label class="form-label small">Registro Fin</label>
+			<input type="datetime-local" name="created_to" class="form-control" [(ngModel)]="created_to" (ngModelChange)="onDateChange($event, search_bank_movement.le, 'created', '', 59)">
+		</div>
+	</div>
+	<app-pagination [path]="path" [pages]="pages" [total_pages]="total_pages" [current_page]="current_page"></app-pagination>
 	<div class="card px-1 px-md-2 py-3 mt-3">
 		<div class="d-none d-md-flex row fw-bold border-bottom pb-2 mb-2">
-			<div class="col-1">ID</div>
-			<div class="col-1">Tipo</div>
-			<div class="col-1">Total</div>
-			<div class="col-1">Saldo</div>
-			<div class="col-1">Tipo</div>
-			<div class="col-1">Referencia</div>
+			<div class="col-1 pointer" (click)="sort('id', search_bank_movement)">ID</div>
+			<div class="col-1 pointer" (click)="sort('type', search_bank_movement)">Tipo</div>
+			<div class="col-1 pointer" (click)="sort('total', search_bank_movement)">Total</div>
+			<div class="col-1 pointer" (click)="sort('balance', search_bank_movement)">Saldo</div>
+			<div class="col-1 pointer" (click)="sort('transaction_type', search_bank_movement)">Tipo</div>
+			<div class="col-1 pointer" (click)="sort('reference', search_bank_movement)">Referencia</div>
 			<div class="col-2">Cuenta</div>
 			<div class="col-1">Moneda</div>
-			<div class="col-2">Fecha</div>
+			<div class="col-1 pointer" (click)="sort('paid_date', search_bank_movement)">Fecha</div>
+			<div class="col-1 pointer" (click)="sort('created', search_bank_movement)">Registro</div>
 			<div class="col-1 text-end">Acciones</div>
 		</div>
 		@for (m of movement_list; track m) {
@@ -62,12 +75,16 @@
 				<div class="col-6 col-md-1">
 					<span class="d-md-none fw-bold">Moneda: </span>{{ m.currency_id || '-' }}
 				</div>
-				<div class="col-6 col-md-2">
+				<div class="col-6 col-md-1">
 					<span class="d-md-none fw-bold">Fecha: </span>
 					<span [title]="m.paid_date | shortDate:'full'">{{ m.paid_date | shortDate:'relative' }}</span>
 					@if (m.is_checkpoint) {
 						<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="ms-1 text-success"><polyline points="20 6 9 17 4 12"/></svg>
 					}
+				</div>
+				<div class="col-6 col-md-1">
+					<span class="d-md-none fw-bold">Registro: </span>
+					<span [title]="m.created | shortDate:'full'">{{ m.created | shortDate:'relative' }}</span>
 				</div>
 				<div class="col-6 col-md-1 text-end">
 					<button type="button" class="btn btn-sm btn-outline-secondary" (click)="startEdit(m)" title="Establecer saldo">Editar</button>
@@ -91,4 +108,5 @@
 			}
 		}
 	</div>
+	<app-pagination [path]="path" [pages]="pages" [total_pages]="total_pages" [current_page]="current_page"></app-pagination>
 </div>
