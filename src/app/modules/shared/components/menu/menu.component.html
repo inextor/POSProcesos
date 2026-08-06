@@ -1143,6 +1143,17 @@
 									<span>Consumo</span>
 								</a>
 							</li>
+							@if (rest.user_permission.production)
+							{
+								<li class="side-nav-item">
+									<a class="side-nav-link" routerLink="/produccion-reportada-vs-validada-report" aria-expanded="false" routerLinkActive="active">
+										<i class="svg-icon">
+											<svg xmlns="http://www.w3.org/2000/svg" width="1.2em" height="1.2em" viewBox="0 0 24 24"><path fill="currentColor" d="M3 3h2v18H3zm4 10h3v8H7zm5-6h3v14h-3zm5 3h3v11h-3z"/></svg>
+										</i>
+										<span>Reportado vs Validado</span>
+									</a>
+								</li>
+							}
 						</ul>
 					</div>
 				</li>
