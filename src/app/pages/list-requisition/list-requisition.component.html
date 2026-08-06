@@ -136,7 +136,9 @@
       <div class="col-6 col-md-2 text-start text-md-end fw-bold">
         <div class="row">
           <div class="col-6">
-            {{ cri.requisition ? cri.requisition.sum_qty : 0 }}
+            <button class="btn btn-sm btn-link p-0" type="button" (click)="showRequisitions(cri)">
+              {{ cri.requisition ? cri.requisition.sum_qty : 0 }}
+            </button>
           </div>
           <div class="col-6">
             @if (cri.requisition) {
@@ -302,6 +304,31 @@
                     <button type="button" class="btn btn-primary w-100" (click)="addProduction(selected_crequistion_item)">Agregar</button>
                   </div>
                 }
+              </div>
+            </div>
+          </app-modal>
+          <app-modal [(show)]="show_requisitions_modal" [closable]="true">
+            <div class="card p-3">
+              <h4 class="my-3">Requisiciones</h4>
+              @if (selected_requisition_item_name) {
+                <h5>{{selected_requisition_item_name}}</h5>
+              }
+              @if (selected_requisition_ids.length > 0) {
+                <ul class="list-group">
+                  @for (id of selected_requisition_ids; track id) {
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                      <span>Requisición #{{id}}</span>
+                      <a [href]="getRequisitionUrl(id)" target="_blank" class="btn btn-sm btn-outline-primary">Abrir</a>
+                    </li>
+                  }
+                </ul>
+              } @else {
+                <div class="alert alert-light m-3">No hay requisiciones</div>
+              }
+              <div class="row">
+                <div class="col-6 mt-3">
+                  <button type="button" class="btn btn-secondary w-100" (click)="closeRequisitionsModal()">Cerrar</button>
+                </div>
               </div>
             </div>
           </app-modal>

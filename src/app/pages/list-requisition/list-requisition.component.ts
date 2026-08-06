@@ -55,6 +55,9 @@ export class ListRequisitionComponent extends BaseComponent implements OnInit
 	rest_store:RestSimple<Store> = this.rest.initRest('store',['id','name','created','updated']);
 	show_add_production: boolean = false;
 	selected_crequistion_item: CRequisitionItem | null = null;
+	show_requisitions_modal: boolean = false;
+	selected_requisition_ids: string[] = [];
+	selected_requisition_item_name: string = '';
 	rest_check_in:RestSimple<Check_In> = this.rest.initRestSimple('check_in',['current']);
 	rest_production:RestSimple<Production> = this.rest.initRestSimple('production',['id','created_by_user_id','produced_by_user_id','verified_by_user_id']);
 	rest_serial_info:Rest<Serial,SerialInfo> = this.rest.initRest('serial_info');
@@ -287,6 +290,36 @@ export class ListRequisitionComponent extends BaseComponent implements OnInit
 		this.show_add_production = false;
 		this.selected_crequistion_item = null;
 	}
+
+	getRequisitionIds(cri:CRequisitionItem): string
+	{
+		if( !cri.requisition )
+			return '';
+
+		const req:any = cri.requisition;
+		return req.requisition_ids ?? req.requesition_ids ?? '';
+	}
+
+	getRequisitionUrl(id:string): string
+	{
+		return `${this.rest.getExternalAppUrl()}/view-l/${id}`;
+	}
+
+	showRequisitions(cri:CRequisitionItem)
+	{
+		const ids = this.getRequisitionIds(cri);
+		this.selected_requisition_ids = ids.split(',').map((s)=>s.trim()).filter((s)=>s.length > 0);
+		this.selected_requisition_item_name = `${cri.requisition?.category_name ?? ''} ${cri.item.name}`.trim();
+		this.show_requisitions_modal = true;
+	}
+
+	closeRequisitionsModal()
+	{
+		this.show_requisitions_modal = false;
+		this.selected_requisition_ids = [];
+		this.selected_requisition_item_name = '';
+	}
+
 	sortRequisitions(str:string)
 	{
 		if(str == '')
