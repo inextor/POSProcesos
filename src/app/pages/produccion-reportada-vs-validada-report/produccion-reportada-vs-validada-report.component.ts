@@ -8,6 +8,7 @@ import { Rest, RestSimple } from '../../modules/shared/services/Rest';
 import { take } from 'rxjs/operators';
 import { LoadingComponent } from '../../components/loading/loading.component';
 import { ItemSearchComponent } from '../../modules/shared/components/item-search/item-search.component';
+import { ExcelUtils } from '../../classes/ExcelUtils';
 
 interface ProduccionReportadaVsValidada
 {
@@ -125,43 +126,35 @@ export class ProduccionReportadaVsValidadaReportComponent extends BaseComponent 
 		});
 	}
 
+	//Se genera el xlsx en el cliente a partir de los resultados que ya estan en pantalla, igual
+	//que report-credit-payments y report-comex-sales. Antes se pedia otra vez al servidor con
+	//format=tsv y se bajaba el blob: eso daba un archivo de texto (que Excel abre mal, sobre todo
+	//con acentos y con numeros que interpreta como fechas) y ademas repetia la consulta completa.
 	downloadExcel()
 	{
-		const date_start = this.start_date.replace('T', ' ') + ':00';
-		const date_end = this.end_date.replace('T', ' ') + ':59';
-		const token = localStorage.getItem('session_token') || '';
+		if( !this.results.length )
+		{
+			return;
+		}
 
-		const url = `${this.rest.getApiPath()}/reports/produccion_reportada_vs_validada.php?start_timestamp=${encodeURIComponent(date_start)}&end_timestamp=${encodeURIComponent(date_end)}&production_area_id=${encodeURIComponent(this.production_area_id)}&user_id=${encodeURIComponent(this.user_id)}&item_id=${encodeURIComponent(this.item_id ?? 'ALL')}&format=tsv`;
+		const rows = this.results.map(row => ({
+			'Fecha': row.fecha,
+			'Área': row.area_name,
+			'Código': row.item_code,
+			'Artículo': row.item_name,
+			'Capturó': row.usuarios,
+			'Reportado': row.reportado,
+			'Validado': row.validado,
+			'Merma': row.merma,
+			'Diferencia': row.diferencia
+		}));
 
-		this.is_loading = true;
+		const headers = ['Fecha', 'Área', 'Código', 'Artículo', 'Capturó',
+			'Reportado', 'Validado', 'Merma', 'Diferencia'];
 
-		fetch(url, {
-			method: 'GET',
-			headers: {
-				'Authorization': 'Bearer ' + token
-			}
-		})
-		.then(response => {
-			if (!response.ok) {
-				throw new Error('Error al descargar el archivo');
-			}
-			return response.blob();
-		})
-		.then(blob => {
-			const downloadUrl = URL.createObjectURL(blob);
-			const a = document.createElement('a');
-			a.href = downloadUrl;
-			a.download = `produccion_reportada_vs_validada_${date_start.substring(0, 10)}_${date_end.substring(0, 10)}.tsv`;
-			document.body.appendChild(a);
-			a.click();
-			document.body.removeChild(a);
-			URL.revokeObjectURL(downloadUrl);
-			this.is_loading = false;
-		})
-		.catch(error => {
-			this.showError(error);
-			this.is_loading = false;
-		});
+		const filename = `produccion_reportada_vs_validada_${this.start_date.substring(0, 10)}_${this.end_date.substring(0, 10)}.xlsx`;
+
+		ExcelUtils.array2xlsx(rows, filename, headers);
 	}
 
 	get total_reportado(): number

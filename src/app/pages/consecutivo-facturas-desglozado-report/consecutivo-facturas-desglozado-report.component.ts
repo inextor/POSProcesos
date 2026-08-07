@@ -7,6 +7,7 @@ import { Store } from '../../modules/shared/RestModels';
 import { Rest } from '../../modules/shared/services/Rest';
 import { take } from 'rxjs/operators';
 import { LoadingComponent } from '../../components/loading/loading.component';
+import { ExcelUtils } from '../../classes/ExcelUtils';
 
 @Component({
 	selector: 'app-consecutivo-facturas-desglozado-report',
@@ -74,41 +75,33 @@ export class ConsecutivoFacturasDesglozadoReportComponent extends BaseComponent 
 			});
 	}
 
+	//Se genera el xlsx en el cliente a partir de los resultados que ya estan en pantalla, igual
+	//que report-credit-payments y report-comex-sales. Antes se pedia otra vez al servidor con
+	//format=tsv y se bajaba el blob: eso daba un archivo de texto (que Excel abre mal, sobre todo
+	//con acentos y con numeros que interpreta como fechas) y ademas repetia la consulta completa.
 	downloadExcel() {
-		const date_start = this.start_date.replace('T', ' ') + ':00';
-		const date_end = this.end_date.replace('T', ' ') + ':59';
-		const token = localStorage.getItem('session_token') || '';
-		
-		const url = `${this.rest.getApiPath()}/reports/consecutivo_facturas_desglozado.php?start_timestamp=${encodeURIComponent(date_start)}&end_timestamp=${encodeURIComponent(date_end)}&store_id=${encodeURIComponent(this.store_id)}&format=tsv`;
+		if (!this.results.length) {
+			return;
+		}
 
-		this.is_loading = true;
+		const rows = this.results.map(item => ({
+			'No. Factura': item.Num_fac,
+			'Fecha': `${item.Falta_fac} ${item.Hora_fac}`.trim(),
+			'Estatus': item.Status_fac,
+			'Serie': item.Cve_factu,
+			'Cliente': item.Nom_fac,
+			'Subtotal': item.Subt_fac,
+			'IVA': item.Iva,
+			'Total': item.Total_fac,
+			'Saldo': item.Saldo_fac,
+			'No. Pedido': item.No_ped
+		}));
 
-		fetch(url, {
-			method: 'GET',
-			headers: {
-				'Authorization': 'Bearer ' + token
-			}
-		})
-		.then(response => {
-			if (!response.ok) {
-				throw new Error('Error al descargar el archivo');
-			}
-			return response.blob();
-		})
-		.then(blob => {
-			const downloadUrl = URL.createObjectURL(blob);
-			const a = document.createElement('a');
-			a.href = downloadUrl;
-			a.download = `reporte_detallado_facturas_${this.store_id}_${date_start.substring(0, 10)}_${date_end.substring(0, 10)}.tsv`;
-			document.body.appendChild(a);
-			a.click();
-			document.body.removeChild(a);
-			URL.revokeObjectURL(downloadUrl);
-			this.is_loading = false;
-		})
-		.catch(error => {
-			this.showError(error);
-			this.is_loading = false;
-		});
+		const headers = ['No. Factura', 'Fecha', 'Estatus', 'Serie', 'Cliente',
+			'Subtotal', 'IVA', 'Total', 'Saldo', 'No. Pedido'];
+
+		const filename = `facturas_desglozado_${this.store_id}_${this.start_date.substring(0, 10)}_${this.end_date.substring(0, 10)}.xlsx`;
+
+		ExcelUtils.array2xlsx(rows, filename, headers);
 	}
 }
