@@ -98,7 +98,7 @@
     <div class="row border-bottom align-items-center">
       <div class="col-8 col-md-3 fw-bold">{{creq.store.name}}</div>
       <div class="col-4 col-md-12 fw-bold d-lg-none order-md-3 text-end text-md">
-        <a class="btn btn-primary my-1" type="button" [routerLink]="['/add-shipping',creq.store.id, 0]" [queryParams]="{from_store_id: selected_from_store_id}">
+        <a class="btn btn-primary my-1" type="button" [routerLink]="['/add-shipping',creq.store.id]" [queryParams]="{from_store_id: selected_from_store_id}">
           <svg class="d-inline d-md-none"  xmlns="http://www.w3.org/2000/svg" width="1.2em" height="1.2em" viewBox="0 0 24 24"><path fill="currentColor" d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6z"/></svg>
           <span class="d-none d-md-inline">Crear envío</span>
         </a>
