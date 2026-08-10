@@ -1,0 +1,25 @@
+.scanner-page app-code-reader {
+	display: block;
+	margin-top: 1rem;
+}
+
+.scanner-stock-box {
+	background: #f8f9fa;
+	border-radius: 0.5rem;
+	padding: 0.75rem;
+}
+
+.scanner-stock-label {
+	font-size: 0.75rem;
+	text-transform: uppercase;
+	color: #6c757d;
+}
+
+.scanner-stock-value {
+	font-size: 1.5rem;
+	font-weight: 600;
+}
+
+.scanner-qty {
+	max-width: 6rem;
+}
