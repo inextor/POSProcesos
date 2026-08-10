@@ -6,6 +6,7 @@ import { of } from 'rxjs';
 import { filter, mergeMap } from 'rxjs/operators';
 import { BaseComponent } from '../../modules/shared/base/base.component';
 import { ConsignmentReceivedInfo } from '../../modules/shared/Models';
+import { Consignment_Received_Item_Batch } from '../../modules/shared/RestModels';
 import { LoadingComponent } from '../../components/loading/loading.component';
 
 interface SettleItem {
@@ -15,6 +16,14 @@ interface SettleItem {
 	unitary_cost: number;
 	settled_qty: number;
 	returned_qty: number;
+}
+
+interface BatchFormItem {
+	consignment_received_item_id: number;
+	item_name: string;
+	qty: number;
+	batch_option: string;
+	entries: Consignment_Received_Item_Batch[];
 }
 
 @Component({
@@ -33,6 +42,10 @@ export class ViewConsignmentReceivedComponent extends BaseComponent implements O
 	purchase_folio: string = '';
 	purchase_due_date: string = '';
 	is_settling: boolean = false;
+
+	show_batch_form: boolean = false;
+	batch_form_items: BatchFormItem[] = [];
+	is_saving: boolean = false;
 
 	constructor(injector: Injector)
 	{
@@ -74,25 +87,150 @@ export class ViewConsignmentReceivedComponent extends BaseComponent implements O
 	{
 		if( !this.info ) return;
 
+		const batch_items = this.info.items.filter(i => this.requiresBatch(i.item));
+
+		if( batch_items.length > 0 )
+		{
+			this.openBatchForm(batch_items);
+			return;
+		}
+
+		this.submitAddToStock([]);
+	}
+
+	requiresBatch(item: any): boolean
+	{
+		return !!item && !!item.batch_option && item.batch_option !== 'NONE';
+	}
+
+	openBatchForm(batch_items: any[])
+	{
+		this.batch_form_items = batch_items.map(i => ({
+			consignment_received_item_id: i.consignment_received_item.id,
+			item_name: i.item.name,
+			qty: i.consignment_received_item.qty,
+			batch_option: i.item.batch_option,
+			entries: [this.newBatchRow()]
+		}));
+
+		this.show_batch_form = true;
+	}
+
+	newBatchRow(): Consignment_Received_Item_Batch
+	{
+		return {
+			id: 0,
+			consignment_received_item_id: 0,
+			batch: '',
+			expiration_date: null,
+			qty: 1,
+			created: new Date(),
+			updated: new Date(),
+			created_by_user_id: 0,
+			updated_by_user_id: 0
+		};
+	}
+
+	addBatchRow(item: BatchFormItem)
+	{
+		item.entries.push(this.newBatchRow());
+	}
+
+	removeBatchRow(item: BatchFormItem, index: number)
+	{
+		item.entries.splice(index, 1);
+	}
+
+	getBatchTotal(item: BatchFormItem): number
+	{
+		return item.entries.reduce((sum, b) => sum + (Number(b.qty) || 0), 0);
+	}
+
+	cancelBatchForm()
+	{
+		this.show_batch_form = false;
+		this.batch_form_items = [];
+	}
+
+	isBatchFormValid(): boolean
+	{
+		for( const item of this.batch_form_items )
+		{
+			const sum = this.getBatchTotal(item);
+
+			if( Math.abs(sum - item.qty) > 0.0001 ) return false;
+
+			const is_batch_only = item.batch_option === 'BATCH_ONLY';
+			const is_exp_only = item.batch_option === 'EXPIRATION_ONLY';
+			const is_both = item.batch_option === 'BATCH_AND_EXPIRATION';
+
+			for( const b of item.entries )
+			{
+				if( (is_batch_only || is_both) && !(b.batch || '').trim() ) return false;
+				if( (is_exp_only || is_both) && !b.expiration_date ) return false;
+			}
+		}
+
+		return true;
+	}
+
+	confirmBatchForm()
+	{
+		if( !this.isBatchFormValid() ) return;
+
+		const batch_details = this.batch_form_items.map(item => ({
+			consignment_received_item_id: item.consignment_received_item_id,
+			quantities: item.entries.map(e => ({
+				batch: e.batch,
+				expiration_date: e.expiration_date,
+				qty: e.qty
+			}))
+		}));
+
+		this.submitAddToStock(batch_details);
+	}
+
+	submitAddToStock(batch_details: any)
+	{
+		this.is_saving = true;
+
 		this.subs.sink = this.confirmation.showConfirmAlert(
 			this.info,
 			'Agregar Inventario',
 			'Los artículos se agregarán al inventario de la sucursal. ¿Continuar?'
 		)
 		.pipe(
-			filter((r) => r.accepted),
-			mergeMap(() => this.rest.update('addConsignmentToStock', { consignment_received_id: this.info!.consignment_received.id }))
+			mergeMap((r) =>
+			{
+				if( !r.accepted )
+				{
+					this.is_saving = false;
+					return of(null);
+				}
+				return this.rest.update('addConsignmentToStock', {
+					consignment_received_id: this.info!.consignment_received.id,
+					batch_details
+				});
+			})
 		)
 		.subscribe({
 			next: (response: any) =>
 			{
-				if( this.info )
+				this.is_saving = false;
+				this.show_batch_form = false;
+
+				if( response && this.info )
 				{
 					this.info.consignment_received.stock_status = 'ADDED_TO_STOCK';
+					this.showSuccess('Inventario agregado exitosamente');
+					this.reload();
 				}
-				this.showSuccess('Inventario agregado exitosamente');
 			},
-			error: (error) => this.showError(error)
+			error: (error) =>
+			{
+				this.is_saving = false;
+				this.showError(error);
+			}
 		});
 	}
 

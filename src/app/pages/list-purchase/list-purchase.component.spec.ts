@@ -1,6 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { ListPurchaseComponent } from './list-purchase.component';
+import { provideComponentMocks } from '../../modules/shared/test/test-mocks';
 
 describe('ListPurchaseComponent', () => {
   let component: ListPurchaseComponent;
@@ -8,7 +9,8 @@ describe('ListPurchaseComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [ListPurchaseComponent]
+      imports: [ListPurchaseComponent],
+      providers: provideComponentMocks()
     })
     .compileComponents();
 

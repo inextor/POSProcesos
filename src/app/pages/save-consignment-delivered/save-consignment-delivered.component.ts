@@ -6,7 +6,7 @@ import { forkJoin, of } from 'rxjs';
 import { mergeMap } from 'rxjs/operators';
 import { BaseComponent } from '../../modules/shared/base/base.component';
 import { ConsignmentDeliveredInfo, ConsignmentDeliveredItemInfo } from '../../modules/shared/Models';
-import { Consignment_Delivered, Consignment_Delivered_Item, Store, User } from '../../modules/shared/RestModels';
+import { Consignment_Delivered, Consignment_Delivered_Item, Consignment_Delivered_Item_Batch, Store, User } from '../../modules/shared/RestModels';
 import { ItemInfo } from '../../modules/shared/Models';
 import { GetEmpty } from '../../modules/shared/GetEmpty';
 import { LoadingComponent } from '../../components/loading/loading.component';
@@ -122,13 +122,56 @@ export class SaveConsignmentDeliveredComponent extends BaseComponent implements 
 			updated: new Date()
 		};
 
+		let batches: Consignment_Delivered_Item_Batch[] = [];
+
+		if (this.requiresBatch(item_info.item))
+		{
+			batches = [this.newBatchRow()];
+		}
+
 		this.info.items.push({
 			consignment_delivered_item: cdi,
+			consignment_delivered_item_batches: batches,
 			item: item_info.item,
 			category: item_info.category
 		});
 
 		this.updateTotal();
+	}
+
+	requiresBatch(item: any): boolean
+	{
+		return !!item && !!item.batch_option && item.batch_option !== 'NONE';
+	}
+
+	newBatchRow(): Consignment_Delivered_Item_Batch
+	{
+		return {
+			id: 0,
+			consignment_delivered_item_id: 0,
+			batch: '',
+			expiration_date: null,
+			qty: 1,
+			created: new Date(),
+			updated: new Date(),
+			created_by_user_id: 0,
+			updated_by_user_id: 0
+		};
+	}
+
+	addBatchRow(item_info: ConsignmentDeliveredItemInfo)
+	{
+		item_info.consignment_delivered_item_batches.push(this.newBatchRow());
+	}
+
+	removeBatchRow(item_info: ConsignmentDeliveredItemInfo, index: number)
+	{
+		item_info.consignment_delivered_item_batches.splice(index, 1);
+	}
+
+	getBatchTotal(item_info: ConsignmentDeliveredItemInfo): number
+	{
+		return (item_info.consignment_delivered_item_batches || []).reduce((sum, b) => sum + (Number(b.qty) || 0), 0);
 	}
 
 	removeItem(index: number)
@@ -158,6 +201,40 @@ export class SaveConsignmentDeliveredComponent extends BaseComponent implements 
 		{
 			this.showError('Debe seleccionar un vendedor');
 			return;
+		}
+
+		for (const item of this.info.items)
+		{
+			if (!this.requiresBatch(item.item)) continue;
+
+			const item_name = item.item.name;
+			const batches = item.consignment_delivered_item_batches || [];
+			const sum = batches.reduce((s, b) => s + (Number(b.qty) || 0), 0);
+
+			if (Math.abs(sum - Number(item.consignment_delivered_item.qty)) > 0.0001)
+			{
+				this.showError(`La suma de lotes de "${item_name}" (${sum}) debe ser igual a la cantidad ${item.consignment_delivered_item.qty}`);
+				return;
+			}
+
+			for (const b of batches)
+			{
+				const is_batch_only = item.item.batch_option === 'BATCH_ONLY';
+				const is_exp_only = item.item.batch_option === 'EXPIRATION_ONLY';
+				const is_both = item.item.batch_option === 'BATCH_AND_EXPIRATION';
+
+				if ((is_batch_only || is_both) && !(b.batch || '').trim())
+				{
+					this.showError(`Debe indicar el código de lote para "${item_name}"`);
+					return;
+				}
+
+				if ((is_exp_only || is_both) && !b.expiration_date)
+				{
+					this.showError(`Debe indicar la fecha de expiración para "${item_name}"`);
+					return;
+				}
+			}
 		}
 
 		this.is_saving = true;

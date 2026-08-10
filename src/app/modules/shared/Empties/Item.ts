@@ -4,6 +4,7 @@ export function item(): Item {
 	let date = new Date();
 	return {
 		id: 0,
+		batch_option: 'NONE',
 		applicable_tax: 'DEFAULT',
 		availability_type: 'ALWAYS',
 		background: 'transparent',

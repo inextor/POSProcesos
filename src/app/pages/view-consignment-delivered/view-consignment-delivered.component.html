@@ -175,6 +175,17 @@
 										<td class="text-end">{{item.consignment_delivered_item.returned_qty}}</td>
 									}
 								</tr>
+								@if (item.consignment_delivered_item_batches.length)
+								{
+									<tr>
+										<td [attr.colspan]="info.consignment_delivered.status == 'SETTLED' ? 6 : 4">
+											<span class="text-muted small fw-bold me-2">Lotes:</span>
+											<span class="small me-3" *ngFor="let b of item.consignment_delivered_item_batches">
+												{{b.batch}}@if (b.expiration_date) { ({{b.expiration_date | date:'shortDate'}}) } x {{b.qty}}
+											</span>
+										</td>
+									</tr>
+								}
 							}
 						</tbody>
 						<tfoot>

@@ -1,18 +1,20 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { ViewSatFacturaComponent } from './view-sat-factura.component';
+import { ListObjectSatFacturaComponent } from './list-object-sat-factura.component';
+import { provideComponentMocks } from '../../modules/shared/test/test-mocks';
 
-describe('ViewSatFacturaComponent', () => {
-  let component: ViewSatFacturaComponent;
-  let fixture: ComponentFixture<ViewSatFacturaComponent>;
+describe('ListObjectSatFacturaComponent', () => {
+  let component: ListObjectSatFacturaComponent;
+  let fixture: ComponentFixture<ListObjectSatFacturaComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [ViewSatFacturaComponent]
+      imports: [ListObjectSatFacturaComponent],
+      providers: provideComponentMocks()
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(ViewSatFacturaComponent);
+    fixture = TestBed.createComponent(ListObjectSatFacturaComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

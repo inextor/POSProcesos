@@ -1,6 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { ListItemOnlineComponent } from './list-item-online.component';
+import { provideComponentMocks } from '../../modules/shared/test/test-mocks';
 
 describe('ListItemOnlineComponent', () => {
   let component: ListItemOnlineComponent;
@@ -8,7 +9,8 @@ describe('ListItemOnlineComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [ListItemOnlineComponent]
+      imports: [ListItemOnlineComponent],
+      providers: provideComponentMocks()
     })
     .compileComponents();
 

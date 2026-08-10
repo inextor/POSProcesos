@@ -75,6 +75,39 @@
 										</button>
 									</td>
 								</tr>
+								@if (requiresBatch(item.item))
+								{
+									<tr>
+										<td colspan="5">
+											<div class="d-flex flex-wrap gap-2 align-items-center">
+												<span class="fw-bold me-2">Lotes:</span>
+												@for (b of item.consignment_delivered_item_batches; track $index)
+												{
+													<div class="d-flex align-items-center gap-1 border rounded p-1">
+														@if (item.item.batch_option !== 'EXPIRATION_ONLY')
+														{
+															<input class="form-control form-control-sm" style="width:130px" [(ngModel)]="b.batch" placeholder="Código de lote">
+														}
+														@if (item.item.batch_option !== 'BATCH_ONLY')
+														{
+															<input type="date" class="form-control form-control-sm" style="width:150px" [(ngModel)]="b.expiration_date" placeholder="Expiración">
+														}
+														<input type="number" class="form-control form-control-sm" style="width:90px" [(ngModel)]="b.qty" min="0" placeholder="Cant.">
+														<button class="btn btn-sm btn-outline-danger" type="button" (click)="removeBatchRow(item, $index)">
+															<i class="bi bi-x"></i>
+														</button>
+													</div>
+												}
+												<button class="btn btn-sm btn-outline-primary" type="button" (click)="addBatchRow(item)">
+													<i class="bi bi-plus"></i> Agregar lote
+												</button>
+												<span class="text-muted small ms-2">
+													Total lotes: {{getBatchTotal(item)}} / {{item.consignment_delivered_item.qty}}
+												</span>
+											</div>
+										</td>
+									</tr>
+								}
 							}
 							@if (info.items.length == 0)
 							{

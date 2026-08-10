@@ -9,7 +9,11 @@
     "watch": "ng build --watch --configuration development",
     "deploy": "./update_build_info.sh && ng build --configuration=production --base-href  && ./deploy.sh",
     "deploy_test": "./update_build_info.sh && ng build --configuration=production --base-href  && ./deploy_test.sh",
-    "test": "ng test"
+    "test": "ng test",
+    "test:consignment": "ng test --include=src/app/pages/view-consignment-received/**/*.spec.ts --include=src/app/pages/view-consignment-delivered/**/*.spec.ts --watch=false --browsers=ChromeHeadless",
+    "test:integration": "ng test --include='src/app/**/*.integration.spec.ts' --watch=false --browsers=ChromeHeadless",
+    "test:e2e": "playwright test",
+    "test:e2e:headless": "E2E_HEADLESS=1 playwright test"
   },
   "private": true,
   "dependencies": {
@@ -32,6 +36,7 @@
     "@angular/build": "^20.0.3",
     "@angular/cli": "^20.0.3",
     "@angular/compiler-cli": "^20.0.4",
+    "@playwright/test": "^1.62.1",
     "@types/jasmine": "~5.1.0",
     "jasmine-core": "~5.1.0",
     "karma": "~6.4.0",

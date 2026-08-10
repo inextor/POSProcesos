@@ -175,6 +175,7 @@ export class SaveConsignmentReceivedComponent extends BaseComponent implements O
 
 		this.info.items.push({
 			consignment_received_item: cri,
+			consignment_received_item_batches: [],
 			item: item_info.item,
 			category: item_info.category
 		});

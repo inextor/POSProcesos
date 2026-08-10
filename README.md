@@ -14,13 +14,20 @@ Run `ng generate component component-name` to generate a new component. You can 
 
 Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory.
 
-## Running unit tests
+## Testing
 
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
+```bash
+npm run test              # Angular unit suite (Karma/ChromeHeadless)
+npm run test:integration  # Angular view tests against the real backend (127.0.0.205/PointOfSale)
+npm run test:e2e          # Playwright E2E — opens a visible Chrome window you can watch
+npm run test:e2e:headless # Playwright E2E — CI-friendly (headless)
+```
 
-## Running end-to-end tests
-
-Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To use this command, you need to first add a package that implements end-to-end testing capabilities.
+- `npm run test` runs the mock-based unit tests (no backend required).
+- `npm run test:integration` and `npm run test:e2e` talk to the real backend and create
+  unique test records, so the backend at `http://127.0.0.205/PointOfSale` must be running.
+- The E2E suite auto-starts (or reuses) the dev server on `http://127.0.0.205:4001` and
+  uses the system Google Chrome (`channel: 'chrome'`), so no browser download is needed.
 
 ## Further help
 

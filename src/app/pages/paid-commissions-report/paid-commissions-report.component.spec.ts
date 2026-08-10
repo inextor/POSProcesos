@@ -1,6 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { PaidCommissionsReportComponent } from './paid-commissions-report.component';
+import { provideComponentMocks } from '../../modules/shared/test/test-mocks';
 
 describe('PaidCommissionsReportComponent', () => {
   let component: PaidCommissionsReportComponent;
@@ -8,7 +9,8 @@ describe('PaidCommissionsReportComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [PaidCommissionsReportComponent]
+      imports: [PaidCommissionsReportComponent],
+      providers: provideComponentMocks()
     })
     .compileComponents();
 

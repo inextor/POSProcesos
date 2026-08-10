@@ -74,6 +74,64 @@
 			</div>
 		</div>
 
+		@if (show_batch_form && rest.user_permission.add_consignment_received)
+		{
+			<div class="card mb-3 border-info">
+				<div class="card-header bg-info text-white">
+					<h5 class="mb-0">Información de Lotes</h5>
+				</div>
+				<div class="card-body">
+					<div class="alert alert-info">
+						Los siguientes artículos requieren información de lote/caducidad para agregar al inventario.
+					</div>
+
+					@for (item of batch_form_items; track item.consignment_received_item_id)
+					{
+						<div class="mb-3 border rounded p-2">
+							<div class="d-flex justify-content-between align-items-center mb-2">
+								<span class="fw-bold">{{item.item_name}}</span>
+								<span class="text-muted small">Cantidad: {{item.qty}}</span>
+							</div>
+							<div class="d-flex flex-wrap gap-2 align-items-center">
+								@for (b of item.entries; track $index)
+								{
+									<div class="d-flex align-items-center gap-1 border rounded p-1">
+										@if (item.batch_option !== 'EXPIRATION_ONLY')
+										{
+											<input class="form-control form-control-sm" style="width:130px" [(ngModel)]="b.batch" placeholder="Código de lote" [disabled]="is_saving">
+										}
+										@if (item.batch_option !== 'BATCH_ONLY')
+										{
+											<input type="date" class="form-control form-control-sm" style="width:150px" [(ngModel)]="b.expiration_date" [disabled]="is_saving">
+										}
+										<input type="number" class="form-control form-control-sm" style="width:90px" [(ngModel)]="b.qty" min="0" placeholder="Cant." [disabled]="is_saving">
+										<button class="btn btn-sm btn-outline-danger" type="button" (click)="removeBatchRow(item, $index)" [disabled]="is_saving">
+											<i class="bi bi-x"></i>
+										</button>
+									</div>
+								}
+								<button class="btn btn-sm btn-outline-primary" type="button" (click)="addBatchRow(item)" [disabled]="is_saving">
+									<i class="bi bi-plus"></i> Agregar lote
+								</button>
+								<span class="text-muted small ms-2">
+									Total lotes: {{getBatchTotal(item)}} / {{item.qty}}
+								</span>
+							</div>
+						</div>
+					}
+
+					<div class="mt-3 text-end">
+						<button class="btn btn-secondary me-2" (click)="cancelBatchForm()" [disabled]="is_saving">
+							Cancelar
+						</button>
+						<button class="btn btn-primary" (click)="confirmBatchForm()" [disabled]="!isBatchFormValid() || is_saving">
+							@if (is_saving) { Procesando... } @else { Agregar Inventario }
+						</button>
+					</div>
+				</div>
+			</div>
+		}
+
 		@if (show_settle_form && rest.user_permission.add_consignment_received)
 		{
 			<div class="card mb-3 border-primary">
@@ -194,6 +252,17 @@
 										<td class="text-end">{{item.consignment_received_item.returned_qty}}</td>
 									}
 								</tr>
+								@if (item.consignment_received_item_batches.length)
+								{
+									<tr>
+										<td [attr.colspan]="info.consignment_received.status == 'SETTLED' ? 6 : 4">
+											<span class="text-muted small fw-bold me-2">Lotes:</span>
+											<span class="small me-3" *ngFor="let b of item.consignment_received_item_batches">
+												{{b.batch}}@if (b.expiration_date) { ({{b.expiration_date | date:'shortDate'}}) } x {{b.qty}}
+											</span>
+										</td>
+									</tr>
+								}
 							}
 						</tbody>
 						<tfoot>
