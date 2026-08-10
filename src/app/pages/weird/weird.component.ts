@@ -5,10 +5,11 @@ import { CreateOrdersInstallmentsComponent } from "../../components/create-order
 import { ClearInventoryComponent } from '../../components/clear-inventory/clear-inventory.component';
 import { TransformBatchItemsComponent } from '../../components/transform-batch-items/transform-batch-items.component';
 import { DownloadBatchRecordsComponent } from '../../components/download-batch-records/download-batch-records.component';
+import { AddBatchStockComponent } from '../../components/add-batch-stock/add-batch-stock.component';
 
 @Component({
 	selector: 'app-weird',
-	imports: [CreateUsersBillingComponent, CreateOrdersComponent, CreateOrdersInstallmentsComponent, ClearInventoryComponent, TransformBatchItemsComponent, DownloadBatchRecordsComponent],
+	imports: [CreateUsersBillingComponent, CreateOrdersComponent, CreateOrdersInstallmentsComponent, ClearInventoryComponent, TransformBatchItemsComponent, DownloadBatchRecordsComponent, AddBatchStockComponent],
 	templateUrl: './weird.component.html',
 	styleUrl: './weird.component.css'
 })
