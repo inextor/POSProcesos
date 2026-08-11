@@ -1,0 +1,262 @@
+<app-modal [(show)]="item_info_service.show_item_info" [biggest_posible]="true">
+	<div class="p-3" *ngIf="item_info_service.show_item_info">
+		<div *ngIf="item_info_service.loading" class="text-center py-5">
+			<app-loading [is_loading]="true"></app-loading>
+			<p class="mt-2 text-muted">Cargando información del artículo...</p>
+		</div>
+
+		<div *ngIf="item_info_service.error" class="text-center py-5">
+			<div class="alert alert-danger">{{item_info_service.error}}</div>
+			<button type="button" class="btn btn-secondary" (click)="close()">Cerrar</button>
+		</div>
+
+		<div *ngIf="!item_info_service.loading && !item_info_service.error && item_info">
+			<div class="d-flex align-items-center mb-3">
+				<div class="me-3">
+					<div *ngIf="item_info.item.image_id || item_info.category?.image_id" class="d-inline-block ratio ratio-1x1" [style]="{'background-image':'url('+rest.getImagePath(item_info.item.image_id,item_info.category?.image_id)+')','background-size':'contain',width:'64px','vertical-align':'middle','background-repeat':'no-repeat','background-position':'center center'}">
+						<img src="/assets/2px_transparent.png" width="64" height="64">
+					</div>
+					<div *ngIf="!(item_info.item.image_id || item_info.category?.image_id)">
+						<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24"><g fill="none"><path d="M13.409 2.512a3.75 3.75 0 0 0-2.818 0l-2.19.888l9.592 3.73l3.374-1.303a1.747 1.747 0 0 0-.46-.275l-7.498-3.04zM22 7.19l-9.25 3.574v10.923c.224-.045.444-.112.659-.199l7.498-3.04A1.75 1.75 0 0 0 22 16.826V7.19zM11.25 21.687V10.764L2 7.19v9.636a1.75 1.75 0 0 0 1.093 1.622l7.498 3.04c.215.087.435.154.659.2zM2.633 5.827L12 9.446l3.917-1.514l-9.543-3.71l-3.281 1.33c-.17.069-.324.162-.46.275z" fill="currentColor"/></g></svg>
+					</div>
+				</div>
+				<div class="flex-grow-1">
+					<h4 class="mb-1 text-capitalize">
+						<span *ngIf="item_info.category">{{item_info.category.name | titlecase}} - </span>{{item_info.item.name}}
+					</h4>
+					<div>
+						<span *ngIf="item_info.item.code" class="badge bg-secondary me-1">Código: {{item_info.item.code}}</span>
+						<span [ngClass]="item_info.item.status == 'ACTIVE' ? 'badge bg-success' : 'badge bg-danger'">
+							{{item_info.item.status == 'ACTIVE' ? 'Activo' : 'Eliminado'}}
+						</span>
+					</div>
+				</div>
+			</div>
+
+			<div class="btn-group w-100 mb-3 flex-wrap">
+				<button type="button" class="btn" [ngClass]="active_section == 'VARIABLES' ? 'btn-primary' : 'btn-secondary'" (click)="showSection('VARIABLES')">Variables</button>
+				<button type="button" class="btn" [ngClass]="active_section == 'PRECIOS' ? 'btn-primary' : 'btn-secondary'" (click)="showSection('PRECIOS')">Precios</button>
+				<button type="button" class="btn" [ngClass]="active_section == 'STOCK' ? 'btn-primary' : 'btn-secondary'" (click)="showSection('STOCK')">Stock</button>
+				<button type="button" class="btn" [ngClass]="active_section == 'IMPUESTOS' ? 'btn-primary' : 'btn-secondary'" (click)="showSection('IMPUESTOS')">Impuestos</button>
+				<button type="button" class="btn" [ngClass]="active_section == 'VENTA' ? 'btn-primary' : 'btn-secondary'" (click)="showSection('VENTA')">Venta</button>
+			</div>
+
+			<div *ngIf="active_section == 'VARIABLES'" class="row">
+				<div class="col-6 col-md-4 py-1" *ngIf="item_info.item.extra_name">
+					<label class="fw-bold d-block mb-0">Nombre extra</label>
+					<span>{{item_info.item.extra_name}}</span>
+				</div>
+				<div class="col-6 col-md-4 py-1" *ngIf="item_info.item.description">
+					<label class="fw-bold d-block mb-0">Descripción</label>
+					<span>{{item_info.item.description}}</span>
+				</div>
+				<div class="col-6 col-md-4 py-1" *ngIf="item_info.item.measurement_unit">
+					<label class="fw-bold d-block mb-0">Unidad de medida</label>
+					<span>{{item_info.item.measurement_unit}}</span>
+				</div>
+				<div class="col-6 col-md-4 py-1">
+					<label class="fw-bold d-block mb-0">Venta parcial</label>
+					<span>{{yes_no_dic[item_info.item.partial_sale] || item_info.item.partial_sale}}</span>
+				</div>
+				<div class="col-6 col-md-4 py-1">
+					<label class="fw-bold d-block mb-0">Para reserva</label>
+					<span>{{yes_no_dic[item_info.item.for_reservation] || item_info.item.for_reservation}}</span>
+				</div>
+				<div class="col-6 col-md-4 py-1" *ngIf="item_info.item.note_required">
+					<label class="fw-bold d-block mb-0">Nota requerida</label>
+					<span>{{yes_no_dic[item_info.item.note_required] || item_info.item.note_required}}</span>
+				</div>
+				<div class="col-6 col-md-4 py-1">
+					<label class="fw-bold d-block mb-0">Acción de devolución</label>
+					<span>{{return_action_dic[item_info.item.return_action] || item_info.item.return_action}}</span>
+				</div>
+				<div class="col-6 col-md-4 py-1" *ngIf="item_info.item.clave_sat">
+					<label class="fw-bold d-block mb-0">Clave SAT</label>
+					<span>{{item_info.item.clave_sat}}</span>
+				</div>
+				<div class="col-6 col-md-4 py-1" *ngIf="item_info.item.unidad_medida_sat_id">
+					<label class="fw-bold d-block mb-0">Unidad SAT</label>
+					<span>{{item_info.item.unidad_medida_sat_id}}</span>
+				</div>
+				<div class="col-6 col-md-4 py-1" *ngIf="item_info.item.brand_id">
+					<label class="fw-bold d-block mb-0">Marca</label>
+					<span>{{item_info.item.brand_id}}</span>
+				</div>
+				<div class="col-6 col-md-4 py-1" *ngIf="item_info.item.provider_user_id">
+					<label class="fw-bold d-block mb-0">Proveedor</label>
+					<span>{{item_info.item.provider_user_id}}</span>
+				</div>
+				<div class="col-6 col-md-4 py-1" *ngIf="item_info.item.json_tags?.length">
+					<label class="fw-bold d-block mb-0">Etiquetas</label>
+					<span>
+						<span *ngFor="let tag of item_info.item.json_tags" class="badge bg-info me-1">{{tag}}</span>
+					</span>
+				</div>
+				<div class="col-6 col-md-4 py-1">
+					<label class="fw-bold d-block mb-0">Creado</label>
+					<span>{{item_info.item.created | shortDate: 'full'}}</span>
+				</div>
+				<div class="col-6 col-md-4 py-1">
+					<label class="fw-bold d-block mb-0">Actualizado</label>
+					<span>{{item_info.item.updated | shortDate: 'full'}}</span>
+				</div>
+			</div>
+
+			<div *ngIf="active_section == 'PRECIOS'" class="row">
+				<div class="col-6 col-md-4 py-1">
+					<label class="fw-bold d-block mb-0">Precio de referencia</label>
+					<span>{{item_info.item.reference_price | currency: (item_info.item.reference_currency_id || 'USD')}}</span>
+				</div>
+				<div class="col-6 col-md-4 py-1">
+					<label class="fw-bold d-block mb-0">Moneda de referencia</label>
+					<span>{{item_info.item.reference_currency_id}}</span>
+				</div>
+				<div class="col-12 py-2" *ngIf="item_info.prices?.length">
+					<div class="table-responsive">
+						<table class="table table-sm table-nowrap mb-0">
+							<thead class="thead-light">
+								<tr>
+									<th>Moneda</th>
+									<th class="text-end">Precio</th>
+									<th class="text-end">Porcentaje</th>
+									<th>Lista</th>
+									<th>Tipo</th>
+									<th>Impuesto incluido</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr *ngFor="let price of item_info.prices">
+									<td>{{price.currency_id}}</td>
+									<td class="text-end">{{price.price | currency: (price.currency_id || 'USD')}}</td>
+									<td class="text-end">{{price.percent}}</td>
+									<td>{{price.price_list_id || '---'}}</td>
+									<td>{{price.price_type_id || '---'}}</td>
+									<td>{{yes_no_dic[price.tax_included] || price.tax_included}}</td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+				</div>
+			</div>
+
+			<div *ngIf="active_section == 'STOCK'" class="row">
+				<div class="col-6 col-md-4 py-1">
+					<label class="fw-bold d-block mb-0">Tipo de disponibilidad</label>
+					<span>{{availability_type_dic[item_info.item.availability_type] || item_info.item.availability_type}}</span>
+				</div>
+				<div class="col-6 col-md-4 py-1">
+					<label class="fw-bold d-block mb-0">Lotes</label>
+					<span>{{batch_option_dic[item_info.item.batch_option] || item_info.item.batch_option}}</span>
+				</div>
+				<div class="col-6 col-md-4 py-1">
+					<label class="fw-bold d-block mb-0">Número de serie</label>
+					<span>{{yes_no_dic[item_info.item.has_serial_number] || item_info.item.has_serial_number}}</span>
+				</div>
+				<div class="col-12 py-2" *ngIf="getStockRows().length">
+					<div class="table-responsive">
+						<table class="table table-sm table-nowrap mb-0">
+							<thead class="thead-light">
+								<tr>
+									<th>Sucursal</th>
+									<th class="text-end">Existencia</th>
+									<th class="text-end" *ngIf="requiresBatch(item_info)"></th>
+								</tr>
+							</thead>
+							<tbody>
+								<ng-container *ngFor="let stock_row of getStockRows()">
+									<tr>
+										<td>{{stock_row.store_name}}</td>
+										<td class="text-end">{{stock_row.qty}}</td>
+										<td class="text-end" *ngIf="requiresBatch(item_info)">
+											<button type="button" class="btn btn-sm btn-outline-secondary" (click)="toggleBatchRows(stock_row)" title="Ver lotes" [attr.aria-label]="'Ver lotes de '+stock_row.store_name">
+												<svg *ngIf="!stock_row.expanded" xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" style="vertical-align:-0.125em"><path fill="currentColor" d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6l-6-6z"/></svg>
+												<svg *ngIf="stock_row.expanded" xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" style="vertical-align:-0.125em"><path fill="currentColor" d="M7.41 15.41L12 10.83l4.59 4.58L18 14l-6-6l-6 6z"/></svg>
+											</button>
+										</td>
+									</tr>
+									<tr *ngIf="stock_row.expanded">
+										<td colspan="3">
+											<div class="batch-panel p-2 border rounded bg-light">
+												<div class="input-group input-group-sm mb-2">
+													<input type="text" class="form-control" placeholder="Buscar lote o caducidad..." [ngModel]="stock_row.batch_search" (ngModelChange)="onBatchSearch(stock_row,$event)">
+													<button type="button" class="btn btn-outline-secondary" (click)="clearBatchSearch(stock_row)" *ngIf="stock_row.batch_search">&times;</button>
+												</div>
+												<app-loading [is_loading]="!!stock_row.batch_loading"></app-loading>
+												<div *ngIf="!stock_row.batch_loading">
+													<div class="table-responsive" *ngIf="stock_row.batch_records?.length">
+														<table class="table table-sm table-nowrap mb-0">
+															<thead class="thead-light">
+																<tr>
+																	<th>Lote</th>
+																	<th>Caducidad</th>
+																	<th class="text-end">Cantidad</th>
+																</tr>
+															</thead>
+															<tbody>
+																<tr *ngFor="let batch of stock_row.batch_records">
+																	<td>{{batch.batch || '-'}}</td>
+																	<td>{{batch.expiration_date || '-'}}</td>
+																	<td class="text-end">{{batch.qty}}</td>
+																</tr>
+															</tbody>
+														</table>
+													</div>
+													<div class="text-muted" *ngIf="!stock_row.batch_records?.length">
+														No hay lotes con inventario.
+													</div>
+												</div>
+											</div>
+										</td>
+									</tr>
+								</ng-container>
+							</tbody>
+						</table>
+					</div>
+				</div>
+				<div class="col-12 py-1 text-muted" *ngIf="!getStockRows().length">
+					Sin movimientos de inventario registrados.
+				</div>
+			</div>
+
+			<div *ngIf="active_section == 'IMPUESTOS'" class="row">
+				<div class="col-6 col-md-4 py-1">
+					<label class="fw-bold d-block mb-0">Impuesto aplicable</label>
+					<span>{{applicable_tax_dic[item_info.item.applicable_tax] || item_info.item.applicable_tax}}</span>
+				</div>
+				<div class="col-6 col-md-4 py-1">
+					<label class="fw-bold d-block mb-0">Porcentaje de impuesto</label>
+					<span>{{item_info.item.tax_percent}}%</span>
+				</div>
+				<div class="col-6 col-md-4 py-1" *ngIf="item_info.item.ieps_value">
+					<label class="fw-bold d-block mb-0">Tipo IEPS</label>
+					<span>{{item_info.item.ieps_type}}</span>
+				</div>
+				<div class="col-6 col-md-4 py-1" *ngIf="item_info.item.ieps_value">
+					<label class="fw-bold d-block mb-0">Valor IEPS</label>
+					<span>{{item_info.item.ieps_value}}</span>
+				</div>
+			</div>
+
+			<div *ngIf="active_section == 'VENTA'" class="row">
+				<div class="col-6 col-md-4 py-1">
+					<label class="fw-bold d-block mb-0">En venta</label>
+					<span>{{yes_no_dic[item_info.item.on_sale] || item_info.item.on_sale}}</span>
+				</div>
+				<div class="col-6 col-md-4 py-1">
+					<label class="fw-bold d-block mb-0">Tipo de comisión</label>
+					<span>{{commission_type_dic[item_info.item.commission_type] || item_info.item.commission_type}}</span>
+				</div>
+				<div class="col-6 col-md-4 py-1" *ngIf="item_info.item.commission_type != 'NONE'">
+					<label class="fw-bold d-block mb-0">Comisión</label>
+					<span>{{item_info.item.commission}} {{item_info.item.commission_currency_id || ''}}</span>
+				</div>
+			</div>
+
+			<div class="row mt-3">
+				<div class="col-12 text-end">
+					<button type="button" class="btn btn-secondary" (click)="close()">Cerrar</button>
+				</div>
+			</div>
+		</div>
+	</div>
+</app-modal>

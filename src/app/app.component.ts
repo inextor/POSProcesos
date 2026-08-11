@@ -6,13 +6,14 @@ import { SharedModule } from './modules/shared/SharedModule';
 import { ConfirmationService } from './modules/shared/services/confirmation.service';
 import { KeyboardShortcutEvent } from './modules/shared/Utils';
 import { ModalComponent } from './components/modal/modal.component';
+import { ItemInfoComponent } from './components/item-info/item-info.component';
 import { BuildInfo } from './modules/shared/BuildInfo';
 
 @Component({
     selector: 'app-root',
     templateUrl: './app.component.html',
     styleUrl: './app.component.css',
-    imports: [RouterOutlet, RouterModule, SharedModule, ModalComponent ]
+    imports: [RouterOutlet, RouterModule, SharedModule, ModalComponent, ItemInfoComponent ]
 })
 export class AppComponent implements OnInit {
 	title = 'POSProcesos';

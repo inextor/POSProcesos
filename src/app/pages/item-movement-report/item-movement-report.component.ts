@@ -11,6 +11,7 @@ import { ItemMovement } from '../../modules/shared/Models';
 import { forkJoin,Observable, of } from 'rxjs';
 import { CategorySearchComponent } from '../../modules/shared/components/category-search/category-search.component';
 import { ItemSearchComponent } from '../../modules/shared/components/item-search/item-search.component';
+import { ItemInfoButtonComponent } from '../../components/item-info-button/item-info-button.component';
 
 interface CItemMovement extends ItemMovement
 {
@@ -36,7 +37,7 @@ interface ItemMovementRequest
 	selector: 'app-item-movement-report',
 	templateUrl: './item-movement-report.component.html',
 	styleUrl: './item-movement-report.component.css',
-	imports: [CommonModule, FormsModule, CategorySearchComponent, ItemSearchComponent],
+	imports: [CommonModule, FormsModule, CategorySearchComponent, ItemSearchComponent, ItemInfoButtonComponent],
 })
 export class ItemMovementReportComponent extends BaseComponent implements OnInit
 {
