@@ -1,7 +1,34 @@
-export const INTEGRATION_HOST = 'http://127.0.0.205';
-export const INTEGRATION_API_BASE = INTEGRATION_HOST + '/PointOfSale';
-export const INTEGRATION_USER = 'nextor@gmail.com';
-export const INTEGRATION_PASS = 'sdfgsdfggggggg';
+interface TestEnv
+{
+	E2E_API_URL?: string;
+	E2E_API_BASE?: string;
+	E2E_USER?: string;
+	E2E_PASS?: string;
+}
+
+const testEnv: TestEnv = (globalThis as any).process?.env ?? {};
+export const INTEGRATION_HOST = testEnv.E2E_API_URL || 'http://127.0.0.205';
+export const INTEGRATION_API_BASE = testEnv.E2E_API_BASE || (INTEGRATION_HOST + '/PointOfSale');
+export const INTEGRATION_USER = testEnv.E2E_USER || 'nextor@gmail.com';
+export const INTEGRATION_PASS = testEnv.E2E_PASS || 'sdfgsdfggggggg';
+
+export function integrationApiOverride(): { domain: string; urlBase: string }
+{
+	if (!testEnv.E2E_API_BASE)
+	{
+		return { domain: '', urlBase: '' };
+	}
+
+	try
+	{
+		const url = new URL(INTEGRATION_API_BASE);
+		return { domain: url.origin, urlBase: url.pathname.replace(/^\/+/, '').replace(/\/+$/, '') };
+	}
+	catch
+	{
+		return { domain: '', urlBase: '' };
+	}
+}
 
 export interface IntegrationSession
 {

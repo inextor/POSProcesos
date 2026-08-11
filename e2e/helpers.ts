@@ -8,13 +8,26 @@ import {
 	createConsignmentReceived,
 	addBatchStock,
 	createConsignmentDelivered,
+	integrationApiOverride,
 	INTEGRATION_USER,
 	INTEGRATION_PASS
 } from '../src/app/modules/shared/test/integration-client';
 
 export async function loginViaUi(page: Page): Promise<void>
 {
-	await page.goto('/#/login');
+	const override = integrationApiOverride();
+
+	if (override.domain)
+	{
+		await page.addInitScript((domain) => { window.__INTEGRATION_DOMAIN__ = domain; }, override.domain);
+	}
+
+	if (override.urlBase)
+	{
+		await page.addInitScript((urlBase) => { window.__INTEGRATION_URL_BASE__ = urlBase; }, override.urlBase);
+	}
+
+	await page.goto('#/login');
 	await page.getByPlaceholder('usuario@ejemplo.com').fill(INTEGRATION_USER);
 	await page.getByPlaceholder('Contraseña').fill(INTEGRATION_PASS);
 	await page.getByRole('button', { name: 'Login' }).click();

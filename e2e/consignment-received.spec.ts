@@ -19,7 +19,7 @@ test.describe.serial('Consignación Recibida (E2E)', () =>
 		const { id, batchCode } = await seedReceivedConsignment();
 		await loginViaUi(page);
 
-		await page.goto('/#/view-consignment-received/' + id);
+		await page.goto('#/view-consignment-received/' + id);
 		await expect(page.getByText('Consignación Recibida #' + id)).toBeVisible();
 
 		await page.getByRole('button', { name: /Agregar Inventario/ }).click();
@@ -44,7 +44,7 @@ test.describe.serial('Consignación Recibida (E2E)', () =>
 		const { id, batchCode } = await seedReceivedConsignment();
 		await loginViaUi(page);
 
-		await page.goto('/#/view-consignment-received/' + id);
+		await page.goto('#/view-consignment-received/' + id);
 		await expect(page.getByText('Consignación Recibida #' + id)).toBeVisible();
 
 		await page.getByRole('button', { name: /Agregar Inventario/ }).click();

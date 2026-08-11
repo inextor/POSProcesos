@@ -13,6 +13,15 @@ import { AttachmentInfo, OrderInfo, OrderItemInfo, OrderItemStructureInfo, Socke
 import { OfflineUtils, ServerInfo } from '../OfflineUtils';
 import { BuildInfo } from '../BuildInfo';
 
+declare global
+{
+	interface Window
+	{
+		__INTEGRATION_DOMAIN__?: string;
+		__INTEGRATION_URL_BASE__?: string;
+	}
+}
+
 export const USER_PERMISSION_KEY = 'user_permission';
 const USER_KEY = 'user';
 
@@ -36,8 +45,18 @@ export class RestService
 	public domain_configuration = {
 		//cambiar hostname por el dominio de test para que funcione en local
 		//ignore on commit
-		domain: environment.app_settings.test_url	|| window.location.protocol+'//'+window.location.hostname
+		domain: this.getDomain()
 	};
+
+	private getDomain(): string
+	{
+		if (typeof window.__INTEGRATION_DOMAIN__ === 'string' && window.__INTEGRATION_DOMAIN__ !== '')
+		{
+			return window.__INTEGRATION_DOMAIN__;
+		}
+
+		return environment.app_settings.test_url || window.location.protocol+'//'+window.location.hostname;
+	}
 
 	private platform_domain_configuration = {
 		domain: this.getPlatformDomain()
@@ -198,6 +217,9 @@ export class RestService
 	getUrlBase():string
 	{
 		this.setDomainChangeSettings();
+
+		if ( typeof window.__INTEGRATION_URL_BASE__ === 'string' && window.__INTEGRATION_URL_BASE__ !== '' )
+			return window.__INTEGRATION_URL_BASE__;
 
 		if ( window.location.hostname.indexOf('integranet.xyz') !== -1 )
 			return 'api';

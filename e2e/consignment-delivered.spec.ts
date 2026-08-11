@@ -8,7 +8,7 @@ test.describe.serial('Consignación Entregada (E2E)', () =>
 		const { id, batchCode } = await seedDeliveredConsignment();
 		await loginViaUi(page);
 
-		await page.goto('/#/view-consignment-delivered/' + id);
+		await page.goto('#/view-consignment-delivered/' + id);
 		await expect(page.getByText('Consignación Entregada #' + id)).toBeVisible();
 
 		const lotesRow = page.locator('tr', { hasText: 'Lotes:' });
@@ -21,7 +21,7 @@ test.describe.serial('Consignación Entregada (E2E)', () =>
 		const { id } = await seedDeliveredConsignment();
 		await loginViaUi(page);
 
-		await page.goto('/#/view-consignment-delivered/' + id);
+		await page.goto('#/view-consignment-delivered/' + id);
 		await expect(page.getByText('Consignación Entregada #' + id)).toBeVisible();
 
 		await page.getByRole('button', { name: /Liquidar/ }).first().click();

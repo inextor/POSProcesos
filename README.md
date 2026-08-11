@@ -19,8 +19,9 @@ Run `ng build` to build the project. The build artifacts will be stored in the `
 ```bash
 npm run test              # Angular unit suite (Karma/ChromeHeadless)
 npm run test:integration  # Angular view tests against the real backend (127.0.0.205/PointOfSale)
-npm run test:e2e          # Playwright E2E — opens a visible Chrome window you can watch
+npm run test:e2e          # Playwright E2E against the local backend (127.0.0.205)
 npm run test:e2e:headless # Playwright E2E — CI-friendly (headless)
+npm run testthishit <host> # Playwright E2E with local code against any backend
 ```
 
 - `npm run test` runs the mock-based unit tests (no backend required).
@@ -28,6 +29,12 @@ npm run test:e2e:headless # Playwright E2E — CI-friendly (headless)
   unique test records, so the backend at `http://127.0.0.205/PointOfSale` must be running.
 - The E2E suite auto-starts (or reuses) the dev server on `http://127.0.0.205:4001` and
   uses the system Google Chrome (`channel: 'chrome'`), so no browser download is needed.
+- `npm run testthishit <host>` runs this project's local code (dev server on
+  `http://127.0.0.205:4001`) against the given backend host:
+  - `npm run testthishit 127.0.0.195` → backend `http://127.0.0.195/PointOfSale`
+  - `npm run testthishit 127.0.0.205` → backend `http://127.0.0.205/PointOfSale`
+  - `npm run testthishit test.integranet.xyz` → backend `https://test.integranet.xyz/api`
+  - Extra args pass through to Playwright (e.g. `-- --grep login`).
 
 ## Further help
 

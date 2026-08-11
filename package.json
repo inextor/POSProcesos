@@ -13,7 +13,8 @@
     "test:consignment": "ng test --include=src/app/pages/view-consignment-received/**/*.spec.ts --include=src/app/pages/view-consignment-delivered/**/*.spec.ts --watch=false --browsers=ChromeHeadless",
     "test:integration": "ng test --include='src/app/**/*.integration.spec.ts' --watch=false --browsers=ChromeHeadless",
     "test:e2e": "playwright test",
-    "test:e2e:headless": "E2E_HEADLESS=1 playwright test"
+    "test:e2e:headless": "E2E_HEADLESS=1 playwright test",
+    "testthishit": "bash e2e/run.sh"
   },
   "private": true,
   "dependencies": {
