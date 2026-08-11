@@ -25,7 +25,8 @@ export class ListProductionAreaComponent extends BaseComponent implements OnInit
 		(
 			mergeMap((_paramMap)=>
 			{
-				return this.production_area_rest.search({limit:99999})
+				//production_area.php no filtra por status, regresa tambien las dadas de baja
+				return this.production_area_rest.search({eq:{status:'ACTIVE'},limit:99999})
 			}),
 		)
 		.subscribe((response)=>

@@ -1,0 +1,78 @@
+<div class="card p-3">
+	<div class="row">
+		<code>[item_id,	store_id,	batch,	expiration_date,	qty]</code>
+		<p class="text-muted small mt-2 mb-0">
+			El artículo debe estar configurado con lote y/o caducidad. La fecha va como AAAA-MM-DD.
+			El orden de las columnas importa: se leen por posición y sólo la primera hoja.
+		</p>
+
+		<form (submit)="validateFile($event)">
+			<div class="my-2">
+				<input type="file" name="batch_stock_file" class="form-control" (change)="onFileChanged($event)" required>
+			</div>
+
+			<div class="my-2">
+				<input type="text" name="batch_stock_comment" class="form-control"
+					placeholder="Comentario para toda la carga (opcional). Ej: Recuento físico agosto 2026"
+					[value]="comment" (input)="onCommentChanged($event)">
+			</div>
+
+			<div class="my-3 d-flex gap-2 flex-wrap">
+				<button type="submit" class="btn btn-primary" [disabled]="is_loading">Validar Archivo</button>
+				<button type="button" class="btn btn-secondary" (click)="downloadTemplate()">Descargar Plantilla</button>
+				<button type="button" class="btn btn-success"
+					[disabled]="is_loading || !is_validated || row_errors.length > 0 || valid_rows.length === 0"
+					(click)="applyStock()">
+					Aplicar Carga
+				</button>
+			</div>
+		</form>
+
+		<app-loading [is_loading]="is_loading"></app-loading>
+
+		@if (is_validated) {
+			<div class="alert" [class.alert-success]="row_errors.length === 0" [class.alert-warning]="row_errors.length > 0">
+				<strong>{{ total_rows }}</strong> renglones leídos ·
+				<strong class="text-success">{{ valid_rows.length }}</strong> válidos ·
+				<strong class="text-danger">{{ row_errors.length }}</strong> con problema
+			</div>
+		}
+
+		@if (row_errors.length) {
+			<div class="d-flex justify-content-between align-items-center mb-2">
+				<h5 class="mb-0">Renglones con problema</h5>
+				<button type="button" class="btn btn-sm btn-outline-danger" (click)="downloadErrors()">Descargar Errores</button>
+			</div>
+
+			@if (row_errors.length > visible_errors.length) {
+				<p class="text-muted small mb-2">
+					Mostrando los primeros {{ visible_errors.length }} de {{ row_errors.length }}.
+					Descarga el Excel para verlos todos.
+				</p>
+			}
+
+			<div class="table-responsive" style="max-height:340px;overflow-y:auto">
+				<table class="table table-sm table-striped">
+					<thead class="table-light">
+						<tr>
+							<th>Fila</th>
+							<th>item_id</th>
+							<th>Lote</th>
+							<th>Motivo</th>
+						</tr>
+					</thead>
+					<tbody>
+						@for (e of visible_errors; track e.Fila) {
+							<tr>
+								<td>{{ e.Fila }}</td>
+								<td>{{ e.item_id }}</td>
+								<td>{{ e.Lote }}</td>
+								<td>{{ e.Motivo }}</td>
+							</tr>
+						}
+					</tbody>
+				</table>
+			</div>
+		}
+	</div>
+</div>
