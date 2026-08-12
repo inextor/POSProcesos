@@ -176,11 +176,12 @@ export async function createStocktake(bearer: string, storeId: number, name: str
 
 export async function closeStocktake(bearer: string, stocktakeId: number, stockAdjustment: string = 'DIFFERENCE'): Promise<any>
 {
-	return apiRequest('/updates/closeStockTake.php', {
-		method: 'POST',
+	return apiRequest('/stocktake.php', {
+		method: 'PUT',
 		bearer,
 		body: {
-			stocktake_id: stocktakeId,
+			id: stocktakeId,
+			status: 'CLOSED',
 			stock_adjustment: stockAdjustment
 		}
 	});
