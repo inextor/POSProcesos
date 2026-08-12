@@ -4,7 +4,6 @@ export interface Item {
   batch_option: 'NONE' | 'BATCH_ONLY' | 'EXPIRATION_ONLY' | 'BATCH_AND_EXPIRATION';
   applicable_tax: 'DEFAULT' | 'EXEMPT' | 'PERCENT';
   availability_type: 'ON_STOCK' | 'BY_ORDER' | 'ALWAYS';
-  batch_option: 'NONE' | 'BATCH_ONLY' | 'EXPIRATION_ONLY' | 'BATCH_AND_EXPIRATION';
   brand_id: number | null;
   category_id: number | null;
   clave_sat: string | null;

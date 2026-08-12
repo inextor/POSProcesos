@@ -137,6 +137,78 @@ export async function grantConsignmentPermissions(bearer: string, userId: number
 	});
 }
 
+export async function grantStocktakePermissions(bearer: string, userId: number): Promise<void>
+{
+	await apiRequest('/user_permission.php', {
+		method: 'PUT',
+		bearer,
+		body: {
+			user_id: userId,
+			stocktake: true,
+			add_stock: true,
+			global_add_stock: true,
+			view_global_stocktake: true,
+			view_stock: true
+		}
+	});
+}
+
+export async function createStocktake(bearer: string, storeId: number, name: string, stockAdjustment: string = 'DIFFERENCE'): Promise<any>
+{
+	const data = await apiRequest('/stocktake.php', {
+		method: 'POST',
+		bearer,
+		body: {
+			store_id: storeId,
+			name,
+			status: 'ACTIVE',
+			stock_adjustment: stockAdjustment
+		}
+	});
+
+	if (!data.id)
+	{
+		throw new Error('Stocktake creation did not return id: ' + JSON.stringify(data));
+	}
+
+	return data;
+}
+
+export async function closeStocktake(bearer: string, stocktakeId: number, stockAdjustment: string = 'DIFFERENCE'): Promise<any>
+{
+	return apiRequest('/updates/closeStockTake.php', {
+		method: 'POST',
+		bearer,
+		body: {
+			stocktake_id: stocktakeId,
+			stock_adjustment: stockAdjustment
+		}
+	});
+}
+
+export async function fetchStocktakeScans(bearer: string, stocktakeId: number): Promise<any>
+{
+	return apiRequest('/stocktake_scan.php?stocktake_id=' + stocktakeId + '&limit=9999', { bearer });
+}
+
+export async function fetchStocktakeItems(bearer: string, stocktakeId: number): Promise<any>
+{
+	return apiRequest('/stocktake_item.php?stocktake_id=' + stocktakeId + '&limit=9999', { bearer });
+}
+
+export async function fetchStocktakeItemBatches(bearer: string, stocktakeItemId: number): Promise<any>
+{
+	return apiRequest('/stocktake_item_batch.php?stocktake_item_id=' + stocktakeItemId + '&limit=9999', { bearer });
+}
+
+export async function fetchCurrentBatchRecord(bearer: string, itemId: number, storeId: number, batch: string): Promise<any>
+{
+	return apiRequest(
+		'/batch_record.php?item_id=' + itemId + '&store_id=' + storeId + '&batch=' + encodeURIComponent(batch) + '&is_current=1&limit=1',
+		{ bearer }
+	);
+}
+
 export function seedSession(session: IntegrationSession): void
 {
 	localStorage.setItem('user', JSON.stringify(session.user));

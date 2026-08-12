@@ -1,0 +1,19 @@
+{
+	"consignment": {
+		"title": "Consignaciones",
+		"description": "Walkthrough paso a paso del módulo de consignaciones (recibidas y entregadas) basado en capturas tomadas por pruebas E2E.",
+		"tests": [
+			"e2e/consignment-received.spec.ts",
+			"e2e/consignment-delivered.spec.ts"
+		],
+		"walkthrough": "e2e/consignment-walkthrough.spec.ts"
+	},
+	"stocktake": {
+		"title": "Toma de Inventario",
+		"description": "Walkthrough paso a paso de la toma de inventario con conteo por lotes y caducidad, basado en capturas tomadas por pruebas E2E.",
+		"tests": [
+			"e2e/stocktake.spec.ts"
+		],
+		"walkthrough": "e2e/stocktake-walkthrough.spec.ts"
+	}
+}

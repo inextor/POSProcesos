@@ -9,12 +9,18 @@
     "watch": "ng build --watch --configuration development",
     "deploy": "./update_build_info.sh && ng build --configuration=production --base-href  && ./deploy.sh",
     "deploy_test": "./update_build_info.sh && ng build --configuration=production --base-href  && ./deploy_test.sh",
-    "test": "ng test",
+    "test": "node e2e/e2e.mjs test",
+    "testall": "node e2e/e2e.mjs testall",
+    "list-test": "node e2e/e2e.mjs list",
+    "generate-doc": "node e2e/e2e.mjs doc",
+    "generate-docs": "node e2e/e2e.mjs docs",
     "test:consignment": "ng test --include=src/app/pages/view-consignment-received/**/*.spec.ts --include=src/app/pages/view-consignment-delivered/**/*.spec.ts --watch=false --browsers=ChromeHeadless",
     "test:integration": "ng test --include='src/app/**/*.integration.spec.ts' --watch=false --browsers=ChromeHeadless",
     "test:e2e": "playwright test",
     "test:e2e:headless": "E2E_HEADLESS=1 playwright test",
-    "testall": "bash e2e/run.sh"
+    "test:e2e:walkthrough": "playwright test e2e/*-walkthrough.spec.ts",
+    "docs:consignaciones": "node e2e/generate-docs-html.mjs --module consignment",
+    "generate_htmls": "bash e2e/build-docs.sh"
   },
   "private": true,
   "dependencies": {

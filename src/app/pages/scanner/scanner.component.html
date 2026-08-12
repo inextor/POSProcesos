@@ -142,9 +142,72 @@
 				<option [ngValue]="stocktake.id">{{ stocktake.name || ('Toma #' + stocktake.id) }} ({{ stocktake.stock_adjustment }})</option>
 			}
 		</select>
+
+		@if (item_info && requiresBatch(item_info.item)) {
+			<div class="mb-3">
+				<div class="alert alert-info py-2">
+					@if (stocktake_confirm_mode) {
+						El artículo usa lotes. Confirma la cantidad contada por lote.
+					} @else {
+						El artículo usa lotes. Ingresa el lote, caducidad y cantidad contada.
+					}
+				</div>
+				@if (stocktake_batch_rows.length > 0) {
+					<table class="table table-sm align-middle">
+						<thead>
+							<tr>
+								<th>Lote</th>
+								<th>Caducidad</th>
+								<th class="text-end">Stock sistema</th>
+								<th class="text-end" style="width:110px">Contado</th>
+								<th></th>
+							</tr>
+						</thead>
+						<tbody>
+							@for (row of stocktake_batch_rows; track $index) {
+								<tr>
+									<td>
+										@if (item_info.item.batch_option !== 'EXPIRATION_ONLY') {
+											<input type="text" class="form-control form-control-sm" [(ngModel)]="row.batch" placeholder="Código de lote" [disabled]="is_saving" />
+										} @else {
+											<span class="text-muted">—</span>
+										}
+									</td>
+									<td>
+										@if (item_info.item.batch_option !== 'BATCH_ONLY') {
+											<input type="date" class="form-control form-control-sm" [(ngModel)]="row.expiration_date" [disabled]="is_saving" />
+										} @else {
+											<span class="text-muted">—</span>
+										}
+									</td>
+									<td class="text-end">{{ row.db_qty }}</td>
+									<td>
+										<input type="number" class="form-control form-control-sm text-end" [(ngModel)]="row.real_qty" min="0" placeholder="0" [disabled]="is_saving" />
+									</td>
+									<td class="text-end">
+										<button class="btn btn-sm btn-outline-danger" type="button" (click)="removeStocktakeBatchRow($index)" [disabled]="stocktake_batch_rows.length <= 1 || is_saving">
+											<i class="bi bi-x"></i>
+										</button>
+									</td>
+								</tr>
+							}
+						</tbody>
+					</table>
+				} @else {
+					<p class="text-muted small mb-0">Cargando lotes...</p>
+				}
+				<div class="d-flex justify-content-between align-items-center">
+					<button class="btn btn-sm btn-outline-primary" type="button" (click)="addStocktakeBatchRow()" [disabled]="is_saving">
+						<i class="bi bi-plus"></i> Agregar lote
+					</button>
+					<span class="text-muted small">Total contado: <b>{{ getStocktakeBatchTotal() }}</b> / {{ quantity }}</span>
+				</div>
+			</div>
+		}
+
 		<div class="d-flex justify-content-end gap-2">
 			<button class="btn btn-secondary" type="button" (click)="show_stocktake_modal = false">Cancelar</button>
-			<button class="btn btn-primary" type="button" (click)="doStockTake()" [disabled]="is_saving">Registrar</button>
+			<button class="btn btn-primary" type="button" (click)="doStockTake()" [disabled]="is_saving || (item_info && requiresBatch(item_info.item) && !isStocktakeBatchValid())">Registrar</button>
 		</div>
 	</div>
 </app-modal>

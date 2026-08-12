@@ -138,6 +138,7 @@ export * from './RestModels/Shipping';
 export * from './RestModels/Stock_Alert';
 export * from './RestModels/Stock_Record';
 export * from './RestModels/Stocktake_Item';
+export * from './RestModels/Stocktake_Item_Batch';
 export * from './RestModels/Stocktake_Scan';
 export * from './RestModels/Stocktake';
 export * from './RestModels/Storage_Item';

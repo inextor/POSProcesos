@@ -1,17 +1,75 @@
-import { Page, expect } from '@playwright/test';
+import { Page, TestInfo, expect } from '@playwright/test';
+import { mkdir, writeFile } from 'node:fs/promises';
+import { basename, join } from 'node:path';
 import {
 	integrationLogin,
 	grantConsignmentPermissions,
+	grantStocktakePermissions,
 	uniqueName,
 	uniqueBatch,
 	createBatchItem,
 	createConsignmentReceived,
 	addBatchStock,
 	createConsignmentDelivered,
+	createStocktake,
 	integrationApiOverride,
 	INTEGRATION_USER,
 	INTEGRATION_PASS
 } from '../src/app/modules/shared/test/integration-client';
+
+export const SHOTS_ROOT = join(process.cwd(), 'e2e', 'screenshots');
+
+export function moduleKeyFromTestFile(testFile: string): string
+{
+	const file = basename(testFile).replace(/\.spec\.ts$/, '');
+	return file.replace(/-walkthrough$/, '');
+}
+
+export function moduleShotDir(moduleKey: string): string
+{
+	return join(SHOTS_ROOT, moduleKey);
+}
+
+export function manifestFile(moduleKey: string): string
+{
+	return join(moduleShotDir(moduleKey), 'manifest.json');
+}
+
+export async function shot(page: Page, testInfo: TestInfo, name: string, caption: string): Promise<string>
+{
+	const moduleKey = moduleKeyFromTestFile(testInfo.file);
+	const dir = moduleShotDir(moduleKey);
+	await mkdir(dir, { recursive: true });
+
+	const safeTest = testInfo.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+	const safeStep = name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+	const file = `${safeTest}__${safeStep}.png`;
+	const fullPath = join(dir, file);
+
+	await page.screenshot({ path: fullPath, fullPage: true });
+	await testInfo.attach(name, { path: fullPath, contentType: 'image/png' });
+
+	const manifest = await readManifest(manifestFile(moduleKey));
+	manifest.push({ order: 0, test: testInfo.title, step: name, caption, file });
+	const deduped = Array.from(new Map(manifest.map(e => [e.file, e])).values())
+		.map((e, i) => ({ ...e, order: i + 1 }));
+	await writeFile(manifestFile(moduleKey), JSON.stringify(deduped, null, 2), 'utf8');
+
+	return fullPath;
+}
+
+async function readManifest(file: string): Promise<Array<{ order: number; test: string; step: string; caption: string; file: string }>>
+{
+	try
+	{
+		const { readFile } = await import('node:fs/promises');
+		return JSON.parse(await readFile(file, 'utf8'));
+	}
+	catch
+	{
+		return [];
+	}
+}
 
 export async function loginViaUi(page: Page): Promise<void>
 {
@@ -34,7 +92,7 @@ export async function loginViaUi(page: Page): Promise<void>
 	await expect(page.locator('.side-nav-link').first()).toBeVisible();
 }
 
-export async function navigateMenuToReceived(page: Page): Promise<void>
+export async function openMenuIfClosed(page: Page): Promise<void>
 {
 	const menuOpen = await page.locator('.ps-menu').evaluate(el => el.classList.contains('menu-open'));
 
@@ -43,10 +101,22 @@ export async function navigateMenuToReceived(page: Page): Promise<void>
 		await page.locator('.hamburger').click();
 		await expect(page.locator('.ps-menu')).toHaveClass(/menu-open/);
 	}
+}
 
+export async function navigateMenuToReceived(page: Page): Promise<void>
+{
+	await openMenuIfClosed(page);
 	await page.locator('.side-nav-link', { hasText: 'Consignaciones' }).click();
 	await page.locator('#show_consignments').getByRole('link', { name: 'Recibidas' }).click();
 	await page.waitForURL(/#\/list-consignment-received/);
+}
+
+export async function navigateMenuToDelivered(page: Page): Promise<void>
+{
+	await openMenuIfClosed(page);
+	await page.locator('.side-nav-link', { hasText: 'Consignaciones' }).click();
+	await page.locator('#show_consignments').getByRole('link', { name: 'Entregadas' }).click();
+	await page.waitForURL(/#\/list-consignment-delivered/);
 }
 
 export async function seedReceivedConsignment(): Promise<{ id: number; batchCode: string; itemName: string }>
@@ -91,4 +161,22 @@ export async function seedDeliveredConsignment(): Promise<{ id: number; batchCod
 	);
 
 	return { id: created.id, batchCode };
+}
+
+export async function seedStocktake(): Promise<{ stocktakeId: number; itemId: number; batchCode: string; itemName: string; storeId: number; stockQty: number }>
+{
+	const session = await integrationLogin();
+	await grantStocktakePermissions(session.bearer, session.user.id);
+
+	const storeId = Number(session.user.store_id || 1);
+	const batchCode = uniqueBatch('E2EST');
+	const itemName = uniqueName('E2E Stocktake Lotes');
+	const item = await createBatchItem(session.bearer, itemName, 'BATCH_AND_EXPIRATION');
+
+	const stockQty = 20;
+	await addBatchStock(session.bearer, item.id, storeId, batchCode, '2027-06-30', stockQty);
+
+	const stocktake = await createStocktake(session.bearer, storeId, uniqueName('Toma E2E'));
+
+	return { stocktakeId: stocktake.id, itemId: item.id, batchCode, itemName, storeId, stockQty };
 }

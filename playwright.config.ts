@@ -9,7 +9,7 @@ export default defineConfig({
 	workers: 1,
 	timeout: 180000,
 	expect: { timeout: 20000 },
-	reporter: [['list']],
+	reporter: [['list'], ['html', { open: 'never' }]],
 	use: {
 		baseURL: APP_URL,
 		channel: 'chrome',

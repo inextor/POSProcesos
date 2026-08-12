@@ -1,12 +1,11 @@
 import { Component, Injector } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { mergeMap } from 'rxjs/operators';
 import { BaseComponent } from '../../modules/shared/base/base.component';
 import { CodeReaderComponent, CodeValue } from '../../modules/shared/code-reader/code-reader.component';
 import { ModalComponent } from '../../components/modal/modal.component';
 import { ItemInfo, ItemStockInfo } from '../../modules/shared/Models';
-import { Item, Serial, Stock_Alert, Stock_Record, Stocktake, Stocktake_Item, Stocktake_Scan, Store } from '../../modules/shared/RestModels';
+import { Batch_Record, Item, Serial, Stock_Alert, Stock_Record, Stocktake, Stocktake_Item, Store } from '../../modules/shared/RestModels';
 import { Rest, RestSimple } from '../../modules/shared/services/Rest';
 
 interface CStockPerStore
@@ -14,6 +13,14 @@ interface CStockPerStore
 	store_id: number;
 	store_name: string;
 	total: number;
+}
+
+interface StocktakeBatchRow
+{
+	batch: string;
+	expiration_date: string | null;
+	db_qty: number;
+	real_qty: number;
 }
 
 @Component({
@@ -29,8 +36,8 @@ export class ScannerComponent extends BaseComponent
 	rest_stock: Rest<Item, ItemStockInfo> = this.rest.initRest('stock_by_item');
 	rest_stock_record: RestSimple<Stock_Record> = this.rest.initRestSimple('stock_record');
 	rest_stocktake: RestSimple<Stocktake> = this.rest.initRestSimple('stocktake');
-	rest_stocktake_scan: RestSimple<Stocktake_Scan> = this.rest.initRestSimple('stocktake_scan');
-	rest_stocktake_item: RestSimple<Stocktake_Item> = this.rest.initRestSimple('stocktake_item');
+	rest_stocktake_item: RestSimple<Stocktake_Item> = this.rest.initRestSimple('stocktake_item_info');
+	rest_batch_record: RestSimple<Batch_Record> = this.rest.initRestSimple('batch_record');
 	rest_stock_alert: RestSimple<Stock_Alert> = this.rest.initRestSimple('stock_alert');
 	rest_serial: RestSimple<Serial> = this.rest.initRestSimple('serial');
 	rest_store: RestSimple<Store> = this.rest.initRestSimple('store', ['id', 'name']);
@@ -51,6 +58,7 @@ export class ScannerComponent extends BaseComponent
 	active_stocktakes: Stocktake[] = [];
 	selected_stocktake_id: number | null = null;
 	show_stocktake_modal: boolean = false;
+	stocktake_batch_rows: StocktakeBatchRow[] = [];
 
 	stock_per_store: CStockPerStore[] = [];
 	show_stock_modal: boolean = false;
@@ -248,8 +256,8 @@ export class ScannerComponent extends BaseComponent
 			previous_qty: current_qty,
 			qty: new_qty,
 			description,
-			created_by_user_id: this.rest.user?.id ?? null,
-			updated_by_user_id: this.rest.user?.id ?? null
+			created_by_user_id: this.rest.user?.id,
+			updated_by_user_id: this.rest.user?.id
 		};
 
 		this.is_saving = true;
@@ -268,6 +276,16 @@ export class ScannerComponent extends BaseComponent
 		});
 	}
 
+	get stocktake_confirm_mode(): boolean
+	{
+		return this.rest.user_permission?.shipping_receive_type === 'VALIDATE';
+	}
+
+	requiresBatch(item: Item): boolean
+	{
+		return !!item && item.batch_option !== 'NONE';
+	}
+
 	openStocktakeModal()
 	{
 		if( this.active_stocktakes.length == 0 )
@@ -280,7 +298,113 @@ export class ScannerComponent extends BaseComponent
 			? this.selected_stocktake_id
 			: this.active_stocktakes[0].id;
 
+		this.stocktake_batch_rows = [];
+
+		if( this.item_info && this.requiresBatch(this.item_info.item) )
+		{
+			if( this.stocktake_confirm_mode )
+			{
+				this.loadCurrentBatches();
+			}
+			else
+			{
+				this.stocktake_batch_rows.push(this.newStocktakeBatchRow());
+			}
+		}
+
 		this.show_stocktake_modal = true;
+	}
+
+	loadCurrentBatches()
+	{
+		let item_info = this.item_info;
+
+		if( !item_info || !this.store_id )
+		{
+			this.stocktake_batch_rows.push(this.newStocktakeBatchRow());
+			return;
+		}
+
+		this.subs.sink = this.rest_batch_record.search({
+			eq: {
+				item_id: item_info.item.id,
+				store_id: this.store_id,
+				is_current: 1
+			},
+			gt: { qty: 0 },
+			limit: 9999,
+			sort_order: ['expiration_date_ASC']
+		}).subscribe({
+			next: (response)=>
+			{
+				this.stocktake_batch_rows = response.data.map((br)=>
+				{
+					return {
+						batch: br.batch || '',
+						expiration_date: br.expiration_date,
+						db_qty: br.qty,
+						real_qty: 0
+					};
+				});
+
+				if( this.stocktake_batch_rows.length == 0 )
+				{
+					this.stocktake_batch_rows.push(this.newStocktakeBatchRow());
+				}
+			},
+			error: (error)=> this.showError(error)
+		});
+	}
+
+	newStocktakeBatchRow(): StocktakeBatchRow
+	{
+		return {
+			batch: '',
+			expiration_date: null,
+			db_qty: 0,
+			real_qty: 0
+		};
+	}
+
+	addStocktakeBatchRow()
+	{
+		this.stocktake_batch_rows.push(this.newStocktakeBatchRow());
+	}
+
+	removeStocktakeBatchRow(index: number)
+	{
+		this.stocktake_batch_rows.splice(index, 1);
+	}
+
+	getStocktakeBatchTotal(): number
+	{
+		return this.stocktake_batch_rows.reduce((sum, row)=> sum + (Number(row.real_qty) || 0), 0);
+	}
+
+	isStocktakeBatchValid(): boolean
+	{
+		if( !this.item_info )
+			return false;
+
+		let item = this.item_info.item;
+
+		if( Math.abs(this.getStocktakeBatchTotal() - this.quantity) > 0.0001 )
+			return false;
+
+		const is_batch_only = item.batch_option === 'BATCH_ONLY';
+		const is_exp_only = item.batch_option === 'EXPIRATION_ONLY';
+		const is_both = item.batch_option === 'BATCH_AND_EXPIRATION';
+
+		for( let row of this.stocktake_batch_rows )
+		{
+			if( (is_batch_only || is_both) && !(row.batch || '').trim() )
+				return false;
+
+			if( (is_exp_only || is_both) && !row.expiration_date )
+				return false;
+		}
+
+		return true;
 	}
 
 	onStocktakeChange(stocktake_id: number | null)
@@ -302,26 +426,50 @@ export class ScannerComponent extends BaseComponent
 			return;
 		}
 
+		if( this.requiresBatch(this.item_info.item) && !this.isStocktakeBatchValid() )
+		{
+			this.showWarning('Revisa los lotes: la suma de contado debe ser igual a la cantidad y los lotes/caducidades deben estar completos');
+			return;
+		}
+
 		this.is_saving = true;
 
-		let scan: Partial<Stocktake_Scan> = {
-			stocktake_id: this.selected_stocktake_id,
-			item_id: this.item_info.item.id,
-			qty: this.quantity,
-			pallet_id: null,
-			box_id: null,
-			box_content_id: null,
+		let stocktake_id = this.selected_stocktake_id as number;
+		let item_id = this.item_info.item.id;
+
+		let payload: any = {
+			stocktake_id,
+			item_id,
 			created_by_user_id: this.rest.user?.id ?? null,
 			updated_by_user_id: this.rest.user?.id ?? null
 		};
 
-		this.subs.sink = this.rest_stocktake_scan.create(scan).pipe(
-			mergeMap(()=> this.upsertStocktakeItem(this.selected_stocktake_id as number, this.quantity))
-		).subscribe({
+		if( this.requiresBatch(this.item_info.item) )
+		{
+			payload.batches = this.stocktake_batch_rows
+				.filter((row)=> Number(row.real_qty) > 0)
+				.map((row)=>
+				{
+					let batch = (row.batch || '').trim() || null;
+					return {
+						batch,
+						expiration_date: row.expiration_date,
+						db_qty: this.getBatchDbQty(batch, row.expiration_date),
+						real_qty: Number(row.real_qty)
+					};
+				});
+		}
+		else
+		{
+			payload.real_qty = this.quantity;
+		}
+
+		this.subs.sink = this.rest_stocktake_item.create(payload).subscribe({
 			next: ()=>
 			{
 				this.is_saving = false;
 				this.show_stocktake_modal = false;
+				this.stocktake_batch_rows = [];
 				this.showSuccess('Cantidad registrada en la toma de inventario');
 			},
 			error: (error)=>
@@ -332,38 +480,10 @@ export class ScannerComponent extends BaseComponent
 		});
 	}
 
-	upsertStocktakeItem(stocktake_id: number, counted_qty: number)
+	getBatchDbQty(batch: string | null, expiration_date: string | null): number
 	{
-		return this.rest_stocktake_item.search({
-			eq: { stocktake_id, item_id: (this.item_info as ItemInfo).item.id },
-			limit: 1
-		}).pipe(
-			mergeMap((response)=>
-			{
-				let existing = response.data[0];
-
-				if( existing )
-				{
-					existing.real_qty += counted_qty;
-					existing.updated_by_user_id = this.rest.user?.id ?? null;
-					return this.rest_stocktake_item.update(existing);
-				}
-
-				let stocktake_item: Partial<Stocktake_Item> = {
-					stocktake_id,
-					item_id: (this.item_info as ItemInfo).item.id,
-					box_id: null,
-					box_content_id: null,
-					pallet_id: null,
-					db_qty: this.current_stock,
-					real_qty: counted_qty,
-					created_by_user_id: this.rest.user?.id ?? null,
-					updated_by_user_id: this.rest.user?.id ?? null
-				};
-
-				return this.rest_stocktake_item.create(stocktake_item);
-			})
-		);
+		let row = this.stocktake_batch_rows.find((r)=> r.batch === batch && r.expiration_date === expiration_date);
+		return row ? row.db_qty : 0;
 	}
 
 	viewMovements()
@@ -444,8 +564,8 @@ export class ScannerComponent extends BaseComponent
 			store_id: this.store_id,
 			min: this.alert_min,
 			max: this.alert_max,
-			created_by_user_id: this.rest.user?.id ?? null,
-			updated_by_user_id: this.rest.user?.id ?? null
+			created_by_user_id: this.rest.user?.id,
+			updated_by_user_id: this.rest.user?.id
 		};
 
 		let obs = this.stock_alert

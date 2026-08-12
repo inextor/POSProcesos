@@ -17,6 +17,7 @@ export const routes: Routes = [
 			{path: 'add-account', loadComponent: () => import('./pages/save-account/save-account.component').then(m => m.SaveAccountComponent), canActivate: [authGuard]},
 			{path: 'edit-account/:id', loadComponent: () => import('./pages/save-account/save-account.component').then(m => m.SaveAccountComponent), canActivate: [authGuard]},
 			{path: 'dashboard', loadComponent: () => import('./pages/dashboard/dashboard.component').then(m => m.DashboardComponent), canActivate: [authGuard]},
+			{path: 'scanner', loadComponent: () => import('./pages/scanner/scanner.component').then(m => m.ScannerComponent), canActivate: [authGuard]},
 			{path: 'add-production-area', loadComponent: () => import('./pages/save-production-area/save-production-area.component').then(m => m.SaveProductionAreaComponent), canActivate: [authGuard]},
 			{path: 'edit-production-area/:id', loadComponent: () => import('./pages/save-production-area/save-production-area.component').then(m => m.SaveProductionAreaComponent), canActivate: [authGuard]},
 			{path: 'list-production-area', loadComponent: () => import('./pages/list-production-area/list-production-area.component').then(m => m.ListProductionAreaComponent), canActivate: [authGuard]},

@@ -8,7 +8,6 @@ export function item(): Item {
 		applicable_tax: 'DEFAULT',
 		availability_type: 'ALWAYS',
 		background: 'transparent',
-		batch_option: 'NONE',
 		brand_id: null,
 		category_id: null,
 		clave_sat: null,
