@@ -63,6 +63,10 @@ export interface Preferences {
   menu_title_color: string;
   name: string;
   offers_enabled: any;
+  pos_display_currency_rate: number;
+  pos_display_IVA: number;
+  pos_display_subtotal: number;
+  pos_display_total_USD: number;
   pv_bar_background_color: string;
   pv_bar_text_color: string;
   pv_bar_total_color: string;
