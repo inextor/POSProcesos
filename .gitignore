@@ -19,6 +19,7 @@ yarn-error.log
 *.launch
 .settings/
 *.sublime-workspace
+.antigravitycli/
 
 # Visual Studio Code
 .vscode/*
@@ -45,3 +46,4 @@ Notes/
 # Playwright
 /test-results
 /playwright-report
+e2e/screenshots/

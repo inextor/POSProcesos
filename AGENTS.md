@@ -5,6 +5,24 @@ POS is the old System(still working)
 
 This file is the entry point for AI agents. Core documentation has been extracted into dedicated files under `docs/`.
 
+**READ BEFORE WRITING ANY CODE:** the rulebook lives in
+[`docs/CONVENTIONS.md`](docs/CONVENTIONS.md). It covers the REST system,
+naming, the page observer pattern, html rules, and how to avoid calling
+functions in templates. Follow it in every file.
+
+## Quick summary
+
+- Use the REST system (query-param "ugly urls"), never pretty/nested urls.
+- Each component creates its own Rest: `this.rest_role = this.rest.initRestSimple<Role>('role');`
+- Pages extend `BaseComponent`; `ngOnInit` observes route params/query params and assigns results to `{name}_array`.
+- App is **Angular 20 zone-based, NOT zoneless, NO signals**: view-bound state is a plain property (`is_loading = false`).
+- Load ALL initial page data in a **single `forkJoin` in `ngOnInit`** — never separate subscriptions (they race).
+- Variables: lowercase snake_case, `_array` suffix for arrays (existing `_list` code is renamed to `_array` as files are touched), no abbreviations except universal (`qty`).
+- Functions: camelCase. Interfaces/classes: PascalCase (models mirror backend table names, e.g. `Order_Item`).
+- Precompute display values in `.map()`, then use `{{ user.age }}` — never `{{ getAge(user) }}` (no signal exception).
+- Html: 1 tag per line; the only exception is inline SVG on one line.
+- Confirm destructive actions with `ConfirmationService`; use `showSuccess`/`showError` from BaseComponent.
+
 ## Quick Start
 
 ```bash
@@ -20,6 +38,7 @@ npm test           # Run Karma unit tests
 
 | Topic | File | Description |
 |-------|------|-------------|
+| **Rulebook** | [docs/CONVENTIONS.md](docs/CONVENTIONS.md) | **The rules. Read it first.** REST, naming, html, page flow |
 | Project Overview | [docs/project-overview.md](docs/project-overview.md) | Domain, tech stack, architecture decisions |
 | Human Instructions | [docs/human-instruction-not-for-agents.md](docs/human-instruction-not-for-agents.md) | Info for human devs (not agents) |
 | Design & Layout | [docs/design-and-layout.md](docs/design-and-layout.md) | Layout structure, styling conventions |
