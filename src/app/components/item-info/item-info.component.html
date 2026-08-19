@@ -92,6 +92,19 @@
 						<span *ngFor="let tag of item_info.item.json_tags" class="badge bg-info me-1">{{tag}}</span>
 					</span>
 				</div>
+				<div class="col-12 py-2" *ngIf="getItemAttributes().length">
+					<label class="fw-bold d-block mb-0">Atributos</label>
+					<div class="table-responsive">
+						<table class="table table-sm table-nowrap mb-0">
+							<tbody>
+								<tr *ngFor="let attribute of getItemAttributes()">
+									<td class="fw-bold">{{attribute.name}}</td>
+									<td>{{attribute.value}}</td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+				</div>
 				<div class="col-6 col-md-4 py-1">
 					<label class="fw-bold d-block mb-0">Creado</label>
 					<span>{{item_info.item.created | shortDate: 'full'}}</span>
