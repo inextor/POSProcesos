@@ -6,6 +6,7 @@ export function item(): Item {
 		id: 0,
 		applicable_tax: 'DEFAULT',
 		availability_type: 'ALWAYS',
+		batch_option: 'NONE',
 		background: 'transparent',
 		brand_id: null,
 		category_id: null,
