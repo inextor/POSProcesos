@@ -127,7 +127,7 @@ export class ListShippingComponent extends BaseComponent
 		});
 	}
 
-	//tienda origen del envio = la tienda del area de produccion seleccionada en el filtro
+	//sucursal origen del envio = la sucursal del area de produccion seleccionada en el filtro
 	get selected_from_store_id(): number | null
 	{
 		let area = this.production_area_list.find(a => a.id == this.production_search.eq.production_area_id);

@@ -18,8 +18,8 @@ export class StoreSearchComponent extends BaseComponent implements OnInit, OnDes
 	@Input() value: number | null | undefined = null;
 	@Output() valueChange = new EventEmitter<number | null>();
 
-	@Input() placeholder: string = 'Buscar tienda...';
-	@Input() nullLabel: string = 'Seleccionar tienda';
+	@Input() placeholder: string = 'Buscar sucursal...';
+	@Input() nullLabel: string = 'Seleccionar sucursal';
 
 	rest_all_stores: RestSimple<Store> = this.rest.initRestSimple('store', ['id', 'name', 'status']);
 	all_stores: Store[] = [];

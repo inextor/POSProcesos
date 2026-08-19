@@ -148,8 +148,8 @@ export class ListRequisitionComponent extends BaseComponent implements OnInit
 
 				let user_store_id: number | null = this.rest.user?.store_id ?? null;
 
-				//si no hay un requested_to_store_id en la url, se usa la tienda del usuario por defecto
-				//'TODAS' es el valor del select para ver todas las tiendas
+				//si no hay un requested_to_store_id en la url, se usa la sucursal del usuario por defecto
+				//'TODAS' es el valor del select para ver todas las sucursales
 				if( !param_map.has('search_extra.requested_to_store_id') )
 				{
 					this.search_requisition.search_extra['requested_to_store_id'] = user_store_id != null ? ''+user_store_id : 'TODAS';

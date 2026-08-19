@@ -9,7 +9,7 @@
 		<form (submit)="performSearch(); $event.preventDefault()">
 			<div class="row mx-0">
 				<div class="col-6 col-md-3 form-group">
-					<label>Tienda</label>
+					<label>Sucursal</label>
 					<select name="store_id" [(ngModel)]="storage_search.eq.store_id"
 						class="form-control"
 						[disabled]="!rest.user_permission.global_add_stock">

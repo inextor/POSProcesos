@@ -124,7 +124,7 @@ export class SaveWorklogRulesComponent extends BaseComponent implements OnInit {
 		this.work_log_rules.production_area_id = this.production_area_id;
 
 		//store_id ya no decide a quien se le aplica la regla, pero la columna sigue siendo NOT NULL:
-		//se llena con la tienda del area para que el registro quede coherente.
+		//se llena con la sucursal del area para que el registro quede coherente.
 		let area = this.production_area_list.find((pa) => pa.id == this.production_area_id);
 
 		if( area )

@@ -56,7 +56,7 @@ export class SaveCommissionRuleComponent extends BaseComponent implements OnInit
 	{
 		if (!this.commission_rule.store_id && !this.commission_rule.price_type_id && !this.commission_rule.category_id && !this.commission_rule.item_id)
 		{
-			this.rest.showError('Se requiere al menos uno de: tienda, tipo de precio, categoría o artículo');
+			this.rest.showError('Se requiere al menos uno de: sucursal, tipo de precio, categoría o artículo');
 			return;
 		}
 

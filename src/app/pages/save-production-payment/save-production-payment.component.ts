@@ -266,9 +266,9 @@ export class SaveProductionPaymentComponent extends BaseComponent implements OnI
 			let area_rules = this.json_rules_list
 				.filter((rule)=> rule.production_area_id != null && rule.production_area_id == this.production_area_id);
 
-			//Solo si el area no tiene regla propia se cae al esquema viejo por tienda, para no dejar
+			//Solo si el area no tiene regla propia se cae al esquema viejo por sucursal, para no dejar
 			//sin pago a nadie durante la migracion. Es excluyente a proposito: si se acumularan, un
-			//usuario con regla de area Y regla de su tienda cobraria las dos. Cuando todas las reglas
+			//usuario con regla de area Y regla de su sucursal cobraria las dos. Cuando todas las reglas
 			//tengan area, esta segunda rama se puede borrar.
 			let rules = area_rules.length
 				? area_rules

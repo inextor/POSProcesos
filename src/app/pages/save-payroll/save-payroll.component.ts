@@ -194,7 +194,7 @@ export class SavePayrollComponent extends BaseComponent implements OnInit {
 					payroll: {
 						id:0,
 						user_id: 0,
-						store_id: user.store_id, //en teoria deben de ser de la misma tienda
+						store_id: user.store_id, //en teoria deben de ser de la misma sucursal
 						created_by_user_id: user.id,
 						updated_by_user_id: user.id,
 						start_date: this.start_date,

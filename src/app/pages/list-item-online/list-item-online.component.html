@@ -109,18 +109,18 @@
 
 				<!-- Store Selection -->
 				<div class="form-group">
-					<label for="modal_store_id">Tienda *</label>
+					<label for="modal_store_id">Sucursal *</label>
 					<select
 						class="form-control"
 						id="modal_store_id"
 						[(ngModel)]="new_item_online.store_id"
 						[class.is-invalid]="new_item_online.store_id === 0"
 						required>
-						<option [value]="0" disabled selected>Seleccione una tienda</option>
+						<option [value]="0" disabled selected>Seleccione una sucursal</option>
 						<option *ngFor="let s of store_list" [value]="s.id">{{ s.name }}</option>
 					</select>
 					<div class="invalid-feedback" *ngIf="new_item_online.store_id === 0">
-						Debe seleccionar una tienda
+						Debe seleccionar una sucursal
 					</div>
 				</div>
 

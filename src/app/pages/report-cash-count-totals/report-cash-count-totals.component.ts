@@ -266,7 +266,7 @@ export class ReportCashCountTotalsComponent extends BaseComponent implements OnI
 	{
 		let store_id = this.cash_count_search.eq['store_id'];
 
-		// Con sucursal seleccionada, usa su tipo de cambio; si no, el promedio de las tiendas.
+		// Con sucursal seleccionada, usa su tipo de cambio; si no, el promedio de las sucursales.
 		let rates = this.currency_rate_list.filter((r) =>
 			r.currency_id === currency_id && (!store_id || r.store_id == store_id)
 		);

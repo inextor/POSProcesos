@@ -249,7 +249,7 @@ export class SaveReservationComponent extends BaseComponent implements OnInit
 		this.selected_store = this.store_list.find((s) => s.id == this.reservation_info.reservation.store_id) as Store;
 
 		if (this.selected_store == null) {
-			this.showError('Seleccione una tienda');
+			this.showError('Seleccione una sucursal');
 			return;
 		}
 

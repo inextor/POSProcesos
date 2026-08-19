@@ -93,7 +93,7 @@ export class HeaderComponent extends BaseComponent
 
 		if( !store_id )
 		{
-			this.rest.showError('El usuario no tiene una tienda asignada');
+			this.rest.showError('El usuario no tiene una sucursal asignada');
 			return;
 		}
 

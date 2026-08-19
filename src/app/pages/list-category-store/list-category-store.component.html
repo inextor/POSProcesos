@@ -1,5 +1,5 @@
 <div class="container-fluid">
-	<h1 class="my-3">Categorías disponibles por tienda</h1>
+	<h1 class="my-3">Categorías disponibles por sucursal</h1>
 	<button (click)="openModal()" class="btn btn-primary mb-3">Add New</button>
 
 	<div class="card-body">
@@ -57,7 +57,7 @@
 	<div class="modal-dialog modal-lg" role="document">
 		<div class="modal-content">
 			<div class="modal-header">
-				<h5 class="modal-title">Agregar Categoría a Tienda</h5>
+				<h5 class="modal-title">Agregar Categoría a Sucursal</h5>
 				<button type="button" class="close" (click)="closeModal()" aria-label="Close">
 					<span aria-hidden="true">&times;</span>
 				</button>
@@ -106,18 +106,18 @@
 
 				<!-- Store Selection -->
 				<div class="form-group">
-					<label for="modal_store_id">Tienda *</label>
+					<label for="modal_store_id">Sucursal *</label>
 					<select
 						class="form-control"
 						id="modal_store_id"
 						[(ngModel)]="new_category_store.store_id"
 						[class.is-invalid]="new_category_store.store_id === 0"
 						required>
-						<option [value]="0" disabled selected>Seleccione una tienda</option>
+						<option [value]="0" disabled selected>Seleccione una sucursal</option>
 						<option *ngFor="let s of store_list" [value]="s.id">{{ s.name }}</option>
 					</select>
 					<div class="invalid-feedback" *ngIf="new_category_store.store_id === 0">
-						Debe seleccionar una tienda
+						Debe seleccionar una sucursal
 					</div>
 				</div>
 

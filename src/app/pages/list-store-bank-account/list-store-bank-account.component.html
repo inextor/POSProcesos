@@ -1,7 +1,7 @@
 <div class="container-fluid">
 	<div class="row align-items-center">
 		<div class="col-8">
-			<h1 class="my-3">Cuentas bancarias por tienda</h1>
+			<h1 class="my-3">Cuentas bancarias por sucursal</h1>
 		</div>
 		<div class="col-4 text-end">
 			<button type="button" class="ml-2 btn btn-secondary lift" [routerLink]="['/add-store-bank-account']">Agregar Nuevo</button>
@@ -13,9 +13,9 @@
 			<div class="row">
 				<div class="col-md-4">
 					<div class="form-group">
-						<label for="store_id">Tienda</label>
+						<label for="store_id">Sucursal</label>
 						<select class="form-control" id="store_id" name="store_id" [(ngModel)]="search_object.eq.store_id">
-							<option [ngValue]="null">Todas las tiendas</option>
+							<option [ngValue]="null">Todas las sucursales</option>
 							@for (s of store_list; track s.id) {
 								<option [ngValue]="s.id">{{ s.name }}</option>
 							}
@@ -36,7 +36,7 @@
 
 		<div class="d-none d-md-flex row fw-bold border-bottom pb-2 mb-2">
 			<div class="col-1">ID</div>
-			<div class="col-2">Tienda</div>
+			<div class="col-2">Sucursal</div>
 			<div class="col-2">Cuenta Bancaria</div>
 			<div class="col-2">Tipo Transacción</div>
 			<div class="col-3">Nombre</div>
@@ -48,7 +48,7 @@
 					<span class="d-md-none fw-bold">ID: </span>{{ i.store_bank_account.id }}
 				</div>
 				<div class="col-6 col-md-2">
-					<span class="d-md-none fw-bold">Tienda: </span>{{ getStoreName(i.store_bank_account.store_id) }}
+					<span class="d-md-none fw-bold">Sucursal: </span>{{ getStoreName(i.store_bank_account.store_id) }}
 				</div>
 				<div class="col-6 col-md-2">
 					<span class="d-md-none fw-bold">Cuenta: </span>{{ getBankAccountName(i.store_bank_account.bank_account_id) }}

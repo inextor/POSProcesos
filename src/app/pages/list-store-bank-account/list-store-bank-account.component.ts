@@ -104,7 +104,7 @@ export class ListStoreBankAccountComponent extends BaseComponent implements OnIn
 	saveRecord()
 	{
 		if (!this.new_record.store_id || this.new_record.store_id === 0) {
-			this.rest.showError('Debe seleccionar una tienda');
+			this.rest.showError('Debe seleccionar una sucursal');
 			return;
 		}
 

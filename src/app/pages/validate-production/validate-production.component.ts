@@ -246,7 +246,7 @@ export class ValidateProductionComponent extends BaseComponent
 			newProduction.merma_reason = pi.merma_reason ? pi.merma_reason : null;
 			newProduction.qty_reported = pi.validated + pi.merma;
 			let production_area = this.production_area_list.find(pa => pa.id == this.search_production.eq.production_area_id);
-			newProduction.store_id = production_area?.store_id || pi.production_list[0].production.store_id; //tienda de la primera produccion
+			newProduction.store_id = production_area?.store_id || pi.production_list[0].production.store_id; //sucursal de la primera produccion
 			newProduction.verified_by_user_id = this.rest.user?.id as number;
 			newProduction.production_area_id = pi.production_list[0].production.production_area_id; //area de la primera produccion
 

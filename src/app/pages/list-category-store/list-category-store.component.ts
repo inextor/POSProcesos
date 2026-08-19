@@ -142,9 +142,9 @@ export class ListCategoryStoreComponent extends BaseComponent implements OnInit 
 			return;
 		}
 
-		// Validar que se haya seleccionado una tienda
+		// Validar que se haya seleccionado una sucursal
 		if (!this.new_category_store.store_id || this.new_category_store.store_id === 0) {
-			this.rest.showError('Debe seleccionar una tienda');
+			this.rest.showError('Debe seleccionar una sucursal');
 			return;
 		}
 

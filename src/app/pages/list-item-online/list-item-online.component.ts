@@ -148,9 +148,9 @@ export class ListItemOnlineComponent extends BaseComponent implements OnInit {
 			return;
 		}
 
-		// Validar que se haya seleccionado una tienda
+		// Validar que se haya seleccionado una sucursal
 		if (!this.new_item_online.store_id || this.new_item_online.store_id === 0) {
-			this.rest.showError('Debe seleccionar una tienda');
+			this.rest.showError('Debe seleccionar una sucursal');
 			return;
 		}
 

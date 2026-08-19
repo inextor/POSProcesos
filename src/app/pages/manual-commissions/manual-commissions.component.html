@@ -31,9 +31,9 @@
 			}
 		</div>
 		<div class="col-md-2">
-			<label class="form-label">Tienda</label>
+			<label class="form-label">Sucursal</label>
 			<select name="manual_store_id" class="form-select" [(ngModel)]="manual_form.store_id" required>
-				<option [ngValue]="0" disabled>Seleccionar tienda</option>
+				<option [ngValue]="0" disabled>Seleccionar sucursal</option>
 				@for (s of stores; track s.id) {
 					<option [ngValue]="s.id">{{ s.name }}</option>
 				}

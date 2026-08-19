@@ -56,7 +56,7 @@ export class ReportStorePaymentsComponent extends BaseComponent implements OnIni
 		(
 			mergeMap((param_map: ParamMap) =>
 			{
-				this.setTitle('Reporte de Pagos por Tienda');
+				this.setTitle('Reporte de Pagos por Sucursal');
 				this.path = '/report-store-payments';
 				this.is_loading = true;
 

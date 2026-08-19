@@ -75,7 +75,7 @@ export class SaveShippingComponent extends BaseComponent
 				if( !store )
 				{
 					this.crequisition_info = null;
-					this.showError('No se encontro la tienda');
+					this.showError('No se encontro la sucursal');
 					return EMPTY;
 				}
 
@@ -153,7 +153,7 @@ export class SaveShippingComponent extends BaseComponent
 			{
 				this.is_loading = true;
 				this.to_store_id = parseInt(params.get('store_id') as string) || 0;
-				//origen: si viene from_store_id (de list-shipping, tienda del area de produccion), usarlo; si no, la del usuario
+				//origen: si viene from_store_id (de list-shipping, sucursal del area de produccion), usarlo; si no, la del usuario
 				let from_store_qp = this.route.snapshot.queryParamMap.get('from_store_id');
 				this.from_store_id = parseInt(from_store_qp || '') || parseInt(this.rest.user?.store_id?.toString() || '');
 				let shipping_id = params.has('id') ? parseInt(params.get('id') ?? '') : null;
