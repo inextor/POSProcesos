@@ -5,9 +5,12 @@ import {
 	integrationLogin,
 	grantConsignmentPermissions,
 	grantStocktakePermissions,
+	grantOfferPermissions,
 	uniqueName,
 	uniqueBatch,
 	createBatchItem,
+	createSimpleItem,
+	createOffer,
 	createConsignmentReceived,
 	addBatchStock,
 	createConsignmentDelivered,
@@ -117,6 +120,45 @@ export async function navigateMenuToDelivered(page: Page): Promise<void>
 	await page.locator('.side-nav-link', { hasText: 'Consignaciones' }).click();
 	await page.locator('#show_consignments').getByRole('link', { name: 'Entregadas' }).click();
 	await page.waitForURL(/#\/list-consignment-delivered/);
+}
+
+export async function navigateMenuToOffers(page: Page): Promise<void>
+{
+	await openMenuIfClosed(page);
+	await page.locator('.side-nav-link', { hasText: 'Ofertas y cupones' }).click();
+	await page.waitForURL(/#\/list-offer/);
+}
+
+export async function seedOffer(): Promise<{ id: number; couponCode: string; itemName: string; itemId: number }>
+{
+	const session = await integrationLogin();
+	await grantOfferPermissions(session.bearer, session.user.id);
+
+	const itemName = uniqueName('E2E Oferta');
+	const item = await createSimpleItem(session.bearer, itemName);
+
+	const couponCode = uniqueName('CUPON').toUpperCase().replace(/\s+/g, '');
+	const offer = await createOffer(session.bearer, {
+		coupon_code: couponCode,
+		type: 'N_X_M',
+		item_id: item.id,
+		n: 3,
+		m: 2,
+		hour_start: '09:00',
+		hour_end: '21:00',
+		is_valid_sunday: 1,
+		is_valid_monday: 1,
+		is_valid_tuesday: 1,
+		is_valid_wednesday: 1,
+		is_valid_thursday: 1,
+		is_valid_friday: 1,
+		is_valid_saturday: 1,
+		valid_from: '2026-01-01T00:00:00',
+		valid_thru: '2036-01-01T00:00:00',
+		status: 'ACTIVE'
+	});
+
+	return { id: offer.id, couponCode, itemName, itemId: item.id };
 }
 
 export async function seedReceivedConsignment(): Promise<{ id: number; batchCode: string; itemName: string }>

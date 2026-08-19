@@ -15,5 +15,13 @@
 			"e2e/stocktake.spec.ts"
 		],
 		"walkthrough": "e2e/stocktake-walkthrough.spec.ts"
+	},
+	"offer": {
+		"title": "Ofertas y Cupones",
+		"description": "Walkthrough paso a paso del módulo de ofertas y cupones: listado, alta, detalle y desactivación, basado en capturas tomadas por pruebas E2E.",
+		"tests": [
+			"e2e/offer.spec.ts"
+		],
+		"walkthrough": "e2e/offer-walkthrough.spec.ts"
 	}
 }
