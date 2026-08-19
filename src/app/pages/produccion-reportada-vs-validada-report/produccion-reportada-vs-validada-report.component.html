@@ -53,7 +53,7 @@
 			</div>
 			<div class="col-12 col-md-4">
 				<div class="form-group mb-0">
-					<label>Fecha Inicial <span class="help-icon" title="Fecha en que se PRODUJO, no la fecha para cuándo se requiere.">?</span></label>
+					<label>Fecha Inicial <span class="help-icon" title="Para Reportado y Validado es la fecha en que se PRODUJO. Para Requerido es la fecha para cuándo lo pidió la sucursal.">?</span></label>
 					<input type="datetime-local" class="form-control" name="start_date" [(ngModel)]="start_date" required>
 				</div>
 			</div>
@@ -80,9 +80,11 @@
 						<tr>
 							<th>Fecha</th>
 							<th>Área</th>
+							<th>Sucursal</th>
 							<th>Código</th>
 							<th>Artículo</th>
 							<th>Capturó</th>
+							<th class="text-end">Requerido</th>
 							<th class="text-end">Reportado</th>
 							<th class="text-end">Validado</th>
 							<th class="text-end">Merma</th>
@@ -90,13 +92,15 @@
 						</tr>
 					</thead>
 					<tbody>
-						@for (row of results; track row.fecha + '-' + row.production_area_id + '-' + row.item_id) {
+						@for (row of results; track row.fecha + '-' + row.production_area_id + '-' + row.store_id + '-' + row.item_id) {
 							<tr class="align-middle" [class.table-warning]="row.diferencia">
 								<td>{{ row.fecha }}</td>
 								<td>{{ row.area_name }}</td>
+								<td>{{ row.store_name }}</td>
 								<td>{{ row.item_code }}</td>
 								<td class="fw-bold">{{ row.item_name }}</td>
 								<td>{{ row.usuarios }}</td>
+								<td class="text-end">{{ row.requerido | number }}</td>
 								<td class="text-end">{{ row.reportado | number }}</td>
 								<td class="text-end">{{ row.validado | number }}</td>
 								<td class="text-end">{{ row.merma | number }}</td>
@@ -110,13 +114,14 @@
 							</tr>
 						} @empty {
 							<tr>
-								<td class="text-center" colspan="9">No se encontraron resultados</td>
+								<td class="text-center" colspan="11">No se encontraron resultados</td>
 							</tr>
 						}
 					</tbody>
 					<tfoot class="table-light fw-bold">
 						<tr>
-							<td colspan="5" class="text-end">Totales</td>
+							<td colspan="6" class="text-end">Totales</td>
+							<td class="text-end">{{ total_requerido | number }}</td>
 							<td class="text-end">{{ total_reportado | number }}</td>
 							<td class="text-end">{{ total_validado | number }}</td>
 							<td class="text-end">{{ total_merma | number }}</td>

@@ -15,11 +15,14 @@ interface ProduccionReportadaVsValidada
 	fecha: string;
 	production_area_id: number | null;
 	area_name: string;
+	store_id: number | null;
+	store_name: string;
 	item_id: number;
 	item_code: string;
 	item_name: string;
 	category_name: string;
 	usuarios: string;
+	requerido: number;
 	reportado: number;
 	reportado_merma: number;
 	validado: number;
@@ -106,9 +109,15 @@ export class ProduccionReportadaVsValidadaReportComponent extends BaseComponent 
 		const date_start = this.start_date.replace('T', ' ') + ':00';
 		const date_end = this.end_date.replace('T', ' ') + ':59';
 
+		//requisition.required_by_timestamp es TIMESTAMP y el backend abre la sesion en UTC, asi que el
+		//mismo texto significa una hora distinta para esa columna que para production.produced, que es
+		//datetime. Se manda el desfase local para que el backend corrija solo el lado del requerido.
+		const timezone_offset_minutes = -(new Date(this.start_date).getTimezoneOffset());
+
 		this.rest.httpPost('reports/produccion_reportada_vs_validada.php', {
 			start_timestamp: date_start,
 			end_timestamp: date_end,
+			timezone_offset_minutes: timezone_offset_minutes,
 			production_area_id: this.production_area_id,
 			user_id: this.user_id,
 			item_id: this.item_id ?? 'ALL'
@@ -140,21 +149,46 @@ export class ProduccionReportadaVsValidadaReportComponent extends BaseComponent 
 		const rows = this.results.map(row => ({
 			'Fecha': row.fecha,
 			'Área': row.area_name,
+			'Sucursal': row.store_name,
 			'Código': row.item_code,
 			'Artículo': row.item_name,
 			'Capturó': row.usuarios,
+			'Requerido': row.requerido,
 			'Reportado': row.reportado,
 			'Validado': row.validado,
 			'Merma': row.merma,
 			'Diferencia': row.diferencia
 		}));
 
-		const headers = ['Fecha', 'Área', 'Código', 'Artículo', 'Capturó',
-			'Reportado', 'Validado', 'Merma', 'Diferencia'];
+		const headers = ['Fecha', 'Área', 'Sucursal', 'Código', 'Artículo', 'Capturó',
+			'Requerido', 'Reportado', 'Validado', 'Merma', 'Diferencia'];
 
 		const filename = `produccion_reportada_vs_validada_${this.start_date.substring(0, 10)}_${this.end_date.substring(0, 10)}.xlsx`;
 
 		ExcelUtils.array2xlsx(rows, filename, headers);
+	}
+
+	//el requerido es del articulo/dia/sucursal, no del area: si un articulo se produjo en dos areas de
+	//la misma tienda el mismo dia, los dos renglones traen el mismo numero, asi que el total lo cuenta
+	//una sola vez. La sucursal SI va en la clave, porque a cada panaderia le pidieron una cantidad
+	//distinta y las dos cuentan
+	get total_requerido(): number
+	{
+		const contados = new Set<string>();
+
+		return this.results.reduce((total, row) =>
+		{
+			const clave = row.fecha + '_' + row.item_id + '_' + row.store_id;
+
+			if( contados.has(clave) )
+			{
+				return total;
+			}
+
+			contados.add(clave);
+
+			return total + row.requerido;
+		}, 0);
 	}
 
 	get total_reportado(): number
