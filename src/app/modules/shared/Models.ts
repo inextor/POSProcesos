@@ -1,4 +1,4 @@
-import { Address, Attachment, Bank_Account, Bank_Movement_Bill, Batch_Record, Bill, Cash_Close, Cash_Count, Bank_Movement, Bank_Movement_Order, Category, Consignment_Received, Consignment_Received_Item, Consignment_Received_Item_Batch, Consignment_Delivered, Consignment_Delivered_Item, Consignment_Delivered_Item_Batch, Delivery_Assignment, File_Type, Item, Item_Exception, Item_Option, Item_Option_Value, Offer, Order, Order_Item, Order_Item_Exception, Order_Item_Serial, Payment, Period, Price, Price_Type, Process, Production, Production_Area, Purchase, Purchase_Detail, Requisition, Requisition_Item, Reservation, Reservation_Item, Reservation_Item_Serial, Return_Assignment, Serial, Serial_Image, Shipping, Shipping_Item, Stock_Record, Store, Task, Transfer, Transformation, Transformation_Input, Transformation_Output, User } from "./RestModels";
+import { Address, Attachment, Bank_Account, Bank_Movement_Bill, Batch_Record, Bill, Cash_Close, Cash_Count, Bank_Movement, Bank_Movement_Order, Category, Consignment_Received, Consignment_Received_Item, Consignment_Received_Item_Batch, Consignment_Delivered, Consignment_Delivered_Item, Consignment_Delivered_Item_Batch, Delivery_Assignment, File_Type, Item, Item_Attribute, Item_Exception, Item_Option, Item_Option_Value, Offer, Order, Order_Item, Order_Item_Exception, Order_Item_Serial, Payment, Period, Price, Price_Type, Process, Production, Production_Area, Purchase, Purchase_Detail, Requisition, Requisition_Item, Reservation, Reservation_Item, Reservation_Item_Serial, Return_Assignment, Serial, Serial_Image, Shipping, Shipping_Item, Stock_Record, Store, Task, Transfer, Transformation, Transformation_Input, Transformation_Output, User } from "./RestModels";
 
 interface CSerial extends Serial
 {
@@ -164,7 +164,7 @@ export interface ItemInfo
 	category:Category | null;
 	//product?:Product; //Category
 	item_options:ItemOptionInfo[];
-	//attributes?:Item_Attribute[];
+	attributes?:Item_Attribute[];
 	price?:Price;
 	prices:Price[];
 	records:Stock_Record[];

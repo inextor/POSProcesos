@@ -1,0 +1,84 @@
+<div class="container-fluid">
+  <div class="row align-items-center">
+    <div class="col-8">
+      <h1 class="my-3">Oferta <span class="fw-bold">{{offer.coupon_code}}</span></h1>
+    </div>
+    <div class="col-4 text-end">
+      <button type="button" class="btn btn-secondary lift me-2" [routerLink]="['/list-offer']">Volver</button>
+      @if (offer.status != 'DELETED') {
+        <button type="button" class="btn btn-danger" (click)="deactivate()">Desactivar</button>
+      }
+    </div>
+  </div>
+
+  <app-loading [is_loading]="is_loading"></app-loading>
+
+  <div class="card p-3 mt-3">
+    <div class="row">
+      <div class="col-6 col-md-4 form-group">
+        <label class="fw-bold">Id</label>
+        <p class="mb-0">{{offer.id}}</p>
+      </div>
+      <div class="col-6 col-md-4 form-group">
+        <label class="fw-bold">Código del cupón</label>
+        <p class="mb-0">{{offer.coupon_code}}</p>
+      </div>
+      <div class="col-6 col-md-4 form-group">
+        <label class="fw-bold">Tipo</label>
+        <p class="mb-0">{{spanish_name}}</p>
+      </div>
+      <div class="col-6 col-md-4 form-group">
+        <label class="fw-bold">Artículo</label>
+        <p class="mb-0">{{item_name || '—'}}</p>
+      </div>
+      <div class="col-6 col-md-4 form-group">
+        <label class="fw-bold">Sucursal</label>
+        <p class="mb-0">{{store_name}}</p>
+      </div>
+      @if (offer.type == 'N_X_M') {
+        <div class="col-6 col-md-4 form-group">
+          <label class="fw-bold">Compra / Paga</label>
+          <p class="mb-0">{{offer.n}} x {{offer.m}}</p>
+        </div>
+      }
+      @if (offer.type == 'PERCENT_DISCOUNT' || offer.type == 'AMOUNT_DISCOUNT') {
+        <div class="col-6 col-md-4 form-group">
+          <label class="fw-bold">Descuento</label>
+          <p class="mb-0">{{offer.qty}}</p>
+        </div>
+      }
+      <div class="col-6 col-md-4 form-group">
+        <label class="fw-bold">Tag</label>
+        <p class="mb-0">{{offer.tag || '—'}}</p>
+      </div>
+      <div class="col-6 col-md-4 form-group">
+        <label class="fw-bold">Lote</label>
+        <p class="mb-0">{{offer.batch || '—'}}</p>
+      </div>
+      <div class="col-6 col-md-4 form-group">
+        <label class="fw-bold">Caduca antes de</label>
+        <p class="mb-0">{{offer.expiration_thru || '—'}}</p>
+      </div>
+      <div class="col-6 col-md-4 form-group">
+        <label class="fw-bold">Caduca dentro de (días)</label>
+        <p class="mb-0">{{offer.expiration_days || '—'}}</p>
+      </div>
+      <div class="col-6 col-md-4 form-group">
+        <label class="fw-bold">Vigencia</label>
+        <p class="mb-0">{{offer.valid_from | shortDate: 'date'}} - {{offer.valid_thru | shortDate: 'date'}}</p>
+      </div>
+      <div class="col-6 col-md-4 form-group">
+        <label class="fw-bold">Horario</label>
+        <p class="mb-0">{{offer.hour_start.substring(0, 5)}} - {{offer.hour_end.substring(0, 5)}}</p>
+      </div>
+      <div class="col-6 col-md-4 form-group">
+        <label class="fw-bold">Días Válidos</label>
+        <p class="mb-0">{{active_days}}</p>
+      </div>
+      <div class="col-6 col-md-4 form-group">
+        <label class="fw-bold">Estatus</label>
+        <p class="mb-0">{{offer.status}}</p>
+      </div>
+    </div>
+  </div>
+</div>

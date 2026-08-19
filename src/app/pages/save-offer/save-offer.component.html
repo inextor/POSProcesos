@@ -1,0 +1,169 @@
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-6">
+      <h1 class="my-3">Agregar nueva Oferta</h1>
+    </div>
+  </div>
+  <app-loading [is_loading]="is_loading"></app-loading>
+  <form (submit)="save($event)" ngNativeValidate>
+    <div class="card px-1 px-md-3 py-3 mt-3">
+      <div class="row">
+        <div class="col-6 col-md-4 form-group">
+          <label>Código del cupón</label>
+          <input type="text" name="coupon_code" [(ngModel)]="offer.coupon_code" class="form-control" required>
+        </div>
+        <div class="col-6 col-md-4 form-group">
+          <label>Tipo de cupon</label>
+          <select name="type" [(ngModel)]="offer.type" class="form-select" required>
+            <option value="">Seleccionar</option>
+            <option value="N_X_M">MXN ej. 2x1</option>
+            <option value="PERCENT_DISCOUNT">Porcentaje</option>
+            <option value="AMOUNT_DISCOUNT">Descontar cantidad</option>
+            <option value="FIXED_PRICE">Precio de oferta</option>
+          </select>
+        </div>
+        @if (offer.type == 'PERCENT_DISCOUNT' || offer.type == 'AMOUNT_DISCOUNT') {
+          <div class="col-6 col-md-4 form-group">
+            <label>Descuento</label>
+            <input type="number" name="qty" [(ngModel)]="offer.qty" step="any" [min]="0" class="form-control" required>
+          </div>
+        }
+        <div class="col-6 col-md-4 form-group">
+          <label>Artículo</label>
+          <app-item-search
+            [value]="offer.item_id"
+            (valueChange)="offer.item_id = $event"
+            [nullLabel]="'Seleccionar artículo'">
+          </app-item-search>
+        </div>
+        <div class="col-6 col-md-4 form-group">
+          <label>Sucursal</label>
+          <app-store-search
+            [value]="offer.store_id"
+            (valueChange)="offer.store_id = $event"
+            [nullLabel]="'Todas'">
+          </app-store-search>
+        </div>
+        <div class="col-6 col-md-4 form-group">
+          <label>Tipo de Precio</label>
+          <app-price-type-search
+            [value]="offer.price_type_id"
+            (valueChange)="offer.price_type_id = $event"
+            [nullLabel]="'Todos'">
+          </app-price-type-search>
+        </div>
+        @if (offer.type == 'N_X_M') {
+          <div class="col-6 col-md-4 form-group">
+            <label>Elementos que el cliente adquiere</label>
+            <input type="number" name="n" [(ngModel)]="offer.n" [min]="1" class="form-control" required>
+          </div>
+          <div class="col-6 col-md-4 form-group">
+            <label>Elementos que el cliente debe pagar</label>
+            <input type="number" name="m" [(ngModel)]="offer.m" [min]="1" class="form-control" required>
+          </div>
+        }
+        <div class="col-6 col-md-4 form-group">
+          <label>TAG (en vez de por artículo o categoría es el tag)</label>
+          <input type="text" name="tag" [(ngModel)]="offer.tag" maxlength="20" class="form-control">
+        </div>
+        <div class="col-6 col-md-4 form-group">
+          <label>Lote (en vez de por artículo, categoría o tag)</label>
+          <input type="text" name="batch" [(ngModel)]="offer.batch" maxlength="60" class="form-control">
+        </div>
+        <div class="col-6 col-md-4 form-group">
+          <label>Caduca antes de (fecha)</label>
+          <input type="date" name="expiration_thru" [(ngModel)]="offer.expiration_thru" class="form-control">
+        </div>
+        <div class="col-6 col-md-4 form-group">
+          <label>Caduca dentro de (días)</label>
+          <input type="number" name="expiration_days" [(ngModel)]="offer.expiration_days" [min]="0" step="1" class="form-control">
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-12 col-lg-6">
+        <div class="row">
+          <div class="col-12">
+            <h2 class="my-3">Vigencia</h2>
+            <div class="card px-1 px-md-3 py-3">
+              <div class="row">
+                <div class="col-6 form-group">
+                  <label>Fecha Inicio</label>
+                  <input type="datetime-local" name="valid_from" [(ngModel)]="offer.valid_from" class="form-control">
+                </div>
+                <div class="col-6 form-group">
+                  <label>Fecha Fin</label>
+                  <input type="datetime-local" name="valid_thru" [(ngModel)]="offer.valid_thru" class="form-control">
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-12">
+            <h2 class="my-3">Horario</h2>
+            <div class="card px-1 px-md-3 py-3">
+              <div class="row">
+                <div class="col-6 col-md-4 form-group">
+                  <label>Inicio</label>
+                  <input type="time" name="hour_start" [(ngModel)]="offer.hour_start" class="form-control">
+                </div>
+                <div class="col-6 form-group">
+                  <label>Fin</label>
+                  <input type="time" name="hour_end" [(ngModel)]="offer.hour_end" class="form-control">
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-12 col-lg-6">
+        <h2 class="my-3">Días Válidos</h2>
+        <div class="card px-1 px-md-3 py-3">
+          <div class="col-12 col-md-4">
+            <div class="form-check form-switch pt-2">
+              <label class="form-check-label">
+                <input type="checkbox" name="is_valid_sunday" (click)="toggleValue('is_valid_sunday')" class="form-check-input" [checked]="offer.is_valid_sunday == 1">
+                Domingo
+              </label>
+            </div>
+            <div class="form-check form-switch pt-2">
+              <label class="form-check-label">
+                <input type="checkbox" name="is_valid_monday" (click)="toggleValue('is_valid_monday')" class="form-check-input" [checked]="offer.is_valid_monday == 1">
+                Lunes
+              </label>
+            </div>
+            <div class="form-check form-switch pt-2">
+              <label class="form-check-label">
+                <input type="checkbox" name="is_valid_tuesday" (click)="toggleValue('is_valid_tuesday')" class="form-check-input" [checked]="offer.is_valid_tuesday == 1">
+                Martes
+              </label>
+            </div>
+            <div class="form-check form-switch pt-2">
+              <label class="form-check-label">
+                <input type="checkbox" name="is_valid_wednesday" (click)="toggleValue('is_valid_wednesday')" class="form-check-input" [checked]="offer.is_valid_wednesday == 1">
+                Miercoles
+              </label>
+            </div>
+            <div class="form-check form-switch pt-2">
+              <label class="form-check-label">
+                <input type="checkbox" name="is_valid_thursday" (click)="toggleValue('is_valid_thursday')" class="form-check-input" [checked]="offer.is_valid_thursday == 1">
+                Jueves
+              </label>
+            </div>
+            <div class="form-check form-switch pt-2">
+              <label class="form-check-label">
+                <input type="checkbox" name="is_valid_friday" (click)="toggleValue('is_valid_friday')" class="form-check-input" [checked]="offer.is_valid_friday == 1">
+                Viernes
+              </label>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="row p-3">
+      <div class="col-12 text-end">
+        <button type="button" class="btn btn-secondary me-2" (click)="location.back()">Cancelar</button>
+        <button type="submit" [disabled]="is_loading" class="btn btn-primary">Guardar</button>
+      </div>
+    </div>
+  </form>
+</div>

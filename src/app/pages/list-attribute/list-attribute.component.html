@@ -1,0 +1,37 @@
+<div class="container-fluid">
+  <div class="row align-items-center">
+    <div class="col-8">
+      <h1 class="my-3">Atributos</h1>
+    </div>
+    <div class="col-4 text-end">
+      <button type="button" class="ml-2 btn btn-secondary lift" [routerLink]="['/add-attribute']">Agregar Nuevo</button>
+    </div>
+  </div>
+
+  <div class="card px-1 px-md-2 py-3 mt-3">
+    <app-loading [is_loading]="is_loading"></app-loading>
+    <table class="table table-striped w-100">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Nombre</th>
+          <th>Creado</th>
+          <th>Modificado</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (attribute of attribute_list; track attribute.id) {
+          <tr>
+            <td>{{ attribute.id }}</td>
+            <td>
+              <a [routerLink]="['/edit-attribute', attribute.id]">{{ attribute.name || 'Sin nombre' }}</a>
+            </td>
+            <td>{{ attribute.created | shortDate: 'relative' }}</td>
+            <td>{{ attribute.updated | shortDate: 'relative' }}</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+    <div *ngIf="attribute_list.length == 0 && !is_loading" class="alert alert-light m-3" role="alert">No se encontraron elementos</div>
+  </div>
+</div>

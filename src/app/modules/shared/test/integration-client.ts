@@ -153,6 +153,18 @@ export async function grantStocktakePermissions(bearer: string, userId: number):
 	});
 }
 
+export async function grantOfferPermissions(bearer: string, userId: number): Promise<void>
+{
+	await apiRequest('/user_permission.php', {
+		method: 'PUT',
+		bearer,
+		body: {
+			user_id: userId,
+			add_offers: true
+		}
+	});
+}
+
 export async function createStocktake(bearer: string, storeId: number, name: string, stockAdjustment: string = 'DIFFERENCE'): Promise<any>
 {
 	const data = await apiRequest('/stocktake.php', {
@@ -256,6 +268,58 @@ export async function createBatchItem(bearer: string, name: string, batchOption:
 	}
 
 	return created.item;
+}
+
+export async function createSimpleItem(bearer: string, name: string): Promise<any>
+{
+	const created = await apiRequest('/item_info.php', {
+		method: 'POST',
+		bearer,
+		body: {
+			item: {
+				applicable_tax: 'DEFAULT',
+				availability_type: 'ON_STOCK',
+				batch_option: 'NONE',
+				clave_sat: '53111603',
+				currency_id: 'MXN',
+				name,
+				note_required: 'NO',
+				on_sale: 'YES',
+				reference_price: 100,
+				status: 'ACTIVE',
+				tax_percent: 16,
+				unidad_medida_sat_id: 'H87'
+			}
+		}
+	});
+
+	if (!created.item || !created.item.id)
+	{
+		throw new Error('Item creation did not return item.id: ' + JSON.stringify(created));
+	}
+
+	return created.item;
+}
+
+export async function createOffer(bearer: string, offer: any): Promise<any>
+{
+	const data = await apiRequest('/offer.php', {
+		method: 'POST',
+		bearer,
+		body: offer
+	});
+
+	if (!data.id)
+	{
+		throw new Error('Offer creation did not return id: ' + JSON.stringify(data));
+	}
+
+	return data;
+}
+
+export async function fetchOffer(bearer: string, id: number): Promise<any>
+{
+	return apiRequest('/offer.php?id=' + id, { bearer });
 }
 
 export async function addBatchStock(bearer: string, itemId: number, storeId: number, batch: string, expirationDate: string, qty: number): Promise<any>

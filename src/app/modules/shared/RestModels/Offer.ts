@@ -1,11 +1,14 @@
 export interface Offer {
   id: number;
+  batch: string | null;
   category_id: number | null;
   coupon_code: string | null;
   created_by_user_id: number;
   created: Date;
   description: string | null;
   discount: number;
+  expiration_days: number | null;
+  expiration_thru: string | null;
   gift_item_id: number | null;
   hour_end: any;
   hour_start: any;

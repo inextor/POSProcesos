@@ -1,0 +1,27 @@
+<app-loading [is_loading]="is_loading"></app-loading>
+
+<div class="container-fluid">
+  <div class="row align-items-center">
+    <div class="col-8">
+      <h1 class="my-3">{{ attribute.id ? 'Editar' : 'Agregar' }} Atributo</h1>
+    </div>
+    <div class="col-4 text-end">
+      <button type="button" class="btn btn-secondary lift" [routerLink]="['/list-attribute']">Regresar</button>
+    </div>
+  </div>
+
+  <div class="card p-4 mt-3">
+    <form (ngSubmit)="save()" #attributeForm="ngForm">
+      <div class="row">
+        <div class="col-12 col-md-6 mb-3">
+          <label for="name" class="form-label">Nombre</label>
+          <input type="text" class="form-control" id="name" name="name" [(ngModel)]="attribute.name" required>
+        </div>
+      </div>
+
+      <div class="text-end mt-3">
+        <button type="submit" class="btn btn-primary" [disabled]="!attributeForm.form.valid">Guardar</button>
+      </div>
+    </form>
+  </div>
+</div>

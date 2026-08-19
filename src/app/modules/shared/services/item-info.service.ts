@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { Observable, of, ReplaySubject } from 'rxjs';
 import { RestService } from './rest.service';
 import { ItemInfo } from '../Models';
-import { Item } from '../RestModels';
+import { Item, Item_Attribute } from '../RestModels';
 import { Rest } from './Rest';
 
 @Injectable({
@@ -17,6 +17,7 @@ export class ItemInfoService
 	error:string | null = null;
 
 	rest_item_info:Rest<Item,ItemInfo> = this.rest.initRest<Item,ItemInfo>('item_info');
+	rest_item_attribute:Rest<Item_Attribute,Item_Attribute> = this.rest.initRest<Item_Attribute,Item_Attribute>('item_attribute');
 
 	constructor(private rest:RestService)
 	{
@@ -29,6 +30,8 @@ export class ItemInfoService
 		this.loading = false;
 		this.error = null;
 		this.show_item_info = true;
+
+		this.ensureAttributes();
 
 		return of( this.item_info );
 	}
@@ -50,6 +53,7 @@ export class ItemInfoService
 			{
 				this.item_info = response;
 				this.loading = false;
+				this.ensureAttributes();
 				subject.next( response );
 				subject.complete();
 			},
@@ -62,6 +66,31 @@ export class ItemInfoService
 		});
 
 		return subject.asObservable();
+	}
+
+	ensureAttributes()
+	{
+		if( this.item_id == null )
+			return;
+
+		let item_info = this.item_info;
+
+		if( !item_info )
+			return;
+
+		if( item_info.attributes )
+			return;
+
+		this.rest_item_attribute.search({ eq:{ item_id: this.item_id }, limit: 9999 })
+		.subscribe({
+			next:(response)=>
+			{
+				item_info.attributes = response.data;
+			},
+			error:()=>
+			{
+			}
+		});
 	}
 
 	close()

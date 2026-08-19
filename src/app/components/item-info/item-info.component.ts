@@ -7,7 +7,7 @@ import { SubSink } from 'subsink';
 import { ItemInfoService } from '../../modules/shared/services/item-info.service';
 import { RestService } from '../../modules/shared/services/rest.service';
 import { ItemInfo } from '../../modules/shared/Models';
-import { Batch_Record, Stock_Record, Store } from '../../modules/shared/RestModels';
+import { Batch_Record, Stock_Record, Store, Attribute, Item_Attribute } from '../../modules/shared/RestModels';
 import { RestSimple } from '../../modules/shared/services/Rest';
 import { ModalComponent } from '../../components/modal/modal.component';
 import { LoadingComponent } from '../../components/loading/loading.component';
@@ -39,10 +39,12 @@ export class ItemInfoComponent implements OnDestroy
 
 	rest_batch_record:RestSimple<Batch_Record> = this.rest.initRestSimple<Batch_Record>('batch_record');
 	rest_store:RestSimple<Store> = this.rest.initRestSimple<Store>('store', ['id', 'name']);
+	rest_attribute:RestSimple<Attribute> = this.rest.initRestSimple<Attribute>('attribute');
 
 	store_dictionary:Record<number,string> = {};
 	stock_row_map:Record<number,CStockRow> = {};
 	private stock_row_map_item_id:number | null = null;
+	attribute_dictionary:Record<number,string> = {};
 
 	availability_type_dic:Record<string,string> = {
 		'ON_STOCK': 'En inventario',
@@ -83,6 +85,17 @@ export class ItemInfoComponent implements OnDestroy
 
 	constructor(public item_info_service:ItemInfoService, public rest:RestService)
 	{
+		this.subs.sink = this.rest_attribute.search({ limit: 9999 }).subscribe({
+			next:(response)=>
+			{
+				response.data.forEach((attribute:Attribute)=>
+				{
+					this.attribute_dictionary[ attribute.id ] = attribute.name;
+				});
+			},
+			error:()=>{}
+		});
+
 		this.subs.sink = this.rest_store.getAll().subscribe({
 			next:(response)=>
 			{
@@ -111,6 +124,18 @@ export class ItemInfoComponent implements OnDestroy
 	showSection(section:string)
 	{
 		this.active_section = section;
+	}
+
+	getItemAttributes():{name:string,value:string}[]
+	{
+		let attributes = this.item_info?.attributes || [];
+
+		return attributes
+			.map((a:Item_Attribute)=>({
+				name: this.attribute_dictionary[ a.attribute_id ] || ('Atributo '+a.attribute_id),
+				value: a.value
+			}))
+			.filter(a=>a.value != null && ''+a.value != '');
 	}
 
 	getStockRows():CStockRow[]
