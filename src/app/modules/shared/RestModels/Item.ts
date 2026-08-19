@@ -1,7 +1,6 @@
 export interface Item {
   id: number;
   background: string;
-  batch_option: 'NONE' | 'BATCH_ONLY' | 'EXPIRATION_ONLY' | 'BATCH_AND_EXPIRATION';
   applicable_tax: 'DEFAULT' | 'EXEMPT' | 'PERCENT';
   availability_type: 'ON_STOCK' | 'BY_ORDER' | 'ALWAYS';
   batch_option: 'NONE' | 'BATCH_ONLY' | 'EXPIRATION_ONLY' | 'BATCH_AND_EXPIRATION';
