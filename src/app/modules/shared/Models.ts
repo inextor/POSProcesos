@@ -356,6 +356,21 @@ export interface ItemMovement
 	attendance_percent?:number
 }
 
+export interface StockCoverage
+{
+	item_id: number;
+	item_name: string;
+	item_code: string | null;
+	category_id: number | null;
+	reference_price: number;
+	inv_fisico: number;
+	requerido: number;
+	inv_mas_pedido: number;
+	total_sold: number;
+	venta_prom_diaria: number;
+	porcentaje_pedido_inv: number;
+}
+
 export interface TransformationInfo
 {
 	transformation: Transformation;
