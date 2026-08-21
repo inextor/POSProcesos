@@ -140,7 +140,7 @@
 								<td class="text-end">{{item.inv_mas_pedido|number}}</td>
 								<td class="text-end">{{item.total_sold|number}}</td>
 								<td class="text-end">{{item.venta_prom_diaria|number:'1.0-4'}}</td>
-								<td class="text-end">{{item.porcentaje_pedido_inv|number:'1.0-2'}}%</td>
+								<td class="text-end" [title]="item.porcentaje_tooltip">{{item.porcentaje_display}}</td>
 								<td class="text-center">
 									<span [class]="item.estatus_class">{{item.estatus}}</span>
 								</td>
@@ -160,7 +160,7 @@
 							<td class="text-end">{{totalInvMasPedido|number}}</td>
 							<td class="text-end">{{totalSold|number}}</td>
 							<td class="text-end">{{totalVentaPromDiaria|number:'1.0-4'}}</td>
-							<td class="text-end">{{avgPorcentaje|number:'1.0-2'}}%</td>
+							<td class="text-end" [title]="'Ponderado '+(weightedPorcentaje|number:'1.0-2')+'%'">{{avgPorcentaje|number:'1.0-2'}}%</td>
 							<td></td>
 						</tr>
 						<tr class="table-secondary fw-bold">

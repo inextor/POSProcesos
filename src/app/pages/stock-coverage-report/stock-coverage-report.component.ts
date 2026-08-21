@@ -18,6 +18,10 @@ interface CStockCoverage extends StockCoverage
 	category: Category | null;
 	estatus: string;
 	estatus_class: string;
+	porcentaje_capped: number;
+	porcentaje_display: string;
+	porcentaje_tooltip: string;
+	porcentaje_multiplier: number;
 }
 
 interface StockCoverageRequest
@@ -82,7 +86,14 @@ export class StockCoverageReportComponent extends BaseComponent implements OnIni
 	get avgPorcentaje(): number
 	{
 		if (!this.stock_coverage_array.length) return 0;
-		return this.stock_coverage_array.reduce((sum, item) => sum + (item.porcentaje_pedido_inv || 0), 0) / this.stock_coverage_array.length;
+		return this.stock_coverage_array.reduce((sum, item) => sum + (item.porcentaje_capped || 0), 0) / this.stock_coverage_array.length;
+	}
+
+	get weightedPorcentaje(): number
+	{
+		let total_inv = this.totalInvFisico;
+		if (!total_inv) return 0;
+		return this.totalRequerido / total_inv * 100;
 	}
 
 	ngOnInit(): void
@@ -217,7 +228,12 @@ export class StockCoverageReportComponent extends BaseComponent implements OnIni
 					let category = response.category.data.find(c=>c.id==x.category_id);
 					let estatus = x.porcentaje_pedido_inv >= 80 ? 'Bajo' : x.porcentaje_pedido_inv >= 30 ? 'Normal' : 'Excesivo';
 					let estatus_class = x.porcentaje_pedido_inv >= 80 ? 'badge bg-danger' : x.porcentaje_pedido_inv >= 30 ? 'badge bg-warning text-dark' : 'badge bg-success';
-					return { ...x, category: category || null, estatus, estatus_class };
+					let porcentaje_capped = Math.min(x.porcentaje_pedido_inv, 999.99);
+					let porcentaje_multiplier = x.inv_fisico > 0 ? x.requerido / x.inv_fisico : 0;
+					let porcentaje_display = x.porcentaje_pedido_inv > 999.99 ? '>999%' : x.porcentaje_pedido_inv.toFixed(2)+'%';
+					if (x.porcentaje_pedido_inv === 0 && x.inv_fisico === 0 && x.requerido > 0) porcentaje_display = '∞';
+					let porcentaje_tooltip = x.porcentaje_pedido_inv > 999.99 ? x.porcentaje_pedido_inv.toFixed(2)+'% ('+porcentaje_multiplier.toFixed(1)+'x)' : '';
+					return { ...x, category: category || null, estatus, estatus_class, porcentaje_capped, porcentaje_display, porcentaje_tooltip, porcentaje_multiplier };
 				});
 
 				this.is_loading = false;
