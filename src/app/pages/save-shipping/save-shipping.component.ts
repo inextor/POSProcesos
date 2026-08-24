@@ -55,6 +55,8 @@ export class SaveShippingComponent extends BaseComponent
 	to_store_id:number= 0;
 	from_store_id:number = 0;
 	fecha_requisitions:string = '';
+	hora_requisitions_desde:string = '00:00';
+	hora_requisitions_hasta:string = '23:59';
 	shipping_info:ShippingInfo = GetEmpty.shipping_info();
 
 	qty_by_item_id:Record<number,number> = {};
@@ -81,8 +83,8 @@ export class SaveShippingComponent extends BaseComponent
 
 				this.is_loading = true;
 
-				let start = new Date(fecha + 'T00:00:00');
-				let end = new Date(fecha + 'T23:59:59');
+				let start = new Date(fecha + 'T' + (this.hora_requisitions_desde || '00:00') + ':00');
+				let end = new Date(fecha + 'T' + (this.hora_requisitions_hasta || '23:59') + ':59');
 
 				return this.rest_item_stock.search({search_extra:{store_id: this.from_store_id}, limit:9999}).pipe(
 					mergeMap((itemResponse) =>

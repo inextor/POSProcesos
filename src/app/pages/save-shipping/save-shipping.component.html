@@ -49,12 +49,18 @@
     </div>
     <div class="my-3 row align-items-center">
       <div class="col-3 d-none d-md-inline">
-        <h4>Artículos de Requisición <span class="help-icon" title="La fecha de la derecha filtra las requisiciones por PARA CUÁNDO se requieren los artículos (fecha de la requisición).">?</span></h4>
+        <h4>Artículos de Requisición <span class="help-icon" title="La fecha y el rango de horas filtran las requisiciones por PARA CUÁNDO se requieren los artículos (fecha de la requisición).">?</span></h4>
       </div>
       <div class="col-md-3 col-6">
         <input type="date" name="requisitions_timestamp" [(ngModel)]="fecha_requisitions" class="form-control" (ngModelChange)="requisitionSearch($event, to_store_id)" required>
       </div>
-      <div class="col-6 text-end">
+      <div class="col-md-2 col-6">
+        <input type="time" name="requisitions_time_from" [(ngModel)]="hora_requisitions_desde" class="form-control" (ngModelChange)="requisitionSearch(fecha_requisitions, to_store_id)">
+      </div>
+      <div class="col-md-2 col-6">
+        <input type="time" name="requisitions_time_to" [(ngModel)]="hora_requisitions_hasta" class="form-control" (ngModelChange)="requisitionSearch(fecha_requisitions, to_store_id)">
+      </div>
+      <div class="col-6 col-lg-2 text-end">
         <button type="button" (click)="addRequired($event)" class="btn btn-primary">Agregar Disponibles</button>
       </div>
     </div>
