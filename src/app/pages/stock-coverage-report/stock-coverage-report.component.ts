@@ -22,6 +22,10 @@ interface CStockCoverage extends StockCoverage
 	porcentaje_display: string;
 	porcentaje_tooltip: string;
 	porcentaje_multiplier: number;
+	dias: number;
+	dias_display: string;
+	dias_req: number;
+	dias_req_display: string;
 }
 
 interface StockCoverageRequest
@@ -55,6 +59,16 @@ export class StockCoverageReportComponent extends BaseComponent implements OnIni
 	get totalInvFisico(): number
 	{
 		return this.stock_coverage_array.reduce((sum, item) => sum + (item.inv_fisico || 0), 0);
+	}
+
+	get totalDias(): number
+	{
+		return this.stock_coverage_array.reduce((sum, item) => sum + (item.dias || 0), 0);
+	}
+
+	get totalDiasReq(): number
+	{
+		return this.stock_coverage_array.reduce((sum, item) => sum + (item.dias_req || 0), 0);
 	}
 
 	get totalRequerido(): number
@@ -156,6 +170,7 @@ export class StockCoverageReportComponent extends BaseComponent implements OnIni
 				else
 				{
 					start = new Date();
+					start.setDate(start.getDate() - 30);
 					start.setHours(0, 0, 0, 0);
 					this.stock_coverage_search.eq.start_timestamp = start;
 				}
@@ -233,7 +248,11 @@ export class StockCoverageReportComponent extends BaseComponent implements OnIni
 					let porcentaje_display = x.porcentaje_pedido_inv > 999.99 ? '>999%' : x.porcentaje_pedido_inv.toFixed(2)+'%';
 					if (x.porcentaje_pedido_inv === 0 && x.inv_fisico === 0 && x.requerido > 0) porcentaje_display = '∞';
 					let porcentaje_tooltip = x.porcentaje_pedido_inv > 999.99 ? x.porcentaje_pedido_inv.toFixed(2)+'% ('+porcentaje_multiplier.toFixed(1)+'x)' : '';
-					return { ...x, category: category || null, estatus, estatus_class, porcentaje_capped, porcentaje_display, porcentaje_tooltip, porcentaje_multiplier };
+					let dias = x.venta_prom_diaria > 0 ? x.inv_fisico / x.venta_prom_diaria : 0;
+					let dias_display = x.venta_prom_diaria > 0 ? Math.round(dias).toString() : '∞';
+					let dias_req = x.venta_prom_diaria > 0 ? x.inv_mas_pedido / x.venta_prom_diaria : 0;
+					let dias_req_display = x.venta_prom_diaria > 0 ? Math.round(dias_req).toString() : '∞';
+					return { ...x, category: category || null, estatus, estatus_class, porcentaje_capped, porcentaje_display, porcentaje_tooltip, porcentaje_multiplier, dias, dias_display, dias_req, dias_req_display };
 				});
 
 				this.is_loading = false;
@@ -302,6 +321,14 @@ export class StockCoverageReportComponent extends BaseComponent implements OnIni
 				case 'inv_mas_pedido':
 					aValue = a.inv_mas_pedido || 0;
 					bValue = b.inv_mas_pedido || 0;
+					break;
+				case 'dias':
+					aValue = a.dias || 0;
+					bValue = b.dias || 0;
+					break;
+				case 'dias_req':
+					aValue = a.dias_req || 0;
+					bValue = b.dias_req || 0;
 					break;
 				case 'total_sold':
 					aValue = a.total_sold || 0;
