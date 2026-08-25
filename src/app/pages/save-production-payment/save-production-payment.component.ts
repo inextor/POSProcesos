@@ -13,12 +13,23 @@ import { ItemInfo } from '../../modules/shared/Models';
 interface CUser_production_report
 {
 	user:User;
+	//Una fila por usuario y por DIA: el pago se guarda en work_log, que es una fila
+	//por dia, asi que agregar el rango en una sola fila obligaria a inventar un
+	//criterio de reparto al momento de guardar.
+	date:string;
+	work_log_array:Work_Log[];
 	total_hours:number;
 	total_extra_hours:number;
 	production_qty:number;
 	cost:number;
 	json_values:Record<string,any>;
 	total_payment:number;
+	//El dia ya tenia pago guardado: se respeta y no se recalcula.
+	is_paid:boolean;
+	//Precalculados para la plantilla: el subtotal del usuario en todo el rango se
+	//pinta solo en su ultima fila.
+	is_last_of_user:boolean;
+	user_subtotal:number;
 }
 
 interface CItem_production_report
@@ -52,14 +63,16 @@ export class SaveProductionPaymentComponent extends BaseComponent implements OnI
 	//el que si tiene area asignada siempre ve la suya y no deberia poder cambiarla.
 	show_production_area_filter:boolean = false;
 
-	user_work_logs_list:Work_Log[] = [];
 	Cuser_production_report_list:CUser_production_report[] = [];
 	CItem_production_report_list:CItem_production_report[] = [];
 	json_rules_list:Work_Log_Rules[] = [];
 	user_extra_fields_list:User_Extra_Fields[] = [];
 
 	search_work_log_obj:SearchObject<Work_Log> = this.getEmptySearch();
-	search_date:string = '';
+	start_date:string = '';
+	end_date:string = '';
+	//Con mas de un dia la tabla muestra la columna de fecha y los subtotales por usuario.
+	is_range:boolean = false;
 
 	items_total:number = 0;
 	merma_total:number = 0;
@@ -84,14 +97,28 @@ export class SaveProductionPaymentComponent extends BaseComponent implements OnI
 				this.path = 'save-production-payment';
 				this.is_loading = true;
 
-				if ( !params.has('eq.date') )
+				//Por default el rango es el dia de hoy, asi la pantalla se ve igual que
+				//cuando el filtro era de un solo dia.
+				let today = Utils.getMysqlStringFromDate(new Date()).split(' ')[0];
+
+				this.start_date = params.has('ge.date')
+					? (params.get('ge.date') as string).split(' ')[0]
+					: today;
+
+				this.end_date = params.has('le.date')
+					? (params.get('le.date') as string).split(' ')[0]
+					: this.start_date;
+
+				//Un rango invertido no traeria nada y se ve como si la pantalla fallara.
+				if( this.end_date < this.start_date )
 				{
-					this.search_work_log_obj.eq.date = Utils.getMysqlStringFromDate(new Date()).split(' ')[0];
+					this.end_date = this.start_date;
 				}
-				else
-				{
-					this.search_work_log_obj.eq.date = (params.get('eq.date') as string).split(' ')[0];
-				}
+
+				this.is_range = this.start_date != this.end_date;
+
+				this.search_work_log_obj.ge.date = this.start_date;
+				this.search_work_log_obj.le.date = this.end_date;
 
 				let user = this.rest.user as User;
 				let permission = this.rest.user_permission;
@@ -112,10 +139,8 @@ export class SaveProductionPaymentComponent extends BaseComponent implements OnI
 
 				this.search_work_log_obj.search_extra = { production_area_id: this.production_area_id };
 
-				let start = new Date(this.search_work_log_obj.eq.date + ' 00:00:00');
-				let end = new Date(this.search_work_log_obj.eq.date + ' 23:59:59');
-
-				this.search_date = Utils.getLocalMysqlStringFromDate(start).split(' ')[0];
+				let start = new Date(this.start_date + ' 00:00:00');
+				let end = new Date(this.end_date + ' 23:59:59');
 
 				let search_production_obj:SearchObject<Production> = this.getEmptySearch();
 				search_production_obj.eq.production_area_id = this.production_area_id;
@@ -166,23 +191,28 @@ export class SaveProductionPaymentComponent extends BaseComponent implements OnI
 
 			this.production_area_list = result.production_area;
 
-			this.calculateTotals(result.production, result.items?.data ?? []);
-
-			this.buildItemProductionReport( result.items?.data ?? [], result.production);
+			let item_array = result.items?.data ?? [];
 
 			this.json_rules_list = result.work_log_rules;
 
 			this.user_extra_fields_list = result.extra_fields?.data ?? [];
 
-			this.user_work_logs_list = result.work_log;
+			this.calculateTotals(result.production, item_array);
 
-			this.buildUserProductionReport(result.users?.data ?? [], result.work_log, result.production, result.items?.data ?? [], this.payment_total);
-			console.log('Cuser_production_report', this.Cuser_production_report_list);
+			this.buildItemProductionReport( item_array, result.production);
+
+			this.buildUserProductionReport(result.users?.data ?? [], result.work_log, result.production, item_array);
 		});
 	}
 
 	calculateTotals(productions:Production[], ItemInfo:ItemInfo[])
 	{
+		//Se reinician: son acumuladores y esta funcion corre en cada busqueda. Sin esto
+		//los totales se iban sumando a los de la busqueda anterior.
+		this.payment_total = 0;
+		this.merma_total = 0;
+		this.production_total = 0;
+
 		//gettin the total of items
 		this.items_total = ItemInfo.length ?? 0;
 
@@ -224,108 +254,271 @@ export class SaveProductionPaymentComponent extends BaseComponent implements OnI
 		});
 	}
 
-	buildUserProductionReport(users:User[], work_logs:Work_Log[], productions:Production[], items:ItemInfo[], payment_total:number)
+	//Se agrupa por dia y las reglas se evaluan un dia a la vez, igual que cuando el filtro
+	//era de una sola fecha. Evaluarlas sobre todo el rango cambiaria lo que significan:
+	//un minimo garantizado por dia se volveria un minimo por semana, y un total_users
+	//sacado del rango repartiria entre mas gente de la que trabajo cada dia.
+	//Se agrupa por dia y las reglas se evaluan un dia a la vez, igual que cuando el filtro
+	//era de una sola fecha. Evaluarlas sobre todo el rango cambiaria lo que significan:
+	//un minimo garantizado por dia se volveria un minimo por semana, y un total_users
+	//sacado del rango repartiria entre mas gente de la que trabajo cada dia.
+	buildUserProductionReport(users:User[], work_logs:Work_Log[], productions:Production[], items:ItemInfo[])
 	{
-		let total_users = users.length;
+		this.Cuser_production_report_list = [];
 
-		users.forEach((user)=>
+		//Map en vez de items.find() adentro de los ciclos: la busqueda corria por cada
+		//produccion, de cada usuario, de cada dia. Con un rango largo se nota.
+		let item_by_id = new Map<number,ItemInfo>();
+		items.forEach((ii)=> item_by_id.set( ii.item.id, ii ) );
+
+		//Las reglas del AREA no dependen del usuario ni del dia, se resuelven una sola vez.
+		//Esta es la dimension con la que trabaja toda esta pantalla (la produccion, los
+		//usuarios listados y total_users salen del area).
+		let area_rule_array = this.json_rules_list
+			.filter((rule)=> rule.production_area_id != null && rule.production_area_id == this.production_area_id);
+
+		let work_log_by_date = new Map<string,Work_Log[]>();
+		work_logs.forEach((work_log)=>
 		{
-			//primero encontrar todos los work_logs de este usuario (ya que pueden ser varios en el mismo dia)
-			let user_work_logs = work_logs.filter((work_log)=>work_log.user_id == user.id);
-			//variables para el total de horas y total de porcentaje de pago
-			let total_hours = 0;
-			let total_extra_hours = 0;
-			let total_payment = 0;
-
-			user_work_logs.forEach((work_log)=>
-			{
-				total_hours += work_log.hours;
-				total_extra_hours += work_log.extra_hours;
-			});
-
-			//gettin the productions of this user
-			//Si produced_by_user_id viene NULL, se atribuye a created_by_user_id (mismo fallback que el backend: production.php:124)
-			let user_productions = productions.filter((production) => (production.produced_by_user_id ?? production.created_by_user_id) == user.id);
-
-			let cost = 0;
-			let production_qty = 0;
-			let merma_qty = 0;
-			user_productions.forEach((production)=>
-			{
-				let item = items.find((ii)=>ii.item.id == production.item_id);
-				if (item)
-				{
-					cost += production.qty * item.item.reference_price;
-				}
-				production_qty += production.qty;
-				merma_qty += production.merma_qty;
-			});
-
-			//Las reglas se resuelven por AREA de produccion, que es la dimension con la que trabaja
-			//toda esta pantalla (la produccion, los usuarios listados y total_users salen del area).
-			let area_rules = this.json_rules_list
-				.filter((rule)=> rule.production_area_id != null && rule.production_area_id == this.production_area_id);
-
-			//Solo si el area no tiene regla propia se cae al esquema viejo por sucursal, para no dejar
-			//sin pago a nadie durante la migracion. Es excluyente a proposito: si se acumularan, un
-			//usuario con regla de area Y regla de su sucursal cobraria las dos. Cuando todas las reglas
-			//tengan area, esta segunda rama se puede borrar.
-			let rules = area_rules.length
-				? area_rules
-				: this.json_rules_list.filter((rule)=> rule.production_area_id == null && rule.store_id == user.store_id);
-
-			//tmp obj with all the rules to be evaluated
-			let props = {};
-			rules.forEach((rules) =>
-			{
-				props = {...props, ...rules.json_rules};
-			})
-
-			let user_extra_fields = this.user_extra_fields_list.find((uef)=>uef.user_id == user.id)?.json_fields;
-			//console.log('user_extra_fields', user_extra_fields);
-			let production_json_values =
-			{
-				total_hours,
-				total_extra_hours,
-				total_users,
-				total_prod: payment_total,
-				total_merma: this.merma_total,
-				individual_prod: production_qty,
-				individual_cost: cost,
-				individual_merma: merma_qty
-			};
-
-			let json_values: Record<string, any> = {};
-
-			if (work_logs.length != 0) {
-				json_values = this.propEvaluator(props, { ...production_json_values}, { ...user_extra_fields});
-			}
-
-			//save the work_log json_values in the work_log_list
-			this.user_work_logs_list.forEach((work_log)=>
-			{
-				if (work_log.user_id == user.id)
-				{
-					work_log.json_values = json_values;
-				}
-			});
-
-			//Lo que dictan las reglas hoy, que es lo que se muestra en las columnas de json_values
-			let calculated_payment = 0;
-			for (let key in json_values)
-			{
-				calculated_payment += json_values[key];
-			}
-
-			//El input arranca con lo YA GUARDADO si existe: antes se sobreescribia siempre con el
-			//calculo, asi que cualquier ajuste manual se perdia al recargar (y si ese dia no habia
-			//produccion validada, el monto capturado se veia como 0 aunque estuviera en la base).
-			let saved_payment = user_work_logs.reduce((total, work_log) => total + (work_log.total_payment || 0), 0);
-			total_payment = saved_payment > 0 ? saved_payment : calculated_payment;
-
-			this.Cuser_production_report_list.push({ user, total_hours, total_extra_hours, production_qty, cost, json_values, total_payment });
+			let date = this.getWorkLogDate( work_log );
+			let day_array = work_log_by_date.get( date ) ?? [];
+			day_array.push( work_log );
+			work_log_by_date.set( date, day_array );
 		});
 
+		let production_by_date = new Map<string,Production[]>();
+		productions.forEach((production)=>
+		{
+			let date = this.getProductionDate( production );
+			let day_array = production_by_date.get( date ) ?? [];
+			day_array.push( production );
+			production_by_date.set( date, day_array );
+		});
+
+		let date_array = Array.from( work_log_by_date.keys() ).sort();
+
+		date_array.forEach((date)=>
+		{
+			let day_work_log_array = work_log_by_date.get( date ) as Work_Log[];
+			let day_production_array = production_by_date.get( date ) ?? [];
+
+			//Se agrupa una vez por usuario en lugar de filtrar la lista completa del dia
+			//por cada persona.
+			let day_work_log_by_user = new Map<number,Work_Log[]>();
+			day_work_log_array.forEach((work_log)=>
+			{
+				let user_array = day_work_log_by_user.get( work_log.user_id ) ?? [];
+				user_array.push( work_log );
+				day_work_log_by_user.set( work_log.user_id, user_array );
+			});
+
+			let day_production_by_user = new Map<number,Production[]>();
+			day_production_array.forEach((production)=>
+			{
+				//Si produced_by_user_id viene NULL, se atribuye a created_by_user_id (mismo fallback que el backend: production.php:124)
+				let user_id = production.produced_by_user_id ?? production.created_by_user_id;
+				let user_array = day_production_by_user.get( user_id ) ?? [];
+				user_array.push( production );
+				day_production_by_user.set( user_id, user_array );
+			});
+
+			let day_user_array = users.filter((user)=> day_work_log_by_user.has( user.id ) );
+
+			//Los totales que ven las reglas tienen que ser de ESE dia, no del rango completo.
+			let day_payment_total = 0;
+			let day_merma_total = 0;
+
+			day_production_array.forEach((production)=>
+			{
+				let item = item_by_id.get( production.item_id );
+
+				if( item )
+				{
+					day_payment_total += production.qty * item.item.reference_price;
+				}
+
+				day_merma_total += production.merma_qty;
+			});
+
+			day_user_array.forEach((user)=>
+			{
+				this.Cuser_production_report_list.push
+				(
+					this.getUserDayReport
+					(
+						user,
+						date,
+						day_user_array.length,
+						day_work_log_by_user.get( user.id ) ?? [],
+						day_production_by_user.get( user.id ) ?? [],
+						item_by_id,
+						area_rule_array,
+						day_payment_total,
+						day_merma_total
+					)
+				);
+			});
+		});
+
+		this.sortUserProductionReport();
+		this.refreshUserSubtotals();
+	}
+
+	getUserDayReport
+	(
+		user:User,
+		date:string,
+		total_users:number,
+		user_work_log_array:Work_Log[],
+		user_production_array:Production[],
+		item_by_id:Map<number,ItemInfo>,
+		area_rule_array:Work_Log_Rules[],
+		day_payment_total:number,
+		day_merma_total:number
+	):CUser_production_report
+	{
+		let total_hours = 0;
+		let total_extra_hours = 0;
+
+		//Un usuario puede tener varias checadas el mismo dia
+		user_work_log_array.forEach((work_log)=>
+		{
+			total_hours += work_log.hours;
+			total_extra_hours += work_log.extra_hours;
+		});
+
+		let cost = 0;
+		let production_qty = 0;
+		let merma_qty = 0;
+
+		user_production_array.forEach((production)=>
+		{
+			let item = item_by_id.get( production.item_id );
+
+			if( item )
+			{
+				cost += production.qty * item.item.reference_price;
+			}
+
+			production_qty += production.qty;
+			merma_qty += production.merma_qty;
+		});
+
+		//Solo si el area no tiene regla propia se cae al esquema viejo por sucursal, para no dejar
+		//sin pago a nadie durante la migracion. Es excluyente a proposito: si se acumularan, un
+		//usuario con regla de area Y regla de su sucursal cobraria las dos. Cuando todas las reglas
+		//tengan area, esta segunda rama se puede borrar.
+		let rules = area_rule_array.length
+			? area_rule_array
+			: this.json_rules_list.filter((rule)=> rule.production_area_id == null && rule.store_id == user.store_id);
+
+		//tmp obj with all the rules to be evaluated
+		let props = {};
+		rules.forEach((rules) =>
+		{
+			props = {...props, ...rules.json_rules};
+		})
+
+		let user_extra_fields = this.user_extra_fields_list.find((uef)=>uef.user_id == user.id)?.json_fields;
+
+		let production_json_values =
+		{
+			total_hours,
+			total_extra_hours,
+			total_users,
+			total_prod: day_payment_total,
+			total_merma: day_merma_total,
+			individual_prod: production_qty,
+			individual_cost: cost,
+			individual_merma: merma_qty
+		};
+
+		let json_values: Record<string, any> = {};
+
+		if( user_work_log_array.length != 0 )
+		{
+			json_values = this.propEvaluator(props, { ...production_json_values}, { ...user_extra_fields});
+		}
+
+		user_work_log_array.forEach((work_log)=>
+		{
+			work_log.json_values = json_values;
+		});
+
+		//Lo que dictan las reglas hoy, que es lo que se muestra en las columnas de json_values
+		let calculated_payment = 0;
+		for (let key in json_values)
+		{
+			calculated_payment += json_values[key];
+		}
+
+		//El input arranca con lo YA GUARDADO si existe: antes se sobreescribia siempre con el
+		//calculo, asi que cualquier ajuste manual se perdia al recargar (y si ese dia no habia
+		//produccion validada, el monto capturado se veia como 0 aunque estuviera en la base).
+		//Se suma sobre las checadas del MISMO dia, nunca sobre todo el rango.
+		let saved_payment = user_work_log_array.reduce((total, work_log) => total + (work_log.total_payment || 0), 0);
+		let is_paid = saved_payment > 0;
+		let total_payment = is_paid ? saved_payment : calculated_payment;
+
+		return {
+			user,
+			date,
+			work_log_array: user_work_log_array,
+			total_hours,
+			total_extra_hours,
+			production_qty,
+			cost,
+			json_values,
+			total_payment,
+			is_paid,
+			is_last_of_user: false,
+			user_subtotal: 0
+		};
+	}
+
+	getWorkLogDate(work_log:Work_Log):string
+	{
+		//work_log.date es columna DATE y Rest no la convierte, llega como string
+		return (''+work_log.date).substring(0,10);
+	}
+
+	getProductionDate(production:Production):string
+	{
+		//created si llega como Date (Rest convierte created/updated/timestamp). Se agrupa por
+		//el dia LOCAL, que es el mismo criterio con el que se arma la ventana que va al backend.
+		return Utils.getLocalMysqlStringFromDate( new Date( production.created ) ).split(' ')[0];
+	}
+
+	sortUserProductionReport()
+	{
+		this.Cuser_production_report_list.sort((a, b)=>
+		{
+			let by_name = a.user.name.localeCompare( b.user.name );
+
+			if( by_name != 0 )
+				return by_name;
+
+			return a.date.localeCompare( b.date );
+		});
+	}
+
+	//Vive aparte porque tambien corre cuando editan un monto a mano.
+	refreshUserSubtotals()
+	{
+		let subtotal_by_user = new Map<number,number>();
+
+		this.Cuser_production_report_list.forEach((upr)=>
+		{
+			let subtotal = subtotal_by_user.get( upr.user.id ) ?? 0;
+			subtotal_by_user.set( upr.user.id, subtotal + (upr.total_payment || 0) );
+		});
+
+		this.Cuser_production_report_list.forEach((upr, index)=>
+		{
+			let next = this.Cuser_production_report_list[index+1];
+			upr.is_last_of_user = !next || next.user.id != upr.user.id;
+			upr.user_subtotal = subtotal_by_user.get( upr.user.id ) ?? 0;
+		});
 	}
 
 	propEvaluator(prop:Record<string,any>,production_values:Record<string,any>,user_values:Record<string,any>)
@@ -354,6 +547,14 @@ export class SaveProductionPaymentComponent extends BaseComponent implements OnI
 
 	performSearch()
 	{
+		//Un rango invertido no traeria nada, se corrige antes de navegar.
+		if( this.end_date < this.start_date )
+		{
+			this.end_date = this.start_date;
+		}
+
+		this.search_work_log_obj.ge.date = this.start_date;
+		this.search_work_log_obj.le.date = this.end_date;
 		this.search_work_log_obj.search_extra = { production_area_id: this.production_area_id };
 		this.search( this.search_work_log_obj );
 	}
@@ -361,23 +562,30 @@ export class SaveProductionPaymentComponent extends BaseComponent implements OnI
 	setValue(total:number, upr:CUser_production_report)
 	{
 		upr.total_payment = Math.round(total * 100)/100;
+		this.refreshUserSubtotals();
 	}
 
 	submit($event:Event)
 	{
-		//update the worklog of the users with the new values for the total_payment
-		let work_log_list = this.user_work_logs_list.map((work_log)=>
+		//Cada work_log recibe el monto de SU dia. Antes se le escribia el mismo total a
+		//todas las filas del usuario, asi que con un rango de una semana cada uno de los
+		//7 registros se llevaba el total completo.
+		let work_log_array:Work_Log[] = [];
+
+		this.Cuser_production_report_list.forEach((upr)=>
 		{
-			let user_production = this.Cuser_production_report_list.find((upr)=>upr.user.id == work_log.user_id);
-			if (user_production)
+			upr.work_log_array.forEach((work_log, index)=>
 			{
-				work_log.total_payment = user_production.total_payment;
-			}
-			return work_log;
+				//El pago es del dia, no de la checada: se asienta en la primera y las
+				//demas van en cero para que no se duplique cuando hubo varias entradas.
+				work_log.total_payment = index == 0 ? upr.total_payment : 0;
+				work_log_array.push( work_log );
+			});
 		});
+
 		this.is_loading = true;
 
-		this.subs.sink = this.rest_work_log.batchUpdate(work_log_list)
+		this.subs.sink = this.rest_work_log.batchUpdate(work_log_array)
 		.subscribe({
 			next: (response)=>
 			{

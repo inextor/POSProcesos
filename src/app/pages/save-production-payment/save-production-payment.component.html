@@ -1,5 +1,5 @@
 <div class="container-fluid">
-  <h1 class="my-3">Registro Diario de Pago</h1>
+  <h1 class="my-3">Registro de Pago</h1>
   <div class="card p-3">
     <div class="row">
       @if (show_production_area_filter) {
@@ -15,13 +15,19 @@
           </div>
         </div>
       }
-      <div [class]="show_production_area_filter ? 'col-6 col-md-4' : 'col-6'">
+      <div [class]="show_production_area_filter ? 'col-6 col-md-3' : 'col-6 col-md-4'">
         <div class="form-group">
-          <label for="search_date">Fecha</label>
-          <input type="date" [(ngModel)]="search_date" (ngModelChange)="onDateChange($event, search_work_log_obj.eq, 'date')" class="form-control" id="search_date">
+          <label for="start_date">Fecha Inicial</label>
+          <input type="date" [(ngModel)]="start_date" class="form-control" id="start_date">
         </div>
       </div>
-      <div [class]="show_production_area_filter ? 'col-6 col-md-4' : 'col-6'">
+      <div [class]="show_production_area_filter ? 'col-6 col-md-3' : 'col-6 col-md-4'">
+        <div class="form-group">
+          <label for="end_date">Fecha Final</label>
+          <input type="date" [(ngModel)]="end_date" class="form-control" id="end_date">
+        </div>
+      </div>
+      <div [class]="show_production_area_filter ? 'col-12 col-md-2' : 'col-12 col-md-4'">
         <div class="form-group">
           <label>&nbsp;</label>
           <button class="btn btn-primary w-100" (click)="performSearch()" >Buscar</button>
@@ -29,7 +35,7 @@
       </div>
     </div>
     @if (show_production_area_filter && !production_area_id) {
-      <div class="alert alert-info mb-0 mt-2">Selecciona un área de producción para ver el registro del día.</div>
+      <div class="alert alert-info mb-0 mt-2">Selecciona un área de producción para ver el registro.</div>
     }
   </div>
   <app-loading [is_loading]="is_loading"></app-loading>
@@ -66,6 +72,9 @@
           <thead class="thead-light">
             <tr>
               <th>Usuario</th>
+              @if (is_range) {
+                <th>Fecha</th>
+              }
               <th class="text-end">Horas Totales</th>
               <th class="text-end">Horas Extras</th>
               <th class="text-end">Producido</th>
@@ -87,6 +96,14 @@
             @for (upr of Cuser_production_report_list; track upr) {
               <tr>
                 <td>{{upr.user.name}}</td>
+                @if (is_range) {
+                  <td>
+                    {{upr.date}}
+                    @if (upr.is_paid) {
+                      <span class="badge bg-secondary ms-1">Pagado</span>
+                    }
+                  </td>
+                }
                 <td class="text-end">{{upr.total_hours}}</td>
                 <td class="text-end">{{upr.total_extra_hours}}</td>
                 <td class="text-end">{{upr.production_qty}}</td>
@@ -98,9 +115,14 @@
                 }
                 <td class="input-group text-end">
                   <span class="input-group-text d-none d-sm-block">$</span>
-                  <input type="number" [name]="'total_payment'+upr.user.id" (ngModelChange)="setValue($event, upr)" placeholder="$0.00" class="form-control text-end" style="min-width: 80px;" [ngModel]="upr.total_payment" step="any" required>
+                  <input type="number" [name]="'total_payment'+upr.user.id+'_'+upr.date" (ngModelChange)="setValue($event, upr)" placeholder="$0.00" class="form-control text-end" style="min-width: 80px;" [ngModel]="upr.total_payment" step="any" required>
                 </td>
               </tr>
+              @if (is_range && upr.is_last_of_user) {
+                <tr class="table-light fw-bold">
+                  <td colspan="100" class="text-end">Total {{upr.user.name}}: {{upr.user_subtotal | currency: "$"}}</td>
+                </tr>
+              }
             }
           </tbody>
         </table>
