@@ -4,6 +4,7 @@ export interface Requisition{
 	created_by_user_id:number | null;
 	date:string | null;
 	id:number;
+	note:string | null;
 	requested_to_store_id:number | null;
 	required_by_store_id:number
 	required_by_timestamp: string | null;

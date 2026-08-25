@@ -1,0 +1,91 @@
+<div class="container-fluid">
+	<div class="row my-3 align-items-center">
+		<div class="col">
+			<h1 class="my-0">Requisición #{{info?.requisition_id}}</h1>
+		</div>
+		<div class="col-auto">
+			<button type="button" class="btn btn-secondary" (click)="goBack()">Volver</button>
+		</div>
+	</div>
+	<app-loading [is_loading]="is_loading"></app-loading>
+	@if (info) {
+		<div class="card p-3 mb-3">
+			<div class="row">
+				<div class="col-12 col-md-4">
+					<strong>Estatus:</strong>
+					<span [class]="info.status_class">{{info.status_label}}</span>
+				</div>
+				<div class="col-12 col-md-4">
+					<strong>Aprobación:</strong>
+					<span class="badge bg-secondary">{{info.approved_status_label}}</span>
+				</div>
+				<div class="col-12 col-md-4">
+					<strong>Para cuándo se requiere:</strong> {{info.required_by_display}}
+				</div>
+				<div class="col-12 col-md-4 mt-2">
+					<strong>Sucursal que requiere:</strong> {{info.required_by_store?.name || '—'}}
+				</div>
+				<div class="col-12 col-md-4 mt-2">
+					<strong>Solicitado a:</strong> {{info.requested_to_store?.name || '—'}}
+				</div>
+				<div class="col-12 col-md-4 mt-2">
+					<strong>Creación:</strong> {{info.created_display}}
+				</div>
+				<div class="col-12 col-md-4 mt-2">
+					<strong>Creado por:</strong> {{info.created_by_display || '—'}}
+				</div>
+				@if (info.shipping) {
+					<div class="col-12 mt-2">
+						<strong>Envío:</strong>
+						{{info.shipping.shipping_company || ''}} {{info.shipping.shipping_guide || ''}}
+						({{info.shipping.status || ''}})
+					</div>
+				}
+				@if (info.requisition.note) {
+					<div class="col-12 mt-2">
+						<strong>Nota:</strong> {{info.requisition.note}}
+					</div>
+				}
+			</div>
+		</div>
+		<div class="card p-3">
+			<div class="d-none d-md-flex row fw-bold border-bottom pb-2 mb-2">
+				<div class="col-md-1">ID</div>
+				<div class="col-md-2">Código</div>
+				<div class="col-md-3">Artículo</div>
+				<div class="col-md-2">Categoría</div>
+				<div class="col-md-2 text-end">Cantidad</div>
+				<div class="col-md-2 text-end">Estatus</div>
+			</div>
+			@for(item of info.items; track item.requisition_item.id)
+			{
+				<div class="row g-1 py-2 border-bottom align-items-center">
+					<div class="col-6 col-md-1">
+						<span class="d-md-none fw-bold">ID: </span>{{item.requisition_item.id}}
+					</div>
+					<div class="col-6 col-md-2">
+						<span class="d-md-none fw-bold">Código: </span>{{item.item_code || '—'}}
+					</div>
+					<div class="col-6 col-md-3">
+						<span class="d-md-none fw-bold">Artículo: </span>{{item.item_name}}
+					</div>
+					<div class="col-6 col-md-2">
+						<span class="d-md-none fw-bold">Categoría: </span>{{item.category_name || '—'}}
+					</div>
+					<div class="col-6 col-md-2 text-md-end">
+						<span class="d-md-none fw-bold">Cantidad: </span>{{item.requisition_item.qty | number}}
+					</div>
+					<div class="col-6 col-md-2 text-md-end">
+						<span class="d-md-none fw-bold">Estatus: </span>{{item.requisition_item_status_label}}
+					</div>
+				</div>
+			}
+			@empty {
+				<div class="text-center py-4">No se encontraron artículos en esta requisición</div>
+			}
+			<div class="fw-bold pt-2 mt-2 border-top">
+				TOTAL: {{totalQty | number}}
+			</div>
+		</div>
+	}
+</div>

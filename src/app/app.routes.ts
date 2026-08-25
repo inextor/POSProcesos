@@ -31,6 +31,8 @@ export const routes: Routes = [
 			{path: 'add-process/:production_area_id', loadComponent: () => import('./pages/save-process/save-process.component').then(m => m.SaveProcessComponent), canActivate: [authGuard]},
 			{path: 'edit-process/:id', loadComponent: () => import('./pages/save-process/save-process.component').then(m => m.SaveProcessComponent), canActivate: [authGuard]},
 			{path: 'list-requisition', loadComponent: () => import('./pages/list-requisition/list-requisition.component').then(m => m.ListRequisitionComponent), canActivate: [authGuard]},
+			{path: 'requisitions-by-item', loadComponent: () => import('./pages/requisitions-by-item/requisitions-by-item.component').then(m => m.RequisitionsByItemComponent), canActivate: [authGuard]},
+			{path: 'view-requisition/:id', loadComponent: () => import('./pages/view-requisition/view-requisition.component').then(m => m.ViewRequisitionComponent), canActivate: [authGuard]},
 			{path: 'users-checking-clock', loadComponent: () => import('./pages/users-checking-clock/users-checking-clock.component').then(m => m.UsersCheckingClockComponent), canActivate: [authGuard]},
 			{path: 'save-user-extra-fields/:user_id', loadComponent: () => import('./pages/save-user-extra-fields/save-user-extra-fields.component').then(m => m.SaveUserExtraFieldsComponent), canActivate: [authGuard]},
 			{path: 'users-attendance', loadComponent: () => import('./pages/list-user-attendance/list-user-attendance.component').then(m => m.ListUserAttendanceComponent), canActivate: [authGuard]},

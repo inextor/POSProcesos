@@ -55,6 +55,7 @@ export class StockCoverageReportComponent extends BaseComponent implements OnIni
 	item_search_str: string = '';
 	sortColumn: string = '';
 	sortDirection: 'asc' | 'desc' = 'asc';
+	sort_select: string = 'porcentaje_pedido_inv';
 
 	get totalInvFisico(): number
 	{
@@ -256,6 +257,21 @@ export class StockCoverageReportComponent extends BaseComponent implements OnIni
 				});
 
 				this.is_loading = false;
+			}
+		});
+	}
+
+	viewRequisitions(item: CStockCoverage)
+	{
+		let start = this.stock_coverage_search.eq.start_timestamp;
+		let end = this.stock_coverage_search.eq.end_timestamp;
+
+		this.router.navigate(['/requisitions-by-item'], {
+			queryParams: {
+				store_id: this.stock_coverage_search.eq.store_id,
+				item_id: item.item_id,
+				start_timestamp: start ? Utils.getUTCMysqlStringFromDate(start) : '',
+				end_timestamp: end ? Utils.getUTCMysqlStringFromDate(end) : '',
 			}
 		});
 	}

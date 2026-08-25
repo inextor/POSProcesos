@@ -1,0 +1,94 @@
+<div class="container-fluid">
+	<h1 class="my-3">Requisiciones para Artículo {{item_name}}</h1>
+	<div class="card p-3">
+		<div class="row">
+			<div class="col-lg-3 col-md-4 col-sm-6">
+				<label>Sucursal</label>
+				<select name="store_id" class="form-control" [(ngModel)]="search_store_id">
+					<option [ngValue]="null">Todas las sucursales</option>
+					@for(store of stores; track store.id)
+					{
+						<option [ngValue]="store.id">{{store.name}}</option>
+					}
+				</select>
+			</div>
+			<div class="col-lg-3 col-md-4 col-sm-6">
+				<label>Artículo</label>
+				<app-item-search [value]="search_item_id" (valueChange)="search_item_id = $event" [nullLabel]="'Buscar artículo...'"></app-item-search>
+			</div>
+			<div class="col-lg-2 col-md-4 col-sm-6">
+				<label>Fecha Inicial</label>
+				<input type="datetime-local" name="start_date" class="form-control" [(ngModel)]="start_date" (ngModelChange)="onDateChange($event, this, 'search_start')">
+			</div>
+			<div class="col-lg-2 col-md-4 col-sm-6">
+				<label>Fecha Final</label>
+				<input type="datetime-local" name="end_date" class="form-control" [(ngModel)]="end_date" (ngModelChange)="onDateChange($event, this, 'search_end', '', 59)">
+			</div>
+			<div class="col-lg-2 col-md-4 col-sm-6 d-flex align-items-end mt-2">
+				<button type="button" class="btn btn-primary px-4 w-100" (click)="performSearch()">Buscar</button>
+			</div>
+		</div>
+	</div>
+	<div class="card p-3 mt-3">
+		@if (is_loading) {
+			<div class="text-center">
+				<div class="spinner-border" role="status">
+					<span class="visually-hidden">Cargando...</span>
+				</div>
+			</div>
+		} @else {
+			<div class="row mb-3">
+				<div class="col-12 col-md-6">
+					<strong>Artículo:</strong> {{item_name}}
+				</div>
+				<div class="col-12 col-md-6">
+					<strong>Sucursal:</strong> {{store_name}}
+				</div>
+			</div>
+			<div class="d-none d-md-flex row fw-bold border-bottom pb-2 mb-2">
+				<div class="col-md-1">Requisición #</div>
+				<div class="col-md-2">Para cuándo se requiere</div>
+				<div class="col-md-2">Creación</div>
+				<div class="col-md-2">Solicitado a</div>
+				<div class="col-md-2">Requerido por</div>
+				<div class="col-md-1 text-end">Cantidad</div>
+				<div class="col-md-2 text-end">Acciones</div>
+			</div>
+			@for(requisition of requisition_array; track requisition.requisition_item.id)
+			{
+				<div class="row g-1 py-2 border-bottom align-items-center">
+					<div class="col-6 col-md-1">
+						<span class="d-md-none fw-bold">Requisición #: </span>{{requisition.requisition?.id}}
+					</div>
+					<div class="col-6 col-md-2">
+						<span class="d-md-none fw-bold">Para cuándo: </span>{{requisition.requisition?.required_by_timestamp | shortDate:'full'}}
+					</div>
+					<div class="col-6 col-md-2">
+						<span class="d-md-none fw-bold">Creación: </span>{{requisition.requisition_item.created | shortDate:'date'}}
+					</div>
+					<div class="col-6 col-md-2">
+						<span class="d-md-none fw-bold">Solicitado a: </span>{{requisition.requested_to_store?.name || '—'}}
+					</div>
+					<div class="col-6 col-md-2">
+						<span class="d-md-none fw-bold">Requerido por: </span>{{requisition.required_by_user?.name || '—'}}
+					</div>
+					<div class="col-6 col-md-1 text-md-end">
+						<span class="d-md-none fw-bold">Cantidad: </span>{{requisition.requisition_item.qty | number}}
+					</div>
+					<div class="col-6 col-md-2 text-md-end">
+						<button type="button" class="btn btn-sm btn-outline-primary" (click)="openRequisition(requisition.requisition!.id)">Ver</button>
+					</div>
+				</div>
+			}
+			@empty {
+				<div class="text-center py-4">
+					@if (item_id) { No se encontraron requisiciones para este artículo }
+					@else { Selecciona un artículo para buscar }
+				</div>
+			}
+			<div class="fw-bold pt-2 mt-2 border-top">
+				TOTAL: {{totalQty | number}}
+			</div>
+		}
+	</div>
+</div>
