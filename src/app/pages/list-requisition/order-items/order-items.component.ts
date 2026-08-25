@@ -34,7 +34,10 @@ export class OrderItemsComponent extends BaseComponent implements OnChanges
 	@Input() end_timestamp: string | number | Date | null = null;
 	@Output() productionCreated = new EventEmitter<{production:Production, item:Item}>();
 
-	rest_order_info:Rest<Order,OrderInfo> = this.rest.initRest('order_info');
+	//production_order_info y no order_info: order_info acota por la sucursal del
+	//usuario y escondia las ordenes levantadas en otra sucursal que esta area si
+	//tiene que producir.
+	rest_order_info:Rest<Order,OrderInfo> = this.rest.initRest('production_order_info');
 	rest_production:RestSimple<Production> = this.rest.initRestSimple('production');
 	order_info_list:StructuredOrderInfo[] = [];
 	special_order_item_rows:SpecialOrderItemRow[] = [];
@@ -67,7 +70,9 @@ export class OrderItemsComponent extends BaseComponent implements OnChanges
 		//si no viene end, ventana corta de 3 dias (NO 231) para no arrastrar entregas de meses
 		let end:Date = end_timestamp ? new Date(end_timestamp) : new Date(start.getTime() + 3*24*60*60*1000);
 
-		return this.rest.getReportByPath('getProductionOrderItems', { start_timestamp: start, end_timestamp: end })
+		let production_area_id = this.rest.user?.production_area_id ?? null;
+
+		return this.rest.getReportByPath('getProductionOrderItems', { start_timestamp: start, end_timestamp: end, production_area_id })
 		.pipe
 		(
 			mergeMap((response:any[]) =>
