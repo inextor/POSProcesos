@@ -371,6 +371,24 @@ export interface StockCoverage
 	porcentaje_pedido_inv: number;
 }
 
+export interface ItemPurchaseCoverage
+{
+	item_id: number;
+	item_name: string;
+	item_code: string | null;
+	category_id: number | null;
+	reference_price: number;
+	inv_fisico: number;
+	purchased: number;
+	inv_mas_pedido: number;
+	total_sold: number;
+	venta_prom_diaria: number;
+	purchase_amount: number;
+	sold_amount: number;
+	difference: number;
+	porcentaje_pedido_inv: number;
+}
+
 export interface TransformationInfo
 {
 	transformation: Transformation;

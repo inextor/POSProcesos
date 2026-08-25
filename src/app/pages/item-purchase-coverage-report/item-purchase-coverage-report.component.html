@@ -1,10 +1,10 @@
 <div class="container-fluid">
-	<h1 class="my-3">Cobertura de Stock</h1>
+	<h1 class="my-3">Cobertura de Compras</h1>
 	<div class="card p-3">
 		<div class="row">
 			<div class="col-lg-2 col-md-3 col-sm-6">
 				<label>Sucursal *</label>
-				<select name="store_id" class="form-control" [(ngModel)]="stock_coverage_search.eq['store_id']">
+				<select name="store_id" class="form-control" [(ngModel)]="item_purchase_coverage_search.eq['store_id']">
 					<option [ngValue]="null">Seleccione sucursal</option>
 					@for(store of stores; track store.id)
 					{
@@ -14,19 +14,19 @@
 			</div>
 			<div class="col-lg-2 col-md-3 col-sm-6">
 				<label>Categoría</label>
-				<app-category-search [value]="stock_coverage_search.eq['category_id']" (valueChange)="stock_coverage_search.eq['category_id'] = $event"></app-category-search>
+				<app-category-search [value]="item_purchase_coverage_search.eq['category_id']" (valueChange)="item_purchase_coverage_search.eq['category_id'] = $event"></app-category-search>
 			</div>
 			<div class="col-lg-2 col-md-3 col-sm-6">
 				<label>Artículo</label>
-				<app-item-search [value]="stock_coverage_search.eq['item_id']" (valueChange)="stock_coverage_search.eq['item_id'] = $event" [text]="item_search_str" (textChange)="item_search_str = $event" [nullLabel]="'Todos los artículos'"></app-item-search>
+				<app-item-search [value]="item_purchase_coverage_search.eq['item_id']" (valueChange)="item_purchase_coverage_search.eq['item_id'] = $event" [text]="item_search_str" (textChange)="item_search_str = $event" [nullLabel]="'Todos los artículos'"></app-item-search>
 			</div>
 			<div class="col-lg-2 col-md-3 col-sm-6">
 				<label>Fecha Inicial</label>
-				<input type="datetime-local" name="start_date" class="form-control" [(ngModel)]="start_date" (ngModelChange)="onDateChange($event, stock_coverage_search.eq, 'start_timestamp')">
+				<input type="datetime-local" name="start_date" class="form-control" [(ngModel)]="start_date" (ngModelChange)="onDateChange($event, item_purchase_coverage_search.eq, 'start_timestamp')">
 			</div>
 			<div class="col-lg-2 col-md-3 col-sm-6">
 				<label>Fecha Final</label>
-				<input type="datetime-local" name="end_date" class="form-control" [(ngModel)]="end_date" (ngModelChange)="onDateChange($event, stock_coverage_search.eq, 'end_timestamp', '', 59)">
+				<input type="datetime-local" name="end_date" class="form-control" [(ngModel)]="end_date" (ngModelChange)="onDateChange($event, item_purchase_coverage_search.eq, 'end_timestamp', '', 59)">
 			</div>
 			<div class="col-lg-2 col-md-3 col-sm-6 d-flex align-items-end mt-2">
 				<button type="button" class="btn btn-primary px-4 d-flex align-items-center justify-content-center w-100" (click)="performSearch()">
@@ -52,12 +52,13 @@
 					<option value="reference_price">Precio</option>
 					<option value="inv_fisico">Inv. físico</option>
 					<option value="dias">Días</option>
-					<option value="requerido">Requerido</option>
-					<option value="dias_req">Días+Req</option>
-					<option value="inv_mas_pedido">Inv.+Requerido</option>
+					<option value="purchased">Compras</option>
+					<option value="inv_mas_pedido">Inv.+Compras</option>
 					<option value="total_sold">Venta</option>
 					<option value="venta_prom_diaria">Venta prom. diaria</option>
-					<option value="porcentaje_pedido_inv">% Requerido/Inv.</option>
+					<option value="purchase_amount">Precio de compra</option>
+					<option value="sold_amount">Importe de venta</option>
+					<option value="difference">Diferencia</option>
 					<option value="estatus">Estatus</option>
 				</select>
 				<button type="button" class="btn btn-sm btn-outline-secondary" (click)="sortBy(sort_select)" title="Cambiar dirección">
@@ -69,15 +70,15 @@
 				<div class="col-md-1 text-end">Precio</div>
 				<div class="col-md-1 text-end">Inv. físico</div>
 				<div class="col-md-1 text-end">Días</div>
-				<div class="col-md-1 text-end">Requerido</div>
-				<div class="col-md-1 text-end">Días+Req</div>
-				<div class="col-md-1 text-end">Inv.+Requerido</div>
+				<div class="col-md-1 text-end">Compras</div>
+				<div class="col-md-1 text-end">Inv.+Compras</div>
 				<div class="col-md-1 text-end">Venta</div>
-				<div class="col-md-1 text-end">Venta prom.</div>
-				<div class="col-md-1 text-end">% Requerido/Inv.</div>
+				<div class="col-md-1 text-end">Precio de compra</div>
+				<div class="col-md-1 text-end">Importe de venta</div>
+				<div class="col-md-1 text-end">Diferencia</div>
 				<div class="col-md-1 text-end">Estatus</div>
 			</div>
-			@for(item of stock_coverage_array; track item.item_id)
+			@for(item of item_purchase_coverage_array; track item.item_id)
 			{
 				<div class="row g-1 py-2 border-bottom align-items-center">
 					<div class="col-6 col-md-2">
@@ -95,23 +96,22 @@
 						<span class="d-md-none fw-bold">Días: </span>{{item.dias_display}}
 					</div>
 					<div class="col-6 col-md-1 text-md-end">
-						<span class="d-md-none fw-bold">Requerido: </span>
-						<button type="button" class="btn btn-link btn-sm p-0" (click)="viewRequisitions(item)">{{item.requerido|number}}</button>
+						<span class="d-md-none fw-bold">Compras: </span>{{item.purchased|number}}
 					</div>
 					<div class="col-6 col-md-1 text-md-end">
-						<span class="d-md-none fw-bold">Días+Req: </span>{{item.dias_req_display}}
-					</div>
-					<div class="col-6 col-md-1 text-md-end">
-						<span class="d-md-none fw-bold">Inv.+Requerido: </span>{{item.inv_mas_pedido|number}}
+						<span class="d-md-none fw-bold">Inv.+Compras: </span>{{item.inv_mas_pedido|number}}
 					</div>
 					<div class="col-6 col-md-1 text-md-end">
 						<span class="d-md-none fw-bold">Venta: </span>{{item.total_sold|number}}
 					</div>
 					<div class="col-6 col-md-1 text-md-end">
-						<span class="d-md-none fw-bold">Venta prom.: </span>{{item.venta_prom_diaria|number:'1.0-4'}}
+						<span class="d-md-none fw-bold">Precio de compra: </span>{{item.purchase_amount|currency}}
 					</div>
 					<div class="col-6 col-md-1 text-md-end">
-						<span class="d-md-none fw-bold">% Requerido/Inv.: </span><span [title]="item.porcentaje_tooltip">{{item.porcentaje_display}}</span>
+						<span class="d-md-none fw-bold">Importe de venta: </span>{{item.sold_amount|currency}}
+					</div>
+					<div class="col-6 col-md-1 text-md-end">
+						<span class="d-md-none fw-bold">Diferencia: </span>{{item.difference|currency}}
 					</div>
 					<div class="col-6 col-md-1 text-md-end">
 						<span class="d-md-none fw-bold">Estatus: </span><span [class]="item.estatus_class">{{item.estatus}}</span>
@@ -129,23 +129,22 @@
 					<span class="small">Días:</span> {{totalDias|number:'1.0-0'}}
 				</div>
 				<div class="col-6 col-md-3">
-					<span class="small">Requerido:</span> {{totalRequerido|number}}
+					<span class="small">Compras:</span> {{totalPurchased|number}}
 				</div>
 				<div class="col-6 col-md-3">
-					<span class="small">Días+Req:</span> {{totalDiasReq|number:'1.0-0'}}
-				</div>
-				<div class="col-6 col-md-3">
-					<span class="small">Inv.+Requerido:</span> {{totalInvMasPedido|number}}
+					<span class="small">Inv.+Compras:</span> {{totalInvMasPedido|number}}
 				</div>
 				<div class="col-6 col-md-3">
 					<span class="small">Venta:</span> {{totalSold|number}}
 				</div>
 				<div class="col-6 col-md-3">
-					<span class="small">Σ Venta/día:</span> {{totalVentaPromDiaria|number:'1.0-4'}}
+					<span class="small">Precio de compra:</span> {{totalPurchaseAmount|currency}}
 				</div>
 				<div class="col-6 col-md-3">
-					<span class="small">% Prom:</span> {{avgPorcentaje|number:'1.0-2'}}%
-					<span class="text-muted" title="Ponderado {{weightedPorcentaje|number:'1.0-2'}}%">(pond. {{weightedPorcentaje|number:'1.0-2'}}%)</span>
+					<span class="small">Importe de venta:</span> {{totalSoldAmount|currency}}
+				</div>
+				<div class="col-6 col-md-3">
+					<span class="small">Diferencia:</span> {{totalDifference|currency}}
 				</div>
 			</div>
 		}
