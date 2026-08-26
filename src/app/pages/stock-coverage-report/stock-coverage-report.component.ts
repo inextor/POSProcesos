@@ -19,9 +19,8 @@ interface CStockCoverage extends StockCoverage
 	estatus: string;
 	estatus_class: string;
 	porcentaje_capped: number;
-	porcentaje_display: string;
-	porcentaje_tooltip: string;
-	porcentaje_multiplier: number;
+	req_inv_venta: number;
+	req_inv_venta_display: string;
 	dias: number;
 	dias_display: string;
 	dias_req: number;
@@ -55,7 +54,7 @@ export class StockCoverageReportComponent extends BaseComponent implements OnIni
 	item_search_str: string = '';
 	sortColumn: string = '';
 	sortDirection: 'asc' | 'desc' = 'asc';
-	sort_select: string = 'porcentaje_pedido_inv';
+	sort_select: string = 'req_inv_venta';
 
 	get totalInvFisico(): number
 	{
@@ -171,7 +170,6 @@ export class StockCoverageReportComponent extends BaseComponent implements OnIni
 				else
 				{
 					start = new Date();
-					start.setDate(start.getDate() - 30);
 					start.setHours(0, 0, 0, 0);
 					this.stock_coverage_search.eq.start_timestamp = start;
 				}
@@ -183,9 +181,16 @@ export class StockCoverageReportComponent extends BaseComponent implements OnIni
 				else
 				{
 					end = new Date();
-					end.setHours(23, 59, 59, 0);
+					end.setSeconds(0, 0);
 					this.stock_coverage_search.eq.end_timestamp = end;
 				}
+
+				// Sales window is always the last 30 days (rolling), independent of the requisitions range.
+				let sales_start = new Date();
+				sales_start.setDate(sales_start.getDate() - 30);
+				sales_start.setHours(0, 0, 0, 0);
+				let sales_end = new Date();
+				sales_end.setHours(23, 59, 59, 0);
 
 				this.start_date = Utils.getLocalMysqlStringFromDate(start);
 				this.end_date = Utils.getLocalMysqlStringFromDate(end);
@@ -204,6 +209,8 @@ export class StockCoverageReportComponent extends BaseComponent implements OnIni
 					store_id: this.stock_coverage_search.eq['store_id'],
 					start_timestamp: start,
 					end_timestamp: end,
+					sales_start_timestamp: sales_start,
+					sales_end_timestamp: sales_end,
 					category_id: this.stock_coverage_search.eq['category_id'],
 					item_id: this.stock_coverage_search.eq['item_id'],
 					item_search: this.stock_coverage_search.eq['item_id'] ? null : this.item_search_str,
@@ -245,15 +252,13 @@ export class StockCoverageReportComponent extends BaseComponent implements OnIni
 					let estatus = x.porcentaje_pedido_inv >= 80 ? 'Bajo' : x.porcentaje_pedido_inv >= 30 ? 'Normal' : 'Excesivo';
 					let estatus_class = x.porcentaje_pedido_inv >= 80 ? 'badge bg-danger' : x.porcentaje_pedido_inv >= 30 ? 'badge bg-warning text-dark' : 'badge bg-success';
 					let porcentaje_capped = Math.min(x.porcentaje_pedido_inv, 999.99);
-					let porcentaje_multiplier = x.inv_fisico > 0 ? x.requerido / x.inv_fisico : 0;
-					let porcentaje_display = x.porcentaje_pedido_inv > 999.99 ? '>999%' : x.porcentaje_pedido_inv.toFixed(2)+'%';
-					if (x.porcentaje_pedido_inv === 0 && x.inv_fisico === 0 && x.requerido > 0) porcentaje_display = '∞';
-					let porcentaje_tooltip = x.porcentaje_pedido_inv > 999.99 ? x.porcentaje_pedido_inv.toFixed(2)+'% ('+porcentaje_multiplier.toFixed(1)+'x)' : '';
+					let req_inv_venta = x.venta_prom_diaria > 0 ? (x.inv_fisico + x.requerido) / x.venta_prom_diaria : 0;
+					let req_inv_venta_display = x.venta_prom_diaria > 0 ? req_inv_venta.toFixed(1) + ' días' : '∞';
 					let dias = x.venta_prom_diaria > 0 ? x.inv_fisico / x.venta_prom_diaria : 0;
 					let dias_display = x.venta_prom_diaria > 0 ? Math.round(dias).toString() : '∞';
 					let dias_req = x.venta_prom_diaria > 0 ? x.inv_mas_pedido / x.venta_prom_diaria : 0;
 					let dias_req_display = x.venta_prom_diaria > 0 ? Math.round(dias_req).toString() : '∞';
-					return { ...x, category: category || null, estatus, estatus_class, porcentaje_capped, porcentaje_display, porcentaje_tooltip, porcentaje_multiplier, dias, dias_display, dias_req, dias_req_display };
+					return { ...x, category: category || null, estatus, estatus_class, porcentaje_capped, req_inv_venta, req_inv_venta_display, dias, dias_display, dias_req, dias_req_display };
 				});
 
 				this.is_loading = false;
@@ -354,9 +359,9 @@ export class StockCoverageReportComponent extends BaseComponent implements OnIni
 					aValue = a.venta_prom_diaria || 0;
 					bValue = b.venta_prom_diaria || 0;
 					break;
-				case 'porcentaje_pedido_inv':
-					aValue = a.porcentaje_pedido_inv || 0;
-					bValue = b.porcentaje_pedido_inv || 0;
+				case 'req_inv_venta':
+					aValue = a.req_inv_venta || 0;
+					bValue = b.req_inv_venta || 0;
 					break;
 				case 'estatus':
 					aValue = a.estatus?.toLowerCase() || '';
