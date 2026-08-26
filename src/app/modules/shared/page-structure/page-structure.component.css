@@ -76,11 +76,6 @@
 	    align-items: flex-start;
 	}
 
-	.ps-main.menu-open
-	{
-		transform: translate3d(var(--menu-width),0,0);
-	}
-
 	.ps-main>.header_container
 	{
 	    order: 0;
@@ -97,11 +92,25 @@
     }
 }
 
-@media (min-width: 1200px)
+/* Mobile (<=640px): the menu slides over the content (displace). */
+@media screen and (max-width: 639.98px)
 {
 	.ps-main.menu-open
 	{
-		right: var(--menu-width);
+		transform: translate3d(var(--menu-width),0,0);
+		left: 0;
+		right: 0;
+	}
+}
+
+/* Desktop (>640px): the menu becomes a persistent sidebar; the content resizes (no translate). */
+@media screen and (min-width: 640px)
+{
+	.ps-main.menu-open
+	{
+		transform: translate3d(0,0,0);
+		left: var(--menu-width);
+		right: 0;
 	}
 }
 
