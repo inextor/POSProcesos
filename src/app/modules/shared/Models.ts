@@ -371,6 +371,24 @@ export interface StockCoverage
 	porcentaje_pedido_inv: number;
 }
 
+export interface ItemPurchasePrice
+{
+	item_id: number;
+	item_name: string;
+	item_code: string | null;
+	category_id: number | null;
+	reference_price: number;
+	purchased_qty: number;
+	sold_qty: number;
+	purchase_total: number;
+	sold_total: number;
+	average_price: number;
+	sold_average_price: number;
+	max_price: number;
+	min_price: number;
+	ganancia: number;
+}
+
 export interface ItemPurchaseCoverage
 {
 	item_id: number;

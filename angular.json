@@ -30,7 +30,8 @@
 						],
 						"styles": [
 							"src/assets/bootstrap/css/bootstrap.min.css",
-							"src/styles.css"
+							"src/styles.css",
+							"src/assets/glovestrap.css"
 						],
 						"scripts": [
 							"src/assets/js/maps.js",

@@ -4,7 +4,7 @@
 		<div class="row">
 			<div class="col-lg-2 col-md-3 col-sm-6">
 				<label>Sucursal *</label>
-				<select name="store_id" class="form-control" [(ngModel)]="item_purchase_coverage_search.eq['store_id']">
+				<select name="store_id" class="form-control" [(ngModel)]="item_purchase_price_search.eq['store_id']">
 					<option [ngValue]="null">Seleccione sucursal</option>
 					@for(store of stores; track store.id)
 					{
@@ -14,19 +14,19 @@
 			</div>
 			<div class="col-lg-2 col-md-3 col-sm-6">
 				<label>Categoría</label>
-				<app-category-search [value]="item_purchase_coverage_search.eq['category_id']" (valueChange)="item_purchase_coverage_search.eq['category_id'] = $event"></app-category-search>
+				<app-category-search [value]="item_purchase_price_search.eq['category_id']" (valueChange)="item_purchase_price_search.eq['category_id'] = $event"></app-category-search>
 			</div>
 			<div class="col-lg-2 col-md-3 col-sm-6">
 				<label>Artículo</label>
-				<app-item-search [value]="item_purchase_coverage_search.eq['item_id']" (valueChange)="item_purchase_coverage_search.eq['item_id'] = $event" [text]="item_search_str" (textChange)="item_search_str = $event" [nullLabel]="'Todos los artículos'"></app-item-search>
+				<app-item-search [value]="item_purchase_price_search.eq['item_id']" (valueChange)="item_purchase_price_search.eq['item_id'] = $event" [text]="item_search_str" (textChange)="item_search_str = $event" [nullLabel]="'Todos los artículos'"></app-item-search>
 			</div>
 			<div class="col-lg-2 col-md-3 col-sm-6">
 				<label>Fecha Inicial</label>
-				<input type="datetime-local" name="start_date" class="form-control" [(ngModel)]="start_date" (ngModelChange)="onDateChange($event, item_purchase_coverage_search.eq, 'start_timestamp')">
+				<input type="datetime-local" name="start_date" class="form-control" [(ngModel)]="start_date" (ngModelChange)="onDateChange($event, item_purchase_price_search.eq, 'start_timestamp')">
 			</div>
 			<div class="col-lg-2 col-md-3 col-sm-6">
 				<label>Fecha Final</label>
-				<input type="datetime-local" name="end_date" class="form-control" [(ngModel)]="end_date" (ngModelChange)="onDateChange($event, item_purchase_coverage_search.eq, 'end_timestamp', '', 59)">
+				<input type="datetime-local" name="end_date" class="form-control" [(ngModel)]="end_date" (ngModelChange)="onDateChange($event, item_purchase_price_search.eq, 'end_timestamp', '', 59)">
 			</div>
 			<div class="col-lg-2 col-md-3 col-sm-6 d-flex align-items-end mt-2">
 				<button type="button" class="btn btn-primary px-4 d-flex align-items-center justify-content-center w-100" (click)="performSearch()">
@@ -44,7 +44,6 @@
 				</div>
 			</div>
 		} @else {
-			<div class="c-container">
 			<div class="d-flex flex-wrap align-items-center gap-2 mb-3">
 				<label class="mb-0 small">Ordenar:</label>
 				<select class="form-control form-control-sm w-auto" [(ngModel)]="sort_select" (ngModelChange)="sortBy($event)">
@@ -65,7 +64,7 @@
 					{{ sortDirection === 'asc' ? '▲' : '▼' }}
 				</button>
 			</div>
-			<div class="c-d-none c-d-md-flex c-row fw-bold border-bottom pb-2 mb-2">
+			<div class="d-none d-md-flex row fw-bold border-bottom pb-2 mb-2">
 				<div class="col-md-2">Producto</div>
 				<div class="col-md-1 text-end">Compras</div>
 				<div class="col-md-1 text-end">Ventas</div>
@@ -78,50 +77,49 @@
 				<div class="col-md-1 text-end">Precio actual</div>
 				<div class="col-md-1 text-end">Ganancia</div>
 			</div>
-			@for(item of item_purchase_coverage_array; track item.item_id)
+			@for(item of item_purchase_price_array; track item.item_id)
 			{
-				<div class="c-row g-1 py-2 border-bottom align-items-center">
+				<div class="row g-1 py-2 border-bottom align-items-center">
 					<div class="col-6 col-md-2">
-						<span class="c-d-md-none fw-bold">Producto: </span>{{item.item_name}}
-						<app-item-info-button [item_id]="item.item_id" btn_class="btn btn-sm btn-outline-primary ms-1"></app-item-info-button>
+						<span class="d-md-none fw-bold">Producto: </span>{{item.item_name}}
 						<div class="small text-muted">#{{item.item_id}} · {{item.item_code || '—'}} · {{item.category?.name || '—'}}</div>
 					</div>
 					<div class="col-6 col-md-1 text-md-end">
-						<span class="c-d-md-none fw-bold">Compras: </span>{{item.purchased_qty|number}}
+						<span class="d-md-none fw-bold">Compras: </span>{{item.purchased_qty|number}}
 					</div>
 					<div class="col-6 col-md-1 text-md-end">
-						<span class="c-d-md-none fw-bold">Ventas: </span>{{item.sold_qty|number}}
+						<span class="d-md-none fw-bold">Ventas: </span>{{item.sold_qty|number}}
 					</div>
 					<div class="col-6 col-md-1 text-md-end">
-						<span class="c-d-md-none fw-bold">Total compra: </span>{{item.purchase_total|currency}}
+						<span class="d-md-none fw-bold">Total compra: </span>{{item.purchase_total|currency}}
 					</div>
 					<div class="col-6 col-md-1 text-md-end">
-						<span class="c-d-md-none fw-bold">Total venta: </span>{{item.sold_total|currency}}
+						<span class="d-md-none fw-bold">Total venta: </span>{{item.sold_total|currency}}
 					</div>
 					<div class="col-6 col-md-1 text-md-end">
-						<span class="c-d-md-none fw-bold">Prom. compra: </span>{{item.average_price|currency}}
+						<span class="d-md-none fw-bold">Prom. compra: </span>{{item.average_price|currency}}
 					</div>
 					<div class="col-6 col-md-1 text-md-end">
-						<span class="c-d-md-none fw-bold">Prom. venta: </span>{{item.sold_average_price|currency}}
+						<span class="d-md-none fw-bold">Prom. venta: </span>{{item.sold_average_price|currency}}
 					</div>
 					<div class="col-6 col-md-1 text-md-end">
-						<span class="c-d-md-none fw-bold">Máximo: </span>{{item.max_price|currency}}
+						<span class="d-md-none fw-bold">Máximo: </span>{{item.max_price|currency}}
 					</div>
 					<div class="col-6 col-md-1 text-md-end">
-						<span class="c-d-md-none fw-bold">Mínimo: </span>{{item.min_price|currency}}
+						<span class="d-md-none fw-bold">Mínimo: </span>{{item.min_price|currency}}
 					</div>
 					<div class="col-6 col-md-1 text-md-end">
-						<span class="c-d-md-none fw-bold">Precio actual: </span>{{item.reference_price|currency}}
+						<span class="d-md-none fw-bold">Precio actual: </span>{{item.reference_price|currency}}
 					</div>
 					<div class="col-6 col-md-1 text-md-end">
-						<span class="c-d-md-none fw-bold">Ganancia: </span><span [class.text-danger]="item.ganancia < 0">{{item.ganancia|currency}}</span>
+						<span class="d-md-none fw-bold">Ganancia: </span><span [class.text-danger]="item.ganancia < 0">{{item.ganancia|currency}}</span>
 					</div>
 				</div>
 			}
 			@empty {
 				<div class="text-center py-4">No se encontraron resultados</div>
 			}
-			<div class="c-row g-1 fw-bold pt-2 mt-2 border-top">
+			<div class="row g-1 fw-bold pt-2 mt-2 border-top">
 				<div class="col-6 col-md-2">
 					<span class="small">Compras:</span> {{totalCompraQty|number}}
 				</div>
@@ -149,7 +147,6 @@
 				<div class="col-6 col-md-2">
 					<span class="small">Ganancia:</span> <span [class.text-danger]="totalGanancia < 0">{{totalGanancia|currency}}</span>
 				</div>
-			</div>
 			</div>
 		}
 	</div>

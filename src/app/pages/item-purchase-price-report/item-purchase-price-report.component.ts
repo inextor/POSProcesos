@@ -11,7 +11,6 @@ import { ItemPurchasePrice } from '../../modules/shared/Models';
 import { forkJoin, Observable, of } from 'rxjs';
 import { CategorySearchComponent } from '../../modules/shared/components/category-search/category-search.component';
 import { ItemSearchComponent } from '../../modules/shared/components/item-search/item-search.component';
-import { ItemInfoButtonComponent } from '../../components/item-info-button/item-info-button.component';
 
 interface CItemPurchasePrice extends ItemPurchasePrice
 {
@@ -28,15 +27,15 @@ interface ItemPurchasePriceRequest
 }
 
 @Component({
-	selector: 'app-item-purchase-coverage-report',
-	templateUrl: './item-purchase-coverage-report.component.html',
-	styleUrl: './item-purchase-coverage-report.component.css',
-	imports: [CommonModule, FormsModule, CategorySearchComponent, ItemSearchComponent, ItemInfoButtonComponent],
+	selector: 'app-item-purchase-price-report',
+	templateUrl: './item-purchase-price-report.component.html',
+	styleUrl: './item-purchase-price-report.component.css',
+	imports: [CommonModule, FormsModule, CategorySearchComponent, ItemSearchComponent],
 })
-export class ItemPurchaseCoverageReportComponent extends BaseComponent implements OnInit
+export class ItemPurchasePriceReportComponent extends BaseComponent implements OnInit
 {
-	item_purchase_coverage_search: SearchObject<ItemPurchasePriceRequest> = this.getEmptySearch();
-	item_purchase_coverage_array: CItemPurchasePrice[] = [];
+	item_purchase_price_search: SearchObject<ItemPurchasePriceRequest> = this.getEmptySearch();
+	item_purchase_price_array: CItemPurchasePrice[] = [];
 	start_date: string = '';
 	end_date: string = '';
 	rest_store: RestSimple<Store> = this.rest.initRestSimple('store', ['id', 'name', 'created', 'updated']);
@@ -49,22 +48,22 @@ export class ItemPurchaseCoverageReportComponent extends BaseComponent implement
 
 	get totalCompraQty(): number
 	{
-		return this.item_purchase_coverage_array.reduce((sum, item) => sum + (item.purchased_qty || 0), 0);
+		return this.item_purchase_price_array.reduce((sum, item) => sum + (item.purchased_qty || 0), 0);
 	}
 
 	get totalVentaQty(): number
 	{
-		return this.item_purchase_coverage_array.reduce((sum, item) => sum + (item.sold_qty || 0), 0);
+		return this.item_purchase_price_array.reduce((sum, item) => sum + (item.sold_qty || 0), 0);
 	}
 
 	get totalCompra(): number
 	{
-		return this.item_purchase_coverage_array.reduce((sum, item) => sum + (item.purchase_total || 0), 0);
+		return this.item_purchase_price_array.reduce((sum, item) => sum + (item.purchase_total || 0), 0);
 	}
 
 	get totalVenta(): number
 	{
-		return this.item_purchase_coverage_array.reduce((sum, item) => sum + (item.sold_total || 0), 0);
+		return this.item_purchase_price_array.reduce((sum, item) => sum + (item.sold_total || 0), 0);
 	}
 
 	get totalPromedioCompra(): number
@@ -81,19 +80,19 @@ export class ItemPurchaseCoverageReportComponent extends BaseComponent implement
 
 	get totalMax(): number
 	{
-		if (this.item_purchase_coverage_array.length === 0) return 0;
-		return Math.max(...this.item_purchase_coverage_array.map(item => item.max_price || 0));
+		if (this.item_purchase_price_array.length === 0) return 0;
+		return Math.max(...this.item_purchase_price_array.map(item => item.max_price || 0));
 	}
 
 	get totalMin(): number
 	{
-		if (this.item_purchase_coverage_array.length === 0) return 0;
-		return Math.min(...this.item_purchase_coverage_array.map(item => item.min_price || 0));
+		if (this.item_purchase_price_array.length === 0) return 0;
+		return Math.min(...this.item_purchase_price_array.map(item => item.min_price || 0));
 	}
 
 	get totalGanancia(): number
 	{
-		return this.item_purchase_coverage_array.reduce((sum, item) => sum + (item.ganancia || 0), 0);
+		return this.item_purchase_price_array.reduce((sum, item) => sum + (item.ganancia || 0), 0);
 	}
 
 	ngOnInit(): void
@@ -119,77 +118,77 @@ export class ItemPurchaseCoverageReportComponent extends BaseComponent implement
 				let param_map = response.param_map;
 
 				this.setTitle('Precios de Compra por Artículo');
-				this.path = '/item-purchase-coverage-report';
+				this.path = '/item-purchase-price-report';
 				this.is_loading = true;
 
-				this.item_purchase_coverage_search = this.getSearch(param_map, ['store_id','start_timestamp','end_timestamp','category_id','item_id'], ['item_search','_sort','sort']);
+				this.item_purchase_price_search = this.getSearch(param_map, ['store_id','start_timestamp','end_timestamp','category_id','item_id'], ['item_search','_sort','sort']);
 
-				if (this.item_purchase_coverage_search.eq.store_id as any === 'undefined' || this.item_purchase_coverage_search.eq.store_id as any === 'null')
+				if (this.item_purchase_price_search.eq.store_id as any === 'undefined' || this.item_purchase_price_search.eq.store_id as any === 'null')
 				{
-					this.item_purchase_coverage_search.eq.store_id = undefined as any;
+					this.item_purchase_price_search.eq.store_id = undefined as any;
 				}
 
-				if (this.item_purchase_coverage_search.eq.category_id as any === 'undefined' || this.item_purchase_coverage_search.eq.category_id as any === 'null')
+				if (this.item_purchase_price_search.eq.category_id as any === 'undefined' || this.item_purchase_price_search.eq.category_id as any === 'null')
 				{
-					this.item_purchase_coverage_search.eq.category_id = undefined;
+					this.item_purchase_price_search.eq.category_id = undefined;
 				}
 
-				if (this.item_purchase_coverage_search.eq.item_id as any === 'undefined' || this.item_purchase_coverage_search.eq.item_id as any === 'null')
+				if (this.item_purchase_price_search.eq.item_id as any === 'undefined' || this.item_purchase_price_search.eq.item_id as any === 'null')
 				{
-					this.item_purchase_coverage_search.eq.item_id = undefined;
+					this.item_purchase_price_search.eq.item_id = undefined;
 				}
 
-				this.item_search_str = (this.item_purchase_coverage_search.search_extra['item_search'] as string) || '';
+				this.item_search_str = (this.item_purchase_price_search.search_extra['item_search'] as string) || '';
 
-				if (!this.item_purchase_coverage_search.eq.store_id && this.rest.user?.store_id)
+				if (!this.item_purchase_price_search.eq.store_id && this.rest.user?.store_id)
 				{
-					this.item_purchase_coverage_search.eq.store_id = this.rest.user.store_id;
+					this.item_purchase_price_search.eq.store_id = this.rest.user.store_id;
 				}
 
 				let start: Date = new Date();
 				let end: Date = new Date();
 
-				if (this.item_purchase_coverage_search.eq.start_timestamp)
+				if (this.item_purchase_price_search.eq.start_timestamp)
 				{
-					start = this.item_purchase_coverage_search.eq.start_timestamp;
+					start = this.item_purchase_price_search.eq.start_timestamp;
 				}
 				else
 				{
 					start = new Date();
 					start.setDate(start.getDate() - 30);
 					start.setHours(0, 0, 0, 0);
-					this.item_purchase_coverage_search.eq.start_timestamp = start;
+					this.item_purchase_price_search.eq.start_timestamp = start;
 				}
 
-				if (this.item_purchase_coverage_search.eq.end_timestamp)
+				if (this.item_purchase_price_search.eq.end_timestamp)
 				{
-					end = this.item_purchase_coverage_search.eq.end_timestamp;
+					end = this.item_purchase_price_search.eq.end_timestamp;
 				}
 				else
 				{
 					end = new Date();
 					end.setHours(23, 59, 59, 0);
-					this.item_purchase_coverage_search.eq.end_timestamp = end;
+					this.item_purchase_price_search.eq.end_timestamp = end;
 				}
 
 				this.start_date = Utils.getLocalMysqlStringFromDate(start);
 				this.end_date = Utils.getLocalMysqlStringFromDate(end);
 
-				let sort_param = (this.item_purchase_coverage_search.search_extra['_sort'] as string) || (this.item_purchase_coverage_search.search_extra['sort'] as string) || 'item_name_ASC';
+				let sort_param = (this.item_purchase_price_search.search_extra['_sort'] as string) || (this.item_purchase_price_search.search_extra['sort'] as string) || 'item_name_ASC';
 
-				if (!this.item_purchase_coverage_search.search_extra['_sort'] && !this.item_purchase_coverage_search.search_extra['sort'])
+				if (!this.item_purchase_price_search.search_extra['_sort'] && !this.item_purchase_price_search.search_extra['sort'])
 				{
-					this.item_purchase_coverage_search.search_extra['_sort'] = sort_param;
+					this.item_purchase_price_search.search_extra['_sort'] = sort_param;
 				}
 
 				return this.rest.getReportByPath('ItemPurchasePriceReport',
 				{
-					store_id: this.item_purchase_coverage_search.eq['store_id'],
+					store_id: this.item_purchase_price_search.eq['store_id'],
 					start_timestamp: start,
 					end_timestamp: end,
-					category_id: this.item_purchase_coverage_search.eq['category_id'],
-					item_id: this.item_purchase_coverage_search.eq['item_id'],
-					item_search: this.item_purchase_coverage_search.eq['item_id'] ? null : this.item_search_str,
+					category_id: this.item_purchase_price_search.eq['category_id'],
+					item_id: this.item_purchase_price_search.eq['item_id'],
+					item_search: this.item_purchase_price_search.eq['item_id'] ? null : this.item_search_str,
 					_sort: sort_param,
 				}) as Observable<RestResponse<ItemPurchasePrice>>;
 			}),
@@ -223,7 +222,7 @@ export class ItemPurchaseCoverageReportComponent extends BaseComponent implement
 			error: (error) => this.showError(error),
 			next: (response) =>
 			{
-				this.item_purchase_coverage_array = response.report.data.map(x=>{
+				this.item_purchase_price_array = response.report.data.map(x=>{
 					let category = response.category.data.find(c=>c.id==x.category_id);
 					return { ...x, category: category || null };
 				});
@@ -235,11 +234,11 @@ export class ItemPurchaseCoverageReportComponent extends BaseComponent implement
 
 	performSearch()
 	{
-		this.item_purchase_coverage_search.search_extra['item_search'] = this.item_purchase_coverage_search.eq['item_id']
+		this.item_purchase_price_search.search_extra['item_search'] = this.item_purchase_price_search.eq['item_id']
 			? null
 			: (this.item_search_str.trim() || null);
 
-		super.search(this.item_purchase_coverage_search);
+		super.search(this.item_purchase_price_search);
 	}
 
 	sortBy(column: string)
@@ -254,7 +253,7 @@ export class ItemPurchaseCoverageReportComponent extends BaseComponent implement
 			this.sortDirection = 'asc';
 		}
 
-		this.item_purchase_coverage_array.sort((a, b) =>
+		this.item_purchase_price_array.sort((a, b) =>
 		{
 			let aValue: any;
 			let bValue: any;

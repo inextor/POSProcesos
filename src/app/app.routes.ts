@@ -125,6 +125,7 @@ export const routes: Routes = [
 			{path: 'purchase/edit/:id', loadComponent: () => import('./pages/save-purchase/save-purchase.component').then(m => m.SavePurchaseComponent), canActivate: [authGuard]},
 			{path: 'stock-coverage-report', loadComponent: () => import('./pages/stock-coverage-report/stock-coverage-report.component').then(m => m.StockCoverageReportComponent), canActivate: [authGuard]},
 			{path: 'item-purchase-coverage-report', loadComponent: () => import('./pages/item-purchase-coverage-report/item-purchase-coverage-report.component').then(m => m.ItemPurchaseCoverageReportComponent), canActivate: [authGuard]},
+			{path: 'item-purchase-price-report', loadComponent: () => import('./pages/item-purchase-price-report/item-purchase-price-report.component').then(m => m.ItemPurchasePriceReportComponent), canActivate: [authGuard]},
 			{path: 'item-movement-report', loadComponent: () => import('./pages/item-movement-report/item-movement-report.component').then(m => m.ItemMovementReportComponent), canActivate: [authGuard]},
 			{path: 'item-movement-all-stores-report', loadComponent: () => import('./pages/item-movement-all-stores-report/item-movement-all-stores-report.component').then(m => m.ItemMovementAllStoresReportComponent), canActivate: [authGuard]},
 			{path: 'item-movement-by-category-report', loadComponent: () => import('./pages/item-movement-by-category-report/item-movement-by-category-report.component').then(m => m.ItemMovementByCategoryReportComponent), canActivate: [authGuard]},
