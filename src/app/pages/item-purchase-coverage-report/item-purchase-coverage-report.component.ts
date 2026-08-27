@@ -182,7 +182,7 @@ export class ItemPurchaseCoverageReportComponent extends BaseComponent implement
 					this.item_purchase_coverage_search.search_extra['_sort'] = sort_param;
 				}
 
-				return this.rest.getReportByPath('ItemPurchasePriceReport',
+				return this.rest.getReportByPath('item_purchase_price_report',
 				{
 					store_id: this.item_purchase_coverage_search.eq['store_id'],
 					start_timestamp: start,
