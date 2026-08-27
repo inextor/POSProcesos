@@ -5,3 +5,15 @@
 .pointer:hover {
 	color: #0d6efd;
 }
+
+.c-row > [class*="col-"] {
+	padding-right: calc(var(--bs-gutter-x, 1.5rem) * 0.5);
+	padding-left: calc(var(--bs-gutter-x, 1.5rem) * 0.5);
+}
+
+/* Container with NO container-name: inner col widths resolve against it
+   (unnamed @container), but c-d-* utilities (named @container glovestrap)
+   skip it and resolve against the top .c-container. */
+.c-col-container {
+	container-type: inline-size;
+}
