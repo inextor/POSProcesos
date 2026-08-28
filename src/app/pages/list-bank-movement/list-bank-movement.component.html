@@ -1,5 +1,5 @@
-<div class="container-fluid">
-	<div class="row align-items-center">
+<div class="container-fluid c-container">
+	<div class="c-row align-items-center">
 		<div class="col-8">
 			<h1 class="my-3">Movimientos Bancarios @if (bank_account_id) { - Cuenta #{{ bank_account_id }} }</h1>
 		</div>
@@ -11,7 +11,7 @@
 		</div>
 	</div>
 	<div class="card p-3 mt-3">
-		<div class="row align-items-end">
+		<div class="c-row g-2 align-items-end">
 			<div class="col-6 col-md-3">
 				<label class="form-label small">Registro Inicio</label>
 				<input type="datetime-local" name="created_from" class="form-control" [(ngModel)]="created_from" (ngModelChange)="onDateChange($event, search_bank_movement.ge, 'created')">
@@ -58,57 +58,57 @@
 	</div>
 	<app-pagination [path]="path" [pages]="pages" [total_pages]="total_pages" [current_page]="current_page"></app-pagination>
 	<div class="card px-1 px-md-2 py-3 mt-3">
-		<div class="d-none d-md-flex row fw-bold border-bottom pb-2 mb-2">
+		<div class="c-d-none c-d-md-flex c-row fw-bold border-bottom pb-2 mb-2">
 			<div class="col-1 pointer" (click)="sort('id', search_bank_movement)">ID</div>
 			<div class="col-1 pointer" (click)="sort('type', search_bank_movement)">Tipo</div>
 			<div class="col-1 pointer" (click)="sort('total', search_bank_movement)">Total</div>
-			<div class="col-1 pointer" (click)="sort('balance', search_bank_movement)">Saldo</div>
+			<div class="col-2 pointer" (click)="sort('balance', search_bank_movement)">Saldo</div>
 			<div class="col-1 pointer" (click)="sort('transaction_type', search_bank_movement)">Tipo</div>
 			<div class="col-1 pointer" (click)="sort('reference', search_bank_movement)">Referencia</div>
 			<div class="col-1">Cuenta</div>
 			<div class="col-1">Moneda</div>
 			<div class="col-1 pointer" (click)="sort('paid_date', search_bank_movement)">Fecha</div>
 			<div class="col-1 pointer" (click)="sort('created', search_bank_movement)">Registro</div>
-			<div class="col-2 text-end">Acciones</div>
+			<div class="col-1 text-end">Acciones</div>
 		</div>
 		@for (m of movement_array; track m) {
-			<div class="row border-bottom py-2 align-items-center">
-				<div class="col-6 col-md-1">
-					<span class="d-md-none fw-bold">ID: </span>{{ m.id }}
+			<div class="c-row border-bottom py-2 align-items-center">
+				<div class="col-6 col-md-1 px-1">
+					<span class="c-d-md-none fw-bold">ID: </span>{{ m.id }}
 				</div>
-				<div class="col-6 col-md-1">
-					<span class="d-md-none fw-bold">Tipo: </span>{{ m.type === 'income' ? 'Ingreso' : 'Egreso' }}
+				<div class="col-6 col-md-1 px-0 px-md-1">
+					<span class="c-d-md-none fw-bold">Tipo: </span>{{ m.type === 'income' ? 'Ingreso' : 'Egreso' }}
 				</div>
-				<div class="col-6 col-md-1">
-					<span class="d-md-none fw-bold">Total: </span>{{ m.total | number:'1.2-2' }}
+				<div class="col-6 col-md-1 px-1 px-md-1">
+					<span class="c-d-md-none fw-bold">Total: </span>{{ m.total | number:'1.2-2' }}
 				</div>
-				<div class="col-6 col-md-1">
-					<span class="d-md-none fw-bold">Saldo: </span>{{ m.balance | number:'1.2-2' }}
+				<div class="col-6 col-md-2 px-0 px-md-1">
+					<span class="c-d-md-none fw-bold">Saldo: </span>{{ m.balance | number:'1.2-2' }}
 				</div>
-				<div class="col-6 col-md-1">
-					<span class="d-md-none fw-bold">Tipo: </span>{{ m.transaction_type_label || '-' }}
+				<div class="col-6 col-md-1 px-1 px-md-1">
+					<span class="c-d-md-none fw-bold">Tipo: </span>{{ m.transaction_type_label || '-' }}
 				</div>
-				<div class="col-6 col-md-1">
-					<span class="d-md-none fw-bold">Referencia: </span>{{ m.reference || '-' }}
+				<div class="col-6 col-md-1 px-0 px-md-1">
+					<span class="c-d-md-none fw-bold">Referencia: </span>{{ m.reference || '-' }}
 				</div>
-				<div class="col-6 col-md-1">
-					<span class="d-md-none fw-bold">Cuenta: </span>{{ m.bank_account?.name || m.bank_account?.alias || m.bank_account?.bank || '-' }}
+				<div class="col-6 col-md-1 px-1 px-md-1">
+					<span class="c-d-md-none fw-bold">Cuenta: </span>{{ m.bank_account?.name || m.bank_account?.alias || m.bank_account?.bank || '-' }}
 				</div>
-				<div class="col-6 col-md-1">
-					<span class="d-md-none fw-bold">Moneda: </span>{{ m.currency_id || '-' }}
+				<div class="col-6 col-md-1 px-0 px-md-1">
+					<span class="c-d-md-none fw-bold">Moneda: </span>{{ m.currency_id || '-' }}
 				</div>
-				<div class="col-6 col-md-1">
-					<span class="d-md-none fw-bold">Fecha: </span>
+				<div class="col-6 col-md-1 px-1 px-md-1">
+					<span class="c-d-md-none fw-bold">Fecha: </span>
 					<span [title]="m.paid_date | shortDate:'full'">{{ m.paid_date | shortDate:'relative' }}</span>
 					@if (m.is_checkpoint) {
 						<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="ms-1 text-success"><polyline points="20 6 9 17 4 12"/></svg>
 					}
 				</div>
-				<div class="col-6 col-md-1">
-					<span class="d-md-none fw-bold">Registro: </span>
+				<div class="col-6 col-md-1 px-0 px-md-1">
+					<span class="c-d-md-none fw-bold">Registro: </span>
 					<span>{{ m.created | shortDate:'full' }}</span>
 				</div>
-				<div class="col-6 col-md-2 text-end">
+				<div class="col-6 col-md-1 text-end">
 					<div class="d-flex justify-content-end gap-1">
 						<a class="btn btn-sm btn-primary" [routerLink]="['/view-bank-movement', m.id]" title="Ver movimiento">
 							<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 20 20"><path d="M0 0h20v20H0z" fill="none"></path><path fill="currentColor" d="m17.545 15.467l-3.779-3.779a6.15 6.15 0 0 0 .898-3.21c0-3.417-2.961-6.377-6.378-6.377A6.185 6.185 0 0 0 2.1 8.287c0 3.416 2.961 6.377 6.377 6.377a6.15 6.15 0 0 0 3.115-.844l3.799 3.801a.953.953 0 0 0 1.346 0l.943-.943c.371-.371.236-.84-.135-1.211M4.004 8.287a4.28 4.28 0 0 1 4.282-4.283c2.366 0 4.474 2.107 4.474 4.474a4.284 4.284 0 0 1-4.283 4.283c-2.366-.001-4.473-2.109-4.473-4.474"></path></svg>
@@ -120,7 +120,7 @@
 				</div>
 			</div>
 			@if (editing_movement_id === m.id) {
-				<div class="row border-bottom py-2 bg-light align-items-center">
+				<div class="c-row border-bottom py-2 bg-light align-items-center">
 					<div class="col-md-3">
 						<label class="form-label small">Saldo</label>
 						<input type="number" class="form-control form-control-sm" [(ngModel)]="editing_balance" step="0.01" placeholder="Saldo" />
