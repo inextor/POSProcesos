@@ -22,6 +22,7 @@ const TRANSACTION_LABELS: Record<string, string> = {
 	DISCOUNT: 'Descuento',
 	RETURN_DISCOUNT: 'Descuento por Devolución',
 	PAYPAL: 'PayPal',
+	INTERNAL_TRANSFER: 'Traspaso Interno',
 };
 
 @Component({
@@ -32,11 +33,17 @@ const TRANSACTION_LABELS: Record<string, string> = {
 })
 export class ListBankMovementComponent extends BaseComponent implements OnInit {
 	bank_account_id: number | null = null;
-	movement_list: MovementWithLabel[] = [];
-	bank_account_list: Bank_Account[] = [];
+	movement_array: MovementWithLabel[] = [];
+	bank_account_array: Bank_Account[] = [];
 
 	created_from: string = '';
 	created_to: string = '';
+
+	type_option_array: { value: string; label: string }[] = [
+		{ value: 'income', label: 'Ingreso' },
+		{ value: 'expense', label: 'Egreso' },
+	];
+	transaction_type_option_array: { value: string; label: string }[] = Object.entries(TRANSACTION_LABELS).map(([value, label]) => ({ value, label }));
 
 	editing_movement_id: number | null = null;
 	editing_balance: number | null = null;
@@ -67,12 +74,12 @@ export class ListBankMovementComponent extends BaseComponent implements OnInit {
 			})
 		).subscribe(response => {
 			this.is_loading = false;
-			this.movement_list = response.movements.data.map(m => ({
+			this.movement_array = response.movements.data.map(m => ({
 				...m.bank_movement,
 				bank_account: m.bank_account,
 				transaction_type_label: TRANSACTION_LABELS[m.bank_movement.transaction_type] || m.bank_movement.transaction_type,
 			}));
-			this.bank_account_list = response.bank_accounts.data;
+			this.bank_account_array = response.bank_accounts.data;
 			this.setPages(this.current_page, response.movements.total);
 		});
 	}
@@ -87,13 +94,17 @@ export class ListBankMovementComponent extends BaseComponent implements OnInit {
 		this.is_loading = true;
 		this.subs.sink = this.rest_bank_movement.searchWithRelations(this.search_bank_movement, [this.rest_bank_account.getRelation('bank_account_id')]).subscribe(response => {
 			this.is_loading = false;
-			this.movement_list = response.data.map((m: any) => ({
+			this.movement_array = response.data.map((m: any) => ({
 				...m.bank_movement,
 				bank_account: m.bank_account,
 				transaction_type_label: TRANSACTION_LABELS[m.bank_movement.transaction_type] || m.bank_movement.transaction_type,
 			}));
 			this.setPages(this.current_page, response.total);
 		});
+	}
+
+	onReferenceChange(value: string): void {
+		this.search_bank_movement.lk.reference = value === '' ? null : value;
 	}
 
 	startEdit(m: MovementWithLabel): void {
