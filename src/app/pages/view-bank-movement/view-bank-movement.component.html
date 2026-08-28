@@ -1,0 +1,274 @@
+<div class="container-fluid">
+	<div class="row my-3 align-items-center">
+		<div class="col">
+			<h1 class="my-0">Movimiento Bancario #{{ bank_movement?.id }}</h1>
+		</div>
+		<div class="col-auto">
+			<button type="button" class="btn btn-secondary" (click)="goBack()">Volver</button>
+		</div>
+	</div>
+
+	<app-loading [is_loading]="is_loading"></app-loading>
+
+	@if (bank_movement)
+	{
+		<div class="card p-3 mb-3">
+			<div class="d-flex justify-content-between align-items-center mb-2">
+				<h5 class="mb-0">Movimiento</h5>
+				<span [class]="'badge ' + (bank_movement.status == 'ACTIVE' ? 'bg-success' : 'bg-danger')">
+					{{ status_label }}
+				</span>
+			</div>
+			<hr>
+			<div class="row">
+				<div class="col-12 col-md-4 mb-2">
+					<label class="text-muted small">Tipo</label>
+					<p class="fw-bold mb-0">
+						<span [class]="'badge ' + (bank_movement.type == 'income' ? 'bg-success' : 'bg-warning')">
+							{{ type_label }}
+						</span>
+					</p>
+				</div>
+				<div class="col-12 col-md-4 mb-2">
+					<label class="text-muted small">Forma de Pago</label>
+					<p class="fw-bold mb-0">{{ transaction_type_label }}</p>
+				</div>
+				<div class="col-12 col-md-4 mb-2">
+					<label class="text-muted small">Estado</label>
+					<p class="fw-bold mb-0">{{ status_label }}</p>
+				</div>
+
+				<div class="col-12 col-md-4 mb-2">
+					<label class="text-muted small">Total</label>
+					<p class="fw-bold mb-0">{{ bank_movement.total | currency }}</p>
+				</div>
+				<div class="col-12 col-md-4 mb-2">
+					<label class="text-muted small">Saldo</label>
+					<p class="fw-bold mb-0">{{ bank_movement.balance | number:'1.2-2' }}</p>
+				</div>
+				<div class="col-12 col-md-4 mb-2">
+					<label class="text-muted small">Monto Recibido</label>
+					<p class="fw-bold mb-0">{{ bank_movement.amount_received | number:'1.2-2' }}</p>
+				</div>
+
+				<div class="col-12 col-md-4 mb-2">
+					<label class="text-muted small">Moneda</label>
+					<p class="fw-bold mb-0">{{ bank_movement.currency_id || '—' }}</p>
+				</div>
+				<div class="col-12 col-md-4 mb-2">
+					<label class="text-muted small">Tipo de Cambio</label>
+					<p class="fw-bold mb-0">{{ bank_movement.exchange_rate }}</p>
+				</div>
+				<div class="col-12 col-md-4 mb-2">
+					<label class="text-muted small">Referencia</label>
+					<p class="fw-bold mb-0">{{ bank_movement.reference || '—' }}</p>
+				</div>
+
+				<div class="col-12 col-md-4 mb-2">
+					<label class="text-muted small">Fecha de Pago</label>
+					<p class="fw-bold mb-0">
+						{{ bank_movement.paid_date | date:'short' }}
+						@if (bank_movement.is_checkpoint) {
+							<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="ms-1 text-success"><polyline points="20 6 9 17 4 12"/></svg>
+						}
+					</p>
+				</div>
+				<div class="col-12 col-md-4 mb-2">
+					<label class="text-muted small">Registro</label>
+					<p class="fw-bold mb-0">{{ bank_movement.created | date:'short' }}</p>
+				</div>
+				<div class="col-12 col-md-4 mb-2">
+					<label class="text-muted small">Banco de Origen</label>
+					<p class="fw-bold mb-0">{{ bank_movement.origin_bank_name || '—' }}</p>
+				</div>
+
+				<div class="col-12 col-md-4 mb-2">
+					<label class="text-muted small">Terminación de Tarjeta</label>
+					<p class="fw-bold mb-0">{{ bank_movement.card_ending || '—' }}</p>
+				</div>
+				<div class="col-12 mb-2">
+					<label class="text-muted small">Nota</label>
+					<p class="mb-0">{{ bank_movement.note || '—' }}</p>
+				</div>
+			</div>
+		</div>
+
+		<div class="card p-3 mb-3">
+			<h5 class="mb-2">Cuenta Bancaria</h5>
+			<hr>
+			@if (bank_account)
+			{
+				<div class="row">
+					<div class="col-12 col-md-3 mb-2">
+						<label class="text-muted small">Nombre</label>
+						<p class="fw-bold mb-0">{{ bank_account.name || '—' }}</p>
+					</div>
+					<div class="col-12 col-md-3 mb-2">
+						<label class="text-muted small">Alias</label>
+						<p class="fw-bold mb-0">{{ bank_account.alias || '—' }}</p>
+					</div>
+					<div class="col-12 col-md-3 mb-2">
+						<label class="text-muted small">Cuenta</label>
+						<p class="fw-bold mb-0">{{ bank_account.account || '—' }}</p>
+					</div>
+					<div class="col-12 col-md-3 mb-2">
+						<label class="text-muted small">Banco</label>
+						<p class="fw-bold mb-0">{{ bank_account.bank || '—' }}</p>
+					</div>
+					<div class="col-12">
+						<a class="btn btn-sm btn-outline-primary" [routerLink]="['/edit-bank-account', bank_account.id]">
+							Ver Cuenta
+						</a>
+					</div>
+				</div>
+			}
+			@else
+			{
+				<p class="text-muted mb-0">Sin cuenta bancaria asignada</p>
+			}
+		</div>
+
+		<div class="card p-3 mb-3">
+			<h5 class="mb-2">Quién lo Realizó</h5>
+			<hr>
+			<div class="row">
+				<div class="col-12 col-md-4 mb-2">
+					<label class="text-muted small">Registrado por</label>
+					<p class="fw-bold mb-0">{{ received_by_user?.name || '—' }}</p>
+				</div>
+				<div class="col-12 col-md-4 mb-2">
+					<label class="text-muted small">Cliente</label>
+					<p class="fw-bold mb-0">{{ client_user?.name || '—' }}</p>
+				</div>
+				<div class="col-12 col-md-4 mb-2">
+					<label class="text-muted small">Proveedor</label>
+					<p class="fw-bold mb-0">{{ provider_user?.name || '—' }}</p>
+				</div>
+			</div>
+		</div>
+
+		@if (payment)
+		{
+			<div class="card p-3 mb-3">
+				<div class="d-flex justify-content-between align-items-center mb-2">
+					<h5 class="mb-0">Pago</h5>
+					<a class="btn btn-sm btn-outline-primary" [routerLink]="['/view-payment', payment.id]">
+						Ver Pago #{{ payment.id }}
+					</a>
+				</div>
+				<hr>
+				<div class="row">
+					<div class="col-12 col-md-3 mb-2">
+						<label class="text-muted small">Tipo</label>
+						<p class="fw-bold mb-0">{{ payment.type == 'income' ? 'Ingreso' : 'Gasto' }}</p>
+					</div>
+					<div class="col-12 col-md-3 mb-2">
+						<label class="text-muted small">Monto</label>
+						<p class="fw-bold mb-0">{{ payment.payment_amount | currency }}</p>
+					</div>
+					<div class="col-12 col-md-3 mb-2">
+						<label class="text-muted small">Concepto</label>
+						<p class="fw-bold mb-0">{{ payment.concept || '—' }}</p>
+					</div>
+					<div class="col-12 col-md-3 mb-2">
+						<label class="text-muted small">Tag</label>
+						<p class="fw-bold mb-0">{{ payment.tag || '—' }}</p>
+					</div>
+				</div>
+			</div>
+		}
+
+		<div class="card p-3 mb-3">
+			<div class="d-flex justify-content-between align-items-center mb-2">
+				<h5 class="mb-0">Órdenes</h5>
+				<span class="badge bg-secondary">{{ bm_orders_display_array.length }}</span>
+			</div>
+			<hr>
+			@if (bm_orders_display_array.length == 0)
+			{
+				<p class="text-muted mb-0">Sin órdenes relacionadas</p>
+			}
+			@else
+			{
+				<div class="table-responsive">
+					<table class="table table-bordered mb-0">
+						<thead>
+							<tr>
+								<th>Orden</th>
+								<th class="text-end">Monto Aplicado</th>
+								<th>Cliente</th>
+								<th>Estado</th>
+							</tr>
+						</thead>
+						<tbody>
+							@for (bmo of bm_orders_display_array; track bmo.bank_movement_order.id)
+							{
+								<tr>
+									<td>
+										<a class="btn btn-sm btn-primary" [routerLink]="['/view-order', bmo.bank_movement_order.order_id]">
+											Orden #{{ bmo.bank_movement_order.order_id }}
+										</a>
+									</td>
+									<td class="text-end">{{ bmo.bank_movement_order.amount | currency }}</td>
+									<td>{{ bmo.order?.client_name || bmo.order?.client_user_id || '—' }}</td>
+									<td>{{ bmo.order?.paid_status || '—' }}</td>
+								</tr>
+							}
+						</tbody>
+					</table>
+				</div>
+			}
+		</div>
+
+		<div class="card p-3 mb-3">
+			<div class="d-flex justify-content-between align-items-center mb-2">
+				<h5 class="mb-0">Facturas / Órdenes de Compra</h5>
+				<span class="badge bg-secondary">{{ bm_bills_display_array.length }}</span>
+			</div>
+			<hr>
+			@if (bm_bills_display_array.length == 0)
+			{
+				<p class="text-muted mb-0">Sin facturas ni órdenes de compra relacionadas</p>
+			}
+			@else
+			{
+				<div class="table-responsive">
+					<table class="table table-bordered mb-0">
+						<thead>
+							<tr>
+								<th>Factura</th>
+								<th class="text-end">Monto Aplicado</th>
+								<th>Estado</th>
+								<th>Orden de Compra</th>
+							</tr>
+						</thead>
+						<tbody>
+							@for (bmb of bm_bills_display_array; track bmb.bank_movement_bill.id)
+							{
+								<tr>
+									<td>
+										{{ bmb.bill?.folio || ('Factura #' + (bmb.bill?.id ?? bmb.bank_movement_bill.bill_id)) }}
+									</td>
+									<td class="text-end">{{ bmb.bank_movement_bill.amount | currency }}</td>
+									<td>{{ bmb.bill?.paid_status || '—' }}</td>
+									<td>
+										@if (bmb.purchase)
+										{
+											<a class="btn btn-sm btn-primary" [routerLink]="['/purchase/edit', bmb.purchase.id]">
+												OC #{{ bmb.purchase.id }} - {{ bmb.purchase.provider_name || '—' }}
+											</a>
+										}
+										@else
+										{
+											<span class="text-muted">—</span>
+										}
+									</td>
+								</tr>
+							}
+						</tbody>
+					</table>
+				</div>
+			}
+		</div>
+	}
+</div>

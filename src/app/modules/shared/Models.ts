@@ -272,6 +272,7 @@ export interface MovementInfo
 {
 	bank_movement:Bank_Movement;
 	bank_movement_orders:Bank_Movement_Order[];
+	bank_movement_bills:BankMovementBillInfo[];
 }
 
 export interface TransferInfo

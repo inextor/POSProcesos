@@ -76,6 +76,7 @@ export const routes: Routes = [
 			{path: 'view-item-transform/:id', loadComponent: () => import('./pages/view-item-transform/view-item-transform.component').then(m => m.ViewItemTransformComponent), canActivate: [authGuard]},
 			{path: 'list-category-store', loadComponent: () => import('./pages/list-category-store/list-category-store.component').then(m => m.ListCategoryStoreComponent), canActivate: [authGuard]},
 			{path: 'list-bank-movement', loadComponent: () => import('./pages/list-bank-movement/list-bank-movement.component').then(m => m.ListBankMovementComponent), canActivate: [authGuard]},
+			{path: 'view-bank-movement/:id', loadComponent: () => import('./pages/view-bank-movement/view-bank-movement.component').then(m => m.ViewBankMovementComponent), canActivate: [authGuard]},
 			{path: 'list-bank-account', loadComponent: () => import('./pages/list-bank-account/list-bank-account.component').then(m => m.ListBankAccountComponent), canActivate: [authGuard]},
 			{path: 'add-bank-account', loadComponent: () => import('./pages/save-bank-account/save-bank-account.component').then(m => m.SaveBankAccountComponent), canActivate: [authGuard]},
 			{path: 'edit-bank-account/:id', loadComponent: () => import('./pages/save-bank-account/save-bank-account.component').then(m => m.SaveBankAccountComponent), canActivate: [authGuard]},
