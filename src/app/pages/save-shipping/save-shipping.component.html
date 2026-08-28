@@ -142,7 +142,7 @@
           <div class="col-6 col-lg-2 text-end px-1">
             <label class="d-lg-none">Cantidad</label>
             @if (sii && sii.shipping_item) {
-              <input type="number" [name]="'shippint_item'+sii.item?.id" [(ngModel)]="sii.shipping_item.qty" (ngModelChange)="updateValues()" class="form-control text-end" [step]="sii.item?.partial_sale == 'NO'?'1':'any'">
+              <input type="number" [name]="'shippint_item'+sii.item?.id" [(ngModel)]="sii.shipping_item.qty" (ngModelChange)="updateValues()" class="form-control text-end" required min="0.0001" [step]="sii.item?.partial_sale == 'NO'?'1':'any'">
             }
           </div>
         </div>

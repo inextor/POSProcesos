@@ -350,6 +350,18 @@ export class SaveShippingComponent extends BaseComponent
 	{
 		_evt.preventDefault();
 
+		let empty_qty_item = this.shipping_info?.items.find((citem) =>
+		{
+			let qty = citem.shipping_item?.qty;
+			return qty == null || isNaN(qty) || qty <= 0;
+		});
+
+		if( empty_qty_item )
+		{
+			this.showError('La cantidad a enviar debe ser mayor a 0 (' + empty_qty_item.item?.name + ')');
+			return;
+		}
+
 		let has_insufficient_stock = this.shipping_info?.items.some((citem) =>
 			citem.shipping_item?.qty != null && citem.shipping_item.qty > (citem.available ?? 0)
 		);
@@ -460,8 +472,14 @@ export class SaveShippingComponent extends BaseComponent
 				continue;
 			}
 
-			let faltante = cri.required - cri.shipped;
-			let qty = Math.min(faltante, cri.stock);
+			let faltante = (cri.required || 0) - (cri.shipped || 0);
+			let qty = Math.min(faltante, cri.stock || 0);
+
+			if( !qty || isNaN(qty) || qty <= 0 )
+			{
+				this.showError('No se pudo calcular la cantidad de ' + cri.item_info.item.name);
+				continue;
+			}
 
 			this.addShippingItem(cri.item_info, qty);
 		}
