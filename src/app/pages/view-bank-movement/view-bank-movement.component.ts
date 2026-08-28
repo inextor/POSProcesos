@@ -23,12 +23,14 @@ interface BankMovementBillDisplay
 	bank_movement_bill: Bank_Movement_Bill;
 	bill: Bill | null;
 	purchase: Purchase | null;
+	folio_display: string;
 }
 
 interface BankMovementOrderDisplay
 {
 	bank_movement_order: Bank_Movement_Order;
 	order: Order | null;
+	client_display: string;
 }
 
 const TRANSACTION_LABELS: Record<string, string> = {
@@ -68,6 +70,9 @@ export class ViewBankMovementComponent extends BaseComponent implements OnInit
 	transaction_type_label: string = '';
 	type_label: string = '';
 	status_label: string = '';
+	type_badge_class: string = '';
+	status_badge_class: string = '';
+	payment_type_label: string = '';
 
 	constructor(injector: Injector)
 	{
@@ -182,6 +187,9 @@ export class ViewBankMovementComponent extends BaseComponent implements OnInit
 				this.transaction_type_label = TRANSACTION_LABELS[bank_movement.transaction_type] || bank_movement.transaction_type;
 				this.type_label = bank_movement.type === 'income' ? 'Ingreso' : 'Egreso';
 				this.status_label = bank_movement.status === 'ACTIVE' ? 'Activo' : 'Eliminado';
+				this.type_badge_class = bank_movement.type === 'income' ? 'badge bg-success' : 'badge bg-warning';
+				this.status_badge_class = bank_movement.status === 'ACTIVE' ? 'badge bg-success' : 'badge bg-danger';
+				this.payment_type_label = this.payment ? (this.payment.type === 'income' ? 'Ingreso' : 'Gasto') : '';
 
 				const users = response.response.users_response.data || [];
 				this.received_by_user = this.findUser(users, bank_movement.received_by_user_id);
@@ -193,10 +201,15 @@ export class ViewBankMovementComponent extends BaseComponent implements OnInit
 				const movement_bank_movement_bills: BankMovementBillInfo[] = response.movement ? response.movement.bank_movement_bills || [] : [];
 
 				this.bm_orders_display_array = (is_income ? movement_bank_movement_orders : [])
-					.map((bmo) => ({
-						bank_movement_order: bmo,
-						order: orders.find((o) => o.id === bmo.order_id) || null,
-					}));
+					.map((bmo) => {
+						const order: Order | null = orders.find((o) => o.id === bmo.order_id) || null;
+						const client_display = order?.client_name || (order?.client_user_id != null ? 'Cliente #' + order.client_user_id : '—');
+						return {
+							bank_movement_order: bmo,
+							order,
+							client_display,
+						};
+					});
 
 				this.bm_bills_display_array = (is_income ? [] : movement_bank_movement_bills)
 					.map((entry: BankMovementBillInfo) => {
@@ -204,10 +217,12 @@ export class ViewBankMovementComponent extends BaseComponent implements OnInit
 						const purchase: Purchase | null = bill?.purchase_id
 							? purchases.find((p) => p.id === bill.purchase_id) || null
 							: null;
+						const folio_display = bill?.folio || (bill?.id != null ? 'Factura #' + bill.id : '—');
 						return {
 							bank_movement_bill: entry.bank_movement_bill as Bank_Movement_Bill,
 							bill,
 							purchase,
+							folio_display,
 						};
 					});
 

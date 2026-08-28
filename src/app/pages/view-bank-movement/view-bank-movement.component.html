@@ -15,7 +15,7 @@
 		<div class="card p-3 mb-3">
 			<div class="d-flex justify-content-between align-items-center mb-2">
 				<h5 class="mb-0">Movimiento</h5>
-				<span [class]="'badge ' + (bank_movement.status == 'ACTIVE' ? 'bg-success' : 'bg-danger')">
+				<span [class]="status_badge_class">
 					{{ status_label }}
 				</span>
 			</div>
@@ -24,7 +24,7 @@
 				<div class="col-12 col-md-4 mb-2">
 					<label class="text-muted small">Tipo</label>
 					<p class="fw-bold mb-0">
-						<span [class]="'badge ' + (bank_movement.type == 'income' ? 'bg-success' : 'bg-warning')">
+						<span [class]="type_badge_class">
 							{{ type_label }}
 						</span>
 					</p>
@@ -116,7 +116,7 @@
 						<p class="fw-bold mb-0">{{ bank_account.bank || '—' }}</p>
 					</div>
 					<div class="col-12">
-						<a class="btn btn-sm btn-outline-primary" [routerLink]="['/edit-bank-account', bank_account.id]">
+						<a class="btn btn-primary btn-sm" [routerLink]="['/edit-bank-account', bank_account.id]">
 							Ver Cuenta
 						</a>
 					</div>
@@ -152,7 +152,7 @@
 			<div class="card p-3 mb-3">
 				<div class="d-flex justify-content-between align-items-center mb-2">
 					<h5 class="mb-0">Pago</h5>
-					<a class="btn btn-sm btn-outline-primary" [routerLink]="['/view-payment', payment.id]">
+					<a class="btn btn-primary btn-sm" [routerLink]="['/view-payment', payment.id]">
 						Ver Pago #{{ payment.id }}
 					</a>
 				</div>
@@ -160,7 +160,7 @@
 				<div class="row">
 					<div class="col-12 col-md-3 mb-2">
 						<label class="text-muted small">Tipo</label>
-						<p class="fw-bold mb-0">{{ payment.type == 'income' ? 'Ingreso' : 'Gasto' }}</p>
+						<p class="fw-bold mb-0">{{ payment_type_label }}</p>
 					</div>
 					<div class="col-12 col-md-3 mb-2">
 						<label class="text-muted small">Monto</label>
@@ -205,12 +205,12 @@
 							{
 								<tr>
 									<td>
-										<a class="btn btn-sm btn-primary" [routerLink]="['/view-order', bmo.bank_movement_order.order_id]">
+										<a class="btn btn-primary btn-sm" [routerLink]="['/view-order', bmo.bank_movement_order.order_id]">
 											Orden #{{ bmo.bank_movement_order.order_id }}
 										</a>
 									</td>
 									<td class="text-end">{{ bmo.bank_movement_order.amount | currency }}</td>
-									<td>{{ bmo.order?.client_name || bmo.order?.client_user_id || '—' }}</td>
+									<td>{{ bmo.client_display }}</td>
 									<td>{{ bmo.order?.paid_status || '—' }}</td>
 								</tr>
 							}
@@ -247,14 +247,14 @@
 							{
 								<tr>
 									<td>
-										{{ bmb.bill?.folio || ('Factura #' + (bmb.bill?.id ?? bmb.bank_movement_bill.bill_id)) }}
+										{{ bmb.folio_display }}
 									</td>
 									<td class="text-end">{{ bmb.bank_movement_bill.amount | currency }}</td>
 									<td>{{ bmb.bill?.paid_status || '—' }}</td>
 									<td>
 										@if (bmb.purchase)
 										{
-											<a class="btn btn-sm btn-primary" [routerLink]="['/purchase/edit', bmb.purchase.id]">
+											<a class="btn btn-primary btn-sm" [routerLink]="['/purchase/edit', bmb.purchase.id]">
 												OC #{{ bmb.purchase.id }} - {{ bmb.purchase.provider_name || '—' }}
 											</a>
 										}
