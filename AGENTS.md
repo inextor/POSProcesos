@@ -20,7 +20,7 @@ functions in templates. Follow it in every file.
 - Variables: lowercase snake_case, `_array` suffix for arrays (existing `_list` code is renamed to `_array` as files are touched), no abbreviations except universal (`qty`).
 - Functions: camelCase. Interfaces/classes: PascalCase (models mirror backend table names, e.g. `Order_Item`).
 - Precompute display values in `.map()`, then use `{{ user.age }}` — never `{{ getAge(user) }}` (no signal exception).
-- Html: 1 tag per line; the only exception is inline SVG on one line.
+- After change or create a new HTML please check [html conventions](docs/html_conventions.md)
 - Confirm destructive actions with `ConfirmationService`; use `showSuccess`/`showError` from BaseComponent.
 
 ## Quick Start
