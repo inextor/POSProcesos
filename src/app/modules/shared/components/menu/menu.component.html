@@ -141,6 +141,14 @@
 
 							@if (rest.user_permission.edit_billing_data || rest.user_permission.view_facturas) {
 								<li class="side-nav-item">
+									<a routerLink="/facturar-ordenes-sin-cliente" routerLinkActive="active" class="side-nav-link" aria-expanded="false">
+										<i class="svg-icon">
+											<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><path fill="currentColor" d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8zm-1 2l5 5h-5zM8 12v-1h3v1zm8 4v1H8v-1zm0-2v1H8v-1zm-5-4v1H8v-1z"/></svg>
+										</i>
+										<span>Facturar Órdenes Sin Cliente</span>
+									</a>
+								</li>
+								<li class="side-nav-item">
 									<a  [attr.href]="external_base_url +'/list-order-facturas'" class="side-nav-link" aria-expanded="false" >
 										<i class="svg-icon">
 											<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" focusable="false" width="1em" height="1em" style="-ms-transform: rotate(360deg); -webkit-transform: rotate(360deg); transform: rotate(360deg);" preserveAspectRatio="xMidYMid meet" viewBox="0 0 1792 1792"><path d="M448 0q26 0 45 19t19 45v891l536-429q17-14 40-14q26 0 45 19t19 45v379l536-429q17-14 40-14q26 0 45 19t19 45v1152q0 26-19 45t-45 19H64q-26 0-45-19t-19-45V64q0-26 19-45T64 0h384z" fill="currentColor"/></svg>

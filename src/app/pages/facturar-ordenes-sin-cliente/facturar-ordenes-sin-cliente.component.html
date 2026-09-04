@@ -1,0 +1,179 @@
+<div class="container-fluid">
+	<div class="row align-items-center my-3">
+		<div class="col">
+			<h1 class="my-3">Órdenes Sin Cliente</h1>
+		</div>
+	</div>
+
+	<app-loading [is_loading]="is_loading"></app-loading>
+
+	<div class="card p-3 mb-3">
+		<div class="card-body">
+			<form (ngSubmit)="search(order_search)">
+				<div class="row">
+					<div class="col-6 col-md-3 form-group">
+						<label>Sucursal</label>
+						<select class="form-control" [(ngModel)]="order_search.eq.store_id" name="eq.store_id">
+							<option [ngValue]="null">Todas</option>
+							@for (store of store_array; track store.id) {
+								<option [ngValue]="store.id">{{ store.name | titlecase }}</option>
+							}
+						</select>
+					</div>
+					<div class="col-6 col-md-3 form-group">
+						<label>Estatus</label>
+						<select class="form-control" [(ngModel)]="order_search.eq.status" name="eq.status">
+							<option [ngValue]="null">Todos</option>
+							<option value="PENDING">Pendiente</option>
+							<option value="ACTIVE">Activa</option>
+							<option value="CLOSED">Cerrada</option>
+							<option value="CANCELLED">Cancelada</option>
+						</select>
+					</div>
+					<div class="col-6 col-md-3 form-group">
+						<label>Fecha Inicial</label>
+						<input type="datetime-local" class="form-control" name="start_date" [(ngModel)]="start_date" (ngModelChange)="onDateChange($event, order_search.ge, 'created')">
+					</div>
+					<div class="col-6 col-md-3 form-group">
+						<label>Fecha Final</label>
+						<input type="datetime-local" class="form-control" name="end_date" [(ngModel)]="end_date" (ngModelChange)="onDateChange($event, order_search.le, 'created')">
+					</div>
+					<div class="col-12 col-md-3 d-flex align-items-end">
+						<button type="submit" class="btn btn-primary w-100">Buscar</button>
+					</div>
+				</div>
+			</form>
+		</div>
+	</div>
+
+	<app-pagination [path]="'/facturar-ordenes-sin-cliente'" [current_page]="current_page" [total_pages]="total_pages" [pages]="pages"></app-pagination>
+
+	<div class="card p-3">
+		<div class="row align-items-center mb-3">
+			<div class="col">
+				<span class="fw-bold">Total seleccionado: {{ selected_total | currency }}</span>
+			</div>
+			<div class="col text-end">
+				<button type="button" class="btn btn-primary" (click)="facturar()" [disabled]="!has_selected">Facturar</button>
+			</div>
+		</div>
+		<div class="table-responsive">
+			<table class="table table-bordered table-striped table-hover mb-0">
+				<thead class="thead-light">
+					<tr>
+						<th class="text-center">
+							<div class="form-check form-switch">
+								<label class="form-check-label">
+									<input type="checkbox" class="form-check-input" [checked]="select_all" (change)="onSelectAllCheckbox($event)">
+								</label>
+							</div>
+						</th>
+						<th (click)="sort('id', order_search)" class="cursor-pointer">Id</th>
+						<th>Cliente</th>
+						<th (click)="sort('store_consecutive', order_search)" class="cursor-pointer">Folio</th>
+						<th>Sucursal</th>
+						<th>Atendió</th>
+						<th (click)="sort('created', order_search)" class="cursor-pointer">Fecha</th>
+						<th (click)="sort('status', order_search)" class="cursor-pointer text-center">Estatus</th>
+						<th class="text-center">Facturado</th>
+						<th (click)="sort('total', order_search)" class="cursor-pointer text-end">Total</th>
+					</tr>
+				</thead>
+				<tbody>
+					@for (order_info of order_info_array; track order_info.order.id) {
+						<tr class="align-middle">
+							<td class="text-center">
+								@if (order_info.order.status != 'CANCELLED') {
+									<div class="form-check form-switch">
+										<label class="form-check-label">
+											<input type="checkbox" class="form-check-input" [checked]="order_info.selected" (change)="onSelectOrder($event, order_info)">
+										</label>
+									</div>
+								}
+							</td>
+							<td>
+								<a [routerLink]="['/view-order', order_info.order.id]">{{ order_info.order.id }}</a>
+							</td>
+							<td>{{ order_info.client_display }}</td>
+							<td>{{ order_info.order.store_consecutive }}</td>
+							<td>{{ order_info.store_name | titlecase }}</td>
+							<td>{{ order_info.cashier_name | titlecase }}</td>
+							<td>{{ order_info.order.created | date: 'MMM d, y HH:mm' }}</td>
+							<td class="text-center">{{ order_info.status_display }}</td>
+							<td class="text-center">{{ order_info.facturado_display }}</td>
+							<td class="text-end">{{ order_info.total_pagar | currency }}</td>
+						</tr>
+					}
+					@empty {
+						<tr>
+							<td colspan="10" class="text-center">No hay órdenes sin cliente</td>
+						</tr>
+					}
+				</tbody>
+			</table>
+		</div>
+		<div class="row align-items-center mt-3">
+			<div class="col">
+				<span class="fw-bold">Total seleccionado: {{ selected_total | currency }}</span>
+			</div>
+			<div class="col text-end">
+				<button type="button" class="btn btn-primary" (click)="facturar()" [disabled]="!has_selected">Facturar</button>
+			</div>
+		</div>
+	</div>
+
+	<app-pagination [path]="'/facturar-ordenes-sin-cliente'" [current_page]="current_page" [total_pages]="total_pages" [pages]="pages"></app-pagination>
+
+	<app-modal [(show)]="show_facturar_modal">
+		<div class="container-fluid">
+			<h2>Facturar Órdenes Seleccionadas</h2>
+			<p class="text-muted">Se facturarán {{ selected_count }} órdenes (Público General). Elige los datos del comprobante.</p>
+			<div class="row">
+				<div class="col-12 form-group">
+					<label>Credenciales de Facturación (RFC Emisor)</label>
+					<select class="form-control" [(ngModel)]="selected_billing_data_id" name="billing_data_id">
+						@for (bd of billing_data_array; track bd.id) {
+							<option [ngValue]="bd.id">{{ bd.rfc }} - {{ bd.razon_social }}</option>
+						}
+					</select>
+				</div>
+				<div class="col-6 form-group">
+					<label>Forma de Pago SAT</label>
+					<select class="form-control" [(ngModel)]="sat_forma_pago" name="sat_forma_pago">
+						<option value="01">01 Efectivo</option>
+						<option value="02">02 Cheque nominativo</option>
+						<option value="03">03 Transferencia electrónica</option>
+						<option value="04">04 Tarjeta de crédito</option>
+						<option value="28">28 Tarjeta de débito</option>
+						<option value="99">99 Por definir</option>
+					</select>
+				</div>
+				<div class="col-6 form-group">
+					<label>Método de Pago</label>
+					<input type="text" class="form-control" value="PUE - Pago en una sola exhibición" disabled>
+					<input type="hidden" [(ngModel)]="sat_metodo_pago" name="sat_metodo_pago">
+				</div>
+				<div class="col-6 form-group">
+					<label>Serie</label>
+					<input type="text" class="form-control" [(ngModel)]="sat_serie" name="sat_serie" maxlength="10" placeholder="A">
+				</div>
+				<div class="col-6 form-group">
+					<label>Uso CFDI (Público General)</label>
+					<select class="form-control" [(ngModel)]="sat_uso_cfdi" name="sat_uso_cfdi">
+						<option value="S01">S01 Sin efectos fiscales</option>
+						<option value="G03">G03 Gastos en general</option>
+						<option value="P01">P01 Por definir</option>
+					</select>
+				</div>
+			</div>
+			<div class="row py-3">
+				<div class="col-6">
+					<button type="button" class="btn btn-secondary w-100" (click)="show_facturar_modal=false" [disabled]="is_loading">Cancelar</button>
+				</div>
+				<div class="col-6">
+					<button type="button" class="btn btn-primary w-100" (click)="confirmFacturar()" [disabled]="is_loading || !selected_billing_data_id">Facturar</button>
+				</div>
+			</div>
+		</div>
+	</app-modal>
+</div>
