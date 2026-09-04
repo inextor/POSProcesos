@@ -13,6 +13,9 @@ import { ItemInfo } from '../../modules/shared/Models';
 interface CUser_production_report
 {
 	user:User;
+	//El area con la que se calculo la fila. Con "Todas las areas" cada renglon puede
+	//venir de un area distinta y las reglas son por area.
+	production_area_id:number | null;
 	//Una fila por usuario y por DIA: el pago se guarda en work_log, que es una fila
 	//por dia, asi que agregar el rango en una sola fila obligaria a inventar un
 	//criterio de reparto al momento de guardar.
@@ -59,6 +62,10 @@ export class SaveProductionPaymentComponent extends BaseComponent implements OnI
 
 	production_area_list:Production_Area[] = [];
 	production_area_id:number | null = null;
+	//Valor centinela del combo para "Todas las areas". No puede ser 0 ni null:
+	//BaseComponent.search() no escribe en la url los valores falsy, y null ya
+	//significa "todavia no elige area".
+	readonly ALL_AREAS:number = -1;
 	//El filtro de area solo se le muestra a quien no esta asignado a ninguna (perfil de oficina):
 	//el que si tiene area asignada siempre ve la suya y no deberia poder cambiarla.
 	show_production_area_filter:boolean = false;
@@ -73,6 +80,14 @@ export class SaveProductionPaymentComponent extends BaseComponent implements OnI
 	end_date:string = '';
 	//Con mas de un dia la tabla muestra la columna de fecha y los subtotales por usuario.
 	is_range:boolean = false;
+	//Union de las llaves de json_values de TODAS las filas: cada area puede tener reglas
+	//distintas, asi que los encabezados no pueden salir de la primera fila.
+	json_value_key_list:string[] = [];
+
+	get is_all_areas():boolean
+	{
+		return this.production_area_id === this.ALL_AREAS;
+	}
 
 	items_total:number = 0;
 	merma_total:number = 0;
@@ -139,11 +154,15 @@ export class SaveProductionPaymentComponent extends BaseComponent implements OnI
 
 				this.search_work_log_obj.search_extra = { production_area_id: this.production_area_id };
 
+				//El centinela solo vive en el combo y en la url. Al backend se le manda null,
+				//que Rest.getParamsFromSearch omite, y omitir el filtro es justamente "todas".
+				let area_filter = this.is_all_areas ? null : this.production_area_id;
+
 				let start = new Date(this.start_date + ' 00:00:00');
 				let end = new Date(this.end_date + ' 23:59:59');
 
 				let search_production_obj:SearchObject<Production> = this.getEmptySearch();
-				search_production_obj.eq.production_area_id = this.production_area_id;
+				search_production_obj.eq.production_area_id = area_filter;
 				search_production_obj.eq.status = 'ACTIVE';
 				search_production_obj.ge.created = start;
 				search_production_obj.le.created = end;
@@ -154,14 +173,19 @@ export class SaveProductionPaymentComponent extends BaseComponent implements OnI
 
 				this.search_work_log_obj.limit = 999999;
 
-				//Sin area no se consulta nada: eq ignora los null, asi que la busqueda traeria
-				//la produccion de TODAS las areas mezclada, y esta pantalla guarda pagos.
+				//Mientras no elija nada en el combo no se consulta: sin area ni centinela no se
+				//sabe si quiere una area o todas, y esta pantalla guarda pagos.
 				let empty_production = of({ total: 0, data: [] as Production[] });
 				let empty_work_log = of({ total: 0, data: [] as Work_Log[] });
+				let has_area_selected = this.production_area_id !== null;
+
+				//search_work_log_obj conserva el centinela porque es el que se serializa a la
+				//url en performSearch; la consulta va con el filtro ya resuelto.
+				let work_log_search = { ...this.search_work_log_obj, search_extra: { production_area_id: area_filter } };
 
 				return forkJoin({
-					production: this.production_area_id ? this.rest_production.search(search_production_obj) : empty_production,
-					work_log: this.production_area_id ? this.rest_work_log.search(this.search_work_log_obj) : empty_work_log,
+					production: has_area_selected ? this.rest_production.search(search_production_obj) : empty_production,
+					work_log: has_area_selected ? this.rest_work_log.search(work_log_search) : empty_work_log,
 					work_log_rules: this.rest_work_log_rules.search({}),
 					production_area: this.show_production_area_filter
 						? this.rest_production_area.search({ eq: { status: 'ACTIVE' }, limit: 9999, sort_order: ['name_ASC'] })
@@ -258,10 +282,6 @@ export class SaveProductionPaymentComponent extends BaseComponent implements OnI
 	//era de una sola fecha. Evaluarlas sobre todo el rango cambiaria lo que significan:
 	//un minimo garantizado por dia se volveria un minimo por semana, y un total_users
 	//sacado del rango repartiria entre mas gente de la que trabajo cada dia.
-	//Se agrupa por dia y las reglas se evaluan un dia a la vez, igual que cuando el filtro
-	//era de una sola fecha. Evaluarlas sobre todo el rango cambiaria lo que significan:
-	//un minimo garantizado por dia se volveria un minimo por semana, y un total_users
-	//sacado del rango repartiria entre mas gente de la que trabajo cada dia.
 	buildUserProductionReport(users:User[], work_logs:Work_Log[], productions:Production[], items:ItemInfo[])
 	{
 		this.Cuser_production_report_list = [];
@@ -270,12 +290,6 @@ export class SaveProductionPaymentComponent extends BaseComponent implements OnI
 		//produccion, de cada usuario, de cada dia. Con un rango largo se nota.
 		let item_by_id = new Map<number,ItemInfo>();
 		items.forEach((ii)=> item_by_id.set( ii.item.id, ii ) );
-
-		//Las reglas del AREA no dependen del usuario ni del dia, se resuelven una sola vez.
-		//Esta es la dimension con la que trabaja toda esta pantalla (la produccion, los
-		//usuarios listados y total_users salen del area).
-		let area_rule_array = this.json_rules_list
-			.filter((rule)=> rule.production_area_id != null && rule.production_area_id == this.production_area_id);
 
 		let work_log_by_date = new Map<string,Work_Log[]>();
 		work_logs.forEach((work_log)=>
@@ -295,6 +309,9 @@ export class SaveProductionPaymentComponent extends BaseComponent implements OnI
 			production_by_date.set( date, day_array );
 		});
 
+		let user_by_id = new Map<number,User>();
+		users.forEach((user)=> user_by_id.set( user.id, user ) );
+
 		let date_array = Array.from( work_log_by_date.keys() ).sort();
 
 		date_array.forEach((date)=>
@@ -302,16 +319,9 @@ export class SaveProductionPaymentComponent extends BaseComponent implements OnI
 			let day_work_log_array = work_log_by_date.get( date ) as Work_Log[];
 			let day_production_array = production_by_date.get( date ) ?? [];
 
-			//Se agrupa una vez por usuario en lugar de filtrar la lista completa del dia
-			//por cada persona.
-			let day_work_log_by_user = new Map<number,Work_Log[]>();
-			day_work_log_array.forEach((work_log)=>
-			{
-				let user_array = day_work_log_by_user.get( work_log.user_id ) ?? [];
-				user_array.push( work_log );
-				day_work_log_by_user.set( work_log.user_id, user_array );
-			});
-
+			//La produccion del usuario se agrupa sobre TODO el dia y no por area: si un
+			//panadero registro produccion etiquetada en otra area, su individual_prod no
+			//se debe perder porque le bajaria el pago.
 			let day_production_by_user = new Map<number,Production[]>();
 			day_production_array.forEach((production)=>
 			{
@@ -322,52 +332,138 @@ export class SaveProductionPaymentComponent extends BaseComponent implements OnI
 				day_production_by_user.set( user_id, user_array );
 			});
 
-			let day_user_array = users.filter((user)=> day_work_log_by_user.has( user.id ) );
+			//Con "Todas las areas" cada area se resuelve por separado: las reglas, total_users
+			//y los totales del dia que ven las reglas son POR AREA. Mezclarlas cambiaria lo que
+			//significan (un minimo por area se volveria un minimo global, y total_users
+			//repartiria entre gente de otras areas) y esta pantalla guarda pagos.
+			let day_area_map = new Map<number|null,{ work_log_by_user:Map<number,Work_Log[]>, production_array:Production[] }>();
 
-			//Los totales que ven las reglas tienen que ser de ESE dia, no del rango completo.
-			let day_payment_total = 0;
-			let day_merma_total = 0;
+			let getAreaBucket = (area_id:number|null)=>
+			{
+				let bucket = day_area_map.get( area_id );
+
+				if( !bucket )
+				{
+					bucket = { work_log_by_user: new Map<number,Work_Log[]>(), production_array: [] };
+					day_area_map.set( area_id, bucket );
+				}
+
+				return bucket;
+			};
+
+			//Work_Log no tiene columna de area: la del renglon es la del usuario.
+			day_work_log_array.forEach((work_log)=>
+			{
+				let user = user_by_id.get( work_log.user_id );
+
+				if( !user )
+					return;
+
+				let bucket = getAreaBucket( this.getUserAreaId( user ) );
+				let user_array = bucket.work_log_by_user.get( work_log.user_id ) ?? [];
+				user_array.push( work_log );
+				bucket.work_log_by_user.set( work_log.user_id, user_array );
+			});
 
 			day_production_array.forEach((production)=>
 			{
-				let item = item_by_id.get( production.item_id );
-
-				if( item )
-				{
-					day_payment_total += production.qty * item.item.reference_price;
-				}
-
-				day_merma_total += production.merma_qty;
+				let area_id = this.is_all_areas ? production.production_area_id : this.production_area_id;
+				getAreaBucket( area_id ).production_array.push( production );
 			});
 
-			day_user_array.forEach((user)=>
+			day_area_map.forEach((bucket, area_id)=>
 			{
-				this.Cuser_production_report_list.push
-				(
-					this.getUserDayReport
+				//Las reglas del AREA no dependen del usuario ni del dia, se resuelven una vez por area.
+				let area_rule_array = this.json_rules_list
+					.filter((rule)=> rule.production_area_id != null && rule.production_area_id == area_id);
+
+				let day_user_array = users.filter((user)=> bucket.work_log_by_user.has( user.id ) );
+
+				//Los totales que ven las reglas tienen que ser de ESE dia y de ESA area,
+				//no del rango completo ni de todas las areas juntas.
+				let day_payment_total = 0;
+				let day_merma_total = 0;
+
+				bucket.production_array.forEach((production)=>
+				{
+					let item = item_by_id.get( production.item_id );
+
+					if( item )
+					{
+						day_payment_total += production.qty * item.item.reference_price;
+					}
+
+					day_merma_total += production.merma_qty;
+				});
+
+				day_user_array.forEach((user)=>
+				{
+					this.Cuser_production_report_list.push
 					(
-						user,
-						date,
-						day_user_array.length,
-						day_work_log_by_user.get( user.id ) ?? [],
-						day_production_by_user.get( user.id ) ?? [],
-						item_by_id,
-						area_rule_array,
-						day_payment_total,
-						day_merma_total
-					)
-				);
+						this.getUserDayReport
+						(
+							user,
+							date,
+							area_id,
+							day_user_array.length,
+							bucket.work_log_by_user.get( user.id ) ?? [],
+							day_production_by_user.get( user.id ) ?? [],
+							item_by_id,
+							area_rule_array,
+							day_payment_total,
+							day_merma_total
+						)
+					);
+				});
 			});
 		});
 
+		this.buildJsonValueKeyList();
 		this.sortUserProductionReport();
 		this.refreshUserSubtotals();
+	}
+
+	//Con una sola area seleccionada se respeta esa, aunque el usuario tenga otra en su
+	//ficha: es lo que hacia la pantalla antes y el backend ya filtro por ella.
+	getUserAreaId(user:User):number | null
+	{
+		return this.is_all_areas ? user.production_area_id : this.production_area_id;
+	}
+
+	getAreaName(production_area_id:number | null):string
+	{
+		if( production_area_id == null )
+			return 'Sin área';
+
+		return this.production_area_list.find((pa)=> pa.id == production_area_id )?.name ?? 'Sin área';
+	}
+
+	//Los encabezados de las columnas calculadas son la union de las llaves de todas las
+	//filas: con areas mezcladas las reglas cambian, y tomarlas de la primera fila dejaba
+	//renglones con mas o menos celdas que el encabezado.
+	buildJsonValueKeyList()
+	{
+		let key_list:string[] = [];
+
+		this.Cuser_production_report_list.forEach((upr)=>
+		{
+			for(let key in upr.json_values)
+			{
+				if( key_list.indexOf( key ) == -1 )
+				{
+					key_list.push( key );
+				}
+			}
+		});
+
+		this.json_value_key_list = key_list;
 	}
 
 	getUserDayReport
 	(
 		user:User,
 		date:string,
+		production_area_id:number | null,
 		total_users:number,
 		user_work_log_array:Work_Log[],
 		user_production_array:Production[],
@@ -463,6 +559,7 @@ export class SaveProductionPaymentComponent extends BaseComponent implements OnI
 		return {
 			user,
 			date,
+			production_area_id,
 			work_log_array: user_work_log_array,
 			total_hours,
 			total_extra_hours,
@@ -493,6 +590,14 @@ export class SaveProductionPaymentComponent extends BaseComponent implements OnI
 	{
 		this.Cuser_production_report_list.sort((a, b)=>
 		{
+			if( this.is_all_areas )
+			{
+				let by_area = this.getAreaName( a.production_area_id ).localeCompare( this.getAreaName( b.production_area_id ) );
+
+				if( by_area != 0 )
+					return by_area;
+			}
+
 			let by_name = a.user.name.localeCompare( b.user.name );
 
 			if( by_name != 0 )
@@ -589,10 +694,12 @@ export class SaveProductionPaymentComponent extends BaseComponent implements OnI
 		.subscribe({
 			next: (response)=>
 			{
+				this.is_loading = false;
 				this.showSuccess('Registro guardado con éxito');
 			},
 			error: (error)=>
 			{
+				this.is_loading = false;
 				this.showError(error);
 			}
 		});

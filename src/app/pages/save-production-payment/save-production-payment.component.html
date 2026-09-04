@@ -8,6 +8,7 @@
             <label for="production_area_id">Área de Producción</label>
             <select class="form-control" id="production_area_id" [(ngModel)]="production_area_id">
               <option [ngValue]="null">Selecciona un área</option>
+              <option [ngValue]="ALL_AREAS">Todas las áreas</option>
               @for (pa of production_area_list; track pa.id) {
                 <option [ngValue]="pa.id">{{pa.name}}</option>
               }
@@ -34,7 +35,7 @@
         </div>
       </div>
     </div>
-    @if (show_production_area_filter && !production_area_id) {
+    @if (show_production_area_filter && production_area_id === null) {
       <div class="alert alert-info mb-0 mt-2">Selecciona un área de producción para ver el registro.</div>
     }
   </div>
@@ -72,6 +73,9 @@
           <thead class="thead-light">
             <tr>
               <th>Usuario</th>
+              @if (is_all_areas) {
+                <th>Área</th>
+              }
               @if (is_range) {
                 <th>Fecha</th>
               }
@@ -79,10 +83,8 @@
               <th class="text-end">Horas Extras</th>
               <th class="text-end">Producido</th>
               <th class="text-end">Costo Total</th>
-              @if (Cuser_production_report_list.length > 0) {
-                @for (jv of Cuser_production_report_list[0].json_values | keyvalue; track jv) {
-                  <th class="text-end">{{jv.key | customToTitle: 'snake_case'}}</th>
-                }
+              @for (key of json_value_key_list; track key) {
+                <th class="text-end">{{key | customToTitle: 'snake_case'}}</th>
               }
               <th class="text-end">Total Pago</th>
             </tr>
@@ -96,6 +98,9 @@
             @for (upr of Cuser_production_report_list; track upr) {
               <tr>
                 <td>{{upr.user.name}}</td>
+                @if (is_all_areas) {
+                  <td>{{getAreaName(upr.production_area_id)}}</td>
+                }
                 @if (is_range) {
                   <td>
                     {{upr.date}}
@@ -108,9 +113,13 @@
                 <td class="text-end">{{upr.total_extra_hours}}</td>
                 <td class="text-end">{{upr.production_qty}}</td>
                 <td class="text-end">{{upr.cost | currency: "$"}}</td>
-                @for (jv of upr.json_values | keyvalue; track jv) {
+                @for (key of json_value_key_list; track key) {
                   <td class="text-end">
-                    {{jv.value | currency: "$"}}
+                    @if (upr.json_values[key] == null) {
+                      &mdash;
+                    } @else {
+                      {{upr.json_values[key] | currency: "$"}}
+                    }
                   </td>
                 }
                 <td class="input-group text-end">
