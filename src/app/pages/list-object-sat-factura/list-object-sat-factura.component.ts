@@ -238,6 +238,8 @@ export class ListObjectSatFacturaComponent extends BaseComponent implements OnIn
 	{
 		// console.log("HOLA SI JALO LA FUNCIÓN");
 		//
+		this.is_loading = true;
+
 		let x:any = evt;
 
 		this.subs.sink = this.rest_reenviar_factura.create
@@ -273,6 +275,7 @@ export class ListObjectSatFacturaComponent extends BaseComponent implements OnIn
 			next:(sat_factura2:any)=>
 			{
 				sat_factura.uuid = sat_factura2.uuid;
+				this.is_loading = false;
 			},
 			error:(error:any)=>this.showError(error)
 		});
