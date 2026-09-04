@@ -8,6 +8,7 @@ import { Utils } from '../../modules/shared/Utils';
 import { mergeMap } from 'rxjs/operators';
 import { ParamMap } from '@angular/router';
 import { forkJoin, of } from 'rxjs';
+import { LoadingComponent } from '../../components/loading/loading.component';
 
 interface CMermaInfo extends Merma 
 {
@@ -21,7 +22,7 @@ interface CMermaInfo extends Merma
 	selector: 'app-list-merma-totals',
 	templateUrl: './list-merma-totals.component.html',
 	styleUrl: './list-merma-totals.component.css',
-	imports: [CommonModule, FormsModule],
+	imports: [CommonModule, FormsModule, LoadingComponent],
 })
 export class ListMermaTotalsComponent extends BaseComponent
 {
@@ -51,9 +52,17 @@ export class ListMermaTotalsComponent extends BaseComponent
 				let start: Date;
 				let end: Date;
 
-				if (this.merma_search.search_extra['initial_date'])
+				//Las fechas viajan en la url como UTC (ver BaseComponent.search),
+				//por eso hay que leerlas como UTC y no con new Date(), que las
+				//interpreta como locales y le suma el offset en cada busqueda.
+				let initial_date_param = this.merma_search.search_extra['initial_date'];
+				let final_date_param = this.merma_search.search_extra['final_date'];
+
+				if (initial_date_param)
 				{
-					start = new Date(this.merma_search.search_extra['initial_date'] as string);
+					start = initial_date_param instanceof Date
+						? initial_date_param
+						: Utils.getDateFromUTCMysqlString(initial_date_param as string);
 				}
 				else
 				{
@@ -63,9 +72,13 @@ export class ListMermaTotalsComponent extends BaseComponent
 
 				this.merma_search.search_extra['initial_date'] = start;
 
-				if (this.merma_search.search_extra['final_date'])
+				if (final_date_param)
 				{
-					end = new Date(this.merma_search.search_extra['final_date'] as string);
+					end = final_date_param instanceof Date
+						? final_date_param
+						: Utils.getDateFromUTCMysqlString(final_date_param as string);
+
+					end.setSeconds(59);
 				}
 				else
 				{
@@ -75,8 +88,8 @@ export class ListMermaTotalsComponent extends BaseComponent
 
 				this.merma_search.search_extra['final_date'] = end;
 
-				this.start_date = Utils.getLocalMysqlStringFromDate(start);
-				this.end_date = Utils.getLocalMysqlStringFromDate(end);
+				this.start_date = Utils.getLocalMysqlStringFromDate(start).replace(' ', 'T');
+				this.end_date = Utils.getLocalMysqlStringFromDate(end).replace(' ', 'T');
 
 				let store_search = this.rest_store.search({limit:999999, eq:{status:'ACTIVE'}});
 				let merma_search = this.rest.getReportByPath('getMermasTotals',
@@ -101,6 +114,7 @@ export class ListMermaTotalsComponent extends BaseComponent
 			},
 			error: (error) =>
 			{
+				this.is_loading = false;
 				this.showError(error);
 			}
 		});
@@ -119,17 +133,21 @@ export class ListMermaTotalsComponent extends BaseComponent
 	navigateToMermaDetail(item_id: number, store_id: number | null)
 	{
 		let url = `${this.external_base_url}/#/list-merma?eq.item_id=${item_id}`;
-		
-		if (this.start_date)
+
+		//El POS lee ge.created/lt.created como UTC, hay que mandarlas en UTC.
+		let start = this.merma_search.search_extra['initial_date'];
+		let end = this.merma_search.search_extra['final_date'];
+
+		if (start instanceof Date)
 		{
-			url += `&ge.created=${this.start_date.replace('T', '%20')}`;
+			url += `&ge.created=${encodeURIComponent(Utils.getUTCMysqlStringFromDate(start))}`;
 		}
-		
-		if (this.end_date)
+
+		if (end instanceof Date)
 		{
-			url += `&lt.created=${this.end_date.replace('T', '%20')}`;
+			url += `&lt.created=${encodeURIComponent(Utils.getUTCMysqlStringFromDate(end))}`;
 		}
-		
+
 		if (store_id)
 		{
 			url += `&eq.store_id=${store_id}`;
