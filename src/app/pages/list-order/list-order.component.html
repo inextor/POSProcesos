@@ -30,9 +30,18 @@
       </div>
     </div>
     <div class="col-12 col-md-5 col-lg-4 text-end mt-2 mt-md-0">
-      <button type="button" class="btn btn-sm btn-secondary me-1 mb-1" (click)="exportOrdersDetails($event)">Detalles</button>
-      <button type="button" class="btn btn-sm btn-secondary me-1 mb-1" (click)="exportOrdersWithItems($event)">Artículos</button>
-      <button type="button" class="btn btn-sm btn-secondary me-1 mb-1" (click)="exportOrders($event)">Exportar</button>
+      <button type="button" class="btn btn-sm btn-secondary me-1 mb-1" (click)="exportOrdersDetails($event)">
+        <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><path fill="currentColor" d="M12 3C7.58 3 4 4.79 4 7s3.58 4 8 4c.5 0 1-.03 1.5-.08V9.5h2.89l-1-1L18.9 5c-1.4-1.2-3.96-2-6.9-2m6.92 4.08L17.5 8.5L20 11h-5v2h5l-2.5 2.5l1.42 1.42L23.84 12M4 9v3c0 2.21 3.58 4 8 4c1.17 0 2.26-.15 3.25-.37l1.13-1.13H13.5v-1.58c-.5.05-1 .08-1.5.08c-4.42 0-8-1.79-8-4m0 5v3c0 2.21 3.58 4 8 4c2.94 0 5.5-.8 6.9-2L17 17.1c-1.39.56-3.1.9-5 .9c-4.42 0-8-1.79-8-4"/></svg>
+        <span class="d-none d-lg-inline">&nbsp;Detalles</span>
+      </button>
+      <button type="button" class="btn btn-sm btn-secondary me-1 mb-1" (click)="exportOrdersWithItems($event)">
+        <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><path fill="currentColor" d="M19 5v14H5V5h14m0-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 14H7v-2h5v2zm3.5-4H7v-2h8.5v2zM17 9H7V7h10v2z"/></svg>
+        <span class="d-none d-lg-inline">&nbsp;Artículos</span>
+      </button>
+      <button type="button" class="btn btn-sm btn-secondary me-1 mb-1" (click)="exportOrders($event)">
+        <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" width="1em" height="1em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 512 512"><path fill="currentColor" d="M453.547 273.449H372.12v-40.714h81.427v40.714zm0 23.264H372.12v40.714h81.427v-40.714zm0-191.934H372.12v40.713h81.427V104.78zm0 63.978H372.12v40.713h81.427v-40.713zm0 191.934H372.12v40.714h81.427V360.69zm56.242 80.264c-2.326 12.098-16.867 12.388-26.58 12.796H302.326v52.345h-36.119L0 459.566V52.492L267.778 5.904h34.548v46.355h174.66c9.83.407 20.648-.291 29.197 5.583c5.991 8.608 5.41 19.543 5.817 29.43l-.233 302.791c-.29 16.925 1.57 34.2-1.978 50.892zm-296.51-91.256c-16.052-32.57-32.395-64.909-48.39-97.48c15.82-31.698 31.408-63.512 46.937-95.327c-13.203.64-26.406 1.454-39.55 2.385c-9.83 23.904-21.288 47.169-28.965 71.888c-7.154-23.323-16.634-45.774-25.3-68.515c-12.796.698-25.592 1.454-38.387 2.21c13.493 29.78 27.86 59.15 40.946 89.104c-15.413 29.081-29.837 58.57-44.785 87.825c12.737.523 25.475 1.047 38.212 1.221c9.074-23.148 20.357-45.424 28.267-69.038c7.096 25.359 19.135 48.798 29.023 73.051c14.017.99 27.976 1.862 41.993 2.676zM484.26 79.882H302.326v24.897h46.53v40.713h-46.53v23.265h46.53v40.713h-46.53v23.265h46.53v40.714h-46.53v23.264h46.53v40.714h-46.53v23.264h46.53v40.714h-46.53v26.897H484.26V79.882z"/></svg>
+        <span class="d-none d-lg-inline">&nbsp;Exportar</span>
+      </button>
     </div>
   </div>
   <div class="card p-3 mb-3">
@@ -192,7 +201,10 @@
           <div class="col-6 col-md-3 col-lg-2 order-3">
             <label>&nbsp;</label>
             <div>
-              <button type="submit" class="w-100 btn btn-primary">Buscar</button>
+              <button type="submit" class="w-100 btn btn-primary">
+                <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" width="1.3em" height="1.3em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 512 512"><path d="M505 442.7L405.3 343c-4.5-4.5-10.6-7-17-7H372c27.6-35.3 44-79.7 44-128C416 93.1 322.9 0 208 0S0 93.1 0 208s93.1 208 208 208c48.3 0 92.7-16.4 128-44v16.3c0 6.4 2.5 12.5 7 17l99.7 99.7c9.4 9.4 24.6 9.4 33.9 0l28.3-28.3c9.4-9.4 9.4-24.6.1-34zM208 336c-70.7 0-128-57.2-128-128c0-70.7 57.2-128 128-128c70.7 0 128 57.2 128 128c0 70.7-57.2 128-128 128z" fill="currentColor"/></svg>
+                <span class="d-none d-md-inline">&nbsp;Buscar</span>
+              </button>
             </div>
           </div>
         </div>
@@ -235,43 +247,94 @@
                 </td>
                 <td>{{oi.store_display}}</td>
                 <td>{{oi.cashier_display}}</td>
-                <td>{{oi.price_name}}</td>
+                <td>
+                  @if (oi.order.service_type === 'TOGO') {
+                    <span>
+                      <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" width="1em" height="1em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 24 24"><path d="M3 4a2 2 0 0 0-2 2v11h2a3 3 0 0 0 3 3a3 3 0 0 0 3-3h6a3 3 0 0 0 3 3a3 3 0 0 0 3-3h2v-5l-3-4h-3V4m-7 2l4 4l-4 4v-3H4V9h6m7 .5h2.5l1.97 2.5H17M6 15.5A1.5 1.5 0 0 1 7.5 17A1.5 1.5 0 0 1 6 18.5A1.5 1.5 0 0 1 4.5 17A1.5 1.5 0 0 1 6 15.5m12 0a1.5 1.5 0 0 1 1.5 1.5a1.5 1.5 0 0 1-1.5 1.5a1.5 1.5 0 0 1-1.5-1.5a1.5 1.5 0 0 1 1.5-1.5z" fill="currentColor"/></svg>
+                    </span>
+                  }
+                  @if (oi.order.service_type === 'PICK_UP') {
+                    <span>
+                      <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" width="1em" height="1em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 16 16"><g fill="currentColor"><path d="M8 1a2.5 2.5 0 0 1 2.5 2.5V4h-5v-.5A2.5 2.5 0 0 1 8 1zm3.5 3v-.5a3.5 3.5 0 1 0-7 0V4H1v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V4h-3.5z"/></g></svg>
+                    </span>
+                  }
+                  @if (oi.order.service_type === 'IN_PLACE') {
+                    <span>
+                      <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" width="1em" height="1em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 24 24"><path d="M21.96 9.73l-1.43-5a.996.996 0 0 0-.96-.73H4.43c-.45 0-.84.3-.96.73l-1.43 5c-.18.63.3 1.27.96 1.27h2.2l-1.05 7.88a.989.989 0 1 0 1.96.26L6.67 15h10.67l.55 4.14a1 1 0 0 0 .98.86c.6 0 1.06-.53.98-1.12L18.8 11H21c.66 0 1.14-.64.96-1.27zM6.93 13l.27-2h9.6l.27 2H6.93z" fill="currentColor"/></svg>
+                    </span>
+                  }
+                  {{oi.price_name}}
+                </td>
                 <td>
                   <abbr title="{{oi.order.closed_timestamp || oi.order.created}}">{{(oi.order.closed_timestamp || oi.order.created) | shortDate}}</abbr>
                 </td>
                 <td class="text-center">
-                  @if (oi.order.status === 'CANCELLED') {
-                    <span class="badge text-bg-danger">Cancelada</span>
+                  @if (oi.order.status !== 'CANCELLED') {
+                    <div>
+                      @if (oi.order.status === 'PENDING' && oi.order.delivery_status === 'PENDING') {
+                        <span class="text-danger">
+                          <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" width="1em" height="1em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 36 36"><path d="M28 30H6V8h13.22l2-2H6a2 2 0 0 0-2 2v22a2 2 0 0 0 2 2h22a2 2 0 0 0 2-2V15l-2 2z" class="clr-i-outline clr-i-outline-path-1" fill="currentColor"/><path d="M33.53 5.84l-3.37-3.37a1.61 1.61 0 0 0-2.28 0L14.17 16.26l-1.11 4.81A1.61 1.61 0 0 0 14.63 23a1.69 1.69 0 0 0 .37 0l4.85-1.07L33.53 8.12a1.61 1.61 0 0 0 0-2.28zM18.81 20.08l-3.66.81l.85-3.63L26.32 6.87l2.82 2.82zM30.27 8.56l-2.82-2.82L29 4.16L31.84 7z" class="clr-i-outline clr-i-outline-path-2" fill="currentColor"/></svg>
+                        </span>
+                      } @else {
+                        <span class="text-success">
+                          <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" width="1em" height="1em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 36 36"><path d="M33 6.4l-3.7-3.7a1.71 1.71 0 0 0-2.36 0L23.65 6H6a2 2 0 0 0-2 2v22a2 2 0 0 0 2 2h22a2 2 0 0 0 2-2V11.76l3-3a1.67 1.67 0 0 0 0-2.36zM18.83 20.13l-4.19.93l1-4.15l9.55-9.57l3.23 3.23zM29.5 9.43L26.27 6.2l1.85-1.85l3.23 3.23z" class="clr-i-solid clr-i-solid-path-1" fill="currentColor"/></svg>
+                        </span>
+                      }
+                      @if (oi.order.delivery_status === 'READY_TO_PICKUP' || oi.order.delivery_status === 'PENDING') {
+                        <span class="text-danger">
+                          <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" width="1em" height="1em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 32 32"><path d="M27.71 4.29a1 1 0 0 0-1.05-.23l-22 8a1 1 0 0 0 0 1.87l9.6 3.84l3.84 9.6a1 1 0 0 0 .9.63a1 1 0 0 0 .92-.66l8-22a1 1 0 0 0-.21-1.05zM19 24.2l-2.79-7L21 12.41L19.59 11l-4.83 4.83L7.8 13l17.53-6.33z" fill="currentColor"/></svg>
+                        </span>
+                      }
+                      @if (oi.order.delivery_status === 'SENT' || oi.order.delivery_status === 'DELIVERED') {
+                        <span class="text-success">
+                          <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" width="1em" height="1em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 32 32"><path d="M27.71 4.29a1 1 0 0 0-1.05-.23l-22 8a1 1 0 0 0 0 1.87l8.59 3.43L19.59 11L21 12.41l-6.37 6.37l3.44 8.59A1 1 0 0 0 19 28a1 1 0 0 0 .92-.66l8-22a1 1 0 0 0-.21-1.05z" fill="currentColor"/></svg>
+                        </span>
+                      }
+                      @if (oi.order.delivery_status !== 'DELIVERED') {
+                        <span class="text-danger">
+                          <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" width="1em" height="1em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 16 16"><g fill="currentColor"><path fill-rule="evenodd" d="M10.854 8.146a.5.5 0 0 1 0 .708l-3 3a.5.5 0 0 1-.708 0l-1.5-1.5a.5.5 0 0 1 .708-.708L7.5 10.793l2.646-2.647a.5.5 0 0 1 .708 0z"/><path d="M8 1a2.5 2.5 0 0 1 2.5 2.5V4h-5v-.5A2.5 2.5 0 0 1 8 1zm3.5 3v-.5a3.5 3.5 0 1 0-7 0V4H1v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V4h-3.5zM2 5h12v9a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V5z"/></g></svg>
+                        </span>
+                      } @else {
+                        <span class="text-success">
+                          <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" width="1em" height="1em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 16 16"><g fill="currentColor"><path fill-rule="evenodd" d="M10.5 3.5a2.5 2.5 0 0 0-5 0V4h5v-.5zm1 0V4H15v10a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V4h3.5v-.5a3.5 3.5 0 1 1 7 0zm-.646 5.354a.5.5 0 0 0-.708-.708L7.5 10.793L6.354 9.646a.5.5 0 1 0-.708.708l1.5 1.5a.5.5 0 0 0 .708 0l3-3z"/></g></svg>
+                        </span>
+                      }
+                      @if (oi.order.paid_status !== 'PAID') {
+                        <span class="text-danger">
+                          <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" width="1em" height="1em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10s10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8s8 3.59 8 8s-3.59 8-8 8zm.89-8.9c-1.78-.59-2.64-.96-2.64-1.9c0-1.02 1.11-1.39 1.81-1.39c1.31 0 1.79.99 1.9 1.34l1.58-.67c-.15-.44-.82-1.91-2.66-2.23V5h-1.75v1.26c-2.6.56-2.62 2.85-2.62 2.96c0 2.27 2.25 2.91 3.35 3.31c1.58.56 2.28 1.07 2.28 2.03c0 1.13-1.05 1.61-1.98 1.61c-1.82 0-2.34-1.87-2.4-2.09l-1.66.67c.63 2.19 2.28 2.78 3.02 2.96V19h1.75v-1.24c.52-.09 3.02-.59 3.02-3.22c.01-1.39-.6-2.61-3-3.44z" fill="currentColor"/></svg>
+                        </span>
+                      } @else {
+                        <span class="text-success">
+                          <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" width="1em" height="1em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10s10-4.48 10-10S17.52 2 12 2zm.88 15.76v.36c0 .48-.39.88-.88.88c-.48 0-.88-.39-.88-.88v-.42c-.63-.15-1.93-.61-2.69-2.1c-.23-.44-.01-.99.45-1.18l.07-.03c.41-.17.87 0 1.08.39c.32.61.95 1.37 2.12 1.37c.93 0 1.98-.48 1.98-1.61c0-.96-.7-1.46-2.28-2.03c-1.1-.39-3.35-1.03-3.35-3.31c0-.1.01-2.4 2.62-2.96v-.36c0-.49.4-.88.88-.88s.88.39.88.88v.37c1.07.19 1.75.76 2.16 1.3c.34.44.16 1.08-.36 1.3c-.36.15-.78.03-1.02-.28c-.28-.38-.78-.77-1.6-.77c-.7 0-1.81.37-1.81 1.39c0 .95.86 1.31 2.64 1.9c2.4.83 3.01 2.05 3.01 3.45c0 2.63-2.5 3.13-3.02 3.22z" fill="currentColor"/></svg>
+                        </span>
+                      }
+                    </div>
                   } @else {
                     <div>
-                      @if (oi.order.paid_status === 'PAID') {
-                        <span class="badge text-bg-success">Pagado</span>
-                      } @else if (oi.order.paid_status === 'PARTIALLY_PAID') {
-                        <span class="badge text-bg-warning">Pago Parcial</span>
+                      @if (!oi.order.system_activated) {
+                        <span class="text-danger">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="1.1em" height="1.1em" viewBox="0 0 16 16"><path fill="currentColor" d="M6.923 1.378a3 3 0 0 1 2.154 0l4.962 1.908a1.5 1.5 0 0 1 .961 1.4v6.626a1.5 1.5 0 0 1-.961 1.4l-4.962 1.909a3 3 0 0 1-2.154 0l-4.961-1.909a1.5 1.5 0 0 1-.962-1.4V4.686a1.5 1.5 0 0 1 .962-1.4l4.961-1.908Zm1.795.933a2 2 0 0 0-1.436 0l-1.384.533l5.59 2.116l1.948-.834L8.718 2.31ZM14 4.971L8.5 7.33v6.428c.074-.019.146-.042.218-.07l4.962-1.908a.5.5 0 0 0 .32-.467v-6.34Zm-6.5 8.786V7.33L2 4.972v6.34a.5.5 0 0 0 .32.467l4.962 1.908c.072.028.144.051.218.07ZM2.564 4.126L8 6.456l2.164-.928l-5.667-2.146l-1.933.744Z"/></svg>
+                        </span>
                       } @else {
-                        <span class="badge text-bg-danger">Pago Pendiente</span>
+                        <span class="text-danger">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="1.1em" height="1.1em" viewBox="0 0 640 512"><path fill="currentColor" d="M425.7 256c-16.9 0-32.8-9-41.4-23.4L320 126l-64.2 106.6c-8.7 14.5-24.6 23.5-41.5 23.5c-4.5 0-9-.6-13.3-1.9L64 215v178c0 14.7 10 27.5 24.2 31l216.2 54.1c10.2 2.5 20.9 2.5 31 0L551.8 424c14.2-3.6 24.2-16.4 24.2-31V215l-137 39.1c-4.3 1.3-8.8 1.9-13.3 1.9zm212.6-112.2L586.8 41c-3.1-6.2-9.8-9.8-16.7-8.9L320 64l91.7 152.1c3.8 6.3 11.4 9.3 18.5 7.3l197.9-56.5c9.9-2.9 14.7-13.9 10.2-23.1zM53.2 41L1.7 143.8c-4.6 9.2.3 20.2 10.1 23l197.9 56.5c7.1 2 14.7-1 18.5-7.3L320 64L69.8 32.1c-6.9-.8-13.5 2.7-16.6 8.9z"/></svg>
+                        </span>
+                      }
+                      @if (oi.order.paid_status === 'PENDING') {
+                        <span class="text-danger">
+                          <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" width="1em" height="1em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10s10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8s8 3.59 8 8s-3.59 8-8 8zm.89-8.9c-1.78-.59-2.64-.96-2.64-1.9c0-1.02 1.11-1.39 1.81-1.39c1.31 0 1.79.99 1.9 1.34l1.58-.67c-.15-.44-.82-1.91-2.66-2.23V5h-1.75v1.26c-2.6.56-2.62 2.85-2.62 2.96c0 2.27 2.25 2.91 3.35 3.31c1.58.56 2.28 1.07 2.28 2.03c0 1.13-1.05 1.61-1.98 1.61c-1.82 0-2.34-1.87-2.4-2.09l-1.66.67c.63 2.19 2.28 2.78 3.02 2.96V19h1.75v-1.24c.52-.09 3.02-.59 3.02-3.22c.01-1.39-.6-2.61-3-3.44z" fill="currentColor"/></svg>
+                        </span>
+                      } @else {
+                        <span class="text-danger">
+                          <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" width="1em" height="1em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10s10-4.48 10-10S17.52 2 12 2zm.88 15.76v.36c0 .48-.39.88-.88.88c-.48 0-.88-.39-.88-.88v-.42c-.63-.15-1.93-.61-2.69-2.1c-.23-.44-.01-.99.45-1.18l.07-.03c.41-.17.87 0 1.08.39c.32.61.95 1.37 2.12 1.37c.93 0 1.98-.48 1.98-1.61c0-.96-.7-1.46-2.28-2.03c-1.1-.39-3.35-1.03-3.35-3.31c0-.1.01-2.4 2.62-2.96v-.36c0-.49.4-.88.88-.88s.88.39.88.88v.37c1.07.19 1.75.76 2.16 1.3c.34.44.16 1.08-.36 1.3c-.36.15-.78.03-1.02-.28c-.28-.38-.78-.77-1.6-.77c-.7 0-1.81.37-1.81 1.39c0 .95.86 1.31 2.64 1.9c2.4.83 3.01 2.05 3.01 3.45c0 2.63-2.5 3.13-3.02 3.22z" fill="currentColor"/></svg>
+                        </span>
                       }
                     </div>
-                    <div>
-                      @if (oi.order.delivery_status === 'DELIVERED') {
-                        <span class="badge text-bg-success">Entregado</span>
-                      } @else if (oi.order.delivery_status === 'SENT') {
-                        <span class="badge text-bg-info">Enviado</span>
-                      } @else if (oi.order.delivery_status === 'READY_TO_PICKUP') {
-                        <span class="badge text-bg-warning">Listo recoger</span>
-                      } @else {
-                        <span class="badge text-bg-secondary">Entrega Pendiente</span>
-                      }
-                    </div>
-                    <div>
-                      @if (oi.order.status === 'ACTIVE') {
-                        <span class="badge text-bg-primary">Activa</span>
-                      } @else if (oi.order.status === 'CLOSED') {
-                        <span class="badge text-bg-success">Cerrada</span>
-                      } @else {
-                        <span class="badge text-bg-secondary">Pendiente</span>
-                      }
-                    </div>
+                    @if (oi.order.paid_status === 'PENDING') {
+                      <span class="text-warning">Cancelada</span>
+                    } @else {
+                      <span class="text-danger">Cancelada</span>
+                    }
                   }
                 </td>
                 <td class="text-end">{{oi.article_discount | currency}}</td>
@@ -281,22 +344,34 @@
                 <td class="text-end nowrap">
                   @if (oi.order.status !== 'CANCELLED') {
                     @if (oi.order.service_type !== 'QUICK_SALE' && oi.order.delivery_status === 'PENDING') {
-                      <button type="button" class="btn btn-sm btn-primary ms-1" (click)="confirmReadyToPickup(oi)">Listo</button>
+                      <button type="button" class="btn btn-primary ms-1" (click)="confirmReadyToPickup(oi)" title="Marcar listo para recoger">
+                        <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" width="1em" height="1em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 24 24"><path d="M16 12c2.76 0 5-2.24 5-5s-2.24-5-5-5s-5 2.24-5 5s2.24 5 5 5m5.45 5.6c-.39-.4-.88-.6-1.45-.6h-7l-2.08-.73l.33-.94L13 16h2.8c.35 0 .63-.14.86-.37s.34-.51.34-.82c0-.54-.26-.91-.78-1.12L8.95 11H7v9l7 2l8.03-3c.01-.53-.19-1-.58-1.4M5 11H.984v11H5V11z" fill="currentColor"/></svg>
+                      </button>
                     }
                     @if (oi.order.service_type === 'TOGO' && oi.order.delivery_status === 'READY_TO_PICKUP') {
-                      <button type="button" class="btn btn-sm btn-primary ms-1" (click)="confirmSend(oi)">Enviar</button>
+                      <button type="button" class="btn btn-primary ms-1" (click)="confirmSend(oi)" title="Marcar como enviado">
+                        <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" width="1em" height="1em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 32 32"><path d="M27.71 4.29a1 1 0 0 0-1.05-.23l-22 8a1 1 0 0 0 0 1.87l8.59 3.43L19.59 11L21 12.41l-6.37 6.37l3.44 8.59A1 1 0 0 0 19 28a1 1 0 0 0 .92-.66l8-22a1 1 0 0 0-.21-1.05z" fill="currentColor"/></svg>
+                      </button>
                     }
                     @if (oi.pdf_url) {
-                      <a class="btn btn-sm btn-primary ms-1" [href]="oi.pdf_url">PDF</a>
+                      <a class="mx-1 btn btn-primary" [href]="oi.pdf_url" title="Ver PDF">
+                        <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" width="0.75em" height="1em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 384 512"><path d="M181.9 256.1c-5-16-4.9-46.9-2-46.9c8.4 0 7.6 36.9 2 46.9zm-1.7 47.2c-7.7 20.2-17.3 43.3-28.4 62.7c18.3-7 39-17.2 62.9-21.9c-12.7-9.6-24.9-23.4-34.5-40.8zM86.1 428.1c0 .8 13.2-5.4 34.9-40.2c-6.7 6.3-29.1 24.5-34.9 40.2zM248 160h136v328c0 13.3-10.7 24-24 24H24c-13.3 0-24-10.7-24-24V24C0 10.7 10.7 0 24 0h200v136c0 13.2 10.8 24 24 24zm-8 171.8c-20-12.2-33.3-29-42.7-53.8c4.5-18.5 11.6-46.6 6.2-64.2c-4.7-29.4-42.4-26.5-47.8-6.8c-5 18.3-.4 44.1 8.1 77c-11.6 27.6-28.7 64.6-40.8 85.8c-.1 0-.1.1-.2.1c-27.1 13.9-73.6 44.5-54.5 68c5.6 6.9 16 10 21.5 10c17.9 0 35.7-18 61.1-61.8c25.8-8.5 54.1-19.1 79-23.2c21.7 11.8 47.1 19.5 64 19.5c29.2 0 31.2-32 19.7-43.4c-13.9-13.6-54.3-9.7-73.6-7.2zM377 105L279 7c-4.5-4.5-10.6-7-17-7h-6v128h128v-6.1c0-6.3-2.5-12.4-7-16.9zm-74.1 255.3c4.1-2.7-2.5-11.9-42.8-9c37.1 15.8 42.8 9 42.8 9z" fill="currentColor"/></svg>
+                      </a>
                     }
                     @if (oi.order.delivery_status !== 'DELIVERED') {
-                      <button type="button" class="btn btn-sm btn-primary ms-1" (click)="confirmDelivered(oi)">Entregar</button>
+                      <button type="button" class="btn btn-primary ms-1" (click)="confirmDelivered(oi)" title="Marcar como entregada">
+                        <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" width="1em" height="1em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 512 512"><path d="M505 174.8l-39.6-39.6c-9.4-9.4-24.6-9.4-33.9 0L192 374.7L80.6 263.2c-9.4-9.4-24.6-9.4-33.9 0L7 302.9c-9.4 9.4-9.4 24.6 0 34L175 505c9.4 9.4 24.6 9.4 33.9 0l296-296.2c9.4-9.5 9.4-24.7.1-34zm-324.3 106c6.2 6.3 16.4 6.3 22.6 0l208-208.2c6.2-6.3 6.2-16.4 0-22.6L366.1 4.7c-6.2-6.3-16.4-6.3-22.6 0L192 156.2l-55.4-55.5c-6.2-6.3-16.4-6.3-22.6 0L68.7 146c-6.2 6.3-6.2 16.4 0 22.6l112 112.2z" fill="currentColor"/></svg>
+                      </button>
                     }
                     @if (oi.order.status !== 'CLOSED' || rest.user_permission.cancel_closed_orders) {
-                      <button type="button" class="btn btn-sm btn-primary ms-1" (click)="confirmCancel(oi)">Cancelar</button>
+                      <button type="button" class="btn btn-primary ms-1" (click)="confirmCancel(oi)" title="Cancelar orden">
+                        <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" width="1em" height="1em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 24 24"><path fill="currentColor" d="M12 4c-4.411 0-8 3.589-8 8s3.589 8 8 8s8-3.589 8-8s-3.589-8-8-8zm-5 8c0-.832.224-1.604.584-2.295l6.711 6.711A4.943 4.943 0 0 1 12 17c-2.757 0-5-2.243-5-5zm9.416 2.295L9.705 7.584A4.943 4.943 0 0 1 12 7c2.757 0 5 2.243 5 5c0 .832-.224 1.604-.584 2.295z"/></svg>
+                      </button>
                     }
                     @if (oi.purchase === null && oi.order.status === 'CLOSED' && oi.client?.store_id && rest.user_permission.add_stock) {
-                      <button type="button" class="btn btn-sm btn-primary ms-1" (click)="confirmAddStockToStore(oi)">Stock</button>
+                      <button type="button" class="btn btn-primary ms-1" (click)="confirmAddStockToStore(oi)" title="Agregar inventario a sucursal">
+                        <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" width="1em" height="1em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 256 256"><path fill="currentColor" d="m223.2 68.4l-16-32A8.2 8.2 0 0 0 200 32H56a8.2 8.2 0 0 0-7.2 4.4l-16 32A9 9 0 0 0 32 72v136a16 16 0 0 0 16 16h160a16 16 0 0 0 16-16V72a9 9 0 0 0-.8-3.6Zm-55.6 87.3l-33.9 34a8.2 8.2 0 0 1-11.4 0l-33.9-34a8 8 0 0 1 11.3-11.3l20.3 20.3V104a8 8 0 0 1 16 0v60.7l20.3-20.3a8 8 0 0 1 11.3 11.3ZM52.9 64l8-16h134.2l8 16Z"/></svg>
+                      </button>
                     }
                   }
                 </td>
@@ -323,10 +398,14 @@
           <div class="col-6 col-sm-2 col-md-2 align-self-center">{{oi.order.created | shortDate}}</div>
           <div class="col-12 col-sm-6 col-md-6 text-end px-0">
             @if (oi.pdf_url) {
-              <a [href]="oi.pdf_url" class="btn btn-sm btn-primary mx-1">PDF</a>
+              <a [href]="oi.pdf_url" class="btn btn-primary mx-1" title="Ver PDF">
+                <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" width="0.75em" height="1em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 384 512"><path d="M181.9 256.1c-5-16-4.9-46.9-2-46.9c8.4 0 7.6 36.9 2 46.9zm-1.7 47.2c-7.7 20.2-17.3 43.3-28.4 62.7c18.3-7 39-17.2 62.9-21.9c-12.7-9.6-24.9-23.4-34.5-40.8zM86.1 428.1c0 .8 13.2-5.4 34.9-40.2c-6.7 6.3-29.1 24.5-34.9 40.2zM248 160h136v328c0 13.3-10.7 24-24 24H24c-13.3 0-24-10.7-24-24V24C0 10.7 10.7 0 24 0h200v136c0 13.2 10.8 24 24 24zm-8 171.8c-20-12.2-33.3-29-42.7-53.8c4.5-18.5 11.6-46.6 6.2-64.2c-4.7-29.4-42.4-26.5-47.8-6.8c-5 18.3-.4 44.1 8.1 77c-11.6 27.6-28.7 64.6-40.8 85.8c-.1 0-.1.1-.2.1c-27.1 13.9-73.6 44.5-54.5 68c5.6 6.9 16 10 21.5 10c17.9 0 35.7-18 61.1-61.8c25.8-8.5 54.1-19.1 79-23.2c21.7 11.8 47.1 19.5 64 19.5c29.2 0 31.2-32 19.7-43.4c-13.9-13.6-54.3-9.7-73.6-7.2zM377 105L279 7c-4.5-4.5-10.6-7-17-7h-6v128h128v-6.1c0-6.3-2.5-12.4-7-16.9zm-74.1 255.3c4.1-2.7-2.5-11.9-42.8-9c37.1 15.8 42.8 9 42.8 9z" fill="currentColor"/></svg>
+              </a>
             }
             @if (oi.order.status !== 'CANCELLED') {
-              <button type="button" class="btn btn-sm btn-primary ms-1" (click)="confirmCancel(oi)">Cancelar</button>
+              <button type="button" class="btn btn-primary ms-1" (click)="confirmCancel(oi)" title="Cancelar orden">
+                <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" width="1em" height="1em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 24 24"><path fill="currentColor" d="M12 4c-4.411 0-8 3.589-8 8s3.589 8 8 8s8-3.589 8-8s-3.589-8-8-8zm-5 8c0-.832.224-1.604.584-2.295l6.711 6.711A4.943 4.943 0 0 1 12 17c-2.757 0-5-2.243-5-5zm9.416 2.295L9.705 7.584A4.943 4.943 0 0 1 12 7c2.757 0 5 2.243 5 5c0 .832-.224 1.604-.584 2.295z"/></svg>
+              </button>
             }
           </div>
         </div>
