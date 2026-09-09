@@ -1,379 +1,379 @@
 <div class="container-fluid">
-<div class="row align-items-center my-3">
-<div class="col-12 col-md-4 col-lg-5">
-@if (client_user) {
-<h1 class="text-capitalize my-3">Ordenes del Cliente: {{client_user.name}}</h1>
-} @else if (agent_user) {
-<h1 class="text-capitalize my-3">Ordenes Agente de ventas {{agent_user.name}}</h1>
-} @else if (order_search.eq.to_prepare) {
-<h1 class="text-capitalize my-3">Pedidos</h1>
-} @else {
-<h1 class="text-capitalize my-3">Ordenes</h1>
-}
-</div>
-<div class="col-12 col-md-3 col-lg-3">
-<div class="d-flex">
-@if (order_search.search_extra['with_discounts']) {
-<div class="text-end">
-<b>Descuentos</b>
-<br class="d-none d-md-inline">
-<span>{{total_descuentos | number: '1.2-2'}}</span>
-</div>
-}
-@if (rest.user_permission.reports) {
-<div class="ms-auto text-end">
-<b>Total</b>
-<br class="d-none d-md-inline">
-<span>{{order_total | number: '1.2-2'}}</span>
-</div>
-}
-</div>
-</div>
-<div class="col-12 col-md-5 col-lg-4 text-end mt-2 mt-md-0">
-<button type="button" class="btn btn-sm btn-secondary me-1 mb-1" (click)="exportOrdersDetails($event)">Detalles</button>
-<button type="button" class="btn btn-sm btn-secondary me-1 mb-1" (click)="exportOrdersWithItems($event)">Artículos</button>
-<button type="button" class="btn btn-sm btn-secondary me-1 mb-1" (click)="exportOrders($event)">Exportar</button>
-</div>
-</div>
-<div class="card p-3 mb-3">
-<div class="card-body">
-<form (ngSubmit)="search(order_search)">
-<div class="row">
-<div class="col-6 col-md-3 col-lg-2 form-group">
-<label class="">Sucursal</label>
-@if (!rest.user_permission.global_pos) {
-<div class="fw-bold">{{store_dictionary[rest.user?.store_id || 0]?.name | titlecase}}</div>
-} @else {
-<select name="store_id" [(ngModel)]="order_search.eq.store_id" class="form-control">
-<option [ngValue]="null">Todos</option>
-@for (c of store_array; track c.id) {
-<option [ngValue]="c.id">{{c.name}}</option>
-}
-</select>
-}
-</div>
-<div class="col-6 col-md-3 col-lg-3 form-group order-2">
-<label class="">Fecha Inicial</label>
-<input type="datetime-local" name="inicial_created" [ngModel]="fecha_inicial" (ngModelChange)="fechaIncialChange($event)" class="form-control">
-</div>
-<div class="col-6 col-md-3 col-lg-3 form-group order-2">
-<label class="">Fecha Final</label>
-<input type="datetime-local" name="final_created" [ngModel]="fecha_final" (ngModelChange)="fechaFinalChange($event)" class="form-control">
-</div>
-@if (rest.user_permission.advanced_order_search) {
-<div class="col-6 col-md-3 col-lg-2 form-group order-md-2">
-<label class="">Búsqueda Avanzada</label>
-<div class="form-check form-switch">
-<label class="form-check-label">
-<input type="checkbox" name="show_advanced_search" value="1" class="form-check-input" (click)="toggleAdvancedSearch($event)" [checked]="show_advanced_search">
-</label>
-</div>
-</div>
-}
-@if (show_advanced_search) {
-<div class="col-6 col-md-3 form-group order-2">
-<label class="">Precio</label>
-<select name="price_type_id" [(ngModel)]="order_search.eq.price_type_id" class="form-control">
-<option [ngValue]="null">Todos</option>
-@for (c of price_type_array; track c.id) {
-<option [ngValue]="c.id">{{c.name}}</option>
-}
-</select>
-</div>
-<div class="col-6 col-md-3 form-group order-2">
-<label class="">Estatus Pago</label>
-<select name="paid_status" [(ngModel)]="order_search.eq.paid_status" class="form-control">
-<option [ngValue]="null">Todos</option>
-<option value="PENDING">Pendiente</option>
-<option value="PARTIALLY_PAID">Pago Parcial</option>
-<option value="PAID">Pagado</option>
-</select>
-</div>
-<div class="col-6 col-md-3 form-group order-2">
-<label class="">Estatus</label>
-<select name="status" [(ngModel)]="order_search.eq.status" class="form-control">
-<option [ngValue]="null">Todos</option>
-<option value="ACTIVE">Activas</option>
-<option value="CANCELLED">Canceladas</option>
-<option value="CLOSED">Finalizadas</option>
-<option value="PENDING">Pendientes</option>
-</select>
-</div>
-<div class="col-6 col-md-3 form-group order-2">
-<label class="">Estatus De Entrega</label>
-<select name="delivery_status" [(ngModel)]="order_search.eq.delivery_status" class="form-control">
-<option [ngValue]="null">Todos</option>
-<option value="PENDING">Pendiente</option>
-<option value="DELIVERED">Entregado</option>
-<option value="CANCELLED">Cancelado</option>
-<option value="READY_TO_PICKUP">Listo para Recoger</option>
-<option value="SENT">Enviado</option>
-</select>
-</div>
-<div class="col-6 col-md-3 form-group order-2">
-<label class="">Total</label>
-<input type="number" name="total_final" [(ngModel)]="order_search.eq.total_final" class="form-control" step="0.01">
-</div>
-<div class="col-6 col-md-3 form-group order-2">
-<label class="">Metodo de pago</label>
-<select name="transaction_type" [(ngModel)]="order_search.search_extra['transaction_type']" class="form-control">
-<option [ngValue]="null">Todas</option>
-<option value="CASH">Efectivo</option>
-<option value="CREDIT_CARD">Tarjeta Credito</option>
-<option value="DEBIT_CARD">Tarjeta Debito</option>
-<option value="CHECK">Cheque</option>
-<option value="COUPON">Coupon</option>
-<option value="TRANSFER">Transferencia</option>
-<option value="DISCOUNT">Descuento</option>
-</select>
-</div>
-<div class="col-6 col-md-3 form-group order-2">
-<label class="">Moneda</label>
-<select name="payment_currency_id" [(ngModel)]="order_search.eq.payment_currency_id" class="form-control">
-<option [ngValue]="null">Todas</option>
-@for (c of currency_array; track c.id) {
-<option [ngValue]="c.id">{{c.name}}</option>
-}
-</select>
-</div>
-<div class="col-6 col-md-3 form-group order-2">
-<label class="">Folio</label>
-<input type="number" name="folio" [(ngModel)]="order_search.eq.store_consecutive" class="form-control">
-</div>
-<div class="col-6 col-md-3 form-group order-2">
-<label class="">Cliente</label>
-<input type="text" name="client_name" [(ngModel)]="order_search.lk.client_name" class="form-control">
-</div>
-<div class="col-6 col-md-3 form-group order-2">
-<label class="">Sin Cliente Registrado</label>
-<div class="form-check form-switch">
-<label class="form-check-label">
-<input type="checkbox" name="publico_general" class="form-check-input" (click)="togglePublicoGeneral($event)" [checked]="!!order_search.search_extra['publico_general']">
-</label>
-</div>
-</div>
-<div class="col-6 col-md-3 form-group order-2">
-<label class="">Cajero</label>
-<select name="cashier_id" [(ngModel)]="order_search.eq.cashier_user_id" class="form-control">
-<option [ngValue]="null">Todos</option>
-@for (c of cashier_user_array; track c.id) {
-<option [ngValue]="c.id">{{c.name}}</option>
-}
-</select>
-</div>
-<div class="col-6 col-md-3 form-group order-2">
-<label class="">Con Descuento</label>
-<select name="with_discounts" [(ngModel)]="order_search.search_extra['with_discounts']" class="form-control">
-<option value="">Todos</option>
-<option value="1">Con Descuento</option>
-</select>
-</div>
-<div class="col-6 col-md-3 form-group order-2">
-<label class="">Código Facturación</label>
-<input type="text" name="lkfacturacion_code" [(ngModel)]="order_search.lk.facturacion_code" class="form-control">
-</div>
-<div class="col-6 col-md-3 form-group order-2">
-<label class="">Sucursal Consecutivo</label>
-<input type="number" name="store_consecutive" [(ngModel)]="order_search.eq.store_consecutive" class="form-control">
-</div>
-<div class="col-6 col-md-3 form-group order-2">
-<label class="">Sat Serie</label>
-<input type="text" name="sat_serie" [(ngModel)]="order_search.eq.sat_serie" class="form-control">
-</div>
-<div class="col-6 col-md-3 form-group order-2">
-<label class="">Sat Consecutivo</label>
-<input type="number" name="sat_serie_consecutive" [(ngModel)]="order_search.eq.sat_serie_consecutive" class="form-control">
-</div>
-<div class="col-6 col-md-3 form-group order-2">
-<label class="">Razon Social</label>
-<input type="text" name="sat_razon_social" [(ngModel)]="order_search.eq.sat_razon_social" class="form-control">
-</div>
-}
-<div class="col-6 col-md-3 col-lg-2 order-3">
-<label>&nbsp;</label>
-<div>
-<button type="submit" class="w-100 btn btn-primary">Buscar</button>
-</div>
-</div>
-</div>
-</form>
-</div>
-</div>
-<app-pagination [path]="'/list-order'" [pages]="pages" [total_pages]="total_pages" [current_page]="current_page"></app-pagination>
-<div class="card p-3">
-<app-loading [is_loading]="is_loading"></app-loading>
-<div class="d-none d-lg-block">
-<div class="table-responsive">
-<table class="table table-sm mb-0 w-100">
-<thead class="thead-light">
-<tr>
-<th>Id</th>
-<th>Cliente</th>
-<th>Sucursal</th>
-<th class="text-center">Atendio</th>
-<th class="text-center">Tipo</th>
-<th>Fecha</th>
-<th class="text-center">Estatus</th>
-<th class="text-end">Desc Art</th>
-<th class="text-end">Desc Orden</th>
-<th class="text-end">Desc Todo</th>
-<th class="text-end">
-<button type="button" class="btn btn-link p-0 text-end" (click)="clickOnHeader('total_final')">Total</button>
-</th>
-<th class="text-center">Acciones</th>
-</tr>
-</thead>
-<tbody>
-@for (oi of order_info_array; track oi.order.id) {
-<tr class="border align-middle">
-<td>
-<a [routerLink]="['/view-order', oi.order.id]">{{oi.order.id}}</a>
-</td>
-<td>
-<div>{{oi.client_display}}</div>
-<div class="d-xxl-none">{{oi.store_display}}</div>
-</td>
-<td>{{oi.store_display}}</td>
-<td>{{oi.cashier_display}}</td>
-<td>{{oi.price_name}}</td>
-<td>
-<abbr title="{{oi.order.closed_timestamp || oi.order.created}}">{{(oi.order.closed_timestamp || oi.order.created) | shortDate}}</abbr>
-</td>
-<td class="text-center">
-@if (oi.order.status === 'CANCELLED') {
-<span class="badge text-bg-danger">Cancelada</span>
-} @else {
-<div>
-@if (oi.order.paid_status === 'PAID') {
-<span class="badge text-bg-success">Pagado</span>
-} @else if (oi.order.paid_status === 'PARTIALLY_PAID') {
-<span class="badge text-bg-warning">Pago Parcial</span>
-} @else {
-<span class="badge text-bg-danger">Pago Pendiente</span>
-}
-</div>
-<div>
-@if (oi.order.delivery_status === 'DELIVERED') {
-<span class="badge text-bg-success">Entregado</span>
-} @else if (oi.order.delivery_status === 'SENT') {
-<span class="badge text-bg-info">Enviado</span>
-} @else if (oi.order.delivery_status === 'READY_TO_PICKUP') {
-<span class="badge text-bg-warning">Listo recoger</span>
-} @else {
-<span class="badge text-bg-secondary">Entrega Pendiente</span>
-}
-</div>
-<div>
-@if (oi.order.status === 'ACTIVE') {
-<span class="badge text-bg-primary">Activa</span>
-} @else if (oi.order.status === 'CLOSED') {
-<span class="badge text-bg-success">Cerrada</span>
-} @else {
-<span class="badge text-bg-secondary">Pendiente</span>
-}
-</div>
-}
-</td>
-<td class="text-end">{{oi.article_discount | currency}}</td>
-<td class="text-end">{{oi.order.discount | currency}}</td>
-<td class="text-end">{{oi.total_discount | currency}}</td>
-<td class="text-end">{{oi.total_after_discount | currency:'$'}}</td>
-<td class="text-end nowrap">
-@if (oi.order.status !== 'CANCELLED') {
-@if (oi.order.service_type !== 'QUICK_SALE' && oi.order.delivery_status === 'PENDING') {
-<button type="button" class="btn btn-sm btn-primary ms-1" (click)="confirmReadyToPickup(oi)">Listo</button>
-}
-@if (oi.order.service_type === 'TOGO' && oi.order.delivery_status === 'READY_TO_PICKUP') {
-<button type="button" class="btn btn-sm btn-primary ms-1" (click)="confirmSend(oi)">Enviar</button>
-}
-@if (oi.pdf_url) {
-<a class="btn btn-sm btn-primary ms-1" [href]="oi.pdf_url">PDF</a>
-}
-@if (oi.order.delivery_status !== 'DELIVERED') {
-<button type="button" class="btn btn-sm btn-primary ms-1" (click)="confirmDelivered(oi)">Entregar</button>
-}
-@if (oi.order.status !== 'CLOSED' || rest.user_permission.cancel_closed_orders) {
-<button type="button" class="btn btn-sm btn-primary ms-1" (click)="confirmCancel(oi)">Cancelar</button>
-}
-@if (oi.purchase === null && oi.order.status === 'CLOSED' && oi.client?.store_id && rest.user_permission.add_stock) {
-<button type="button" class="btn btn-sm btn-primary ms-1" (click)="confirmAddStockToStore(oi)">Stock</button>
-}
-}
-</td>
-</tr>
-} @empty {
-@if (!is_loading) {
-<tr>
-<td colspan="12" class="text-center">No se encontraron elementos</td>
-</tr>
-}
-}
-</tbody>
-</table>
-</div>
-</div>
-<div class="d-lg-none">
-@for (oi of order_info_array; track oi.order.id) {
-<div class="row mb-3 border-bottom pb-2">
-<div class="col-9">
-<a [routerLink]="['/view-order', oi.order.id]">{{oi.order.id}} - {{oi.client_display}}</a>
-</div>
-<div class="col-3 px-0 text-end align-self-center">{{oi.order.total | currency:'$'}}</div>
-<div class="col-6 col-sm-4 align-self-center">{{oi.store_display}}</div>
-<div class="col-6 col-sm-2 col-md-2 align-self-center">{{oi.order.created | shortDate}}</div>
-<div class="col-12 col-sm-6 col-md-6 text-end px-0">
-@if (oi.pdf_url) {
-<a [href]="oi.pdf_url" class="btn btn-sm btn-primary mx-1">PDF</a>
-}
-@if (oi.order.status !== 'CANCELLED') {
-<button type="button" class="btn btn-sm btn-primary ms-1" (click)="confirmCancel(oi)">Cancelar</button>
-}
-</div>
-</div>
-}
-@if (order_info_array.length === 0 && !is_loading) {
-<div class="row">
-<div class="col-12">
-<div class="alert alert-light m-3 text-center" role="alert">
-<div>No se encontraron elementos.</div>
-<br>
-<button type="button" class="btn btn-primary" (click)="loadLastOrders()">buscar las últimas 20 ventas</button>
-</div>
-</div>
-</div>
-}
-</div>
-</div>
-<app-pagination [path]="'/list-order'" [pages]="pages" [total_pages]="total_pages" [current_page]="current_page"></app-pagination>
+  <div class="row align-items-center my-3">
+    <div class="col-12 col-md-4 col-lg-5">
+      @if (client_user) {
+        <h1 class="text-capitalize my-3">Ordenes del Cliente: {{client_user.name}}</h1>
+      } @else if (agent_user) {
+        <h1 class="text-capitalize my-3">Ordenes Agente de ventas {{agent_user.name}}</h1>
+      } @else if (order_search.eq.to_prepare) {
+        <h1 class="text-capitalize my-3">Pedidos</h1>
+      } @else {
+        <h1 class="text-capitalize my-3">Ordenes</h1>
+      }
+    </div>
+    <div class="col-12 col-md-3 col-lg-3">
+      <div class="d-flex">
+        @if (order_search.search_extra['with_discounts']) {
+          <div class="text-end">
+            <b>Descuentos</b>
+            <br class="d-none d-md-inline">
+            <span>{{total_descuentos | number: '1.2-2'}}</span>
+          </div>
+        }
+        @if (rest.user_permission.reports) {
+          <div class="ms-auto text-end">
+            <b>Total</b>
+            <br class="d-none d-md-inline">
+            <span>{{order_total | number: '1.2-2'}}</span>
+          </div>
+        }
+      </div>
+    </div>
+    <div class="col-12 col-md-5 col-lg-4 text-end mt-2 mt-md-0">
+      <button type="button" class="btn btn-sm btn-secondary me-1 mb-1" (click)="exportOrdersDetails($event)">Detalles</button>
+      <button type="button" class="btn btn-sm btn-secondary me-1 mb-1" (click)="exportOrdersWithItems($event)">Artículos</button>
+      <button type="button" class="btn btn-sm btn-secondary me-1 mb-1" (click)="exportOrders($event)">Exportar</button>
+    </div>
+  </div>
+  <div class="card p-3 mb-3">
+    <div class="card-body">
+      <form (ngSubmit)="search(order_search)">
+        <div class="row">
+          <div class="col-6 col-md-3 col-lg-2 form-group">
+            <label class="">Sucursal</label>
+            @if (!rest.user_permission.global_pos) {
+              <div class="fw-bold">{{store_dictionary[rest.user?.store_id || 0]?.name | titlecase}}</div>
+            } @else {
+              <select name="store_id" [(ngModel)]="order_search.eq.store_id" class="form-control">
+                <option [ngValue]="null">Todos</option>
+                @for (c of store_array; track c.id) {
+                  <option [ngValue]="c.id">{{c.name}}</option>
+                }
+              </select>
+            }
+          </div>
+          <div class="col-6 col-md-3 col-lg-3 form-group order-2">
+            <label class="">Fecha Inicial</label>
+            <input type="datetime-local" name="inicial_created" [ngModel]="fecha_inicial" (ngModelChange)="fechaIncialChange($event)" class="form-control">
+          </div>
+          <div class="col-6 col-md-3 col-lg-3 form-group order-2">
+            <label class="">Fecha Final</label>
+            <input type="datetime-local" name="final_created" [ngModel]="fecha_final" (ngModelChange)="fechaFinalChange($event)" class="form-control">
+          </div>
+          @if (rest.user_permission.advanced_order_search) {
+            <div class="col-6 col-md-3 col-lg-2 form-group order-md-2">
+              <label class="">Búsqueda Avanzada</label>
+              <div class="form-check form-switch">
+                <label class="form-check-label">
+                  <input type="checkbox" name="show_advanced_search" value="1" class="form-check-input" (click)="toggleAdvancedSearch($event)" [checked]="show_advanced_search">
+                </label>
+              </div>
+            </div>
+          }
+          @if (show_advanced_search) {
+            <div class="col-6 col-md-3 form-group order-2">
+              <label class="">Precio</label>
+              <select name="price_type_id" [(ngModel)]="order_search.eq.price_type_id" class="form-control">
+                <option [ngValue]="null">Todos</option>
+                @for (c of price_type_array; track c.id) {
+                  <option [ngValue]="c.id">{{c.name}}</option>
+                }
+              </select>
+            </div>
+            <div class="col-6 col-md-3 form-group order-2">
+              <label class="">Estatus Pago</label>
+              <select name="paid_status" [(ngModel)]="order_search.eq.paid_status" class="form-control">
+                <option [ngValue]="null">Todos</option>
+                <option value="PENDING">Pendiente</option>
+                <option value="PARTIALLY_PAID">Pago Parcial</option>
+                <option value="PAID">Pagado</option>
+              </select>
+            </div>
+            <div class="col-6 col-md-3 form-group order-2">
+              <label class="">Estatus</label>
+              <select name="status" [(ngModel)]="order_search.eq.status" class="form-control">
+                <option [ngValue]="null">Todos</option>
+                <option value="ACTIVE">Activas</option>
+                <option value="CANCELLED">Canceladas</option>
+                <option value="CLOSED">Finalizadas</option>
+                <option value="PENDING">Pendientes</option>
+              </select>
+            </div>
+            <div class="col-6 col-md-3 form-group order-2">
+              <label class="">Estatus De Entrega</label>
+              <select name="delivery_status" [(ngModel)]="order_search.eq.delivery_status" class="form-control">
+                <option [ngValue]="null">Todos</option>
+                <option value="PENDING">Pendiente</option>
+                <option value="DELIVERED">Entregado</option>
+                <option value="CANCELLED">Cancelado</option>
+                <option value="READY_TO_PICKUP">Listo para Recoger</option>
+                <option value="SENT">Enviado</option>
+              </select>
+            </div>
+            <div class="col-6 col-md-3 form-group order-2">
+              <label class="">Total</label>
+              <input type="number" name="total_final" [(ngModel)]="order_search.eq.total_final" class="form-control" step="0.01">
+            </div>
+            <div class="col-6 col-md-3 form-group order-2">
+              <label class="">Metodo de pago</label>
+              <select name="transaction_type" [(ngModel)]="order_search.search_extra['transaction_type']" class="form-control">
+                <option [ngValue]="null">Todas</option>
+                <option value="CASH">Efectivo</option>
+                <option value="CREDIT_CARD">Tarjeta Credito</option>
+                <option value="DEBIT_CARD">Tarjeta Debito</option>
+                <option value="CHECK">Cheque</option>
+                <option value="COUPON">Coupon</option>
+                <option value="TRANSFER">Transferencia</option>
+                <option value="DISCOUNT">Descuento</option>
+              </select>
+            </div>
+            <div class="col-6 col-md-3 form-group order-2">
+              <label class="">Moneda</label>
+              <select name="payment_currency_id" [(ngModel)]="order_search.eq.payment_currency_id" class="form-control">
+                <option [ngValue]="null">Todas</option>
+                @for (c of currency_array; track c.id) {
+                  <option [ngValue]="c.id">{{c.name}}</option>
+                }
+              </select>
+            </div>
+            <div class="col-6 col-md-3 form-group order-2">
+              <label class="">Folio</label>
+              <input type="number" name="folio" [(ngModel)]="order_search.eq.store_consecutive" class="form-control">
+            </div>
+            <div class="col-6 col-md-3 form-group order-2">
+              <label class="">Cliente</label>
+              <input type="text" name="client_name" [(ngModel)]="order_search.lk.client_name" class="form-control">
+            </div>
+            <div class="col-6 col-md-3 form-group order-2">
+              <label class="">Sin Cliente Registrado</label>
+              <div class="form-check form-switch">
+                <label class="form-check-label">
+                  <input type="checkbox" name="publico_general" class="form-check-input" (click)="togglePublicoGeneral($event)" [checked]="!!order_search.search_extra['publico_general']">
+                </label>
+              </div>
+            </div>
+            <div class="col-6 col-md-3 form-group order-2">
+              <label class="">Cajero</label>
+              <select name="cashier_id" [(ngModel)]="order_search.eq.cashier_user_id" class="form-control">
+                <option [ngValue]="null">Todos</option>
+                @for (c of cashier_user_array; track c.id) {
+                  <option [ngValue]="c.id">{{c.name}}</option>
+                }
+              </select>
+            </div>
+            <div class="col-6 col-md-3 form-group order-2">
+              <label class="">Con Descuento</label>
+              <select name="with_discounts" [(ngModel)]="order_search.search_extra['with_discounts']" class="form-control">
+                <option value="">Todos</option>
+                <option value="1">Con Descuento</option>
+              </select>
+            </div>
+            <div class="col-6 col-md-3 form-group order-2">
+              <label class="">Código Facturación</label>
+              <input type="text" name="lkfacturacion_code" [(ngModel)]="order_search.lk.facturacion_code" class="form-control">
+            </div>
+            <div class="col-6 col-md-3 form-group order-2">
+              <label class="">Sucursal Consecutivo</label>
+              <input type="number" name="store_consecutive" [(ngModel)]="order_search.eq.store_consecutive" class="form-control">
+            </div>
+            <div class="col-6 col-md-3 form-group order-2">
+              <label class="">Sat Serie</label>
+              <input type="text" name="sat_serie" [(ngModel)]="order_search.eq.sat_serie" class="form-control">
+            </div>
+            <div class="col-6 col-md-3 form-group order-2">
+              <label class="">Sat Consecutivo</label>
+              <input type="number" name="sat_serie_consecutive" [(ngModel)]="order_search.eq.sat_serie_consecutive" class="form-control">
+            </div>
+            <div class="col-6 col-md-3 form-group order-2">
+              <label class="">Razon Social</label>
+              <input type="text" name="sat_razon_social" [(ngModel)]="order_search.eq.sat_razon_social" class="form-control">
+            </div>
+          }
+          <div class="col-6 col-md-3 col-lg-2 order-3">
+            <label>&nbsp;</label>
+            <div>
+              <button type="submit" class="w-100 btn btn-primary">Buscar</button>
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+  <app-pagination [path]="'/list-order'" [pages]="pages" [total_pages]="total_pages" [current_page]="current_page"></app-pagination>
+  <div class="card p-3">
+    <app-loading [is_loading]="is_loading"></app-loading>
+    <div class="d-none d-lg-block">
+      <div class="table-responsive">
+        <table class="table table-sm mb-0 w-100">
+          <thead class="thead-light">
+            <tr>
+              <th>Id</th>
+              <th>Cliente</th>
+              <th>Sucursal</th>
+              <th class="text-center">Atendio</th>
+              <th class="text-center">Tipo</th>
+              <th>Fecha</th>
+              <th class="text-center">Estatus</th>
+              <th class="text-end">Desc Art</th>
+              <th class="text-end">Desc Orden</th>
+              <th class="text-end">Desc Todo</th>
+              <th class="text-end">
+                <button type="button" class="btn btn-link p-0 text-end" (click)="clickOnHeader('total_final')">Total</button>
+              </th>
+              <th class="text-center">Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (oi of order_info_array; track oi.order.id) {
+              <tr class="border align-middle">
+                <td>
+                  <a [routerLink]="['/view-order', oi.order.id]">{{oi.order.id}}</a>
+                </td>
+                <td>
+                  <div>{{oi.client_display}}</div>
+                  <div class="d-xxl-none">{{oi.store_display}}</div>
+                </td>
+                <td>{{oi.store_display}}</td>
+                <td>{{oi.cashier_display}}</td>
+                <td>{{oi.price_name}}</td>
+                <td>
+                  <abbr title="{{oi.order.closed_timestamp || oi.order.created}}">{{(oi.order.closed_timestamp || oi.order.created) | shortDate}}</abbr>
+                </td>
+                <td class="text-center">
+                  @if (oi.order.status === 'CANCELLED') {
+                    <span class="badge text-bg-danger">Cancelada</span>
+                  } @else {
+                    <div>
+                      @if (oi.order.paid_status === 'PAID') {
+                        <span class="badge text-bg-success">Pagado</span>
+                      } @else if (oi.order.paid_status === 'PARTIALLY_PAID') {
+                        <span class="badge text-bg-warning">Pago Parcial</span>
+                      } @else {
+                        <span class="badge text-bg-danger">Pago Pendiente</span>
+                      }
+                    </div>
+                    <div>
+                      @if (oi.order.delivery_status === 'DELIVERED') {
+                        <span class="badge text-bg-success">Entregado</span>
+                      } @else if (oi.order.delivery_status === 'SENT') {
+                        <span class="badge text-bg-info">Enviado</span>
+                      } @else if (oi.order.delivery_status === 'READY_TO_PICKUP') {
+                        <span class="badge text-bg-warning">Listo recoger</span>
+                      } @else {
+                        <span class="badge text-bg-secondary">Entrega Pendiente</span>
+                      }
+                    </div>
+                    <div>
+                      @if (oi.order.status === 'ACTIVE') {
+                        <span class="badge text-bg-primary">Activa</span>
+                      } @else if (oi.order.status === 'CLOSED') {
+                        <span class="badge text-bg-success">Cerrada</span>
+                      } @else {
+                        <span class="badge text-bg-secondary">Pendiente</span>
+                      }
+                    </div>
+                  }
+                </td>
+                <td class="text-end">{{oi.article_discount | currency}}</td>
+                <td class="text-end">{{oi.order.discount | currency}}</td>
+                <td class="text-end">{{oi.total_discount | currency}}</td>
+                <td class="text-end">{{oi.total_after_discount | currency:'$'}}</td>
+                <td class="text-end nowrap">
+                  @if (oi.order.status !== 'CANCELLED') {
+                    @if (oi.order.service_type !== 'QUICK_SALE' && oi.order.delivery_status === 'PENDING') {
+                      <button type="button" class="btn btn-sm btn-primary ms-1" (click)="confirmReadyToPickup(oi)">Listo</button>
+                    }
+                    @if (oi.order.service_type === 'TOGO' && oi.order.delivery_status === 'READY_TO_PICKUP') {
+                      <button type="button" class="btn btn-sm btn-primary ms-1" (click)="confirmSend(oi)">Enviar</button>
+                    }
+                    @if (oi.pdf_url) {
+                      <a class="btn btn-sm btn-primary ms-1" [href]="oi.pdf_url">PDF</a>
+                    }
+                    @if (oi.order.delivery_status !== 'DELIVERED') {
+                      <button type="button" class="btn btn-sm btn-primary ms-1" (click)="confirmDelivered(oi)">Entregar</button>
+                    }
+                    @if (oi.order.status !== 'CLOSED' || rest.user_permission.cancel_closed_orders) {
+                      <button type="button" class="btn btn-sm btn-primary ms-1" (click)="confirmCancel(oi)">Cancelar</button>
+                    }
+                    @if (oi.purchase === null && oi.order.status === 'CLOSED' && oi.client?.store_id && rest.user_permission.add_stock) {
+                      <button type="button" class="btn btn-sm btn-primary ms-1" (click)="confirmAddStockToStore(oi)">Stock</button>
+                    }
+                  }
+                </td>
+              </tr>
+            } @empty {
+              @if (!is_loading) {
+                <tr>
+                  <td colspan="12" class="text-center">No se encontraron elementos</td>
+                </tr>
+              }
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="d-lg-none">
+      @for (oi of order_info_array; track oi.order.id) {
+        <div class="row mb-3 border-bottom pb-2">
+          <div class="col-9">
+            <a [routerLink]="['/view-order', oi.order.id]">{{oi.order.id}} - {{oi.client_display}}</a>
+          </div>
+          <div class="col-3 px-0 text-end align-self-center">{{oi.order.total | currency:'$'}}</div>
+          <div class="col-6 col-sm-4 align-self-center">{{oi.store_display}}</div>
+          <div class="col-6 col-sm-2 col-md-2 align-self-center">{{oi.order.created | shortDate}}</div>
+          <div class="col-12 col-sm-6 col-md-6 text-end px-0">
+            @if (oi.pdf_url) {
+              <a [href]="oi.pdf_url" class="btn btn-sm btn-primary mx-1">PDF</a>
+            }
+            @if (oi.order.status !== 'CANCELLED') {
+              <button type="button" class="btn btn-sm btn-primary ms-1" (click)="confirmCancel(oi)">Cancelar</button>
+            }
+          </div>
+        </div>
+      }
+      @if (order_info_array.length === 0 && !is_loading) {
+        <div class="row">
+          <div class="col-12">
+            <div class="alert alert-light m-3 text-center" role="alert">
+              <div>No se encontraron elementos.</div>
+              <br>
+              <button type="button" class="btn btn-primary" (click)="loadLastOrders()">buscar las últimas 20 ventas</button>
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+  </div>
+  <app-pagination [path]="'/list-order'" [pages]="pages" [total_pages]="total_pages" [current_page]="current_page"></app-pagination>
 </div>
 <app-modal [(show)]="show_cancel_order">
-@if (selected_order_info) {
-<div class="card p-1 p-md-3">
-<form (ngSubmit)="cancelOrderWithMessage($event)" ngNativeValidate>
-<h2 class="my-3">Cancelar Orden</h2>
-<app-loading [is_loading]="is_loading"></app-loading>
-<div class="row">
-<div class="col-12">Motivo</div>
-<div class="col-12 py-3">
-<textarea name="cancellation_reason" [(ngModel)]="cancellation_reason" class="form-control w-100" rows="5" required></textarea>
-</div>
-</div>
-<div class="row">
-<div class="col-4">
-<button type="button" class="btn btn-primary" (click)="show_cancel_order = false">Cerrar</button>
-</div>
-<div class="col-8">
-<button type="submit" class="btn btn-primary w-100" [disabled]="is_loading">Cancelar Orden</button>
-</div>
-</div>
-</form>
-</div>
-}
+  @if (selected_order_info) {
+    <div class="card p-1 p-md-3">
+      <form (ngSubmit)="cancelOrderWithMessage($event)" ngNativeValidate>
+        <h2 class="my-3">Cancelar Orden</h2>
+        <app-loading [is_loading]="is_loading"></app-loading>
+        <div class="row">
+          <div class="col-12">Motivo</div>
+          <div class="col-12 py-3">
+            <textarea name="cancellation_reason" [(ngModel)]="cancellation_reason" class="form-control w-100" rows="5" required></textarea>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-4">
+            <button type="button" class="btn btn-primary" (click)="show_cancel_order = false">Cerrar</button>
+          </div>
+          <div class="col-8">
+            <button type="submit" class="btn btn-primary w-100" [disabled]="is_loading">Cancelar Orden</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  }
 </app-modal>
 <app-modal [(show)]="show_export_modal" [closable]="false">
-<div class="card p-3">
-<h4 class="mb-3">Exportando datos</h4>
-<p>{{export_message}}</p>
-<app-loading [is_loading]="true"></app-loading>
-</div>
+  <div class="card p-3">
+    <h4 class="mb-3">Exportando datos</h4>
+    <p>{{export_message}}</p>
+    <app-loading [is_loading]="true"></app-loading>
+  </div>
 </app-modal>
