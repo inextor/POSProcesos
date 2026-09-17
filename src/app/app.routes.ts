@@ -156,7 +156,14 @@ export const routes: Routes = [
 		{path: 'save-consignment-delivered/:id', loadComponent: () => import('./pages/save-consignment-delivered/save-consignment-delivered.component').then(m => m.SaveConsignmentDeliveredComponent), canActivate: [authGuard]},
 		{path: 'view-consignment-delivered/:id', loadComponent: () => import('./pages/view-consignment-delivered/view-consignment-delivered.component').then(m => m.ViewConsignmentDeliveredComponent), canActivate: [authGuard]},
 		{path: 'consignment-report', loadComponent: () => import('./pages/consignment-report/consignment-report.component').then(m => m.ConsignmentReportComponent), canActivate: [authGuard]},
-			{path: 'produccion-reportada-vs-validada-report', loadComponent: () => import('./pages/produccion-reportada-vs-validada-report/produccion-reportada-vs-validada-report.component').then(m => m.ProduccionReportadaVsValidadaReportComponent), canActivate: [authGuard]}
+			{path: 'produccion-reportada-vs-validada-report', loadComponent: () => import('./pages/produccion-reportada-vs-validada-report/produccion-reportada-vs-validada-report.component').then(m => m.ProduccionReportadaVsValidadaReportComponent), canActivate: [authGuard]},
+			{path: 'pos', loadComponent: () => import('./pages/easy-pos/easy-pos.component').then(m => m.EasyPosComponent), canActivate: [authGuard]},
+			{path: 'pos/:id', loadComponent: () => import('./pages/easy-pos/easy-pos.component').then(m => m.EasyPosComponent), canActivate: [authGuard]},
+			{path: 'pos/table/:table_id', loadComponent: () => import('./pages/easy-pos/easy-pos.component').then(m => m.EasyPosComponent), canActivate: [authGuard]},
+			{path: 'pos/pay/:make_payment/:id', loadComponent: () => import('./pages/easy-pos/easy-pos.component').then(m => m.EasyPosComponent), canActivate: [authGuard]},
+			{path: 'pos/pay-offline/:make_payment/:sync_id', loadComponent: () => import('./pages/easy-pos/easy-pos.component').then(m => m.EasyPosComponent), canActivate: [authGuard]},
+			{path: 'pos/offline/:sync_id', loadComponent: () => import('./pages/easy-pos/easy-pos.component').then(m => m.EasyPosComponent), canActivate: [authGuard]},
+			{path: 'pos/client/:client_id', loadComponent: () => import('./pages/easy-pos/easy-pos.component').then(m => m.EasyPosComponent), canActivate: [authGuard]}
 		]
 	},
 ];

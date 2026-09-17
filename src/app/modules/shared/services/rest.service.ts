@@ -313,6 +313,13 @@ export class RestService
 		return this.httpPost('replay_sat_factura.php',{sat_factura_id}) as Observable<Sat_Factura>;
 	}
 
+	checkPermissions(username:string,password:string,csv_permissions:string):Observable<any>
+	{
+		let permissions = csv_permissions;
+
+		return this.http.post<any>(`${this.domain_configuration.domain}/${this.url_base}/checkPermissions.php`, { username, password, permissions}, { withCredentials: true })
+	}
+
 	getPendingComplements():Observable<any[]>
 	{
 		let url = `${this.domain_configuration.domain}/${this.url_base}/updates/get_pending_complements.php`;

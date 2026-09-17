@@ -14,6 +14,7 @@ export interface Order_Item{
 	id_payment:number | null;
 	ieps_type:'RATE'|'AMOUNT';
 	ieps_value:number;
+	ieps_calculated:number;
 	is_free_of_charge:'NO'|'YES';
 	is_item_extra:'NO'|'YES';
 	item_extra_id:number | null;

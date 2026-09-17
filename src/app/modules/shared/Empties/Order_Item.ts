@@ -16,6 +16,7 @@ export function order_item(item: Item): Order_Item {
 		id_payment: null,
 		ieps_type: "RATE",
 		ieps_value: 0,
+		ieps_calculated: 0,
 		is_free_of_charge: "NO",
 		is_item_extra: "NO",
 		item_extra_id: null,

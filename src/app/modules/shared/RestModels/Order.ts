@@ -17,11 +17,13 @@ export interface Order{
 	created:Date;
 	currency_id:string;
 	delivery_status:'PENDING'|'SENT'|'DELIVERED'|'CANCELLED'|'READY_TO_PICKUP';
+	delivery_schedule?:string | null;
 	delivery_user_id:number | null;
 	discount:number;
 	discount_calculated:number;
 	facturacion_code:string;
 	facturado:'NO'|'YES';
+	external_id?:string | null;
 	guests:number | null;
 	id:number;
 	lat:number | null;

@@ -72,6 +72,7 @@ export * from './RestModels/Ledger';
 export * from './RestModels/Merma';
 export * from './RestModels/Notification_Token';
 export * from './RestModels/Offer';
+export * from './RestModels/Order_Item_Batch';
 export * from './RestModels/Order_Item_Cost';
 export * from './RestModels/Order_Item_Exception';
 export * from './RestModels/Order_Item_Response';
