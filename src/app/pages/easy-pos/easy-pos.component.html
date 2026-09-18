@@ -1,0 +1,951 @@
+<div class="flex_row_vertical">
+	<div class="flex_item p-1 p-sm-2">
+		<div class="card">
+			<div class="d-none d-lg-block" id="easy-pos-tabs">
+				<ul class="nav nav-tabs mx-1 mt-1">
+					<li *ngFor="let order of order_list| slice:0:orders_to_display_in_tabs" class="nav-item d-none d-md-block">
+						<a class="order-tabs nav-link px-2 text-truncate" routerLinkActive="active" [routerLink]="['/pos',order.id]">{{order.id}}-{{order.client_name}}</a>
+					</li>
+					<li class="nav-item" >
+						<a class="order-tabs nav-link px-2 fw-bold" (click)="show_pv_options=true">Opciones</a>
+					</li>
+				</ul>
+			</div>
+			<!-- Mobile -->
+			<div class="row d-md-none p-1 p-sm-2 align-items-center">
+				<div class="col-12 text-end">
+					<a class="btn btn-primary px-2 mt-2 me-2" routerLink="/list-order" [queryParams]="{'csv.status':'ACTIVE,PENDING'}">
+						<svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" width="1em" height="1em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 48 48"><mask id="svgIDa"><g fill="none" stroke-linejoin="round" stroke-width="4"><rect width="30" height="36" x="9" y="8" fill="#fff" stroke="#fff" rx="2"/><path stroke="#fff" stroke-linecap="round" d="M18 4v6m12-6v6"/><path stroke="#000" stroke-linecap="round" d="M16 19h16m-16 8h12m-12 8h8"/></g></mask><path fill="currentColor" d="M0 0h48v48H0z" mask="url(#svgIDa)"/></svg>
+					</a>
+					<button type="button" class="btn btn-primary px-2 mt-2 me-2" (click)="show_pv_options=true">
+						<svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" width="1em" height="1em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 20 20"><path fill="currentColor" d="M9 9V3H3v6h6zm8 0V3h-6v6h6zm-8 8v-6H3v6h6zm8 0v-6h-6v6h6z"/></svg>
+					</button>
+					<button type="button" class="btn btn-primary px-2 mt-2 me-2" *ngIf="active_list=='order_item_list' && order_item_search_index < order_info.items.length" (click)="showOrderItemExceptions()">
+						<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" width="1em" height="1em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 24 24"><path d="M22.7 19l-9.1-9.1c.9-2.3.4-5-1.5-6.9c-2-2-5-2.4-7.4-1.3L9 6L6 9L1.6 4.7C.4 7.1.9 10.1 2.9 12.1c1.9 1.9 4.6 2.4 6.9 1.5l9.1 9.1c.4.4 1 .4 1.4 0l2.3-2.3c.5-.4.5-1.1.1-1.4z" fill="currentColor"/></svg>
+					</button>
+					<button type="button" class="btn btn-primary px-2 mt-2 me-2" *ngIf="order_info.order.service_type == 'QUICK_SALE'" (click)="show_delivery_options=true">
+						<svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" width="1em" height="1em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 16 16"><path fill="currentColor" d="M5.52.359A.5.5 0 0 1 6 0h4a.5.5 0 0 1 .474.658L8.694 6H12.5a.5.5 0 0 1 .395.807l-7 9a.5.5 0 0 1-.873-.454L6.823 9.5H3.5a.5.5 0 0 1-.48-.641l2.5-8.5z"/></svg>
+					</button>
+					<button type="button" class="btn btn-primary px-2 mt-2 me-2" *ngIf="order_info.order.service_type == 'TOGO'" (click)="show_delivery_options=true">
+						<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" width="1em" height="1em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 24 24"><path d="M3 4a2 2 0 0 0-2 2v11h2a3 3 0 0 0 3 3a3 3 0 0 0 3-3h6a3 3 0 0 0 3 3a3 3 0 0 0 3-3h2v-5l-3-4h-3V4m-7 2l4 4l-4 4v-3H4V9h6m7 .5h2.5l1.97 2.5H17M6 15.5A1.5 1.5 0 0 1 7.5 17A1.5 1.5 0 0 1 6 18.5A1.5 1.5 0 0 1 4.5 17A1.5 1.5 0 0 1 6 15.5m12 0a1.5 1.5 0 0 1 1.5 1.5a1.5 1.5 0 0 1-1.5 1.5a1.5 1.5 0 0 1-1.5-1.5a1.5 1.5 0 0 1 1.5-1.5z" fill="currentColor"/></svg>
+					</button>
+					<button type="button" class="btn btn-primary px-2 mt-2 me-2" *ngIf="order_info.order.service_type == 'IN_PLACE'" (click)="show_delivery_options=true">
+						<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" width="1em" height="1em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 24 24"><path d="M21.96 9.73l-1.43-5a.996.996 0 0 0-.96-.73H4.43c-.45 0-.84.3-.96.73l-1.43 5c-.18.63.3 1.27.96 1.27h2.2L4 20h2l.67-5h10.67l.66 5h2l-1.2-9H21c.66 0 1.14-.64.96-1.27zM6.93 13l.27-2h9.6l.27 2H6.93z" fill="currentColor"/></svg>
+					</button>
+					<button type="button" class="btn btn-primary px-2 mt-2 me-2" *ngIf="order_info.order.service_type == 'PICK_UP'" (click)="show_delivery_options=true">
+						<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" width="1em" height="1em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 16 16"><g fill="currentColor"><path d="M8 1a2.5 2.5 0 0 1 2.5 2.5V4h-5v-.5A2.5 2.5 0 0 1 8 1zm3.5 3v-.5a3.5 3.5 0 1 0-7 0V4H1v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V4h-3.5z"/></g></svg>
+					</button>
+					<button type="button" class="btn btn-primary px-2 mt-2 me-2" *ngIf="address_list.length && order_info.order.service_type == 'TOGO'" (click)="show_delivery_address=true">
+						<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" width="1em" height="1em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 32 32"><defs/><path d="M16 2A11.013 11.013 0 0 0 5 13a10.889 10.889 0 0 0 2.216 6.6s.3.395.349.452L16 30l8.439-9.953c.044-.053.345-.447.345-.447l.001-.003A10.885 10.885 0 0 0 27 13A11.013 11.013 0 0 0 16 2zm0 15a4 4 0 1 1 4-4a4.005 4.005 0 0 1-4 4z" fill="currentColor"/><circle id="_Inner-Path_" cx="16" cy="13" r="4" fill="none"/></svg>
+					</button>
+					<button type="button" class="btn btn-primary px-2 mt-2 me-2" (click)="is_search_active=true">
+						<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" width="1em" height="1em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 512 512"><path d="M505 442.7L405.3 343c-4.5-4.5-10.6-7-17-7H372c27.6-35.3 44-79.7 44-128C416 93.1 322.9 0 208 0S0 93.1 0 208s93.1 208 208 208c48.3 0 92.7-16.4 128-44v16.3c0 6.4 2.5 12.5 7 17l99.7 99.7c9.4 9.4 24.6 9.4 33.9 0l28.3-28.3c9.4-9.4 9.4-24.6.1-34zM208 336c-70.7 0-128-57.2-128-128c0-70.7 57.2-128 128-128c70.7 0 128 57.2 128 128c0 70.7-57.2 128-128 128z" fill="currentColor"/></svg>
+					</button>
+					<button type="button" class="btn btn-primary px-2 mt-2 me-2" (click)="is_search_active=false">
+						<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 24 24"><path fill="currentColor" d="M21.822 7.431A1 1 0 0 0 21 7H7.333L6.179 4.23A1.994 1.994 0 0 0 4.333 3H2v2h2.333l4.744 11.385A1 1 0 0 0 10 17h8c.417 0 .79-.259.937-.648l3-8a1 1 0 0 0-.115-.921z"/><circle cx="10.5" cy="19.5" r="1.5" fill="currentColor"/><circle cx="17.5" cy="19.5" r="1.5" fill="currentColor"/></svg>
+						<span class="number_indicator" *ngIf="order_info.items.length">{{order_info.items.length}}</span>
+					</button>
+				</div>
+			</div>
+			<div class="row mx-0 pb-1 px-1 px-xl-2">
+				<div class="col-12 col-md-5 dropdown">
+					<div class="row align-items-center">
+						<div class="col-10">
+							<div class="form-group mt-1">
+								<input type="text" class="px-1 px-lg-2 form-control" name="client_name" [ngModel]="search_client_str" (ngModelChange)="onClientSearch($event)" placeholder="Nombre Cliente" autocomplete="off" > <!--(keyup)="onClientSearch($event)" -->
+							</div>
+						</div>
+						<div class="col-2">
+							<span style="line-height:38px">
+								<svg *ngIf="!client_user?.image_id" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" width="38" height="38" preserveAspectRatio="xMidYMid meet" viewBox="0 0 24 24"><path d="M7.5 6.5C7.5 8.981 9.519 11 12 11s4.5-2.019 4.5-4.5S14.481 2 12 2S7.5 4.019 7.5 6.5zM20 21h1v-1c0-3.859-3.141-7-7-7h-4c-3.86 0-7 3.141-7 7v1h17z" fill="currentColor"/></svg>
+							</span>
+							<img *ngIf="client_user?.image_id" [src]="rest.getImagePath(client_user?.image_id,rest.preferences.default_user_logo_image_id)" style="margin-top:4px" width="38" height="38">
+						</div>
+					</div>
+					<ul class="dropdown-menu show w-100 client_list" *ngIf="client_list.length || show_client_list">
+						<li [ngClass]="{'active':client_search_index==0}">
+							<button type="button" class="dropdown-item" (click)="noRegistrarUsuario()">No Registrar</button>
+						</li>
+						<li [ngClass]="{'active':client_search_index==1}">
+							<button type="button" class="dropdown-item" (click)="agregarNuevoClienteConNombre(search_client_str)">Agregar Nuevo</button>
+						</li>
+						<li *ngFor="let client of client_list;let i=index" [ngClass]="{'active':(client_search_index-2)==i}">
+							<button type="button" class="dropdown-item" (click)="onSelectClient(client)">
+								<img [src]="rest.getImagePath(client.image_id,rest.preferences.default_user_logo_image_id)" width="30px" height="30px">
+								{{client.name | titlecase}} - {{client.phone}}
+							</button>
+						</li>
+					</ul>
+				</div>
+				<div class="col-7">
+					<div class="row">
+						<div class="d-none d-md-block col-4 px-0">
+							<button type="button" class="btn btn-secondary" (click)="show_pv_options=true">
+								<svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" width="1em" height="1em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 20 20"><path fill="currentColor" d="M9 9V3H3v6h6zm8 0V3h-6v6h6zm-8 8v-6H3v6h6zm8 0v-6h-6v6h6z"/></svg>
+							</button>
+							<button *ngIf="active_list=='order_item_list' " (click)="showOrderItemExceptions()" type="button" class="btn btn-secondary ms-1">
+								<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" width="1em" height="1em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 24 24"><path d="M22.7 19l-9.1-9.1c.9-2.3.4-5-1.5-6.9c-2-2-5-2.4-7.4-1.3L9 6L6 9L1.6 4.7C.4 7.1.9 10.1 2.9 12.1c1.9 1.9 4.6 2.4 6.9 1.5l9.1 9.1c.4.4 1 .4 1.4 0l2.3-2.3c.5-.4.5-1.1.1-1.4z" fill="currentColor"/></svg>
+							</button>
+							<button *ngIf="order_info.order.service_type == 'QUICK_SALE'" class="btn btn-secondary ms-1" type="button" (click)="show_delivery_options=true">
+								<svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" width="1em" height="1em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 16 16"><path fill="currentColor" d="M5.52.359A.5.5 0 0 1 6 0h4a.5.5 0 0 1 .474.658L8.694 6H12.5a.5.5 0 0 1 .395.807l-7 9a.5.5 0 0 1-.873-.454L6.823 9.5H3.5a.5.5 0 0 1-.48-.641l2.5-8.5z"/></svg>
+							</button>
+							<button *ngIf="order_info?.order?.service_type == 'TOGO'" class="btn btn-secondary ms-1" type="button" (click)="show_delivery_options=true">
+								<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" width="1em" height="1em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 24 24"><path d="M3 4a2 2 0 0 0-2 2v11h2a3 3 0 0 0 3 3a3 3 0 0 0 3-3h6a3 3 0 0 0 3 3a3 3 0 0 0 3-3h2v-5l-3-4h-3V4m-7 2l4 4l-4 4v-3H4V9h6m7 .5h2.5l1.97 2.5H17M6 15.5A1.5 1.5 0 0 1 7.5 17A1.5 1.5 0 0 1 6 18.5A1.5 1.5 0 0 1 4.5 17A1.5 1.5 0 0 1 6 15.5m12 0a1.5 1.5 0 0 1 1.5 1.5a1.5 1.5 0 0 1-1.5 1.5a1.5 1.5 0 0 1-1.5-1.5a1.5 1.5 0 0 1 1.5-1.5z" fill="currentColor"/></svg>
+							</button>
+							<button *ngIf="order_info?.order?.service_type == 'IN_PLACE'" class="btn btn-secondary ms-1" type="button" (click)="show_delivery_options=true">
+								<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" width="1em" height="1em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 24 24"><path d="M21.96 9.73l-1.43-5a.996.996 0 0 0-.96-.73H4.43c-.45 0-.84.3-.96.73l-1.43 5c-.18.63.3 1.27.96 1.27h2.2L4 20h2l.67-5h10.67l.66 5h2l-1.2-9H21c.66 0 1.14-.64.96-1.27zM6.93 13l.27-2h9.6l.27 2H6.93z" fill="currentColor"/></svg>
+							</button>
+							<button *ngIf="order_info?.order?.service_type == 'PICK_UP'" class="btn btn-secondary ms-1" type="button" (click)="show_delivery_options=true">
+								<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" width="1em" height="1em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 16 16"><g fill="currentColor"><path d="M8 1a2.5 2.5 0 0 1 2.5 2.5V4h-5v-.5A2.5 2.5 0 0 1 8 1zm3.5 3v-.5a3.5 3.5 0 1 0-7 0V4H1v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V4h-3.5z"/></g></svg>
+							</button>
+							<button *ngIf="address_list.length && order_info.order.service_type == 'TOGO'" type="button" class="btn btn-secondary ms-1" (click)="show_delivery_address=true">
+								<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" width="1em" height="1em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 32 32"><defs/><path d="M16 2A11.013 11.013 0 0 0 5 13a10.889 10.889 0 0 0 2.216 6.6s.3.395.349.452L16 30l8.439-9.953c.044-.053.345-.447.345-.447l.001-.003A10.885 10.885 0 0 0 27 13A11.013 11.013 0 0 0 16 2zm0 15a4 4 0 1 1 4-4a4.005 4.005 0 0 1-4 4z" fill="currentColor"/><circle id="_Inner-Path_" cx="16" cy="13" r="4" fill="none"/></svg>
+							</button>
+							<button type="button" *ngIf="order_info.order.id && rest.user_permission.print_pre_receipt" (click)="printPreReceipt($event)" class="btn btn-secondary ms-1">
+								<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" width="1em" height="1em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 28 28"><g _ngcontent-pvm-c245="" fill="none"><path _ngcontent-pvm-c245="" d="M7.004 5.765V7H6a4 4 0 0 0-4 4v7a3 3 0 0 0 3 3h2v1a3 3 0 0 0 3 3h8a3 3 0 0 0 3-3v-1h2a3 3 0 0 0 3-3v-7a4 4 0 0 0-4-4h-1V5.752a2.75 2.75 0 0 0-2.754-2.75l-8.496.013a2.75 2.75 0 0 0-2.746 2.75zM19.5 5.752V7H8.504V5.765c0-.69.558-1.249 1.248-1.25l8.496-.013a1.25 1.25 0 0 1 1.252 1.25zM10 15.5h8a1.5 1.5 0 0 1 1.5 1.5v5a1.5 1.5 0 0 1-1.5 1.5h-8A1.5 1.5 0 0 1 8.5 22v-5a1.5 1.5 0 0 1 1.5-1.5z" fill="currentColor"></path></g></svg>
+							</button>
+						</div>
+						<!--Desktop -->
+						<div class="col-6 d-none col-md-3 d-sm-block px-1 px-xl-2" *ngIf="!scanner_enabled">
+							<select class="form-control mt-1" name="search_order_id" [ngModel]="search_order_id" (ngModelChange)="onOrderSearchChange($event)">
+								<option [ngValue]="null">Buscar orden</option>
+								<option *ngFor="let order of order_list" [ngValue]="order.id">{{order.id}} - {{order.client_name | titlecase}}</option>
+							</select>
+						</div>
+						<div class="col-12 col-sm-6 col-md-3 d-md-block px-1 px-xl-2" *ngIf="price_type_list.length>1">
+							<select class="form-control mt-1" name="price_type_id" [ngModel]="order_info.order.price_type_id" (ngModelChange)="onPriceTypeChanged($event)" *ngIf="rest.user_permission.change_client_prices">
+								<option *ngFor="let price_type of price_type_list" [ngValue]="price_type.id">{{price_type.id}} - {{price_type.name | titlecase}}</option>
+							</select>
+							<div	*ngIf="!rest.user_permission.change_client_prices">{{order_info.price_type.name || 'PUBLICO_GENERAL'}}</div>
+						</div>
+						<div class="col-12 col-sm-6 col-md-2 d-md-block px-1 " *ngIf="rest.preferences.currency_price_preference == 'MULTIPLE_CURRENCY'">
+							<select class="form-control mt-1" name="currency_id" [ngModel]="order_info.order.currency_id" (ngModelChange)="onCurrencyRateChanged($event)">
+								<option *ngFor="let currency of currency_list" [ngValue]="currency.id">{{currency.id}}</option>
+							</select>
+						</div>
+						<div class="col-12 col-sm-6 col-md-2 d-md-block px-1 " *ngIf="store_list.length>1 && rest.user_permission.global_pos">
+							<select class="form-control mt-1" name="store_id" [ngModel]="order_info.order.store_id" (ngModelChange)="onStoreChanged($event)"  [disabled]="!!order_info.order.id || order_info.items.length>0 || scanner_enabled">
+								<option *ngFor="let store of store_list" [ngValue]="store.id">
+								{{store.name}}
+								</option>
+							</select>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="card mt-2" *ngIf="order_info.client">
+			<table>
+				<tr>
+					<td rowspan="3" style="width:80px">
+						<img [src]="rest.getImagePath(order_info.client.image_id)" width="60px">
+					</td>
+					<td style="width:200px">Nombre</td>
+					<th>
+						<a [routerLink]="['/view-client',order_info.client.id]">{{order_info.client.id}}-{{order_info.client.name | titlecase}}</a>
+					</th>
+				</tr>
+				<tr>
+					<td style="width:200px">Saldo Pendiente:</td>
+					<span class="fw-bold">{{client_user?.balance | currency:'$'}}</span>
+					<span *ngIf="(client_user?.credit_limit ?? 0) > 0 && (client_user?.balance ?? 0) < -(client_user?.credit_limit ?? 0)" class="text-danger">LIMITE SUPERADO</span>
+					<span *ngIf="(client_user?.credit_limit ?? 0) < 1" class="text-danger">&nbsp;Sin Credito</span>
+				</tr>
+				<tr *ngIf="(client_user?.points ?? 0)>=1">
+					<td style="width:200px">Puntos</td>
+					<th>{{client_user?.points | number:'1.2-2'}}</th>
+				</tr>
+				<tr *ngIf="rest.preferences.comex_enabled && client_user?.code">
+					<td style="width:200px">Puntos Comex</td>
+					<th style="vertical-align: middle; display: flex; align-items: center; justify-content: start; gap: 2px;" >
+						{{comex_points | number:'1.0-0'}}
+						<button class="btn btn-link p-0" (click)="loadComexPoints()">
+							<svg xmlns="http://www.w3.org/2000/svg" width="0.8em" height="0.8em" viewBox="0 0 8 8"><path fill="currentColor" d="M4 0C1.8 0 0 1.8 0 4s1.8 4 4 4c1.1 0 2.12-.43 2.84-1.16l-.72-.72c-.54.54-1.29.88-2.13.88c-1.66 0-3-1.34-3-3s1.34-3 3-3c.83 0 1.55.36 2.09.91L4.99 3h3V0L6.8 1.19C6.08.47 5.09 0 3.99 0z"/></svg>
+						</button>
+					</th>
+				</tr>
+			</table>
+		</div>
+	</div>
+	<div class="flex_item_expand" style="overflow:hidden">
+		<div class="easy-pos-main-container px-1" style="height:100%">
+			<div class="card mx-0 mx-sm-1 mb-2" style="height:100%;overflow:auto;" *ngIf="!hide_search || is_search_active">
+				<div class="search_item_area" style="height:100%;overflow:auto;">
+					<ng-container *ngIf="search_type=='TACTILE';">
+						<div style="height:100%" class="">
+							<app-item-selector (onItemSelect)="onSelectItem($event,false)" [store_id]="order_info.order.store_id" [(navigation_length)]="navigation_length" [navigationBack]="navigation_detected"></app-item-selector>
+						</div>
+					</ng-container>
+					<ng-container *ngIf="search_type=='KEYBOARD'">
+						<div>
+							<input type="text" (input)="onSearch($event)" #input_search id="item_search_pos" [(ngModel)]="search_str" class="form-control" placeholder="Buscar..." autocomplete="off" autofocus>
+							<ng-container *ngIf="scanner_enabled && !isAnyModalOpen"> {{input_search.focus()}} </ng-container>
+						</div>
+						<div>
+							<div style="height:100%;user-select: none;">
+								<!--TODO: restore cdk-virtual-scroll-viewport (no @angular/cdk in this repo)-->
+								<div #item_view_port class="w-100 h-100 view-port-1">
+									<a *ngFor="let item_info of item_list;let i=index" [class]="{'search_item':true,focus_item:i==item_search_index&&active_list == 'search_list'}" (click)="onSelectItem(item_info,true)">
+										<img [src]="rest.getImagePath(item_info.item.image_id,item_info?.category?.image_id,rest.preferences.default_product_image_id)" style="height:44px;width:44px;">
+										{{item_info | itemName}}
+										<span style="opacity:0.5">{{item_info.item.code}}</span>
+										<span class="d-none d-xl-inline" *ngIf="item_info.price"> - {{item_info.price.price || 0 | currency}}</span>
+										<span class="d-none d-xl-inline" *ngIf="rest.user_permission.view_stock && item_info?.stock_record"> [{{item_info.stock_record?.qty}}]</span>
+									</a>
+								</div>
+							</div>
+						</div>
+					</ng-container>
+				</div>
+			</div>
+			<div class="mx-0 mx-sm-1" style="height:100%;overflow:auto;" *ngIf="!hide_search || !is_search_active">
+				<div class="order_items_area card" style="height:100%;overflow:hidden">
+					<div>
+						<div class="row mx-0 w-100 align-items-center py-1">
+							<div class="col-5 col-lg-4 px-1">Nombre</div>
+							<div class="col-7 col-lg-4 px-0">
+								<div class="row m-0 p-0">
+									<div class="col-6 d-md-block ps-0 pe-1 text-end">Cant×Precio</div>
+									<div class="col-6 px-0 text-end">Total</div>
+								</div>
+							</div>
+							<div class="col-lg-4 text-end">
+								<button type="button" *ngIf="order_info.items.length && active_list=='order_item_list' && order_info.items.length > order_item_search_index && !order_info.items[order_item_search_index].order_item.id" class="btn btn-primary btn-small me-2" (click)="toggleSeparator(order_info.items[order_item_search_index])" title="add_separator">
+									<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12h18M8 8l4-4l4 4m0 8l-4 4l-4-4"/></svg>
+								</button>
+								<button type="button" *ngIf="rest.user_permission.pv_returns && order_info.items.length && active_list=='order_item_list'" class="btn btn-primary btn-small me-2" (click)="toggleOrderItemToRefund()">
+									<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 20 20"><path fill="currentColor" fill-rule="evenodd" d="M5 2a2 2 0 0 0-2 2v14l3.5-2l3.5 2l3.5-2l3.5 2V4a2 2 0 0 0-2-2H5Zm4.707 3.707a1 1 0 0 0-1.414-1.414l-3 3a1 1 0 0 0 0 1.414l3 3a1 1 0 0 0 1.414-1.414L8.414 9H10a3 3 0 0 1 3 3v1a1 1 0 1 0 2 0v-1a5 5 0 0 0-5-5H8.414l1.293-1.293Z" clip-rule="evenodd"/></svg>
+								</button>
+								<button type="button" *ngIf="order_info.items.length && active_list=='order_item_list'" class="btn btn-primary btn-small me-2" (click)="showOrderItemExceptions()" title="Agregar nota">
+									<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"><path fill="currentColor" d="M5 3h14a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H9l-5 4v-4H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2Zm2 5v2h10V8H7Zm0 4v2h7v-2H7Z"/></svg>
+								</button>
+								<button type="button" *ngIf="rest.user_permission.discounts && order_info.items.length && active_list=='order_item_list'" class="btn btn-primary btn-small" (click)="showAddDiscount()">
+									<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 15 15"><path fill="currentColor" fill-rule="evenodd" d="m6.448.436l-1.13 1.129a.488.488 0 0 1-.344.143H3.196c-.822 0-1.488.666-1.488 1.488v1.778a.49.49 0 0 1-.143.345L.435 6.448a1.488 1.488 0 0 0 0 2.104l1.13 1.13a.488.488 0 0 1 .143.344v1.778c0 .822.666 1.488 1.488 1.488h1.778a.49.49 0 0 1 .345.143l1.129 1.13a1.488 1.488 0 0 0 2.104 0l1.13-1.13a.488.488 0 0 1 .344-.143h1.778c.822 0 1.488-.666 1.488-1.488v-1.778a.49.49 0 0 1 .143-.345l1.13-1.129a1.488 1.488 0 0 0 0-2.104l-1.13-1.13a.488.488 0 0 1-.143-.344V3.196c0-.822-.666-1.488-1.488-1.488h-1.778a.488.488 0 0 1-.345-.143L8.552.435a1.488 1.488 0 0 0-2.104 0Zm-1.802 9.21l5-5l.708.708l-5 5l-.708-.708ZM5 5v1h1V5H5Zm4 5h1V9H9v1Z" clip-rule="evenodd"/></svg>
+								</button>
+							</div>
+						</div>
+					</div>
+					<div style="user-select: none">
+						<!--TODO: restore cdk-virtual-scroll-viewport (no @angular/cdk in this repo)-->
+						<div #order_item_view_port class="w-100 h-100">
+							<div *ngFor="let oii of order_info.items;let i=index" [ngStyle]="{height:order_item_height+'px'}" [ngClass]="{item:true,'border-bottom': oii.order_item.has_separator == 'YES', 'd-block':true,focus_item:i==order_item_search_index && active_list=='order_item_list' }" (click)="onSelectOrderItem(oii)" (dblclick)="onSelectDoubleClick(oii)">
+								<div class="row mx-0 w-100 align-items-center pointer">
+									<div class="col-5 col-lg-4 col-lg-4 px-0 text-truncate align-self-center" *ngIf="!(oii?.order_item?.item_option_id)">
+										<div class="d-flex flex-row">
+											<div>
+												<img [src]="rest.getImagePath(oii.item.image_id,oii?.category?.image_id,rest.preferences.default_product_image_id)" style="max-height:44px;max-width:44px;">
+											</div>
+											<div>
+												<div *ngIf="rest.preferences.display_categories_on_items != 'NO' && oii.display_category !== false ">
+													{{oii?.category?.name | titlecase}}
+												</div>
+												<div>
+													<span class="fw-bold">{{oii.item.name | titlecase}}</span>
+												</div>
+												<div *ngIf="oii.order_item.note || oii.order_item.exceptions || oii.order_item.type=='REFUND' || oii.serials_string || (oii.batches && oii.batches.length > 0)">
+													{{oii.order_item.type == 'REFUND' ? '(DEVOLUCION)':''}}
+													<ng-container *ngIf="oii.batches && oii.batches.length > 0">
+														<span *ngFor="let b of oii.batches; let last = last" class="small text-muted">
+														●Lot:{{b.batch}} Exp: {{b.expiration_date | date:'shortDate'}}{{last ? '' : ', '}}
+														</span>
+													</ng-container>
+													&nbsp;{{oii.order_item.note}}
+													{{oii.serials_string}}
+													{{oii.order_item.exceptions}}
+												</div>
+											</div>
+										</div>
+									</div>
+									<div class="col-1 col-lg-1 align-self-center px-1" *ngIf="(oii.order_item?.item_option_id)"></div>
+									<div class="col-4 col-lg-3 col-lg-3 px-1 align-self-center text-truncate" *ngIf="(oii.order_item?.item_option_id)">
+										{{oii.order_item.item_option_qty}} - {{oii.item.name | titlecase}}
+										<span *ngIf="oii.order_item.note" class="small"> — {{oii.order_item.note}}</span>
+									</div>
+									<!--div class="col-1 col-lg-1 text-end px-1 align-self-center ps-0"></div-->
+									<div class="col-6 col-lg-4 p-0 m-0">
+										<div class="row m-0 p-0">
+											<div class="col-6 text-end ps-0 pe-1 align-self-center">
+												{{oii.order_item.qty | number}}×<span *ngIf="oii.order_item.original_unitary_price>0">{{oii.order_item.type == 'REFUND'?'-':''}}{{(oii.order_item.tax_included == 'YES'
+													? oii.order_item.unitary_price_meta
+													: (oii.order_item.unitary_price_meta * (1+((oii.item.applicable_tax=='EXEMPT'?0:order_info.order.tax_percent)/100)))) | currency:'$'}}
+												</span>
+											</div>
+											<div class="col-6 text-end align-self-center px-0">{{ oii.order_item.total | currency:'$'}}</div>
+										</div>
+									</div>
+									<div class="col-12 col-lg-4 align-self-center p-0 px-xxl-2 text-end">
+										<div class="row align-items-center">
+											<div class="col-3">
+												<ng-container *ngIf="oii.order_item.discount_percent">
+													{{oii.order_item.discount_percent | number:'1.0-1'}}%
+												</ng-container>
+												<!--ng-container *ngIf="oii.order_item.discount_percent == 0 && oii.order_item.discount">
+													{{oii.order_item.discount | currency}}$
+												</ng-container-->
+											</div>
+											<div class="col-9">
+												<ng-container *ngIf="(!oii.order_item.id || order_info.order.status=='PENDING') && !oii.order_item.item_option_id && rest.user_permission.delete_draft_items">
+													<button type="button" (click)="editOptions(oii)" class="btn btn-sm btn-secondary me-1 me-xxl-2" *ngIf="hasItemOptions(oii)" title="Editar opciones">
+														<svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" width="1.5em" height="1.5em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 24 24"><path fill="currentColor" d="m14.06 9.02l.92.92L5.92 19H5v-.92zm3.6-6.04c-.25 0-.51.1-.7.29l-1.83 1.83l3.75 3.75l1.83-1.83c.39-.39.39-1.03 0-1.42l-2.34-2.34c-.2-.19-.45-.28-.71-.28m-3.6 3.19L3 17.23V21h3.77L17.83 9.94z"/></svg>
+													</button>
+													<button type="button" class="me-2" (click)="decrementOrderItemInfo(oii)" *ngIf="oii.order_item.qty > 1 && oii.serials.length == 0 && (oii.batches ? oii.batches.length <= 1 : true)" class="btn btn-sm btn-secondary me-1 me-xxl-2">
+														<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" width="1.5em" height="1.5em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 24 24"><g fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M12 1C5.925 1 1 5.925 1 12s4.925 11 11 11s11-4.925 11-11S18.075 1 12 1zM8 11a1 1 0 1 0 0 2h8a1 1 0 1 0 0-2H8z" fill="currentColor"/></g></svg>
+													</button>
+													<button type="button" (click)="incrementOrderItemInfo(oii)" class="btn btn-sm me-1 me-xxl-2 btn-secondary" *ngIf="oii.serials.length == 0 && (oii.batches ? oii.batches.length <= 1 : true)">
+														<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" width="1.5em" height="1.5em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 24 24"><g fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M12 1C5.925 1 1 5.925 1 12s4.925 11 11 11s11-4.925 11-11S18.075 1 12 1zm1 15a1 1 0 1 1-2 0v-3H8a1 1 0 1 1 0-2h3V8a1 1 0 1 1 2 0v3h3a1 1 0 1 1 0 2h-3v3z" fill="currentColor"/></g></svg>
+													</button>
+													<button type="button" (click)="removeItem(oii)" class="btn btn-sm btn-secondary">
+														<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" width="1.5em" height="1.5em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 1024 1024"><path d="M512 1024q-104 0-199-40.5t-163.5-109T40.5 711T0 512t40.5-199t109-163.5T313 40.5T512 0t199 40.5t163.5 109t109 163.5t40.5 199t-40.5 199t-109 163.5t-163.5 109t-199 40.5zm247-670q9-10 9-23t-9-22l-44-44q-10-9-22.5-9t-22.5 9L512 424L353 265q-9-9-22-9t-22 9l-44 44q-9 9-9 22t9 23l158 158l-158 158q-9 10-9 23t9 22l44 44q9 9 22 9t22-9l159-159l158 159q10 9 22.5 9t22.5-9l44-44q9-9 9-22t-9-23L600 512z" fill="currentColor"/></svg>
+													</button>
+												</ng-container>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="flex_item text-center la-barra-total" *ngIf="order_info.order">
+		<div class="d-flex" style="height:88px">
+			<div class="flex-fill align-self-center d-none d-md-block" *ngIf="currency_rate && rest.preferences.pos_display_currency_rate">
+				<div class="display-4">
+					{{currency_rate.rate | currency: currency_rate.currency_id}}
+				</div>
+				<div>Tipo Cambio</div>
+			</div>
+			<div class="flex-fill align-self-center d-none d-md-block" *ngIf="rest.preferences.pos_display_subtotal">
+				<div class="display-4">{{order_info.order.subtotal | currency:'$'}}</div>
+				<div>Subtotal</div>
+			</div>
+			<div class="flex-fill align-self-center d-none d-md-block" *ngIf="rest.preferences.pos_display_IVA">
+				<div class="display-4">{{order_info.order.tax | currency:'$' }}</div>
+				<div>IVA</div>
+			</div>
+			<div class="flex-fill align-self-center d-none d-md-block" *ngIf="currency_rate && rest.preferences.pos_display_total_USD">
+				<div class="display-4">{{ceil2( (order_info.order.total-order_info.order.discount) / getExchangeRate('USD')) |currency:'$'}}</div>
+				<div>Total USD</div>
+			</div>
+			<div class="flex-fill align-self-center">
+				<div class="display-4 texto-total">{{ order_info.order.total / getExchangeRate('MXN') | currency:'$' }}</div>
+				<div>Total</div>
+			</div>
+			<div class="flex-fill align-self-center px-1 px-sm-2">
+				<!--*ngIf="(!order_info.order?.id && order_info.items.length > 0 && order_info.order.service_type=='IN_PLACE') || show_order_button || ((order_info.order.service_type == 'TOGO' || order_info.order.service_type == 'PICK_UP') && order_info.items.length )"-->
+				<button class="btn btn-secondary w-100"
+					*ngIf="show_order_button && order_info.items.length"
+					(click)="ordenarACommanda()">
+					<span class="display-5" >Ordenar</span>
+				</button>
+			</div>
+			<div class="flex-fill align-self-center px-1 px-sm-2" *ngIf="!block_payment && rest.user_permission.add_payments && order_info?.items?.length">
+				<button class="btn btn-success w-100" style="background-color:#60B044" (click)="pay($event)" [disabled]="is_loading">
+					<span class="display-5 text-white">Pagar</span>
+				</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<app-modal [show]="show_receive_payment" (showChange)="onClosePayment($event)" [biggest_posible]="true">
+	<app-make-payment [order_info]="order_info" [currency_rate_list]="currency_rate_list" [user_balance]="client_user?.balance" [price_type_list]="price_type_list" [comex_max_points]="comex_max_points"></app-make-payment>
+</app-modal>
+
+<app-modal [(show)]="show_add_gasto">
+	<div style="min-width:300px" *ngIf="show_add_gasto">
+		<app-add-pos-bill (expenseAdded)="onExpenseAdded($event)"></app-add-pos-bill>
+	</div>
+</app-modal>
+
+<app-modal [(show)]="show_add_retiro">
+	<div style="min-width:300px" *ngIf="show_add_retiro">
+		<app-add-withdrawal (withdrawalAdded)="onWithdrawalAdded()"></app-add-withdrawal>
+	</div>
+</app-modal>
+<app-modal [show]="show_add_new_client" [closable]="false">
+	<ng-container *ngIf="show_add_new_client">
+		<app-add-new-client (newClient)="onNewClient($event)" [suggested_name]="new_client_suggested_name"></app-add-new-client>
+	</ng-container>
+</app-modal>
+
+<app-modal [(show)]="show_corte_caja" *ngIf="show_corte_caja">
+	<app-save-cash-close (close)="closeModalCorte()" *ngIf="show_corte_caja"></app-save-cash-close>
+</app-modal>
+
+<app-modal [show]="show_agregar_fondo" (showChange)="onModalFondoCerro(false)" [closable]="false">
+	<app-save-fund *ngIf="show_agregar_fondo" [reload]="show_agregar_fondo" (fundSaved)="onModalFondoCerro($event)"></app-save-fund>
+</app-modal>
+
+<app-modal [(show)]="show_select_options" [closable]="true" [biggest_posible]="true">
+	<ng-container *ngIf="!show_serial_item && show_select_options && order_info && selected_item_info">
+		<app-select-item-option
+			[item_info]="selected_item_info"
+			[price_list_id]="order_info.store.price_list_id"
+			[tax_percent]="order_info.order.tax_percent"
+			[use_inputs]="!!editing_order_item_info"
+			[initial_option_dictionary]="selected_option_quantities"
+			[initial_option_note_dictionary]="selected_option_notes"
+			(orderItemInfoList)="onOrderItemWithOptions($event)">
+		</app-select-item-option>
+	</ng-container>
+</app-modal>
+
+<app-modal [(show)]="show_order_item_exceptions">
+	<div class="p-3">
+		<div class="my-2" *ngIf="selected_order_item">
+			<h2>Nota</h2>
+			<div class="form-group mb-3">
+				<input type="text" [(ngModel)]="selected_order_item.order_item.note" name="order_item_note" class="form-control">
+			</div>
+			<div class="form-group mb-3" *ngIf="selected_order_item.batches && selected_order_item.batches.length > 0">
+				<h2 class="mt-2">Lotes</h2>
+				<ul class="list-group">
+					<li class="list-group-item" *ngFor="let b of selected_order_item.batches">
+						Lote: {{b.batch}} - Caducidad: {{b.expiration_date | date:'shortDate'}}
+					</li>
+				</ul>
+			</div>
+			<ng-container *ngIf="!selected_order_item.order_item.item_option_id">
+				<h2>Excepciones</h2>
+				<ul class="list-group">
+					<li class="list-group-item" *ngFor="let ie of selected_item_exceptions" (click)="clickOnException( ie )">
+						{{ie.description}}
+						<span style="float:right" *ngIf="ie.selected">
+							<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" d="M20 7L10 17l-5-5"/></svg>
+						</span>
+					</li>
+				</ul>
+			</ng-container>
+		</div>
+		<div class="text-end mt-3">
+			<button class="btn btn-danger mx-1" (click)="showChangePrice(selected_order_item)">Precio</button>
+			<button class="btn btn-danger mx-1" (click)="confirmRemoveElement(selected_order_item)" *ngIf="rest.user_permission.cancel_ordered_item">Eliminar</button>
+			<button class="btn btn-primary mx-1" (click)="show_order_item_exceptions = false">Cerrar</button>
+		</div>
+	</div>
+</app-modal>
+
+<app-modal [(show)]="show_order_note">
+	<form (submit)="saveNote($event)" ngNativeValidate>
+		<div class="p-3">
+			<div class="my-2">
+				<h2>Nota</h2>
+				<div class="form-group mb-3">
+					<textarea name="order_note" rows="5" cols="80" [(ngModel)]="note" class="form-control"></textarea>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-6">
+					<button class="btn btn-primary" (click)="show_order_note=false">cancelar</button>
+				</div>
+				<div class="col-6">
+					<button type="submit" class="btn btn-primary">Guardar</button>
+				</div>
+			</div>
+		</div>
+	</form>
+</app-modal>
+
+<app-modal [(show)]="show_pv_options">
+	<div>
+		<h3 class="my-3 fw-bold px-3">Opciones</h3>
+		<ul class="list-group pointer">
+
+			<li class="list-group-item" (click)="showOrderNote()">
+				<svg xmlns="http://www.w3.org/2000/svg" width="2em" height="2em" viewBox="0 0 20 20"><path fill="currentColor" d="m15.81 10.548l-4.83 4.83a2.2 2.2 0 0 0-.578 1.02l-.375 1.498a.89.89 0 0 0 1.079 1.078l1.498-.374a2.2 2.2 0 0 0 1.02-.578l4.83-4.83a1.87 1.87 0 0 0-2.645-2.644M7 2.5a.5.5 0 0 0-1 0V3h-.5A1.5 1.5 0 0 0 4 4.5v12A1.5 1.5 0 0 0 5.5 18h3.503q.01-.171.054-.347l.375-1.498a3.2 3.2 0 0 1 .84-1.485l4.83-4.83A2.9 2.9 0 0 1 16 9.232V4.5A1.5 1.5 0 0 0 14.5 3H14v-.5a.5.5 0 0 0-1 0V3h-2.5v-.5a.5.5 0 0 0-1 0V3H7zM7.5 7h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1 0-1m5.5 3.5a.5.5 0 0 1-.5.5h-5a.5.5 0 0 1 0-1h5a.5.5 0 0 1 .5.5M7.5 13h2a.5.5 0 0 1 0 1h-2a.5.5 0 0 1 0-1"/></svg>
+				<span class="ms-2">Agregar Nota</span>
+			</li>
+
+			<li class="list-group-item" *ngIf="order_info.order.service_type == 'TOGO' && order_info.order.delivery_status != 'DELIVERED'" (click)="showSelectDeliveryUser()">
+				<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" width="2em" height="2em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 16 16"><g fill="currentColor"><path fill-rule="evenodd" d="M10.5 3.5a2.5 2.5 0 0 0-5 0V4h5v-.5zm1 0V4H15v10a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V4h3.5v-.5a3.5 3.5 0 1 1 7 0zm-.646 5.354a.5.5 0 0 0-.708-.708L7.5 10.793L6.354 9.646a.5.5 0 1 0-.708.708l1.5 1.5a.5.5 0 0 0 .708 0l3-3z"/></g></svg>
+				<span class="ms-2">Asignar Repartidor</span>
+			</li>
+			<li class="list-group-item" *ngIf="order_info.order.delivery_status == 'PENDING'" (click)="updateOrderDeliveryStatus('READY_TO_PICKUP')">
+				<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" width="2em" height="2em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 16 16"><g fill="currentColor"><path fill-rule="evenodd" d="M10.5 3.5a2.5 2.5 0 0 0-5 0V4h5v-.5zm1 0V4H15v10a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V4h3.5v-.5a3.5 3.5 0 1 1 7 0zm-.646 5.354a.5.5 0 0 0-.708-.708L7.5 10.793L6.354 9.646a.5.5 0 1 0-.708.708l1.5 1.5a.5.5 0 0 0 .708 0l3-3z"/></g></svg>
+				<span class="ms-2">Marcar Lista Para recoger</span>
+			</li>
+			<li class="list-group-item" (click)="nuevaVenta()">
+				<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" width="2em" height="2em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 24 24"><circle cx="10.5" cy="19.5" r="1.5" fill="currentColor"/><circle cx="17.5" cy="19.5" r="1.5" fill="currentColor"/><path d="M21 7H7.334L6.18 4.23A1.995 1.995 0 0 0 4.333 3H2v2h2.334l4.743 11.385c.155.372.52.615.923.615h8c.417 0 .79-.259.937-.648l3-8A1.003 1.003 0 0 0 21 7zm-4 6h-2v2h-2v-2h-2v-2h2V9h2v2h2v2z" fill="currentColor"/></svg>
+				<span class="ms-2">Nueva Venta</span>
+			</li>
+			<li class="list-group-item" (click)="show_pv_options=false;show_add_gasto=true">
+				<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" width="2em" height="2em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 24 24"><g fill="none"><path d="M5 4.25A2.25 2.25 0 0 1 7.25 2h8.5A2.25 2.25 0 0 1 18 4.25V12h3.5v3.25a3.25 3.25 0 0 1-3.25 3.25h-5.326c.05-.326.076-.66.076-1a6.472 6.472 0 0 0-1.376-4h2.626a.75.75 0 0 0 0-1.5H9.966A6.52 6.52 0 0 0 5 11.174V4.25zM18 17h.25A1.75 1.75 0 0 0 20 15.25V13.5h-2V17zM8.75 5a.75.75 0 0 0 0 1.5h5.5a.75.75 0 0 0 0-1.5h-5.5zm0 3.5a.75.75 0 0 0 0 1.5h5.5a.75.75 0 0 0 0-1.5h-5.5zm3.25 9a5.5 5.5 0 1 0-11 0a5.5 5.5 0 0 0 11 0zM7 18l.001 2.503a.5.5 0 1 1-1 0V18H3.496a.5.5 0 0 1 0-1H6v-2.5a.5.5 0 1 1 1 0V17h2.497a.5.5 0 0 1 0 1H7z" fill="currentColor"/></g></svg>
+				<span class="ms-2">Agregar Gasto</span>
+			</li>
+			<li class="list-group-item" (click)="show_pv_options=false;show_add_retiro=true">
+				<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/2000/svg" aria-hidden="true" role="img" width="2em" height="2em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 24 24"><path d="M3 7a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v1h3a1 1 0 0 1 1 1v6a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V7zm14 1H5v5h12V8zm3 2h-1v3h1a1 1 0 0 0 0-3z" fill="currentColor"/></svg>
+				<span class="ms-2">Hacer Retiro</span>
+			</li>
+			<li class="list-group-item" (click)="show_pv_options=false;show_corte_caja=true">
+				<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" width="1.5em" height="1.5em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 448 512"><path d="M278.06 256L444.48 89.57c4.69-4.69 4.69-12.29 0-16.97c-32.8-32.8-85.99-32.8-118.79 0L210.18 188.12l-24.86-24.86c4.31-10.92 6.68-22.81 6.68-35.26c0-53.02-42.98-96-96-96S0 74.98 0 128s42.98 96 96 96c4.54 0 8.99-.32 13.36-.93L142.29 256l-32.93 32.93c-4.37-.61-8.83-.93-13.36-.93c-53.02 0-96 42.98-96 96s42.98 96 96 96s96-42.98 96-96c0-12.45-2.37-24.34-6.68-35.26l24.86-24.86L325.69 439.4c32.8 32.8 85.99 32.8 118.79 0c4.69-4.68 4.69-12.28 0-16.97L278.06 256zM96 160c-17.64 0-32-14.36-32-32s14.36-32 32-32s32 14.36 32 32s-14.36 32-32 32zm0 256c-17.64 0-32-14.36-32-32s14.36-32 32-32s32 14.36 32 32s-14.36 32-32 32z" fill="currentColor"/></svg>
+				<span class="ms-2">Cortes de Caja</span>
+			</li>
+			<li class="list-group-item" (click)="show_pv_options=false;show_agregar_fondo=true">
+				<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" width="2em" height="2em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 640 512"><path d="M352 288h-16v-88c0-4.42-3.58-8-8-8h-13.58c-4.74 0-9.37 1.4-13.31 4.03l-15.33 10.22a7.994 7.994 0 0 0-2.22 11.09l8.88 13.31a7.994 7.994 0 0 0 11.09 2.22l.47-.31V288h-16c-4.42 0-8 3.58-8 8v16c0 4.42 3.58 8 8 8h64c4.42 0 8-3.58 8-8v-16c0-4.42-3.58-8-8-8zM608 64H32C14.33 64 0 78.33 0 96v320c0 17.67 14.33 32 32 32h576c17.67 0 32-14.33 32-32V96c0-17.67-14.33-32-32-32zM48 400v-64c35.35 0 64 28.65 64 64H48zm0-224v-64h64c0 35.35-28.65 64-64 64zm272 192c-53.02 0-96-50.15-96-112c0-61.86 42.98-112 96-112s96 50.14 96 112c0 61.87-43 112-96 112zm272 32h-64c0-35.35 28.65-64 64-64v64zm0-224c-35.35 0-64-28.65-64-64h64v64z" fill="currentColor"/></svg>
+				<span class="ms-2">Agregar Fondo</span>
+			</li>
+			<li class="list-group-item" (click)="show_pv_options=false;show_add_new_client = true">
+				<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" width="2.2em" height="2.2em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 24 24"><path d="M4.5 8.552c0 1.995 1.505 3.5 3.5 3.5s3.5-1.505 3.5-3.5s-1.505-3.5-3.5-3.5s-3.5 1.505-3.5 3.5zM19 8h-2v3h-3v2h3v3h2v-3h3v-2h-3zM4 19h10v-1c0-2.757-2.243-5-5-5H7c-2.757 0-5 2.243-5 5v1h2z" fill="currentColor"/></svg>
+				<span class="ms-2">Agregar Cliente</span>
+			</li>
+			<li class="list-group-item" *ngIf="order_info.order?.paid_status == 'PENDING' && (order_info.items?.length ?? 0) > 0" (click)="cancelOrder()">
+				<svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" width="1.8em" height="1.8em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 16 16"><g fill="currentColor"><path d="M10 .5a.5.5 0 0 0-.5-.5h-3a.5.5 0 0 0-.5.5a.5.5 0 0 1-.5.5a.5.5 0 0 0-.5.5V2a.5.5 0 0 0 .5.5h5A.5.5 0 0 0 11 2v-.5a.5.5 0 0 0-.5-.5a.5.5 0 0 1-.5-.5Z"/><path d="M4.085 1H3.5A1.5 1.5 0 0 0 2 2.5v12A1.5 1.5 0 0 0 3.5 16h9a1.5 1.5 0 0 0 1.5-1.5v-12A1.5 1.5 0 0 0 12.5 1h-.585c.055.156.085.325.085.5V2a1.5 1.5 0 0 1-1.5 1.5h-5A1.5 1.5 0 0 1 4 2v-.5c0-.175.03-.344.085-.5ZM8 8.293l1.146-1.147a.5.5 0 1 1 .708.708L8.707 9l1.147 1.146a.5.5 0 0 1-.708.708L8 9.707l-1.146 1.147a.5.5 0 0 1-.708-.708L7.293 9L6.146 7.854a.5.5 0 1 1 .708-.708L8 8.293Z"/></g></svg>
+				Cancelar Orden
+			</li>
+			<li class="list-group-item" *ngIf="rest.user_permission.pv_returns" (click)="show_return_order_search=true">
+				<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" width="2em" height="2em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 32 32"><path d="M12.98 9.073V6.817L.876 13.807l12.106 6.99v-2.422c3.286-.002 9.053.28 9.053 2.27c0 2.78-6.023 4.262-6.023 4.262v2.132s13.53.462 13.53-9.824c0-8.082-11.588-8.385-16.56-8.143z" fill="currentColor"/></svg>
+				Cancelar Articulos
+			</li>
+			<!--li class="list-group-item pointer" routerLink="/facturacion-periodo">
+				<svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" width="1em" height="1em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 15 15"><path fill="currentColor" d="M10 7.995V9H8V7.995h2ZM10 6v.995H8V6h2ZM7 6H5v.995h2V6Zm0 1.995H5V9h2V7.995Z"/><path fill="currentColor" fill-rule="evenodd" d="M1 1.5A1.5 1.5 0 0 1 2.5 0h8.207L14 3.293V13.5a1.5 1.5 0 0 1-1.5 1.5h-10A1.5 1.5 0 0 1 1 13.5v-12ZM4 4h3V3H4v1Zm7 1H4v5h7V5Zm0 7H8v-1h3v1Z" clip-rule="evenodd"/></svg>
+				Facturación por Periodo
+			</li-->
+			<li class="list-group-item" *ngIf="rest.is_offline" (click)="rest.is_offline=false">
+				<svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" width="2em" height="2em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 24 24"><path d="M12 12c-2.03 0-3.9.67-5.4 1.8l-1.8-2.4C6.81 9.89 9.3 9 12 9s5.19.89 7.2 2.4l-1.28 1.7c-.37.07-.74.17-1.08.31C15.44 12.5 13.78 12 12 12m9-3l1.8-2.4C19.79 4.34 16.05 3 12 3S4.21 4.34 1.2 6.6L3 9c2.5-1.88 5.62-3 9-3s6.5 1.12 9 3m-9 6c-1.35 0-2.6.45-3.6 1.2L12 21l1.04-1.39c-.04-.2-.04-.4-.04-.61c0-1.34.44-2.57 1.19-3.57c-.69-.27-1.42-.43-2.19-.43m9.12.46L19 17.59l-2.12-2.12l-1.41 1.41L17.59 19l-2.12 2.12l1.41 1.42L19 20.41l2.12 2.13l1.42-1.42L20.41 19l2.13-2.12l-1.42-1.42z" fill="currentColor"/></svg>
+				<span class="ms-2">Activar Modo En Linea</span>
+			</li>
+
+			<li class="list-group-item" *ngIf="!rest.is_offline" (click)="rest.is_offline=true">
+				<svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" width="2em" height="2em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 24 24"><path d="M12 12c-2.03 0-3.9.67-5.4 1.8l-1.8-2.4C6.81 9.89 9.3 9 12 9s5.19.89 7.2 2.4l-1.28 1.7c-.37.07-.74.17-1.08.31C15.44 12.5 13.78 12 12 12m9-3l1.8-2.4C19.79 4.34 16.05 3 12 3S4.21 4.34 1.2 6.6L3 9c2.5-1.88 5.62-3 9-3s6.5 1.12 9 3m-9 6c-1.35 0-2.6.45-3.6 1.2L12 21l1.04-1.39c-.04-.2-.04-.4-.04-.61c0-1.34.44-2.57 1.19-3.57c-.69-.27-1.42-.43-2.19-.43m5.75 4.43l-1.59-1.59L15 19l2.75 3l4.75-4.75l-1.16-1.41l-3.59 3.59z" fill="currentColor"/></svg>
+				<span class="ms-2">Activar Modo Offline</span>
+			</li>
+
+			<li class="list-group-item" *ngIf="!rest._offline_search_enabled" (click)="enableOfflineSearch()" [ngClass]="{disabled:rest.is_offline}">
+				<svg xmlns="http://www.w3.org/2000/svg" width="2em" height="2em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 20 20"><path fill="currentColor" d="M7.988 4.18a12.213 12.213 0 0 0-.67 2.32h5.364a12.219 12.219 0 0 0-.67-2.32c-.301-.733-.648-1.294-1.008-1.663C10.646 2.149 10.307 2 10 2c-.307 0-.646.149-1.004.517c-.36.37-.706.93-1.008 1.663ZM7.89 2.281c-.314.426-.59.941-.828 1.518c-.32.78-.58 1.694-.762 2.701H2.804a8.02 8.02 0 0 1 5.087-4.219Zm5.046 1.518a7.185 7.185 0 0 0-.827-1.518A8.02 8.02 0 0 1 17.196 6.5h-3.497c-.182-1.007-.44-1.922-.762-2.7ZM17.602 7.5H13.85c.098.795.15 1.634.15 2.5c0 .866-.052 1.705-.15 2.5h3.752A7.99 7.99 0 0 0 18 10a7.99 7.99 0 0 0-.398-2.5Zm-3.903 6h3.497a8.02 8.02 0 0 1-5.086 4.219a7.18 7.18 0 0 0 .827-1.518c.321-.78.58-1.694.762-2.701Zm-4.137.44c.068-.143.129-.29.182-.44h2.938a12.217 12.217 0 0 1-.67 2.32a8.018 8.018 0 0 1-.2.45a1.503 1.503 0 0 0-.251-.33l-2-2Zm.41-1.44h2.87c.102-.786.158-1.625.158-2.5s-.056-1.715-.158-2.5H7.158l-.037.3a4.502 4.502 0 0 1 2.852 4.7Zm-3.822-5l-.006.046A4.539 4.539 0 0 0 5.5 7.5h.65Zm-3.752 0H5.5a4.49 4.49 0 0 0-3.45 1.612c.061-.556.18-1.096.35-1.612Zm3.102 8c.786 0 1.512-.26 2.096-.697l2.55 2.55a.5.5 0 1 0 .708-.707l-2.55-2.55A3.5 3.5 0 1 0 5.5 15.5Zm0-1a2.5 2.5 0 1 1 0-5a2.5 2.5 0 0 1 0 5Z"/></svg>
+				<!--svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" width="2em" height="2em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 24 24"><path d="M12 12c-2.03 0-3.9.67-5.4 1.8l-1.8-2.4C6.81 9.89 9.3 9 12 9s5.19.89 7.2 2.4l-1.28 1.7c-.37.07-.74.17-1.08.31C15.44 12.5 13.78 12 12 12m9-3l1.8-2.4C19.79 4.34 16.05 3 12 3S4.21 4.34 1.2 6.6L3 9c2.5-1.88 5.62-3 9-3s6.5 1.12 9 3m-9 6c-1.35 0-2.6.45-3.6 1.2L12 21l1.04-1.39c-.04-.2-.04-.4-.04-.61c0-1.34.44-2.57 1.19-3.57c-.69-.27-1.42-.43-2.19-.43m5.75 4.43l-1.59-1.59L15 19l2.75 3l4.75-4.75l-1.16-1.41l-3.59 3.59z" fill="currentColor"/></svg-->
+				<span class="ms-2">Activar Búsqueda Rápida</span>
+			</li>
+
+			<li class="list-group-item" *ngIf="rest._offline_search_enabled " (click)="disableOfflineSearch()" [ngClass]="{disabled:rest.is_offline}">
+				<!--svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" width="2em" height="2em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 24 24"><path d="M12 12c-2.03 0-3.9.67-5.4 1.8l-1.8-2.4C6.81 9.89 9.3 9 12 9s5.19.89 7.2 2.4l-1.28 1.7c-.37.07-.74.17-1.08.31C15.44 12.5 13.78 12 12 12m9-3l1.8-2.4C19.79 4.34 16.05 3 12 3S4.21 4.34 1.2 6.6L3 9c2.5-1.88 5.62-3 9-3s6.5 1.12 9 3m-9 6c-1.35 0-2.6.45-3.6 1.2L12 21l1.04-1.39c-.04-.2-.04-.4-.04-.61c0-1.34.44-2.57 1.19-3.57c-.69-.27-1.42-.43-2.19-.43m5.75 4.43l-1.59-1.59L15 19l2.75 3l4.75-4.75l-1.16-1.41l-3.59 3.59z" fill="currentColor"/></svg-->
+				<svg xmlns="http://www.w3.org/2000/svg" width="1.8em" height="2em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 460 512"><path fill="currentColor" d="m220.6 130.3l-67.2 28.2V43.2L98.7 233.5l54.7-24.2v130.3l67.2-209.3zm-83.2-96.7l-1.3 4.7l-15.2 52.9C80.6 106.7 52 145.8 52 191.5c0 52.3 34.3 95.9 83.4 105.5v53.6C57.5 340.1 0 272.4 0 191.6c0-80.5 59.8-147.2 137.4-158zm311.4 447.2c-11.2 11.2-23.1 12.3-28.6 10.5c-5.4-1.8-27.1-19.9-60.4-44.4c-33.3-24.6-33.6-35.7-43-56.7c-9.4-20.9-30.4-42.6-57.5-52.4l-9.7-14.7c-24.7 16.9-53 26.9-81.3 28.7l2.1-6.6l15.9-49.5c46.5-11.9 80.9-54 80.9-104.2c0-54.5-38.4-102.1-96-107.1V32.3C254.4 37.4 320 106.8 320 191.6c0 33.6-11.2 64.7-29 90.4l14.6 9.6c9.8 27.1 31.5 48 52.4 57.4s32.2 9.7 56.8 43c24.6 33.2 42.7 54.9 44.5 60.3s.7 17.3-10.5 28.5zm-9.9-17.9c0-4.4-3.6-8-8-8s-8 3.6-8 8s3.6 8 8 8s8-3.6 8-8z"/></svg>
+				<span class="ms-2">Activar Búsqueda en Linea</span>
+			</li>
+
+			<li class="list-group-item" *ngIf="search_type=='TACTILE'" (click)="showInterfase('KEYBOARD')">
+				<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" width="2.26em" height="2em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 576 512"><path d="M528 448H48c-26.51 0-48-21.49-48-48V112c0-26.51 21.49-48 48-48h480c26.51 0 48 21.49 48 48v288c0 26.51-21.49 48-48 48zM128 180v-40c0-6.627-5.373-12-12-12H76c-6.627 0-12 5.373-12 12v40c0 6.627 5.373 12 12 12h40c6.627 0 12-5.373 12-12zm96 0v-40c0-6.627-5.373-12-12-12h-40c-6.627 0-12 5.373-12 12v40c0 6.627 5.373 12 12 12h40c6.627 0 12-5.373 12-12zm96 0v-40c0-6.627-5.373-12-12-12h-40c-6.627 0-12 5.373-12 12v40c0 6.627 5.373 12 12 12h40c6.627 0 12-5.373 12-12zm96 0v-40c0-6.627-5.373-12-12-12h-40c-6.627 0-12 5.373-12 12v40c0 6.627 5.373 12 12 12h40c6.627 0 12-5.373 12-12zm96 0v-40c0-6.627-5.373-12-12-12h-40c-6.627 0-12 5.373-12 12v40c0 6.627 5.373 12 12 12h40c6.627 0 12-5.373 12-12zm-336 96v-40c0-6.627-5.373-12-12-12h-40c-6.627 0-12 5.373-12 12v40c0 6.627 5.373 12 12 12h40c6.627 0 12-5.373 12-12zm96 0v-40c0-6.627-5.373-12-12-12h-40c-6.627 0-12 5.373-12 12v40c0 6.627 5.373 12 12 12h40c6.627 0 12-5.373 12-12zm96 0v-40c0-6.627-5.373-12-12-12h-40c-6.627 0-12 5.373-12 12v40c0 6.627 5.373 12 12 12h40c6.627 0 12-5.373 12-12zm96 0v-40c0-6.627-5.373-12-12-12h-40c-6.627 0-12 5.373-12 12v40c0 6.627 5.373 12 12 12h40c6.627 0 12-5.373 12-12zm-336 96v-40c0-6.627-5.373-12-12-12H76c-6.627 0-12 5.373-12 12v40c0 6.627 5.373 12 12 12h40c6.627 0 12-5.373 12-12zm288 0v-40c0-6.627-5.373-12-12-12H172c-6.627 0-12 5.373-12 12v40c0 6.627 5.373 12 12 12h232c6.627 0 12-5.373 12-12zm96 0v-40c0-6.627-5.373-12-12-12h-40c-6.627 0-12 5.373-12 12v40c0 6.627 5.373 12 12 12h40c6.627 0 12-5.373 12-12z" fill="currentColor"/></svg>
+				Interfaz Teclado
+			</li>
+			<li class="list-group-item" *ngIf="search_type=='KEYBOARD'" (click)="showInterfase('TACTILE');">
+				<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" width="2em" height="2em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 32 32"><path d="M13 2a6.007 6.007 0 0 0-6 6h2a4 4 0 0 1 8 0h2a6.007 6.007 0 0 0-6-6z" fill="currentColor"/><path d="M21 30h-4.44a4 4 0 0 1-2.708-1.057l-9.2-8.466a2.002 2.002 0 0 1 .118-3.055a2.074 2.074 0 0 1 2.658.173L11 20.857V8a2 2 0 0 1 4 0v7a2 2 0 0 1 4 0v1a2 2 0 0 1 4 0v1a2 2 0 0 1 4 0v7a6 6 0 0 1-6 6z" fill="currentColor"/></svg>
+				Interfaz Táctil
+			</li>
+
+			<li class="list-group-item pointer" [routerLink]="['/split-order',order_info.order.id]">
+				<svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" width="2.2em" height="2.2em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 24 24"><path fill="currentColor" d="M11 5h2v14h-2V5zm-6 7c1.1 0 2-.9 2-2s-.9-2-2-2s-2 .9-2 2s.9 2 2 2zm2.78 1.58a6.95 6.95 0 0 0-5.56 0A2.01 2.01 0 0 0 1 15.43V16h8v-.57c0-.81-.48-1.53-1.22-1.85zM19 12c1.1 0 2-.9 2-2s-.9-2-2-2s-2 .9-2 2s.9 2 2 2zm2.78 1.58a6.95 6.95 0 0 0-5.56 0A2.01 2.01 0 0 0 15 15.43V16h8v-.57c0-.81-.48-1.53-1.22-1.85z"/></svg>
+				<span class="ms-2">Partir Orden</span>
+			</li>
+
+			<li class="list-group-item pointer" *ngIf="order_info.order.discount>0" (click)="restorePrices()">
+				<span class="ms-2">Restaurar Precios</span>
+			</li>
+		</ul>
+	</div>
+</app-modal>
+
+<app-modal [(show)]="show_delivery_address">
+	<div class="m-3">Seleccione Dirección de entrega</div>
+	<ul class="list-group">
+		<li class="list-group-item" (click)="showAddNewAddress()">Agregar Nueva Dirección</li>
+		<li class="list-group-item" *ngFor="let address of address_list" (click)="onSelectDeliveryAddress(address)">
+			{{address.address}}
+			<span *ngIf="order_info.order.shipping_address_id == address.id">
+				<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" width="1em" height="1em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 16 16"><g fill="currentColor"><path d="M13.485 1.431a1.473 1.473 0 0 1 2.104 2.062l-7.84 9.801a1.473 1.473 0 0 1-2.12.04L.431 8.138a1.473 1.473 0 0 1 2.084-2.083l4.111 4.112l6.82-8.69a.486.486 0 0 1 .04-.045z"/></g></svg>
+			</span>
+		</li>
+	</ul>
+</app-modal>
+<app-modal [(show)]="show_delivery_options">
+	<div class="m-3">Opciones</div>
+	<ul class="list-group pointer">
+		<li class="list-group-item" (click)="setOrderType('QUICK_SALE')">
+			<svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" width="1em" height="1em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 16 16"><path fill="currentColor" d="M5.52.359A.5.5 0 0 1 6 0h4a.5.5 0 0 1 .474.658L8.694 6H12.5a.5.5 0 0 1 .395.807l-7 9a.5.5 0 0 1-.873-.454L6.823 9.5H3.5a.5.5 0 0 1-.48-.641l2.5-8.5z"/></svg>
+			Venta Rápida
+		</li>
+		<li class="list-group-item" (click)="setOrderType('TOGO')" *ngIf="order_info.order.client_user_id">
+			<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" width="1em" height="1em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 24 24"><path d="M3 4a2 2 0 0 0-2 2v11h2a3 3 0 0 0 3 3a3 3 0 0 0 3-3h6a3 3 0 0 0 3 3a3 3 0 0 0 3-3h2v-5l-3-4h-3V4m-7 2l4 4l-4 4v-3H4V9h6m7 .5h2.5l1.97 2.5H17M6 15.5A1.5 1.5 0 0 1 7.5 17A1.5 1.5 0 0 1 6 18.5A1.5 1.5 0 0 1 4.5 17A1.5 1.5 0 0 1 6 15.5m12 0a1.5 1.5 0 0 1 1.5 1.5a1.5 1.5 0 0 1-1.5 1.5a1.5 1.5 0 0 1-1.5-1.5a1.5 1.5 0 0 1 1.5-1.5z" fill="currentColor"/></svg>
+			A Domicilio
+		</li>
+		<li class="list-group-item" (click)="setOrderType('IN_PLACE')">
+			<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" width="1em" height="1em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 24 24"><path d="M21.96 9.73l-1.43-5a.996.996 0 0 0-.96-.73H4.43c-.45 0-.84.3-.96.73l-1.43 5c-.18.63.3 1.27.96 1.27h2.2L4 20h2l.67-5h10.67l.66 5h2l-1.2-9H21c.66 0 1.14-.64.96-1.27zM6.93 13l.27-2h9.6l.27 2H6.93z" fill="currentColor"/></svg>
+			Comer Aquí
+		</li>
+		<li class="list-group-item" (click)="setOrderType('PICK_UP')">
+			<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" width="1em" height="1em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 16 16"><g fill="currentColor"><path d="M8 1a2.5 2.5 0 0 1 2.5 2.5V4h-5v-.5A2.5 2.5 0 0 1 8 1zm3.5 3v-.5a3.5 3.5 0 1 0-7 0V4H1v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V4h-3.5z"/></g></svg>
+			Recoger
+		</li>
+		<li class="list-group-item" *ngIf="order_info.order.paid_status == 'PENDING' && order_info.items.length > 0" (click)="cancelOrder()">
+			Cancelar
+		</li>
+	</ul>
+</app-modal>
+
+<app-modal [show]="show_add_new_address">
+	<div class="m-3"></div>
+	<app-add-new-address  *ngIf="show_add_new_address" [user]="client_user" (addressChange)="onAddressChange(address)"></app-add-new-address>
+</app-modal>
+
+<app-modal [(show)]="show_asign_delivery_user">
+	<ng-container *ngIf="order_info">
+		<app-select-delivery-user (onUserSelected)="onDeliveryUserSelected($event)" [order_id]="order_info.order.id" [delivery_store_id]="order_info.order.store_id"></app-select-delivery-user>
+	</ng-container>
+</app-modal>
+
+<app-modal [show]="show_return_order" [closable]="false" [biggest_posible]="true">
+	<ng-container *ngIf="return_order_id">
+		<app-make-order-return [order_id]="return_order_id" [store_id]="order_info.order.store_id" (onCancel)="cancelReturnOrderId()" (onOrderReturned)="onOrderReturnedSuccessfully($event)"></app-make-order-return>
+	</ng-container>
+</app-modal>
+
+<app-modal [(show)]="show_edit_qty">
+		<form (submit)="onSelectedItemQtyChanged($event)" ngNativeValidate>
+		<div class="p-3" *ngIf="show_edit_qty">
+			<h2>Editar Cantidad</h2>
+
+			<!-- ul class="nav nav-tabs discount-tabs">
+				<li class="nav-item">
+					<a class="nav-link" [ngClass]="{active:edit_qty_type=='AMOUNT'}" (click)="edit_qty_type='AMOUNT'">Cantidad</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link" [ngClass]="{active:edit_qty_type=='PRICE'}" (click)="edit_qty_type='PRICE'">Por Precio</a>
+				</li>
+			</ul -->
+
+			<div class="row w-100">
+				<div class="col-6 px-1 px-md-3">
+					<label>Cantidad</label>
+					<input name="selected_order_item_qty_input" type="number" [min]="selected_order_item?.item?.partial_sale == 'YES'?0.001:1" [(ngModel)]="selected_order_item_qty" [step]="selected_order_item?.item?.partial_sale == 'YES'?'any':1" class="form-control" #selected_order_item_qty_input required>
+				</div>
+				<div class="col-6 px-1 px-md-3">
+					<label></label>
+					<div>
+						<button type="submit" class="btn btn-primary">Actualizar</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	</form>
+</app-modal>
+
+<app-modal [(show)]="show_add_discount">
+	<form (submit)="applyDiscount()" ngNativeValidate>
+		<div class="p-3" *ngIf="selected_order_item">
+			<h2>Agregar Descuento</h2>
+			<ul class="nav nav-tabs discount-tabs">
+				<li class="nav-item">
+					<a class="nav-link" [ngClass]="{active:discount_type=='PERCENT'}" (click)="discount_type='PERCENT'">Porcentual</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link" [ngClass]="{active:discount_type=='AMOUNT'}" (click)="discount_type='AMOUNT'">Cantidad</a>
+				</li>
+			</ul>
+			<div class="row w-100 mx-0">
+				<div class="col-8 fw-bold">{{selected_order_item | itemName }}</div>
+				<div class="col-4 fw-bold"></div>
+				<div class="col-8">
+					Artículos
+				</div>
+				<div class="col-4 text-end fw-bold">{{selected_order_item.order_item.qty | number}}</div>
+				<div class="col-8">Precio Unitario</div>
+				<div class="col-4 fw-bold text-end">
+					{{selected_order_item.order_item.unitary_price * (1+(this.selected_order_item.item.applicable_tax =='EXEMPT' ? 0 : this.order_info.order.tax_percent)/100) | currency}}
+				</div>
+				<div class="col-8">Precio Unitario con descuento</div>
+				<div class="col-4 fw-bold text-end">
+
+					<ng-container *ngIf="discount_type=='PERCENT'">
+						<label>{{(selected_order_item_total_original/selected_order_item.order_item.qty)*(1-selected_order_item_discount_percent/100) | currency}}</label>
+					</ng-container>
+					<ng-container *ngIf="discount_type=='AMOUNT'">
+						<label>{{(selected_order_item_total_original/selected_order_item.order_item.qty)-selected_order_item_discount | currency}}</label>
+					</ng-container>
+
+				</div>
+				<div class="col-8">Descuento Total</div>
+
+				<div class="col-4 fw-bold text-end">
+					<ng-container *ngIf="discount_type=='PERCENT'">
+						<label>{{(selected_order_item_total_original*selected_order_item_discount_percent/100) | currency}}</label>
+					</ng-container>
+					<ng-container *ngIf="discount_type=='AMOUNT'">
+						<label>{{(selected_order_item_discount*selected_order_item.order_item.qty) | currency}}</label>
+					</ng-container>
+
+				</div>
+
+
+				<div class="col-8">Total</div>
+				<div class="col-4 fw-bold text-end">
+					<ng-container *ngIf="discount_type=='PERCENT'">
+						<label>{{selected_order_item_total_original *(1-selected_order_item_discount_percent/100) | currency}}</label>
+					</ng-container>
+					<ng-container *ngIf="discount_type=='AMOUNT'">
+						<label>{{selected_order_item_total_original-(selected_order_item_discount*selected_order_item.order_item.qty) | currency}}</label>
+					</ng-container>
+				</div>
+				<div class="col-12 px-1 px-lg-3" *ngIf="discount_type == 'PERCENT'">
+					<div class="input-group">
+						<input name="selected_order_item_discount_percent_range" style="flex:5 1 auto" step="5" type="range" min="0" max="100" [(ngModel)]="selected_order_item_discount_percent" class="form-control">
+						<input name="selected_order_item_discount_percent_number" style="flex:1 1 auto" step="any" type="number" min="0" max="100" [(ngModel)]="selected_order_item_discount_percent" class="form-control" autofocus>
+						<div class="input-group-append">
+							<span class="input-group-text">%</span>
+						</div>
+					</div>
+				</div>
+				<div class="col-12 px-1 px-lg-3" *ngIf="discount_type == 'AMOUNT'">
+					<label class="w-100">Descuento x Artículo
+						<b style="float: right;">
+							{{(selected_order_item_discount/(this.selected_order_item_total_original/this.selected_order_item.order_item.qty))*100| number:'1.0-0'}}%
+							{{selected_order_item_discount}}
+						</b>
+					</label>
+					<div class="input-group">
+						<input name="selected_order_item_discount_range" style="flex:5 1 auto" type="range" step=1 min=0 [max]="selected_order_item.order_item.unitary_price_meta" [(ngModel)]="selected_order_item_discount" class="form-control">
+						<input name="selected_order_item_discount_number" style="flex:1 1 auto" type="number" step="any" min="0" [max]="selected_order_item.order_item.unitary_price_meta" [(ngModel)]="selected_order_item_discount" class="form-control" autofocus>
+						<div class="input-group-append">
+							<span class="input-group-text">$</span>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="row my-3 mx-0">
+				<div class="col-6">
+					<button type="button" (click)="show_add_discount=false" class="w-100 btn btn-primary">Cancelar</button>
+				</div>
+				<div class="col-6">
+					<button type="submit" class="w-100 btn btn-danger">Aceptar</button>
+				</div>
+			</div>
+		</div>
+	</form>
+</app-modal>
+
+<app-modal [show]="show_return_order_search" [closable]="false" ngNativeValidate>
+	<form (submit)="showReturnOrder(return_order_search_id ?? 0,$event)" name="search_return_order">
+		<div class="p-3">
+			<h1>Cancelaciones</h1>
+			<div class="form-group">
+				<label>Id de la Orden</label>
+				<input type="number" [(ngModel)]="return_order_search_id" name="return_order_search_id" class="form-control" #numerodefolio4 required autofocus>
+			</div>
+			<div class="row">
+				<div class="col-6 mt-3">
+					<button type="button" class="btn btn-primary" (click)="show_return_order_search=false">Cancelar</button>
+				</div>
+				<div class="col-6 mt-3">
+					<button type="submit" class="btn btn-primary">Buscar</button>
+				</div>
+			</div>
+		</div>
+	</form>
+</app-modal>
+
+<app-modal [show]="show_order_closed" [closable]="false">
+	<div class="p-3">
+		<h2>La orden ya fue Procesada</h2>
+		<div class="text-end">
+			<a routerLink="/pos" class="btn btn-primary">Cerrar</a>
+		</div>
+	</div>
+</app-modal>
+<app-modal [show]="show_change_order_item_price" [closable]="false">
+	<div class="p-3" *ngIf="selected_order_item">
+		<form (submit)="onChangeOrderItemPrice($event)">
+			<h2>Cambiar el precio a {{selected_order_item | itemName }}</h2>
+			<div class="row">
+				<div class="form-group">
+					<label>Precio
+						<abbr title="IVA incluido">
+							<svg xmlns="http://www.w3.org/2000/svg" width="1.5em" height="1.5em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 20 20"><path fill="currentColor" d="M10 .4C4.697.4.399 4.698.399 10A9.6 9.6 0 0 0 10 19.601c5.301 0 9.6-4.298 9.6-9.601c0-5.302-4.299-9.6-9.6-9.6zm.896 3.466c.936 0 1.211.543 1.211 1.164c0 .775-.62 1.492-1.679 1.492c-.886 0-1.308-.445-1.282-1.182c0-.621.519-1.474 1.75-1.474zM8.498 15.75c-.64 0-1.107-.389-.66-2.094l.733-3.025c.127-.484.148-.678 0-.678c-.191 0-1.022.334-1.512.664l-.319-.523c1.555-1.299 3.343-2.061 4.108-2.061c.64 0 .746.756.427 1.92l-.84 3.18c-.149.562-.085.756.064.756c.192 0 .82-.232 1.438-.719l.362.486c-1.513 1.512-3.162 2.094-3.801 2.094z"/></svg>
+						</abbr>
+					</label>
+					<input type="number" name="new_price" [(ngModel)]="new_price" step="0.01" class="form-control">
+				</div>
+
+				<ng-container *ngIf="!(rest.user_permission.store_prices || rest.user_permission.global_prices)">
+					<div class="form-group col-12">
+						<label>Gerente</label>
+						<input type="text" name="new_price_manager_user" [(ngModel)]="new_price_manager_user" list="manager_user_list" class="form-control" required autocomplete="off">
+						<datalist id="manager_user_list">
+							<option *ngFor="let user of manager_user_list" [value]="user.username">{{user.name}}</option>
+						</datalist>
+					</div>
+					<div class="form-group col-12">
+						<label>Contraseña</label>
+						<input type="password" name="new_price_password" [(ngModel)]="new_price_password" class="form-control" autocomplete="off" required>
+					</div>
+				</ng-container>
+				<div class="col-12">
+					<span>El cambio del precio es temporal o permanente?</span>
+				</div>
+				<div class="form-group col-12">
+					<div class="form-check">
+						<input class="form-check-input" type="radio" name="new_price_change_type" [(ngModel)]="new_price_change_type" value="ONE_TIME" id="just_this_time">
+						<label class="form-check-label" for="just_this_time">
+							Temporal. Modificar solo esta venta
+						</label>
+					</div>
+				</div>
+				<ng-container *ngIf="order_info.price_type?.model != 'PERCENT'">
+					<div class="form-group col-12">
+						<div class="form-check">
+							<input class="form-check-input" type="radio" name="new_price_change_type" [(ngModel)]="new_price_change_type" value="ALWAYS" id="always">
+							<label class="form-check-label" for="always">
+								Permanente. Modificar esta venta y ventas futuras
+							</label>
+						</div>
+					</div>
+				</ng-container>
+			</div>
+			<div class="row mt-3">
+				<div class="col-6">
+					<button type="button" (click)="show_change_order_item_price = false" class="btn btn-primary">Cancelar</button>
+				</div>
+				<div class="col-6">
+					<button type="submit" class="btn btn-primary w-100">Cambiar</button>
+				</div>
+			</div>
+		</form>
+	</div>
+</app-modal>
+
+<app-modal [show]="show_change_item_price" [closable]="false">
+	<div class="p-3" *ngIf="selected_item_info">
+		<form (submit)="onChangeItemPrice($event)">
+			<h2>Cambiar el precio a {{selected_item_info | itemName}}</h2>
+			<div class="row">
+				<div class="form-group">
+					<label>
+						Precio
+						<abbr title="IVA incluido">
+							<svg xmlns="http://www.w3.org/2000/svg" width="1.5em" height="1.5em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 20 20"><path fill="currentColor" d="M10 .4C4.697.4.399 4.698.399 10A9.6 9.6 0 0 0 10 19.601c5.301 0 9.6-4.298 9.6-9.601c0-5.302-4.299-9.6-9.6-9.6zm.896 3.466c.936 0 1.211.543 1.211 1.164c0 .775-.62 1.492-1.679 1.492c-.886 0-1.308-.445-1.282-1.182c0-.621.519-1.474 1.75-1.474zM8.498 15.75c-.64 0-1.107-.389-.66-2.094l.733-3.025c.127-.484.148-.678 0-.678c-.191 0-1.022.334-1.512.664l-.319-.523c1.555-1.299 3.343-2.061 4.108-2.061c.64 0 .746.756.427 1.92l-.84 3.18c-.149.562-.085.756.064.756c.192 0 .82-.232 1.438-.719l.362.486c-1.513 1.512-3.162 2.094-3.801 2.094z"/></svg>
+						</abbr>
+					</label>
+					<input type="number" name="new_price" [(ngModel)]="new_price" step="0.01" class="form-control">
+				</div>
+				<ng-container *ngIf="!(rest.user_permission.store_prices || !rest.user_permission.global_prices)">
+					<div class="form-group col-12">
+						<label>Gerente</label>
+						<input type="text" name="new_price_manager_user" [(ngModel)]="new_price_manager_user" list="manager_user_list" class="form-control" required autocomplete="off">
+						<datalist id="manager_user_list">
+							<option *ngFor="let user of manager_user_list" [value]="user.username">{{user.name}}</option>
+						</datalist>
+					</div>
+					<div class="form-group col-12">
+						<label>Contraseña</label>
+						<input type="password" name="new_price_password" [(ngModel)]="new_price_password" class="form-control" autocomplete="off" required>
+					</div>
+				</ng-container>
+			</div>
+			<div class="row mt-3">
+				<div class="col-6">
+					<button type="button" (click)="show_change_item_price = false" class="btn btn-primary">Cancelar</button>
+				</div>
+				<div class="col-6">
+					<button type="submit" class="btn btn-primary w-100">Cambiar</button>
+				</div>
+			</div>
+		</form>
+	</div>
+</app-modal>
+
+<app-modal [show]="show_serial_item" [closable]="false">
+	<ng-container *ngIf="show_serial_item && selected_item_info">
+		<app-select-item-serial
+			[item_info]="selected_item_info"
+			[store_id]="order_info.order.store_id"
+			(orderItemInfoList)="onOrderItemWithOptions($event)"></app-select-item-serial>
+	</ng-container>
+</app-modal>
+
+<app-modal [show]="show_batch_selection" [closable]="false" [biggest_posible]="true">
+	<form (submit)="onBatchSelectionConfirm(); $event.preventDefault()" *ngIf="selected_item_info">
+		<div class="p-3">
+			<h2>Seleccionar Lotes para {{selected_item_info.item.name | titlecase}}</h2>
+
+			<div *ngIf="is_loading" class="text-center my-3">
+				<div class="spinner-border text-primary" role="status">
+					<span class="visually-hidden">Cargando...</span>
+				</div>
+			</div>
+
+			<div *ngIf="!is_loading">
+				<table class="table table-bordered mt-3">
+					<thead>
+						<tr>
+							<th>Lote</th>
+							<th>Caducidad</th>
+							<th class="text-end">Disponible</th>
+							<th class="text-end">Cantidad a Tomar</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr *ngFor="let sel of batch_selections">
+							<td class="align-middle">{{sel.batch.batch || 'N/A'}}</td>
+							<td class="align-middle">{{sel.batch.expiration_date ? (sel.batch.expiration_date | date:'shortDate') : 'N/A'}}</td>
+							<td class="align-middle text-end">{{sel.batch.qty}}</td>
+							<td style="width: 150px;">
+								<div class="input-group">
+									<button class="btn btn-outline-secondary px-2" type="button" (click)="sel.qty = (sel.qty > 0 ? sel.qty - 1 : 0)">
+										<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" width="1.5em" height="1.5em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 24 24"><g fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M12 1C5.925 1 1 5.925 1 12s4.925 11 11 11s11-4.925 11-11S18.075 1 12 1zM8 11a1 1 0 1 0 0 2h8a1 1 0 1 0 0-2H8z" fill="currentColor"/></g></svg>
+									</button>
+									<input type="number" #batch_qty_input name="batch_qty_{{sel.batch.id}}" class="form-control text-center px-1" [(ngModel)]="sel.qty" min="0" [max]="sel.batch.qty" step="1">
+									<button class="btn btn-outline-secondary px-2" type="button" (click)="sel.qty = (sel.qty < sel.batch.qty ? sel.qty + 1 : sel.batch.qty)">
+										<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" width="1.5em" height="1.5em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 24 24"><g fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M12 1C5.925 1 1 5.925 1 12s4.925 11 11 11s11-4.925 11-11S18.075 1 12 1zm1 15a1 1 0 1 1-2 0v-3H8a1 1 0 1 1 0-2h3V8a1 1 0 1 1 2 0v3h3a1 1 0 1 1 0 2h-3v3z" fill="currentColor"/></g></svg>
+									</button>
+								</div>
+							</td>
+						</tr>
+						<tr *ngIf="batch_selections.length === 0">
+							<td colspan="4" class="text-center">No hay lotes disponibles con cantidad positiva en esta sucursal.</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+
+			<div class="row mt-4">
+				<div class="col-6">
+					<button type="button" class="btn btn-secondary w-100" (click)="show_batch_selection=false">Cancelar</button>
+				</div>
+				<div class="col-6">
+					<button type="submit" class="btn btn-primary w-100" [disabled]="is_loading || batch_selections.length === 0">Confirmar</button>
+				</div>
+			</div>
+		</div>
+	</form>
+</app-modal>
+
+<app-modal [show]="show_ask_dinners" [closable]="false">
+	<form name="dinners_number_form" (submit)="updateDinnersNumber($event)">
+		<div class="px-3">
+			<h2>Número de Personas</h2>
+			<div class="row my-3">
+				<div class="col-6 form-group">
+					<input type="number" name="dinners_number" min="1" [(ngModel)]="dinners_number" class="form-control" required>
+				</div>
+				<div class="col-6 form-group">
+					<button type="submit" class="btn btn-primary w-100">Guardar</button>
+				</div>
+			</div>
+		</div>
+	</form>
+</app-modal>
+
+<app-modal [show]="show_assign_delivery_date" [closable]="false">
+	<form name="updateDeliveryDate" (submit)="updateDeliveryDate($event)">
+		<div class="px-3">
+			<h2>Fecha de entrega</h2>
+			<div class="row my-3">
+				<div class="col-6 form-group">
+					<input type="datetime-local" name="order_delivery_date" [min]="min_delivery_tomorrow_date" [(ngModel)]="order_delivery_date" class="form-control" required>
+				</div>
+				<div class="col-6 form-group">
+					<button type="submit" class="btn btn-primary w-100">Guardar</button>
+				</div>
+			</div>
+		</div>
+	</form>
+</app-modal>

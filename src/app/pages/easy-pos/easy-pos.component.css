@@ -1,0 +1,312 @@
+.number_indicator
+{
+	position: absolute;
+	color: white;
+	right: 1.5em;
+	background-color: red;
+	border-radius: 1em;
+	width: 2em;
+	height: 2em;
+	text-align: center;
+	font-size: 7px;
+}
+.easy-pos-main-container
+{
+	display: -ms-flexbox;
+	display: -webkit-flex;
+	display: flex;
+	flex-direction: row;
+	flex-wrap: nowrap;
+	justify-content: flex-start;
+	align-content: stretch;
+	align-items: flex-start;
+}
+
+.easy-pos-main-container>div:nth-child(1) {
+	order: 0;
+	flex: 1 1 auto;
+	align-self: stretch;
+}
+
+.easy-pos-main-container>div:nth-child(2) {
+	order: 0;
+	flex: 1 1 auto;
+	align-self: stretch;
+}
+
+.easy-pos-main-container>div:nth-child(3) {
+	order: 0;
+	flex: 1 1 auto;
+	align-self: stretch;
+}
+
+
+@media (min-width: 768px) {
+
+	.easy-pos-main-container>div:nth-child(1) {
+		order: 0;
+		flex: 0 1 35%;
+		align-self: stretch;
+	}
+
+	.easy-pos-main-container>div:nth-child(2) {
+		order: 0;
+		flex: 0 1 65%;
+		align-self: stretch;
+	}
+}
+
+
+@media (min-width: 1024px)
+{
+	.easy-pos-main-container>div:nth-child(1) {
+		order: 0;
+		flex: 0 1 50%;
+		align-self: stretch;
+	}
+
+	.easy-pos-main-container>div:nth-child(2) {
+		order: 0;
+		flex: 0 1 50%;
+		align-self: stretch;
+	}
+}
+
+
+
+.pos_item_height
+{
+	height: var(--pos_item_height);
+}
+
+@media (min-width: 992px) {
+	.pos_item_height
+	{
+		height: 88px;
+	}
+}
+
+@media (min-width: 992px and max-height: 1400px )
+{
+	.menu_open .pos_item_height
+	{
+		height: 88px;
+	}
+}
+
+
+.focus_item
+{
+
+	color: var(--item-selected-text-color);
+	background-color: var(--item-selected-background-color);
+}
+
+.search_item_area
+{
+	display: flex;
+	flex-direction: column;
+	flex-wrap: nowrap;
+	justify-content: flex-start;
+	align-content: stretch;
+	align-items: flex-start;
+}
+
+.search_item_area .item
+{
+	height: 44px;
+	display:block;
+	cursor: pointer;
+}
+
+.search_item_area>div:nth-child(1)
+{
+	order: 0;
+	flex: 0 1 auto;
+	align-self: stretch;
+}
+
+.search_item_area>div:nth-child(2)
+{
+	order: 0;
+	flex: 1 1 auto;
+	align-self: stretch;
+}
+.h-100
+{
+	height: 100%;
+}
+
+
+.flex_row_vertical
+{
+	display: flex;
+	flex-direction: column;
+	flex-wrap: nowrap;
+	justify-content: flex-start;
+	align-content: stretch;
+	align-items: flex-start;
+	height:100%;
+	box-sizing: border-box;
+	/*XXX Siguiente linea
+	Si hay problemas se puede quitar sin pedos el scroll es minimo y se ve bien
+	agregandole el overflow:hiden se ve mucho mejor pero si hay pedos quitarlo
+	*/
+overflow: hidden;
+}
+
+.flex_item
+{
+	order: 0;
+	flex: 0 1 auto;
+	align-self: stretch;
+}
+
+.flex_item_expand
+{
+	order: 0;
+	flex: 1 1 auto;
+	align-self: stretch;
+}
+
+
+
+
+.order_items_area
+{
+	display: flex;
+	flex-direction: column;
+	flex-wrap: nowrap;
+	justify-content: flex-start;
+	align-content: stretch;
+	align-items: flex-start;
+}
+
+.order_items_area .item
+{
+	height: 60px;
+	display:block;
+	cursor: pointer;
+}
+
+.order_items_area>div:nth-child(1)
+{
+	order: 0;
+	flex: 0 1 auto;
+	align-self: stretch;
+}
+
+.order_items_area>div:nth-child(2)
+{
+	order: 0;
+	flex: 1 1 auto;
+	align-self: stretch;
+}
+
+.la-barra-total
+{
+	background-color: var(--pv-bar-background-color);
+	color: var(--pv-bar-text-color);
+}
+
+.la-barra-total .texto-total
+{
+	color: var(--pv-bar-total-color);
+}
+
+.nav-tabs.discount-tabs
+{
+	border-bottom: 0;
+}
+
+.nav-tabs.discount-tabs a,
+.nav-tabs.discount-tabs a:active,
+.nav-tabs.discount-tabs a:focus,
+.nav-tabs.discount-tabs a:visited
+{
+	color: var(--link-color );
+	font-weight: normal;
+	color: var( --pv-bar-background-color );
+}
+
+.discount-tabs .nav-link:hover,
+.discount-tabs .nav-link.active:hover
+{
+	border-color: transparent;
+}
+
+.discount-tabs .nav-link.active
+{
+	background: transparent;
+	font-weight: bolder;
+	color: var(--link-color );
+	border-bottom: 3px solid var(--pv-bar-background-color);
+}
+
+#easy-pos-tabs
+{
+	background-color: var( --pv-bar-background-color );
+}
+
+#easy-pos-tabs a.nav-link:not(.active)
+{
+	color: var(--pv-bar-text-color );
+}
+
+.order-tabs.nav-link
+{
+	max-width: 200px;
+}
+
+#easy-pos-tabs a.nav-link,
+#easy-pos-tabs a.nav-link:visited,
+#easy-pos-tabs a.nav-link:active
+{
+	color: var(--pv-bar-text-color );
+}
+
+
+#easy-pos-tabs a.nav-link.active,
+#easy-pos-tabs a.nav-link.active:visited,
+#easy-pos-tabs a.nav-link.active:active
+{
+	color: var(--pv-bar-background-color );
+}
+
+@media (max-width: 992px)
+{
+	.item
+	{
+		border-bottom: 1px solid #AAAAAA;
+		cursor: pointer;
+	}
+}
+
+.search_item
+{
+	display: block;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+
+.client_list>.active{
+	background-color: var(--item-selected-background-color );
+	color: var(--item_selected_text_color );
+}
+
+.item.border-bottom.focus_item
+{
+	border-bottom: 2px solid var(--pv-bar-text-color ) !important;
+}
+
+.item.border-bottom
+{
+	border-bottom: 2px solid var(--pv-bar-background-color ) !important;
+}
+
+.item.border-bottom
+{
+	border-bottom: 2px solid var(--pv-bar-background-color );
+}
