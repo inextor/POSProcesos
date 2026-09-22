@@ -39,6 +39,7 @@
 				<button type="button" class="btn" [ngClass]="active_section == 'STOCK' ? 'btn-primary' : 'btn-secondary'" (click)="showSection('STOCK')">Stock</button>
 				<button type="button" class="btn" [ngClass]="active_section == 'IMPUESTOS' ? 'btn-primary' : 'btn-secondary'" (click)="showSection('IMPUESTOS')">Impuestos</button>
 				<button type="button" class="btn" [ngClass]="active_section == 'VENTA' ? 'btn-primary' : 'btn-secondary'" (click)="showSection('VENTA')">Venta</button>
+				<button type="button" class="btn" [ngClass]="active_section == 'PROVEEDORES' ? 'btn-primary' : 'btn-secondary'" (click)="showSection('PROVEEDORES')">Proveedores</button>
 			</div>
 
 			<div *ngIf="active_section == 'VARIABLES'" class="row">
@@ -262,6 +263,43 @@
 				<div class="col-6 col-md-4 py-1" *ngIf="item_info.item.commission_type != 'NONE'">
 					<label class="fw-bold d-block mb-0">Comisión</label>
 					<span>{{item_info.item.commission}} {{item_info.item.commission_currency_id || ''}}</span>
+				</div>
+			</div>
+			<div *ngIf="active_section == 'PROVEEDORES'" class="row">
+				<div class="col-12 py-2" *ngIf="provider_loading">
+					<app-loading [is_loading]="true"></app-loading>
+					<p class="mt-2 text-muted">Cargando historial de proveedores...</p>
+				</div>
+				<div class="col-12 py-2" *ngIf="!provider_loading && provider_error">
+					<div class="alert alert-danger">{{provider_error}}</div>
+					<button type="button" class="btn btn-primary" (click)="loadProviders()">Reintentar</button>
+				</div>
+				<div class="col-12 py-2" *ngIf="!provider_loading && !provider_error">
+					<div class="table-responsive" *ngIf="provider_array.length">
+						<table class="table table-sm table-nowrap mb-0">
+							<thead class="thead-light">
+								<tr>
+									<th>Proveedor</th>
+									<th>Fecha</th>
+									<th class="text-end">Cantidad</th>
+									<th class="text-end">Precio unitario</th>
+									<th class="text-end">Total</th>
+									<th>Sucursal</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr *ngFor="let row of provider_array">
+									<td>{{row.provider_name}}</td>
+									<td>{{row.created | shortDate: 'full'}}</td>
+									<td class="text-end">{{row.qty}}</td>
+									<td class="text-end">{{row.unitary_price | currency: 'MXN'}}</td>
+									<td class="text-end">{{row.total | currency: 'MXN'}}</td>
+									<td>{{row.store_name}}</td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+					<div class="text-muted" *ngIf="!provider_array.length">Sin compras registradas para este artículo.</div>
 				</div>
 			</div>
 

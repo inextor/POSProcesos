@@ -149,6 +149,7 @@ export * from './RestModels/Store_Bank_Account';
 export * from './RestModels/Transfer';
 export * from './RestModels/Store_Sale_Report';
 export * from './RestModels/Store';
+export * from './RestModels/Subscription';
 export * from './RestModels/Table';
 export * from './RestModels/Task_Comment';
 export * from './RestModels/Task';

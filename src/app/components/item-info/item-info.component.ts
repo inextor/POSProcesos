@@ -6,12 +6,24 @@ import { debounceTime, switchMap } from 'rxjs/operators';
 import { SubSink } from 'subsink';
 import { ItemInfoService } from '../../modules/shared/services/item-info.service';
 import { RestService } from '../../modules/shared/services/rest.service';
-import { ItemInfo } from '../../modules/shared/Models';
-import { Batch_Record, Stock_Record, Store, Attribute, Item_Attribute } from '../../modules/shared/RestModels';
+import { ItemInfo, PurchaseInfo } from '../../modules/shared/Models';
+import { Batch_Record, Purchase_Detail, Stock_Record, Store, Attribute, Item_Attribute, User } from '../../modules/shared/RestModels';
 import { RestSimple } from '../../modules/shared/services/Rest';
 import { ModalComponent } from '../../components/modal/modal.component';
 import { LoadingComponent } from '../../components/loading/loading.component';
 import { ShortDatePipe } from '../../modules/shared/pipes/short-date.pipe';
+
+interface CProviderRow
+{
+	purchase_id:number;
+	provider_user_id:number | null;
+	provider_name:string;
+	created:Date;
+	qty:number;
+	unitary_price:number;
+	total:number;
+	store_name:string;
+}
 
 interface CStockRow
 {
@@ -40,6 +52,15 @@ export class ItemInfoComponent implements OnDestroy
 	rest_batch_record:RestSimple<Batch_Record> = this.rest.initRestSimple<Batch_Record>('batch_record');
 	rest_store:RestSimple<Store> = this.rest.initRestSimple<Store>('store', ['id', 'name']);
 	rest_attribute:RestSimple<Attribute> = this.rest.initRestSimple<Attribute>('attribute');
+	rest_purchase_detail:RestSimple<Purchase_Detail> = this.rest.initRestSimple<Purchase_Detail>('purchase_detail');
+	rest_purchase_info:RestSimple<PurchaseInfo> = this.rest.initRestSimple<PurchaseInfo>('purchase_info');
+	rest_provider:RestSimple<User> = this.rest.initRestSimple<User>('user');
+
+	provider_array:CProviderRow[] = [];
+	provider_loading:boolean = false;
+	provider_error:string | null = null;
+	provider_loaded_item_id:number | null = null;
+	provider_limit:number = 10;
 
 	store_dictionary:Record<number,string> = {};
 	stock_row_map:Record<number,CStockRow> = {};
@@ -124,6 +145,154 @@ export class ItemInfoComponent implements OnDestroy
 	showSection(section:string)
 	{
 		this.active_section = section;
+
+		if( section == 'PROVEEDORES' )
+		{
+			this.loadProviders();
+		}
+	}
+
+	loadProviders()
+	{
+		let item_info = this.item_info;
+
+		if( !item_info )
+		{
+			return;
+		}
+
+		let item_id = item_info.item.id;
+
+		if( this.provider_loading )
+		{
+			return;
+		}
+
+		if( this.provider_loaded_item_id == item_id && this.provider_error == null )
+		{
+			return;
+		}
+
+		this.provider_loading = true;
+		this.provider_error = null;
+
+		this.subs.sink = this.rest_purchase_detail.search({
+			eq: {
+				item_id: item_id,
+				status: 'ACTIVE'
+			},
+			sort_order: ['id_DESC'],
+			limit: this.provider_limit
+		}).subscribe({
+			next:(detail_response)=>
+			{
+				let detail_array = detail_response.data || [];
+
+				if( !detail_array.length )
+				{
+					this.provider_array = [];
+					this.provider_loading = false;
+					this.provider_loaded_item_id = item_id;
+					return;
+				}
+
+				let purchase_ids:number[] = [];
+				let provider_ids:number[] = [];
+
+				for(let detail of detail_array)
+				{
+					if( detail.purchase_id != null && !purchase_ids.includes( detail.purchase_id ) )
+					{
+						purchase_ids.push( detail.purchase_id );
+					}
+				}
+
+				let purchase_obx = this.rest_purchase_info.search({
+					csv: { id: purchase_ids } as any,
+					limit: 9999
+				});
+
+				this.subs.sink = purchase_obx.subscribe({
+					next:(purchase_response)=>
+					{
+						let purchase_info_array = (purchase_response.data || []).filter((p:PurchaseInfo)=>p.purchase.status == 'ACTIVE');
+						let purchase_dict:Record<number,PurchaseInfo> = {};
+
+						for(let purchase_info of purchase_info_array)
+						{
+							purchase_dict[ purchase_info.purchase.id ] = purchase_info;
+
+							if( purchase_info.purchase.provider_user_id != null && !provider_ids.includes( purchase_info.purchase.provider_user_id ) )
+							{
+								provider_ids.push( purchase_info.purchase.provider_user_id );
+							}
+						}
+
+						let provider_obx = provider_ids.length
+							? this.rest_provider.search({ csv: { id: provider_ids } as any, limit: 9999 })
+							: of({ total: 0, data: [] as User[] });
+
+						this.subs.sink = provider_obx.subscribe({
+							next:(provider_response)=>
+							{
+								let provider_dict:Record<number,User> = {};
+
+								for(let provider of (provider_response.data || []))
+								{
+									provider_dict[ provider.id ] = provider;
+								}
+
+								this.provider_array = detail_array
+									.filter((detail)=>purchase_dict[ detail.purchase_id ] != null)
+									.map((detail)=>
+									{
+										let purchase = purchase_dict[ detail.purchase_id ].purchase;
+										let provider = purchase.provider_user_id != null
+											? (provider_dict[ purchase.provider_user_id ] || null)
+											: null;
+										let provider_name = provider?.name
+											|| purchase.provider_name
+											|| (purchase.provider_user_id != null ? ('Proveedor '+purchase.provider_user_id) : 'Sin proveedor');
+										let store_name = this.store_dictionary[ purchase.store_id ] || ('Sucursal '+purchase.store_id);
+
+										return {
+											purchase_id: purchase.id,
+											provider_user_id: purchase.provider_user_id,
+											provider_name: provider_name,
+											created: purchase.created,
+											qty: detail.qty,
+											unitary_price: detail.unitary_price,
+											total: detail.total ?? (detail.qty * detail.unitary_price),
+											store_name: store_name
+										} as CProviderRow;
+									});
+
+								this.provider_loading = false;
+								this.provider_loaded_item_id = item_id;
+							},
+							error:()=>
+							{
+								this.provider_array = [];
+								this.provider_loading = false;
+								this.provider_error = 'No se pudo cargar el historial de proveedores. Intente de nuevo.';
+							}
+						});
+					},
+					error:()=>
+					{
+						this.provider_array = [];
+						this.provider_loading = false;
+						this.provider_error = 'No se pudo cargar el historial de proveedores. Intente de nuevo.';
+					}
+				});
+			},
+			error:()=>
+			{
+				this.provider_array = [];
+				this.provider_loading = false;
+				this.provider_error = 'No se pudo cargar el historial de proveedores. Intente de nuevo.';
+			}
+		});
 	}
 
 	getItemAttributes():{name:string,value:string}[]
@@ -328,6 +497,11 @@ export class ItemInfoComponent implements OnDestroy
 
 	close()
 	{
+		this.provider_array = [];
+		this.provider_loading = false;
+		this.provider_error = null;
+		this.provider_loaded_item_id = null;
+		this.active_section = 'VARIABLES';
 		this.item_info_service.close();
 	}
 }

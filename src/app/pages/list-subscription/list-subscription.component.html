@@ -1,0 +1,240 @@
+<div class="container-fluid">
+	<h1 class="my-3">Suscripciones</h1>
+
+	<ul class="nav nav-tabs mb-3">
+		<li class="nav-item">
+			<button type="button" class="nav-link" [class.active]="mode === 'summary'" (click)="mode = 'summary'">Resumen</button>
+		</li>
+		<li class="nav-item">
+			<button type="button" class="nav-link" [class.active]="mode === 'client'" (click)="mode = 'client'">Por cliente</button>
+		</li>
+		<li class="nav-item">
+			<button type="button" class="nav-link" [class.active]="mode === 'room'" (click)="mode = 'room'">Por cuarto</button>
+		</li>
+	</ul>
+
+	@if (mode === 'summary') {
+		<div class="card p-3 mb-3">
+			<div class="card-body">
+				<div class="row align-items-end">
+					<div class="col-md-6">
+						<div>
+							Usuarios: <span class="fw-bold">{{ total_users }}</span>
+						</div>
+						<div>
+							Periodos: <span class="fw-bold">{{ total_periods }}</span>
+						</div>
+					</div>
+					<div class="col-md-4 ms-auto">
+						<label class="form-label" for="summary_status">Estado</label>
+						<select id="summary_status" name="summary_status" class="form-control form-control-sm" [(ngModel)]="summary_status" (ngModelChange)="loadSummary()">
+							<option value="ACTIVE">Activas</option>
+							<option value="">Todas</option>
+							<option value="SUSPENDED">Suspendidas</option>
+							<option value="EXPIRED">Expiradas</option>
+							<option value="RETURNED">Devueltas</option>
+							<option value="CANCELLED">Canceladas</option>
+						</select>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="card p-3">
+			<div class="table-responsive">
+				<table class="table table-sm table-striped mb-0">
+					<thead>
+						<tr>
+							<th>Artículo</th>
+							<th class="text-end">Usuarios</th>
+							<th class="text-end">Periodos</th>
+							<th class="text-end">Activos</th>
+							<th></th>
+						</tr>
+					</thead>
+					<tbody>
+						@for (row of summary_array; track row.item_id) {
+							<tr>
+								<td>{{ row.item_name }}</td>
+								<td class="text-end">{{ row.user_count }}</td>
+								<td class="text-end">{{ row.period_count }}</td>
+								<td class="text-end">{{ row.active_count }}</td>
+								<td class="text-end">
+									<button type="button" class="btn btn-sm btn-outline-dark" (click)="toggleArticle(row)">{{ expanded_item_id === row.item_id ? 'Ocultar' : 'Ver' }}</button>
+								</td>
+							</tr>
+							@if (expanded_item_id === row.item_id) {
+								<tr>
+									<td colspan="5" class="p-0">
+										<div class="p-2 bg-light">
+											@if (article_subscription_array.length) {
+												<div class="table-responsive">
+													<table class="table table-sm table-striped mb-0">
+														<thead>
+															<tr>
+																<th>Cliente</th>
+																<th>Periodo</th>
+																<th>Estado</th>
+																<th class="text-end">Saldo</th>
+																<th>Cuarto</th>
+															</tr>
+														</thead>
+														<tbody>
+															@for (info of article_subscription_array; track info.subscription.id) {
+																<tr>
+																	<td>{{ info.customer_name_display }}</td>
+																	<td class="text-nowrap">{{ info.period_display }}</td>
+																	<td>{{ info.subscription.status }}</td>
+																	<td class="text-end">{{ info.balance_display }}</td>
+																	<td>{{ info.asset_code_display }}</td>
+																</tr>
+															}
+														</tbody>
+													</table>
+												</div>
+											} @else {
+												<div class="text-muted small">Cargando…</div>
+											}
+										</div>
+									</td>
+								</tr>
+							}
+						} @empty {
+							<tr>
+								<td colspan="5" class="text-muted">Sin resultados.</td>
+							</tr>
+						}
+					</tbody>
+				</table>
+			</div>
+		</div>
+	}
+
+	@if (mode === 'client') {
+		<div class="card p-3 mb-3">
+			<div class="card-body">
+				<label class="form-label" for="client_search">Buscar cliente por nombre</label>
+				<input id="client_search" name="client_search" type="text" class="form-control" [(ngModel)]="client_search_str" (ngModelChange)="onClientSearchChange()" placeholder="Ej. Diego" autocomplete="off">
+				@if (client_array.length) {
+					<ul class="list-group mt-2">
+						@for (client of client_array; track client.id) {
+							<li class="list-group-item">
+								<button type="button" class="btn btn-link p-0" (click)="selectClient(client)">{{ client.name }}</button>
+								@if (client.phone) {
+									<span class="text-muted small"> - {{ client.phone }}</span>
+								}
+							</li>
+						}
+					</ul>
+				}
+			</div>
+		</div>
+
+		@if (selected_client) {
+			<div class="card p-3">
+				<div class="card-body">
+					<div class="d-flex justify-content-between align-items-center mb-2">
+						<h5 class="mb-0">{{ selected_client.name }} ({{ client_subscription_array.length }} suscripciones)</h5>
+						<button type="button" class="btn btn-sm btn-outline-dark" (click)="show_client_detail = !show_client_detail">{{ show_client_detail ? 'Ocultar' : 'Mostrar' }}</button>
+					</div>
+					@if (show_client_detail) {
+						<div class="table-responsive">
+							<table class="table table-sm table-striped mb-0">
+								<thead>
+									<tr>
+										<th>Artículo</th>
+										<th>Expira</th>
+										<th>Estado</th>
+										<th class="text-end">Saldo</th>
+										<th>Cuarto</th>
+									</tr>
+								</thead>
+								<tbody>
+									@for (info of client_subscription_array; track info.subscription.id) {
+										<tr>
+											<td>{{ info.item_name_display }}</td>
+											<td class="text-nowrap">{{ info.subscription.expires_at || 'sin expiración' }}</td>
+											<td>{{ info.subscription.status }}</td>
+											<td class="text-end">{{ info.balance_display }}</td>
+											<td>{{ info.asset_code_display }}</td>
+										</tr>
+									} @empty {
+										<tr>
+											<td colspan="5" class="text-muted">Sin suscripciones.</td>
+										</tr>
+									}
+								</tbody>
+							</table>
+						</div>
+					}
+				</div>
+			</div>
+		}
+	}
+
+	@if (mode === 'room') {
+		<div class="card p-3 mb-3">
+			<div class="card-body">
+				<div class="row">
+					<div class="col-12 col-md-6 mb-2">
+						<label class="form-label" for="history_asset_item">Tipo de activo</label>
+						<select id="history_asset_item" name="history_asset_item" class="form-control" [(ngModel)]="selected_asset_item_id" (ngModelChange)="loadSerials()">
+							<option [ngValue]="null">Seleccionar tipo…</option>
+							@for (entry of asset_item_array; track entry.item.id) {
+								<option [ngValue]="entry.item.id">{{ entry.item.name }}</option>
+							}
+						</select>
+					</div>
+					<div class="col-12 col-md-6 mb-2">
+						<label class="form-label" for="history_serial">Cuarto</label>
+						<select id="history_serial" name="history_serial" class="form-control" [(ngModel)]="selected_serial_id" (ngModelChange)="loadSerialHistory()" [disabled]="!serial_array.length">
+							<option [ngValue]="null">Seleccionar cuarto…</option>
+							@for (serial of serial_array; track serial.id) {
+								<option [ngValue]="serial.id">{{ serial.serial_number }}</option>
+							}
+						</select>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		@if (selected_serial_id) {
+			<div class="card p-3">
+				<div class="card-body">
+					<div class="d-flex justify-content-between align-items-center mb-2">
+						<h5 class="mb-0">Historial ({{ serial_history_array.length }})</h5>
+						<button type="button" class="btn btn-sm btn-outline-dark" (click)="show_room_detail = !show_room_detail">{{ show_room_detail ? 'Ocultar' : 'Mostrar' }}</button>
+					</div>
+					@if (show_room_detail) {
+						<div class="table-responsive">
+							<table class="table table-sm table-striped mb-0">
+								<thead>
+									<tr>
+										<th>Cliente</th>
+										<th>Artículo</th>
+										<th>Periodo</th>
+										<th>Estado</th>
+									</tr>
+								</thead>
+								<tbody>
+									@for (info of serial_history_array; track info.subscription.id) {
+										<tr>
+											<td>{{ info.customer_name_display }}</td>
+											<td>{{ info.item_name_display }}</td>
+											<td class="text-nowrap">{{ info.period_display }}</td>
+											<td>{{ info.subscription.status }}</td>
+										</tr>
+									} @empty {
+										<tr>
+											<td colspan="4" class="text-muted">Sin historial.</td>
+										</tr>
+									}
+								</tbody>
+							</table>
+						</div>
+					}
+				</div>
+			</div>
+		}
+	}
+</div>
