@@ -190,7 +190,11 @@ export class ViewProductionAreaComponent extends BaseComponent implements OnInit
 		this.subs.sink = this.rest_production_area_item.create(production_area_item)
 		.subscribe({
 
-			next: (response)=>	this.cproduction_area_item_list.push({ ...response, name: item_info.item.name }),
+			next: (response)=>
+			{
+				this.cproduction_area_item_list.push({ ...response, name: item_info.item.name });
+				this.showSuccess('Artículo agregado correctamente');
+			},
 
 			error: (error)=> this.rest.showError(error)
 
