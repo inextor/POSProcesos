@@ -50,6 +50,22 @@ test('menu background uses the themed --menu-background-color', async ({ page })
 	).toBe(true);
 });
 
+test('theme fallback assets load without 404s', async ({ page }) =>
+{
+	const missing: string[] = [];
+
+	page.on('response', response =>
+	{
+		if (response.url().includes('/assets/default_') && response.status() >= 400)
+		{
+			missing.push(`${response.status()} ${response.url()}`);
+		}
+	});
+
+	await loginViaUi(page);
+	expect(missing).toEqual([]);
+});
+
 test('header background uses the themed --header-background-color', async ({ page }) =>
 {
 	await loginViaUi(page);

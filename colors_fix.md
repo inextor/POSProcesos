@@ -17,7 +17,7 @@ Legacy code and DB stay untouched. All changes in `POSReservaciones20` only.
     `background-color: var(--menu-background-color);` remain (legacy order).
   - Verify: sidebar computes to `rgb(154,189,72)` (green).
 
-- [ ] **2. Restore missing fallback assets**
+- [x] **2. Restore missing fallback assets**
   - Copy from `/home/nextor/Projects/POS/src/assets/` to `src/assets/`:
     `default_background.webp`, `default_login_background.webp`
     (plus `default_background.jpg` if referenced).
