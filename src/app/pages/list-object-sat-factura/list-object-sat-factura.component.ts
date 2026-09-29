@@ -32,7 +32,7 @@ export interface CSatFacturaInfo extends Sat_Factura
 	client_name?: string;
 	folio: string | null;
 	total?: number;
-	type:'NORMAL'|'COMPLEMENTO_PAGO' | 'POR_PERIODO'| 'DESCONOCIDO';
+	type:'NORMAL'|'COMPLEMENTO_PAGO'|'POR_PERIODO'|'NOTA_CREDITO'|'PAGO_PARCIAL'|'DESCONOCIDO';
 	payment_id:number;
 	system_cancelled_timestamp:Date;
 	cancelado_por_sat:'NO'|'YES';
@@ -203,7 +203,7 @@ export class ListObjectSatFacturaComponent extends BaseComponent implements OnIn
 	checarFactura(sat_factura: Sat_Factura)
 	{
 		this.is_loading = true;
-		this.modal_UUID = sat_factura.uuid;
+		this.modal_UUID = sat_factura.uuid ?? '';
 		this.modal_factura_id = sat_factura.id;
 		let auth_header = this.rest.getSessionHeaders().get('Authorization') || '';
 

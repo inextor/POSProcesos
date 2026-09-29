@@ -1,0 +1,158 @@
+<div class="card p-3">
+<div class="card-body">
+<div class="row mb-4">
+<div class="col-md-6">
+<h5 class="text-secondary mb-3">1. Buscar Orden</h5>
+<div class="input-group">
+<input type="number" class="form-control" [(ngModel)]="search_order" placeholder="Ingrese el ID de la orden" (keyup.enter)="searchOrder()" [disabled]="searching">
+<button class="btn btn-primary" type="button" (click)="searchOrder()" [disabled]="searching">
+@if (searching) {
+<span class="spinner-border spinner-border-sm me-1"></span>
+<span>Buscando...</span>
+} @else {
+<span>Buscar</span>
+}
+</button>
+</div>
+<small class="text-muted">Se creará la factura SAT ligada a esta orden</small>
+</div>
+<div class="col-md-6">
+<h5 class="text-secondary mb-3">2. Tipo de Factura</h5>
+<label class="form-label fw-bold" for="factura_type_select">Tipo (Sat_Factura)</label>
+<select id="factura_type_select" class="form-select" [(ngModel)]="factura_type" (ngModelChange)="onFacturaTypeChange()">
+@for (factura_option of factura_type_array; track factura_option) {
+<option [ngValue]="factura_option">{{ factura_option }}</option>
+}
+</select>
+</div>
+</div>
+@if (selected_order) {
+<div class="row mb-4">
+<div class="col-12">
+<h5 class="text-secondary mb-3">Orden Seleccionada</h5>
+<div class="row">
+<div class="col-md-3">
+<strong>Orden:</strong>
+<br>
+<span>#{{ selected_order.id }}</span>
+</div>
+<div class="col-md-3">
+<strong>Cliente:</strong>
+<br>
+<span>{{ selected_order.client_display_name }}</span>
+</div>
+<div class="col-md-3">
+<strong>Total:</strong>
+<br>
+<span>{{ selected_order.total | currency:'MXN':'symbol':'1.2-2' }}</span>
+</div>
+<div class="col-md-3">
+<strong>Estado:</strong>
+<br>
+<span class="badge bg-success">{{ selected_order.status }}</span>
+</div>
+</div>
+@if (show_order_warning) {
+<div class="alert alert-warning mt-3 mb-0">
+<span>{{ order_warning_text }}</span>
+</div>
+}
+</div>
+</div>
+<div class="row mb-4">
+<div class="col-12">
+<h5 class="text-secondary mb-3">3. Cargar Archivos de Factura</h5>
+</div>
+<div class="col-md-6 mb-3">
+<label class="form-label fw-bold">Archivo XML</label>
+<app-attachment-uploader [default_message]="'Seleccionar archivo XML'" [displayUploadedAttachmentName]="true" [containerClasses]="{}" [imageClasses]="{}" (attachmentChange)="onXmlAttachmentChange($event)"></app-attachment-uploader>
+@if (xml_attachment_id) {
+<div class="alert alert-success mt-2 mb-0 py-1 px-2">
+<span>XML subido (ID: {{ xml_attachment_id }})</span>
+</div>
+}
+</div>
+<div class="col-md-6 mb-3">
+<label class="form-label fw-bold">Archivo PDF</label>
+<app-attachment-uploader [default_message]="'Seleccionar archivo PDF'" [displayUploadedAttachmentName]="true" [containerClasses]="{}" [imageClasses]="{}" (attachmentChange)="onPdfAttachmentChange($event)"></app-attachment-uploader>
+@if (pdf_attachment_id) {
+<div class="alert alert-success mt-2 mb-0 py-1 px-2">
+<span>PDF subido (ID: {{ pdf_attachment_id }})</span>
+</div>
+}
+</div>
+</div>
+@if (factura_info) {
+<div class="row mb-4">
+<div class="col-12">
+<h5 class="text-secondary mb-3">Información Extraída del XML</h5>
+<div class="row">
+<div class="col-md-4">
+<strong>UUID:</strong>
+<br>
+<code>{{ factura_info.uuid }}</code>
+</div>
+<div class="col-md-4">
+<strong>Serie:</strong>
+<br>
+<span class="badge bg-secondary">{{ factura_info.serie }}</span>
+</div>
+<div class="col-md-4">
+<strong>Folio:</strong>
+<br>
+<span class="badge bg-secondary">{{ factura_info.folio }}</span>
+</div>
+</div>
+</div>
+</div>
+}
+<div class="row mb-3">
+<div class="col-12">
+<h5 class="text-secondary mb-3">4. Crear Factura SAT</h5>
+<button class="btn btn-primary btn-lg" type="button" (click)="crearSatFactura()" [disabled]="!can_submit">
+@if (is_creating) {
+<span class="spinner-border spinner-border-sm me-2"></span>
+<span>Creando factura...</span>
+} @else {
+<span>Crear SAT Factura</span>
+}
+</button>
+</div>
+</div>
+@if (created_response) {
+<div class="row mb-2">
+<div class="col-12">
+<div class="alert alert-success mb-0">
+<strong>Factura creada:</strong>
+<br>
+<span>ID: {{ created_response.sat_factura_id }}</span>
+<br>
+<span>Orden: {{ created_response.order_id }}</span>
+<br>
+<span>Tipo: {{ created_response.type }}</span>
+<br>
+<span>UUID: {{ created_response.uuid }}</span>
+<br>
+<span>Serie: {{ created_response.serie }}</span>
+<br>
+<span>Folio: {{ created_response.folio }}</span>
+<br>
+<span>{{ created_response.message }}</span>
+</div>
+</div>
+</div>
+}
+}
+@if (!selected_order && !searching) {
+<div class="alert alert-info mb-0">
+<span>Busque una orden para comenzar. Después suba el XML y el PDF, elija el tipo y cree la factura SAT.</span>
+</div>
+}
+</div>
+</div>
+<div class="d-flex justify-content-end mt-3">
+<button class="btn btn-secondary" type="button" (click)="resetAll()" [disabled]="searching || is_creating">Reiniciar</button>
+</div>
+@if (is_creating || searching) {
+<app-loading></app-loading>
+}

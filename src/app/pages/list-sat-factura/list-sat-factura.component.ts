@@ -265,7 +265,7 @@ export class ListSatFacturaComponent extends BaseComponent implements OnInit
 	checarFactura(sat_factura: CSatFacturaInfo): void
 	{
 		this.is_loading = true;
-		this.modal_UUID = sat_factura.uuid;
+		this.modal_UUID = sat_factura.uuid ?? '';
 		this.modal_factura_id = sat_factura.id;
 		let auth_header = this.rest.getSessionHeaders().get('Authorization') || '';
 
