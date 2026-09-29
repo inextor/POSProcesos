@@ -102,7 +102,8 @@ export class SaveShippingComponent extends BaseComponent
 						return forkJoin
 						({
 							requisitions: ids.length > 0 ? this.rest_requisition_info.search(search_requisition) : of( null ),
-							shippings: ids.length > 0 ? this.rest_shipping_info.searchAsPost({ csv:{id:ids}, eq:{from_store_id: Number(this.from_store_id), to_store_id: Number(this.to_store_id), date: this.fecha_requisitions }, limit:9999}) : of( null ),
+							//Envios del dia origen->destino; antes filtraba csv:{id:ids} (shipping.id contra IDs de ARTICULO) y nunca encontraba envios
+							shippings: ids.length > 0 ? this.rest_shipping_info.searchAsPost({ eq:{from_store_id: Number(this.from_store_id), to_store_id: Number(to_store_id), date: fecha }, limit:9999}) : of( null ),
 							production: of( null ), //no se usa; production.php trata el POST como ALTA (no busqueda) y truena con 500
 							item_stock: ids.length > 0 ? of(itemResponse) : of( null ),
 							store: of(store!),
@@ -238,6 +239,8 @@ export class SaveShippingComponent extends BaseComponent
 
 			let required = rii.requisition_item.qty;
 			let shipped = shipping_info_list?.reduce((p, si) => {
+				if( si.shipping.status == 'CANCELLED' )
+					return p;
 				let items = si.items.filter((x) => x.item?.id == rii.item.id);
 				return p + items.reduce((prev_c, item) => prev_c + (item.shipping_item?.qty ?? 0), 0);
 			}, 0);
