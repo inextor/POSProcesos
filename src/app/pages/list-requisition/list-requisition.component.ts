@@ -302,7 +302,7 @@ export class ListRequisitionComponent extends BaseComponent implements OnInit
 
 	getRequisitionUrl(id:string): string
 	{
-		return `${this.rest.getExternalAppUrl()}/view-l/${id}`;
+		return `${this.rest.getExternalAppUrl()}/#/view-requisition/${id}`;
 	}
 
 	showRequisitions(cri:CRequisitionItem)
