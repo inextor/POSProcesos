@@ -103,6 +103,8 @@ export const routes: Routes = [
 			{path: 'list-order-sat-factura/:order_id', loadComponent: () => import('./pages/list-object-sat-factura/list-object-sat-factura.component').then(m => m.ListObjectSatFacturaComponent)},
 			{path: 'list-payment-sat-factura/:payment_id', loadComponent: () => import('./pages/list-object-sat-factura/list-object-sat-factura.component').then(m => m.ListObjectSatFacturaComponent)},
 			{path: 'facturar-ordenes-sin-cliente', loadComponent: () => import('./pages/facturar-ordenes-sin-cliente/facturar-ordenes-sin-cliente.component').then(m => m.FacturarOrdenesSinClienteComponent), canActivate: [authGuard]},
+			{path: 'crear-sat-factura', loadComponent: () => import('./pages/crear-sat-factura/crear-sat-factura.component').then(m => m.CrearSatFacturaPageComponent), canActivate: [authGuard]},
+			{path: 'crear-sat-factura/:order_id', loadComponent: () => import('./pages/crear-sat-factura/crear-sat-factura.component').then(m => m.CrearSatFacturaPageComponent), canActivate: [authGuard]},
 		{path: 'view-payment/:id', loadComponent: () => import('./pages/view-payment/view-payment.component').then(m => m.ViewPaymentComponent), canActivate: [authGuard]},
 			{path: 'list-merma-totals', loadComponent: () => import('./pages/list-merma-totals/list-merma-totals.component').then(m => m.ListMermaTotalsComponent), canActivate: [authGuard]},
 			{path: 'weird', loadComponent: () => import('./pages/weird/weird.component').then(m => m.WeirdComponent), canActivate: [authGuard]},

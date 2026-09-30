@@ -313,6 +313,11 @@ export class RestService
 		return this.httpPost('replay_sat_factura.php',{sat_factura_id}) as Observable<Sat_Factura>;
 	}
 
+	crearSatFactura(payload: { xml_attachment_id: number; pdf_attachment_id: number; order_id: number; type: string; billing_data_id?: number }):Observable<any>
+	{
+		return this.httpPost('updates/crear_sat_factura.php', payload) as Observable<any>;
+	}
+
 	getPendingComplements():Observable<any[]>
 	{
 		let url = `${this.domain_configuration.domain}/${this.url_base}/updates/get_pending_complements.php`;
