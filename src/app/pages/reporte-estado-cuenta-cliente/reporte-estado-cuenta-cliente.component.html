@@ -6,7 +6,7 @@
 		</div>
 	</div>
 	<div class="card p-3">
-		<form (submit)="doSearch()" ngNativeValidate>
+		<form (ngSubmit)="doSearch()" ngNativeValidate>
 			<div class="row">
 				<div class="col-4">
 					<div class="form-group">
@@ -23,142 +23,223 @@
 				<div class="col-2">
 					<label>&nbsp;</label>
 					<div>
-						<button class="btn btn-primary w-100" (click)="doSearch()">buscar</button>
+						<button type="submit" class="btn btn-primary w-100">Buscar</button>
 					</div>
 				</div>
 				<div class="col-2">
 					<label>&nbsp;</label>
 					<div>
-						<button class="btn btn-secondary w-100" (click)="downloadPdf()">Descargar PDF</button>
+						<button type="button" class="btn btn-secondary w-100" (click)="downloadPdf()">Descargar PDF</button>
 					</div>
 				</div>
 			</div>
 		</form>
 	</div>
 	<div class="card p-3 mt-3">
-		<div id="to_pdf">
-			<table style="width: 100%;">
+		<!-- Todo lo de #to_pdf se manda como innerHTML al pdfservice: solo tablas, estilos inline y colores literales (no flex, no var()). Solo negro y grises: se imprime en blanco y negro -->
+		<div id="to_pdf" style="font-family: 'DejaVu Sans', Arial, sans-serif; font-size: 9pt; color: #000000;">
+			<table style="width: 100%; border-collapse: collapse;">
 				<tr>
-					<td style="width: 20%; text-align: left; vertical-align: top;">
-						@if(preferences && preferences.logo_image_id){
-							<img [src]="rest.getImagePath(preferences.logo_image_id)" style="max-width: 150px; max-height: 150px;">
+					<td style="width: 16%; vertical-align: top; padding: 0 12px 10px 0; border-bottom: 2px solid #000000;">
+						@if (logo_url) {
+							<img [src]="logo_url" style="max-width: 110px; max-height: 80px;">
 						}
 					</td>
-					<td style="width: 40%; text-align: left; vertical-align: top;">
-						@if(store){
-							<h3>{{preferences?.name}}</h3>
-							<p><strong>{{store.name}}</strong></p>
-							<p>{{formatStoreAddress(store)}}</p>
+					<td style="width: 40%; vertical-align: top; padding: 0 0 10px 0; border-bottom: 2px solid #000000;">
+						<div style="font-size: 13pt; font-weight: bold; color: #000000;">
+							{{preferences?.name}}
+						</div>
+						@if (store) {
+							<div style="font-size: 9pt; font-weight: bold; color: #000000; margin-top: 2px;">
+								{{store.name}}
+							</div>
+							@if (store_address) {
+								<div style="font-size: 8pt; color: #333333; margin-top: 2px;">
+									{{store_address}}
+								</div>
+							}
+							@if (store.phone) {
+								<div style="font-size: 8pt; color: #333333;">
+									Tel. {{store.phone}}
+								</div>
+							}
 						}
-						@if(billing_data){
-							<p>RFC: {{billing_data.rfc}}</p>
-							<p>{{billing_data.razon_social}}</p>
+						@if (billing_data) {
+							<div style="font-size: 8pt; color: #333333; margin-top: 2px;">
+								{{billing_data.razon_social}} &middot; RFC {{billing_data.rfc}}
+							</div>
 						}
 					</td>
-					<td style="width: 40%; text-align: right; vertical-align: top;">
-						@if (selectedClient) {
-							<h3>Datos del Cliente</h3>
-							<p><strong>Nombre:</strong> {{selectedClient.name}}</p>
-							@if(billing_address && billing_address.email){
-							<p><strong>Email:</strong> {{billing_address.email}}</p>
-							}
-							@if(selectedClient.phone){
-							<p><strong>Teléfono:</strong> {{selectedClient.phone}}</p>
-							}
-							@if (billing_address && billing_address.rfc && billing_address.address && billing_address.city && billing_address.state && billing_address.zipcode) {
-								<h3 style="margin-top: 1rem;">Datos de Facturación</h3>
-								<p><strong>RFC:</strong> {{billing_address.rfc}}</p>
-								<p><strong>Dirección:</strong> {{billing_address.address}}, {{billing_address.city}}, {{billing_address.state}}, {{billing_address.zipcode}}</p>
-							}
-						}
+					<td style="width: 44%; vertical-align: top; text-align: right; padding: 0 0 10px 0; border-bottom: 2px solid #000000;">
+						<div style="font-size: 15pt; font-weight: bold; color: #000000; letter-spacing: 1px; white-space: nowrap;">
+							ESTADO DE CUENTA
+						</div>
+						<div style="font-size: 8.5pt; color: #000000; margin-top: 6px;">
+							<b>Periodo:</b> {{start_date | shortDate:'date'}} al {{end_date | shortDate:'date'}}
+						</div>
+						<div style="font-size: 8.5pt; color: #000000; margin-top: 2px;">
+							<b>Fecha de emisión:</b> {{emission_date | shortDate:'date'}}
+						</div>
 					</td>
 				</tr>
 			</table>
 
+			@if (client_user) {
+				<table style="width: 100%; border-collapse: collapse; margin-top: 12px; background-color: #f2f2f2;">
+					<tr>
+						<td style="width: 55%; vertical-align: top; padding: 9px 12px;">
+							<div style="font-size: 7.5pt; font-weight: bold; color: #444444; letter-spacing: 1px;">
+								CLIENTE
+							</div>
+							<div style="font-size: 12pt; font-weight: bold; color: #000000; margin-top: 3px;">
+								{{client_user.name}}
+							</div>
+							@if (client_user.phone) {
+								<div style="font-size: 8.5pt; color: #000000; margin-top: 3px;">
+									Tel. {{client_user.phone}}
+								</div>
+							}
+							@if (billing_address && billing_address.email) {
+								<div style="font-size: 8.5pt; color: #000000;">
+									{{billing_address.email}}
+								</div>
+							}
+						</td>
+						<td style="width: 45%; vertical-align: top; padding: 9px 12px;">
+							@if (billing_address_full) {
+								<div style="font-size: 7.5pt; font-weight: bold; color: #444444; letter-spacing: 1px;">
+									DATOS DE FACTURACIÓN
+								</div>
+								<div style="font-size: 8.5pt; color: #000000; margin-top: 3px;">
+									<b>RFC:</b> {{billing_address?.rfc}}
+								</div>
+								<div style="font-size: 8.5pt; color: #000000;">
+									{{billing_address_full}}
+								</div>
+							}
+						</td>
+					</tr>
+				</table>
+			}
+
 			@if (is_loading) {
-			<div class="row">
-				<div class="col-12">
-					<app-loading></app-loading>
-				</div>
-			</div>
-			} @else {
 				<div class="row">
 					<div class="col-12">
-						<table class="table table-striped" style="width: 100%; border-collapse: collapse;">
-							<thead>
-								<tr style="border: 1px solid black;">
-									<th style="border: 1px solid black; padding: 8px;">Fecha</th>
-									<th style="border: 1px solid black; padding: 8px;">Folio</th>
-									<th style="border: 1px solid black; padding: 8px;">Concepto</th>
-									<th style="border: 1px solid black; padding: 8px;">Forma de Pago</th>
-									<th style="border: 1px solid black; padding: 8px;">Metodo de Pago</th>
-									<th style="border: 1px solid black; padding: 8px; text-align: right;">Cargo</th>
-									<th style="border: 1px solid black; padding: 8px; text-align: right;">Abono</th>
-									<th style="border: 1px solid black; padding: 8px; text-align: right;">Saldo</th>
-									<th style="border: 1px solid black; padding: 8px; text-align: right;">Dias Vencimiento</th>
-								</tr>
-							</thead>
-							<tbody>
-								<tr style="border: 1px solid black;">
-								<td style="border: 1px solid black; padding: 8px;">{{start_date | shortDate:'date'}}</td>
-									<td style="border: 1px solid black; padding: 8px;"></td>
-									<td style="border: 1px solid black; padding: 8px;">Saldo Inicial</td>
-									<td style="border: 1px solid black; padding: 8px;"></td>
-									<td style="border: 1px solid black; padding: 8px;"></td>
-									<td style="border: 1px solid black; padding: 8px; text-align: right;"></td>
-									<td style="border: 1px solid black; padding: 8px; text-align: right;"></td>
-									<td style="border: 1px solid black; padding: 8px; text-align: right;">{{balance.balance | currency}}</td>
-									<td style="border: 1px solid black; padding: 8px; text-align: right;"></td>
-								</tr>
-
-								@for (item of report_items; track item) {
-									<tr style="border: 1px solid black;">
-										<td style="border: 1px solid black; padding: 8px;">{{item.fecha | shortDate:'date'}}</td>
-										<td style="border: 1px solid black; padding: 8px;">{{item.folio}}</td>
-										<td style="border: 1px solid black; padding: 8px;">{{item.concepto}}</td>
-										<td style="border: 1px solid black; padding: 8px;">{{item.forma_pago}}</td>
-										<td style="border: 1px solid black; padding: 8px;">{{item.metodo_pago}}</td>
-										<td style="border: 1px solid black; padding: 8px; text-align: right;">{{item.cargo | currency}}</td>
-										<td style="border: 1px solid black; padding: 8px; text-align: right;">{{item.abono | currency}}</td>
-										<td style="border: 1px solid black; padding: 8px; text-align: right;">{{balance.balance + item.saldo | currency}}</td>
-										<td style="border: 1px solid black; padding: 8px; text-align: right;">{{item.dias_vencimiento}}</td>
-									</tr>
-								}
-							</tbody>
-							<tfoot>
-								<tr style="border: 1px solid black;">
-									<td colspan="5" style="border: 1px solid black; padding: 8px; text-align: right;"><strong>Totales:</strong></td>
-									<td style="border: 1px solid black; padding: 8px; text-align: right;"></td>
-									<td style="border: 1px solid black; padding: 8px; text-align: right;"><strong>{{total_cargos| currency}}</strong></td>
-									<td style="border: 1px solid black; padding: 8px; text-align: right;"><strong>{{total_abonos| currency}}</strong></td>
-									<td style="border: 1px solid black; padding: 8px; text-align: right;"><strong>{{balance.balance + total_cargos - total_abonos | currency}}</strong></td>
-								</tr>
-							</tfoot>
-						</table>
-
-						<div style="margin-top: 40px; width: 50%; margin-left: 50%;">
-							<table class="table table-striped" style="width: 100%; border-collapse: collapse;">
-								<tbody>
-									<tr style="border: 1px solid black;">
-										<td style="border: 1px solid black; padding: 8px;"><strong>Saldo Inicial:</strong></td>
-										<td style="border: 1px solid black; padding: 8px; text-align: right;">{{balance.balance | currency}}</td>
-									</tr>
-									<tr style="border: 1px solid black;">
-										<td style="border: 1px solid black; padding: 8px;"><strong>Total de Cargos:</strong></td>
-										<td style="border: 1px solid black; padding: 8px; text-align: right;">{{total_cargos | currency}}</td>
-									</tr>
-									<tr style="border: 1px solid black;">
-										<td style="border: 1px solid black; padding: 8px;"><strong>Total de Abonos:</strong></td>
-										<td style="border: 1px solid black; padding: 8px; text-align: right;">{{total_abonos | currency}}</td>
-									</tr>
-									<tr style="border: 1px solid black;">
-										<td style="border: 1px solid black; padding: 8px;"><strong>Saldo Final:</strong></td>
-										<td style="border: 1px solid black; padding: 8px; text-align: right;">{{balance.balance+total_cargos - total_abonos | currency}}</td>
-									</tr>
-								</tbody>
-							</table>
-						</div>
+						<app-loading></app-loading>
 					</div>
+				</div>
+			} @else {
+				<table style="width: 100%; border-collapse: collapse; margin-top: 14px;">
+					<thead>
+						<tr>
+							<th style="width: 12.4%; padding: 6px 5px; text-align: left; font-size: 7.5pt; color: #000000; background-color: #e6e6e6; border-top: 2px solid #000000; border-bottom: 2px solid #000000;">FECHA</th>
+							<th style="width: 9%; padding: 6px 5px; text-align: left; font-size: 7.5pt; color: #000000; background-color: #e6e6e6; border-top: 2px solid #000000; border-bottom: 2px solid #000000;">FOLIO</th>
+							<th style="width: 10%; padding: 6px 5px; text-align: left; font-size: 7.5pt; color: #000000; background-color: #e6e6e6; border-top: 2px solid #000000; border-bottom: 2px solid #000000;">CONCEPTO</th>
+							<th style="width: 13%; padding: 6px 5px; text-align: left; font-size: 7.5pt; color: #000000; background-color: #e6e6e6; border-top: 2px solid #000000; border-bottom: 2px solid #000000;">FORMA DE PAGO</th>
+							<th style="width: 8.6%; padding: 6px 5px; text-align: left; font-size: 7.5pt; color: #000000; background-color: #e6e6e6; border-top: 2px solid #000000; border-bottom: 2px solid #000000;">MÉTODO</th>
+							<th style="width: 13%; padding: 6px 5px; text-align: right; font-size: 7.5pt; color: #000000; background-color: #e6e6e6; border-top: 2px solid #000000; border-bottom: 2px solid #000000;">CARGO</th>
+							<th style="width: 13%; padding: 6px 5px; text-align: right; font-size: 7.5pt; color: #000000; background-color: #e6e6e6; border-top: 2px solid #000000; border-bottom: 2px solid #000000;">ABONO</th>
+							<th style="width: 14.7%; padding: 6px 5px; text-align: right; font-size: 7.5pt; color: #000000; background-color: #e6e6e6; border-top: 2px solid #000000; border-bottom: 2px solid #000000;">SALDO</th>
+							<th style="width: 6.3%; padding: 6px 5px; text-align: right; font-size: 7.5pt; color: #000000; background-color: #e6e6e6; border-top: 2px solid #000000; border-bottom: 2px solid #000000;">DÍAS VENC.</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<td style="padding: 6px 5px; font-size: 9pt; border-bottom: 1px solid #999999; color: #000000; font-style: italic;">{{start_date | shortDate:'date'}}</td>
+							<td style="padding: 6px 5px; font-size: 9pt; border-bottom: 1px solid #999999;"></td>
+							<td colspan="5" style="padding: 6px 5px; font-size: 9pt; border-bottom: 1px solid #999999; color: #000000; font-style: italic;">Saldo inicial</td>
+							<td style="padding: 6px 5px; font-size: 9pt; border-bottom: 1px solid #999999; text-align: right; white-space: nowrap; color: #000000; font-style: italic;">{{saldo_inicial | currency}}</td>
+							<td style="padding: 6px 5px; font-size: 9pt; border-bottom: 1px solid #999999;"></td>
+						</tr>
+						@for (item of report_item_array; track $index; let odd = $odd) {
+							<tr [style.background-color]="odd ? '#f4f4f4' : '#ffffff'">
+								<td style="padding: 6px 5px; font-size: 9pt; border-bottom: 1px solid #999999; white-space: nowrap;">{{item.fecha | shortDate:'date'}}</td>
+								<td style="padding: 6px 5px; font-size: 9pt; border-bottom: 1px solid #999999;">{{item.folio}}</td>
+								<td style="padding: 6px 5px; font-size: 9pt; border-bottom: 1px solid #999999;">{{item.concepto}}</td>
+								<td style="padding: 6px 5px; font-size: 9pt; border-bottom: 1px solid #999999;">{{item.forma_pago}}</td>
+								<td style="padding: 6px 5px; font-size: 9pt; border-bottom: 1px solid #999999;">{{item.metodo_pago}}</td>
+								<td style="padding: 6px 5px; font-size: 9pt; border-bottom: 1px solid #999999; text-align: right; white-space: nowrap;">
+									@if (item.cargo) {
+										{{item.cargo | currency}}
+									}
+								</td>
+								<td style="padding: 6px 5px; font-size: 9pt; border-bottom: 1px solid #999999; text-align: right; white-space: nowrap;">
+									@if (item.abono) {
+										{{item.abono | currency}}
+									}
+								</td>
+								<td style="padding: 6px 5px; font-size: 9pt; border-bottom: 1px solid #999999; text-align: right; white-space: nowrap; font-weight: bold;">{{item.saldo | currency}}</td>
+								@if (item.dias_vencimiento > 0) {
+									<td style="padding: 6px 5px; font-size: 9pt; border-bottom: 1px solid #999999; text-align: right; white-space: nowrap; font-weight: bold;">{{item.dias_vencimiento}}</td>
+								} @else {
+									<td style="padding: 6px 5px; font-size: 9pt; border-bottom: 1px solid #999999; text-align: right;">&mdash;</td>
+								}
+							</tr>
+						} @empty {
+							<tr>
+								<td colspan="9" style="padding: 12px 5px; font-size: 9pt; border-bottom: 1px solid #999999; text-align: center; color: #000000;">Sin movimientos en el periodo</td>
+							</tr>
+						}
+					</tbody>
+					<tfoot>
+						<tr>
+							<td colspan="5" style="padding: 7px 5px; font-size: 9pt; text-align: right; font-weight: bold; border-top: 2px solid #000000;">Totales</td>
+							<td style="padding: 7px 5px; font-size: 9pt; text-align: right; white-space: nowrap; font-weight: bold; border-top: 2px solid #000000;">{{total_cargos | currency}}</td>
+							<td style="padding: 7px 5px; font-size: 9pt; text-align: right; white-space: nowrap; font-weight: bold; border-top: 2px solid #000000;">{{total_abonos | currency}}</td>
+							<td style="padding: 7px 5px; font-size: 9pt; text-align: right; white-space: nowrap; font-weight: bold; border-top: 2px solid #000000;">{{saldo_final | currency}}</td>
+							<td style="padding: 7px 5px; font-size: 9pt; border-top: 2px solid #000000;"></td>
+						</tr>
+					</tfoot>
+				</table>
+
+				<table style="width: 100%; border-collapse: collapse; margin-top: 22px;">
+					<tr>
+						<td style="width: 23.5%; border: 1px solid #999999; padding: 8px 10px; vertical-align: top;">
+							<div style="font-size: 7.5pt; font-weight: bold; color: #444444; letter-spacing: 1px;">
+								SALDO INICIAL
+							</div>
+							<div style="font-size: 13pt; font-weight: bold; color: #000000; margin-top: 3px;">
+								{{saldo_inicial | currency}}
+							</div>
+						</td>
+						<td style="width: 2%;">
+							&nbsp;
+						</td>
+						<td style="width: 23.5%; border: 1px solid #999999; padding: 8px 10px; vertical-align: top;">
+							<div style="font-size: 7.5pt; font-weight: bold; color: #444444; letter-spacing: 1px;">
+								TOTAL DE CARGOS
+							</div>
+							<div style="font-size: 13pt; font-weight: bold; color: #000000; margin-top: 3px;">
+								{{total_cargos | currency}}
+							</div>
+						</td>
+						<td style="width: 2%;">
+							&nbsp;
+						</td>
+						<td style="width: 23.5%; border: 1px solid #999999; padding: 8px 10px; vertical-align: top;">
+							<div style="font-size: 7.5pt; font-weight: bold; color: #444444; letter-spacing: 1px;">
+								TOTAL DE ABONOS
+							</div>
+							<div style="font-size: 13pt; font-weight: bold; color: #000000; margin-top: 3px;">
+								{{total_abonos | currency}}
+							</div>
+						</td>
+						<td style="width: 2%;">
+							&nbsp;
+						</td>
+						<td style="width: 23.5%; border: 2px solid #000000; padding: 8px 10px; vertical-align: top; background-color: #e6e6e6;">
+							<div style="font-size: 7.5pt; font-weight: bold; color: #000000; letter-spacing: 1px;">
+								SALDO FINAL
+							</div>
+							<div style="font-size: 13pt; font-weight: bold; color: #000000; margin-top: 3px;">
+								{{saldo_final | currency}}
+							</div>
+						</td>
+					</tr>
+				</table>
+
+				<div style="margin-top: 22px; padding-top: 8px; border-top: 1px solid #999999; font-size: 7.5pt; color: #333333;">
+					Los días de vencimiento se cuentan a partir de 30 días de crédito sobre la fecha de la venta. Si tiene alguna aclaración sobre este estado de cuenta, comuníquese con nosotros.
 				</div>
 			}
 		</div>

@@ -1,16 +1,13 @@
-import { Component, Injector, OnInit } from '@angular/core';
-import { RestService } from '../../modules/shared/services/rest.service';
+import { Component, OnInit } from '@angular/core';
 import { Address, Billing_Data, Order, Payment, Preferences, Store, User } from '../../modules/shared/RestModels';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Rest, RestResponse } from '../../modules/shared/services/Rest';
+import { Rest } from '../../modules/shared/services/Rest';
 import { BaseComponent } from '../../modules/shared/base/base.component';
-import { forkJoin, Observable, of } from 'rxjs';
+import { forkJoin, of } from 'rxjs';
 import { LoadingComponent } from '../../components/loading/loading.component';
-import { mergeMap } from 'rxjs/operators';
-import { GetEmpty } from '../../modules/shared/GetEmpty';
+import { map, mergeMap } from 'rxjs/operators';
 import { OrderInfo, PaymentInfo } from '../../modules/shared/Models';
-import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../environments/environment';
 import { Utils } from '../../modules/shared/Utils';
 import { ShortDatePipe } from '../../modules/shared/pipes/short-date.pipe';
@@ -25,13 +22,13 @@ interface ReporteItem {
 	abono: number;
 	saldo: number;
 	dias_vencimiento: number;
+	type: 'order' | 'payment';
 }
 
-interface Balance {
-	total_orders: number;
-	total_paid: number;
-	balance: number;
-}
+const DIAS_CREDITO = 30;
+//Una venta liquidada antes de estas horas despues de cerrarse se reporta como Contado
+const HORAS_CONTADO = 8;
+const MS_POR_HORA = 60 * 60 * 1000;
 
 @Component({
 	selector: 'app-reporte-estado-cuenta-cliente',
@@ -45,118 +42,91 @@ export class ReporteEstadoCuentaClienteComponent extends BaseComponent implement
 	start_date: string = '';
 	end_date: string = '';
 
-	selectedClient: User | null = null;
+	client_user: User | null = null;
 	billing_address: Address | null = null;
+	billing_address_full: string = '';
 	store: Store | null = null;
+	store_address: string = '';
 	billing_data: Billing_Data | null = null;
 	preferences: Preferences | null = null;
+	logo_url: string = '';
+	emission_date: Date = new Date();
+
+	report_item_array: ReporteItem[] = [];
+	saldo_inicial: number = 0;
 	total_cargos: number = 0;
 	total_abonos: number = 0;
+	saldo_final: number = 0;
 
-	report_items: ReporteItem[] = [];
-	unique_orders: OrderInfo[] = [];
-
-	rest_order: Rest<Order, OrderInfo> = this.rest.initRest<Order, OrderInfo>('order_info');
-	rest_payment: Rest<Payment, Payment> = this.rest.initRest<Payment, Payment>('payment');
+	rest_order_info: Rest<Order, OrderInfo> = this.rest.initRest<Order, OrderInfo>('order_info');
+	rest_payment_info: Rest<Payment, PaymentInfo> = this.rest.initRest<Payment, PaymentInfo>('payment_info');
 	rest_user: Rest<User, User> = this.rest.initRest<User, User>('user');
 	rest_address: Rest<Address, Address> = this.rest.initRest<Address, Address>('address');
-	rest_payment_info: Rest<Payment, PaymentInfo> = this.rest.initRest<Payment, PaymentInfo>('payment_info');
 	rest_store: Rest<Store, Store> = this.rest.initRest<Store, Store>('store');
 	rest_billing_data: Rest<Billing_Data, Billing_Data> = this.rest.initRest<Billing_Data, Billing_Data>('billing_data');
 	rest_preferences: Rest<Preferences, Preferences> = this.rest.initRest<Preferences, Preferences>('preferences');
-	balance:Balance = {
-		total_orders: 0,
-		total_paid: 0,
-		balance: 0
-	};
 
 	ngOnInit(): void {
 		this.path = '/reporte-estado-cuenta-cliente';
+		this.setTitle('Reporte de Estado de Cuenta de Cliente');
 
-		this.sink = this.getParamsAndQueriesObservable().pipe
+		this.subs.sink = this.getParamsAndQueriesObservable().pipe
 		(
 			mergeMap(params =>
 			{
-				this.setTitle('Reporte de Estado de Cuenta de Cliente');
-
 				let start = new Date();
 
 				start.setDate(1);
 				start.setHours(0,0,0,0);
 
-				let end = Utils.getEndOfMonth(start);
-
-				console.log('start'+params.query.get('start_date')+' FOOOOOOOOO');
-				console.log('end'+params.query.get('end_date')+' FOOOOOOOOO');
-				console.log('start'+Utils.getLocalMysqlStringFromDate(start)+' FOOOOOOOOO');
-
 				this.start_date = (params.query.get('start_date') || Utils.getLocalMysqlStringFromDate(start)).substring(0,10);
-				this.end_date = (params.query.get('end_date') || Utils.getLocalMysqlStringFromDate(end)).substring(0,10);
+				this.end_date = (params.query.get('end_date') || Utils.getLocalMysqlStringFromDate(Utils.getEndOfMonth(start))).substring(0,10);
 
-				const client_user_id = parseInt( params.query.get('client_user_id') as string) as number;
+				const client_user_id = parseInt(params.query.get('client_user_id') as string);
+				const start_date = Utils.getDateFromLocalMysqlString(this.start_date+' 00:00:00');
+				const end_date = Utils.getDateFromLocalMysqlString(this.end_date+' 23:59:59');
+				const store_id = this.rest.user?.store_id;
 
-				start = Utils.getDateFromLocalMysqlString( this.start_date+' 00:00:00' );
-				end = Utils.getDateFromLocalMysqlString( this.end_date+' 23:59:59' );
-
-				if( this.rest?.user?.store_id == null )
+				if( store_id == null )
 				{
 					this.showError('No tienes configurado una sucursal, por favor habla con tu administrador');
-
 				}
 
 				this.is_loading = true;
-				return forkJoin({
-					data: this.fetchData(client_user_id, start, end),
-					store: this.rest_store.get(this.rest?.user?.store_id as number),
+
+				return forkJoin
+				({
+					client_user: this.rest_user.get(client_user_id),
+					order_info: this.rest_order_info.search({
+						eq: { client_user_id: client_user_id, status: 'CLOSED' },
+						ge: { closed_timestamp: start_date },
+						le: { closed_timestamp: end_date },
+						limit: 999999
+					}),
+					//Sin limit el backend regresa solo 20 pagos y se perderian abonos
+					payment_info: this.rest_payment_info.search({
+						eq: { paid_by_user_id: client_user_id, type: 'income' },
+						ge: { created: start_date },
+						le: { created: end_date },
+						limit: 999999
+					}),
+					store: store_id ? this.rest_store.get(store_id) : of(null),
 					preferences: this.rest_preferences.get(1),
-					balance: this.rest.getReportByPath('getBalance', { to_date: Utils.getLocalMysqlStringFromDate(start), client_user_id: client_user_id })
+					balance: this.rest.getReportByPath('getBalance', { to_date: Utils.getLocalMysqlStringFromDate(start_date), client_user_id: client_user_id })
 				});
 			}),
-			mergeMap((response: any) => {
-				this.store = response.store;
-				this.preferences = response.preferences;
-				this.balance = response.balance;
-
-				const billing_data_id = this.store?.default_billing_data_id;
-
-				return forkJoin
-				({
-					data: of(response.data),
-					billing_data: billing_data_id ? this.rest_billing_data.get(billing_data_id) : of(null)
-				});
-			}),
-			mergeMap((response: any) =>
+			//billing_data y billing_address solo dependen del bloque anterior: se piden en paralelo
+			mergeMap(response =>
 			{
-				this.billing_data = response.billing_data;
-				let orders_ids: number[] = [];
-
-				for(let pi of response.data.payments_received.data)
-				{
-					for(let m of pi.movements)
-					{
-						for(let mo of m.bank_movement_orders)
-						{
-							orders_ids.push(mo.order_id);
-						}
-					}
-				}
-
-				console.log('orders_ids',orders_ids);
-
-				//let order_payments_obs = orders_ids.length > 0 ? this.rest_order.search
-				//({
-				//	csv:{ id: orders_ids },
-				//	limit: 99999
-				//}) : of({total: 0, data: []}) as Observable<RestResponse<OrderInfo>>;
+				const billing_data_id = response.store?.default_billing_data_id;
+				const billing_address_id = response.client_user.default_billing_address_id;
 
 				return forkJoin
 				({
-					client_user: of( response.data.client_user ),
-					closed_orders: of( response.data.closed_orders ),
-					payments_received: of( response.data.payments_received ),
-					//order_info_with_payments: order_payments_obs,
-					billing_address: response.data.client_user.default_billing_address_id ? this.rest_address.get(response.data.client_user.default_billing_address_id) : of(null)
-				});
+					billing_data: billing_data_id ? this.rest_billing_data.get(billing_data_id) : of(null),
+					billing_address: billing_address_id ? this.rest_address.get(billing_address_id) : of(null)
+				})
+				.pipe(map(billing => ({ ...response, ...billing })));
 			})
 		)
 		.subscribe
@@ -164,162 +134,105 @@ export class ReporteEstadoCuentaClienteComponent extends BaseComponent implement
 			error:(error:any) =>this.showError(error),
 			next: response =>
 			{
-				this.selectedClient = response.client_user;
+				this.client_user = response.client_user;
+				this.store = response.store;
+				this.preferences = response.preferences;
+				this.billing_data = response.billing_data;
 				this.billing_address = response.billing_address;
-				this.unique_orders = response.closed_orders.data;
-						//this.createUniqueOrderList(response.closed_orders.data, response.order_info_with_payments.data);
-				this.report_items = this.generateReport(this.unique_orders, response.payments_received.data);
+				this.store_address = this.formatStoreAddress(response.store);
+				this.billing_address_full = this.formatBillingAddress(response.billing_address);
+				this.logo_url = response.preferences.logo_image_id ? this.rest.getImagePath(response.preferences.logo_image_id) : '';
+				this.emission_date = new Date();
+				this.saldo_inicial = Number(response.balance?.balance) || 0;
+				this.report_item_array = this.generateReport(response.order_info.data, response.payment_info.data);
 				this.calculateTotals();
 				this.is_loading = false;
 			}
 		});
 	}
 
-	fetchData(user_id: number | null, start_date: Date | null, end_date: Date | null)
-	{
-		return forkJoin
-		({
-			client_user: this.rest_user.get(user_id),
-			closed_orders: this.getClosedOrders(user_id, start_date, end_date),
-			payments_received: this.getPaymentsReceived(user_id, start_date, end_date),
-		});
-	}
+	generateReport(order_info_array: OrderInfo[], payment_info_array: PaymentInfo[]): ReporteItem[] {
+		const report_item_array: ReporteItem[] = [];
+		const last_payment_by_order = new Map<number, Date>();
 
-	getClosedOrders(user_id: number | null, start_date: Date | null, end_date: Date | null): Observable<RestResponse<OrderInfo>> {
-		return this.rest_order.search({
-			eq: { client_user_id: user_id, status: 'CLOSED' },
-			ge: { closed_timestamp: start_date },
-			le: { closed_timestamp: end_date },
-			limit: 999999
-		});
-	}
-
-	getPaymentsReceived(user_id: number | null, start_date: Date | null, end_date: Date | null): Observable<RestResponse<PaymentInfo>> {
-		return this.rest_payment_info.search({
-			eq: { paid_by_user_id: user_id, type: 'income' },
-			ge: { created: start_date || undefined },
-			le: { created: end_date || undefined }
-		});
-	}
-
-	createUniqueOrderList(closed_order_info:OrderInfo[], payments_to_orders:OrderInfo[]):OrderInfo[]
-	{
-		console.log('createUniqueOrderList', closed_order_info);
-		console.log('create Payments to orders', payments_to_orders);
-
-		let all_orders = new Map<number, OrderInfo>();
-
-		for(let oi of closed_order_info)
-		{
-			console.log('oi', oi);
-			all_orders.set(oi.order.id, oi);
-		}
-
-		for(let pi of payments_to_orders)
-		{
-			all_orders.set(pi.order.id, pi);
-		}
-
-		return Array.from(all_orders.values());
-	}
-
-	generateReport(orders: OrderInfo[], payments: PaymentInfo[]): ReporteItem[] {
-		let all_items: any[] = [];
-
-		// Add orders
-		for (const order of orders) {
-			all_items.push({
-				fecha: order.order.closed_timestamp,
-				folio: order.order.id,
+		for (const order_info of order_info_array) {
+			report_item_array.push({
+				fecha: order_info.order.closed_timestamp as Date,
+				folio: order_info.order.id,
 				concepto: 'Venta',
 				forma_pago: '',
 				metodo_pago: '',
-				cargo: order.order.total,
+				cargo: order_info.order.total,
 				abono: 0,
+				saldo: 0,
+				dias_vencimiento: 0,
 				type: 'order'
 			});
 		}
 
-		// Add payments
-		for (const payment of payments) {
-			for (const movement of payment.movements) {
-				for (const bmo of movement.bank_movement_orders) {
-					all_items.push({
-						fecha: payment.payment.created,
-						folio: bmo.order_id,
+		for (const payment_info of payment_info_array) {
+			const created = payment_info.payment.created;
+
+			for (const movement of payment_info.movements) {
+				const forma_pago = this.getPaymentMethodName(movement.bank_movement.transaction_type);
+
+				for (const bank_movement_order of movement.bank_movement_orders) {
+					report_item_array.push({
+						fecha: created,
+						folio: bank_movement_order.order_id,
 						concepto: 'Abono',
-						forma_pago: this.getPaymentMethodName(movement.bank_movement.transaction_type),
-						metodo_pago: '',//movement.bank_movement.payment_type,
+						forma_pago: forma_pago,
+						metodo_pago: '',
 						cargo: 0,
-						abono: bmo.amount,
+						abono: bank_movement_order.amount,
+						saldo: 0,
+						dias_vencimiento: 0,
 						type: 'payment'
 					});
+
+					const last_payment = last_payment_by_order.get(bank_movement_order.order_id);
+
+					if (!last_payment || created > last_payment)
+						last_payment_by_order.set(bank_movement_order.order_id, created);
 				}
 			}
 		}
 
-		// Sort by folio, then date
-		all_items.sort((a, b) => {
-			if (a.folio < b.folio) return -1;
-			if (a.folio > b.folio) return 1;
-			if (a.fecha < b.fecha) return -1;
-			if (a.fecha > b.fecha) return 1;
-			return 0;
-		});
+		// Por folio y luego por fecha: cada venta queda seguida de sus abonos
+		report_item_array.sort((a, b) => a.folio - b.folio || a.fecha.getTime() - b.fecha.getTime());
 
-		// Calculate saldo and dias_vencimiento
-		let saldo_acumulado = 0;
+		const order_by_id = new Map(order_info_array.map(order_info => [order_info.order.id, order_info.order]));
 		const today = new Date();
-		const order_info_map = new Map(orders.map(o => [o.order.id, o]));
-		const last_payment_map = new Map<number, Date>();
+		let saldo = this.saldo_inicial;
 
-		for (const payment of payments) {
-			for (const movement of payment.movements) {
-				for (const bmo of movement.bank_movement_orders) {
-					last_payment_map.set(bmo.order_id, payment.payment.created);
-				}
+		for (const item of report_item_array) {
+			saldo += item.cargo - item.abono;
+			item.saldo = saldo;
+
+			const order = order_by_id.get(item.folio);
+
+			if (item.type != 'order' || !order)
+				continue;
+
+			const closed_timestamp = order.closed_timestamp as Date;
+
+			if (order.amount_paid < order.total) {
+				item.metodo_pago = 'Crédito';
+
+				const fecha_vencimiento = new Date(closed_timestamp);
+				fecha_vencimiento.setDate(fecha_vencimiento.getDate() + DIAS_CREDITO);
+
+				if (today > fecha_vencimiento)
+					item.dias_vencimiento = Math.ceil((today.getTime() - fecha_vencimiento.getTime()) / (24 * MS_POR_HORA));
+			} else {
+				const last_payment = last_payment_by_order.get(item.folio);
+
+				if (last_payment)
+					item.metodo_pago = last_payment.getTime() - closed_timestamp.getTime() < HORAS_CONTADO * MS_POR_HORA ? 'Contado' : 'Crédito';
 			}
 		}
 
-		return all_items.map(item => {
-			saldo_acumulado = saldo_acumulado + item.cargo - item.abono;
-			let dias_vencimiento = 0;
-
-			const order_info = order_info_map.get(item.folio);
-			if (order_info) {
-				const order_is_paid = order_info.order.total <= order_info.order.amount_paid;
-
-				if(item.type === 'order') {
-					if (!order_is_paid) {
-						item.metodo_pago = 'CREDITO';
-						const fecha_vencimiento = new Date(order_info.order.closed_timestamp as Date);
-						fecha_vencimiento.setDate(fecha_vencimiento.getDate() + 30); // 30 days credit
-						if (today > fecha_vencimiento) {
-							const diffTime = today.getTime() - fecha_vencimiento.getTime();
-							dias_vencimiento = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-						}
-					} else {
-						const last_payment_date = last_payment_map.get(item.folio);
-						if (last_payment_date) {
-							const closed_date = new Date(order_info.order.closed_timestamp as Date);
-							const diffTime = last_payment_date.getTime() - closed_date.getTime();
-							const diffHours = diffTime / (1000 * 60 * 60);
-							if (diffHours < 8) {
-								item.metodo_pago = 'CONTADO';
-							} else {
-								item.metodo_pago = 'CREDITO';
-							}
-						}
-					}
-				}
-			}
-
-			return {
-				...item,
-				saldo: saldo_acumulado,
-				dias_vencimiento: item.type === 'order' ? dias_vencimiento : 0 // Only show for orders
-			};
-		});
+		return report_item_array;
 	}
 
 	getPaymentMethodName(transaction_type:string):string
@@ -335,71 +248,77 @@ export class ReporteEstadoCuentaClienteComponent extends BaseComponent implement
 			case 'DISCOUNT': return 'Descuento';
 			case 'RETURN_DISCOUNT': return 'Descuento por Devolución';
 			case 'PAYPAL': return 'Transferencia';
+			case 'DIGITAL_WALLET': return 'Monedero';
 		}
 		return transaction_type;
 	}
 
 	calculateTotals() {
-		this.total_cargos = this.report_items.reduce((acc, item) => acc + item.cargo, 0);
-		this.total_abonos = this.report_items.reduce((acc, item) => acc + item.abono, 0);
+		this.total_cargos = this.report_item_array.reduce((total, item) => total + item.cargo, 0);
+		this.total_abonos = this.report_item_array.reduce((total, item) => total + item.abono, 0);
+		this.saldo_final = this.saldo_inicial + this.total_cargos - this.total_abonos;
 	}
 
 	doSearch() {
-		const queryParams: any = {};
+		const query_params: any = {};
 
 		if (this.start_date) {
-			queryParams.start_date = this.start_date;//.toISOString().split('T')[0];
+			query_params.start_date = this.start_date;
 		}
 		if (this.end_date) {
-			queryParams.end_date = this.end_date;//.toISOString().split('T')[0];
+			query_params.end_date = this.end_date;
 		}
-		if (this.selectedClient) {
-			queryParams.client_user_id = this.selectedClient.id;
+		if (this.client_user) {
+			query_params.client_user_id = this.client_user.id;
 		}
-		this.router.navigate([this.path], { queryParams });
+		this.router.navigate([this.path], { queryParams: query_params });
 	}
 
 	downloadPdf() {
 		const element = document.getElementById('to_pdf');
-		if (element) {
-			const html = element.innerHTML;
-			const payload = {
-				html: html,
-				orientation: 'P', // P for Portrait
-				default_font_size: 10,
-				download_name: `estado-de-cuenta-${this.selectedClient?.name}.pdf`
-			};
 
-			let url = `${environment.app_settings.pdf_service_url}/index.php`;
+		if (!element)
+			return;
 
-			let headers
-			this.rest.callPostApi(url,payload,headers);
+		const download_name = `estado-de-cuenta-${this.client_user?.name}.pdf`;
+		const payload = {
+			html: element.innerHTML,
+			orientation: 'P', // P for Portrait
+			default_font_size: 10,
+			download_name: download_name
+		};
+		const url = `${environment.app_settings.pdf_service_url}/index.php`;
 
-			let options = { responseType: 'blob' };
-			this.sink = this.rest.callPostApi(url,payload,options).subscribe
-			({
-				error:(error:any)=>this.showError(error),
-				next:(response:any) =>
-				{
-					const blob = new Blob([response], { type: 'application/pdf' });
-					const url = window.URL.createObjectURL(blob);
-					const a = document.createElement('a');
-					a.href = url;
-					a.download = `estado-de-cuenta-${this.selectedClient?.name}.pdf`;
-					document.body.appendChild(a);
-					a.click();
-					window.URL.revokeObjectURL(url);
-					document.body.removeChild(a);
-				}
-			});
-		}
+		this.subs.sink = this.rest.callPostApi(url, payload, { responseType: 'blob' }).subscribe
+		({
+			error:(error:any)=>this.showError(error),
+			next:(response:any) =>
+			{
+				const blob_url = window.URL.createObjectURL(new Blob([response], { type: 'application/pdf' }));
+				const link = document.createElement('a');
+				link.href = blob_url;
+				link.download = download_name;
+				document.body.appendChild(link);
+				link.click();
+				window.URL.revokeObjectURL(blob_url);
+				document.body.removeChild(link);
+			}
+		});
 	}
 
 	formatStoreAddress(store: Store | null): string {
 		if (!store) {
 			return '';
 		}
-		const addressParts = [store.address, store.city, store.state, store.zipcode];
-		return addressParts.filter(part => part).join(', ');
+		const address_parts = [store.address, store.city, store.state, store.zipcode];
+		return address_parts.filter(part => part).join(', ');
+	}
+
+	//Solo se muestra cuando la direccion de facturacion esta completa
+	formatBillingAddress(address: Address | null): string {
+		if (!address?.rfc || !address.address || !address.city || !address.state || !address.zipcode) {
+			return '';
+		}
+		return `${address.address}, ${address.city}, ${address.state}, C.P. ${address.zipcode}`;
 	}
 }
