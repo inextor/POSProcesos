@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { RouterModule } from '@angular/router';
 import { BaseComponent } from '../../modules/shared/base/base.component';
 import { Utils } from '../../modules/shared/Utils';
 import { Production_Area, User } from '../../modules/shared/RestModels';
@@ -28,12 +29,13 @@ interface ProduccionReportadaVsValidada
 	validado: number;
 	merma: number;
 	diferencia: number | null;
+	requisitions_params?: Record<string, string | number>;
 }
 
 @Component({
 	selector: 'app-produccion-reportada-vs-validada-report',
 	standalone: true,
-	imports: [CommonModule, FormsModule, LoadingComponent, ItemSearchComponent],
+	imports: [CommonModule, FormsModule, RouterModule, LoadingComponent, ItemSearchComponent],
 	templateUrl: './produccion-reportada-vs-validada-report.component.html',
 	styleUrls: ['./produccion-reportada-vs-validada-report.component.css']
 })
@@ -124,7 +126,8 @@ export class ProduccionReportadaVsValidadaReportComponent extends BaseComponent 
 		})
 		.subscribe({
 			next: (data: any) => {
-				this.results = Array.isArray(data) ? data : (data.data || []);
+				let rows: ProduccionReportadaVsValidada[] = Array.isArray(data) ? data : (data.data || []);
+				this.results = rows.map(row => ({ ...row, requisitions_params: this.getRequisitionsParams(row, date_start, date_end) }));
 				this.searched = true;
 				this.is_loading = false;
 			},
@@ -133,6 +136,27 @@ export class ProduccionReportadaVsValidadaReportComponent extends BaseComponent 
 				this.is_loading = false;
 			}
 		});
+	}
+
+	//Filtros para requisitions-by-item que reproducen el requerido del renglon: mismo articulo, la sucursal
+	//a la que se le pidio (requested_to_store_id, no la que pide) y el dia del renglon recortado al rango
+	//buscado, igual que el WHERE del backend. requisitions-by-item espera las fechas en UTC
+	getRequisitionsParams(row: ProduccionReportadaVsValidada, date_start: string, date_end: string): Record<string, string | number>
+	{
+		const day_start = Utils.getDateFromLocalMysqlString(row.fecha + ' 00:00:00');
+		const day_end = Utils.getDateFromLocalMysqlString(row.fecha + ' 23:59:59');
+		const range_start = Utils.getDateFromLocalMysqlString(date_start);
+		const range_end = Utils.getDateFromLocalMysqlString(date_end);
+
+		const start = day_start > range_start ? day_start : range_start;
+		const end = day_end < range_end ? day_end : range_end;
+
+		return {
+			item_id: row.item_id,
+			requested_to_store_id: row.store_id ?? '',
+			start_timestamp: Utils.getUTCMysqlStringFromDate(start),
+			end_timestamp: Utils.getUTCMysqlStringFromDate(end),
+		};
 	}
 
 	//Se genera el xlsx en el cliente a partir de los resultados que ya estan en pantalla, igual

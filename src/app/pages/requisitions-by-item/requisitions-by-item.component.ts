@@ -31,6 +31,9 @@ interface CRequisitionItem
 export class RequisitionsByItemComponent extends BaseComponent implements OnInit
 {
 	store_id: number | null = null;
+	//sucursal a la que se le pidio (la que produce). Llega desde produccion-reportada-vs-validada, cuyo
+	//requerido se agrupa por requested_to_store_id y no por la sucursal que pide (store_id)
+	requested_to_store_id: number | null = null;
 	item_id: number | null = null;
 	item_name: string = '';
 	store_name: string = '';
@@ -77,6 +80,7 @@ export class RequisitionsByItemComponent extends BaseComponent implements OnInit
 				this.is_loading = true;
 
 				this.store_id = this.getNumericParam(param_map, 'store_id');
+				this.requested_to_store_id = this.getNumericParam(param_map, 'requested_to_store_id');
 				this.item_id = this.getNumericParam(param_map, 'item_id');
 				this.start_timestamp = param_map.get('start_timestamp') || '';
 				this.end_timestamp = param_map.get('end_timestamp') || '';
@@ -102,6 +106,7 @@ export class RequisitionsByItemComponent extends BaseComponent implements OnInit
 					search_extra:
 					{
 						required_by_store_id: this.store_id ?? '',
+						requested_to_store_id: this.requested_to_store_id ?? '',
 						requisition_approved_status: 'APPROVED',
 						required_by_timestamp_start: this.start_timestamp,
 						required_by_timestamp_end: this.end_timestamp,
@@ -165,6 +170,11 @@ export class RequisitionsByItemComponent extends BaseComponent implements OnInit
 				end_timestamp: this.search_end ? Utils.getUTCMysqlStringFromDate(this.search_end) : '',
 			}
 		});
+	}
+
+	get requested_to_store_name(): string
+	{
+		return this.stores.find(s => s.id == this.requested_to_store_id)?.name || '';
 	}
 
 	get totalQty(): number

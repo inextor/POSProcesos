@@ -42,7 +42,11 @@
 					<strong>Artículo:</strong> {{item_name}}
 				</div>
 				<div class="col-12 col-md-6">
-					<strong>Sucursal:</strong> {{store_name}}
+					@if (requested_to_store_id) {
+						<strong>Solicitado a:</strong> {{requested_to_store_name}}
+					} @else {
+						<strong>Sucursal:</strong> {{store_name}}
+					}
 				</div>
 			</div>
 			<div class="d-none d-md-flex row fw-bold border-bottom pb-2 mb-2">
