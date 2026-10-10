@@ -69,6 +69,9 @@
                 <button class="btn btn-sm btn-outline-dark" (click)="toggleAgent(agent)">
                   {{ agent.expanded ? '−' : '+' }}
                 </button>
+                <button class="btn btn-sm btn-outline-success mt-1" (click)="calculateAgentFormulas(agent)" title="Calcular con fórmulas y generar">
+                  fx
+                </button>
               </td>
               <td class="text-center">
                 <input type="checkbox" class="form-check-input" [(ngModel)]="agent.selected" (change)="toggleAgentSelection(agent)">
@@ -155,6 +158,58 @@
   } @else if (!is_loading) {
     <div class="alert alert-info mt-4">
       Seleccione un rango de fechas de <strong>pagos</strong> y presione "Generar Reporte" para ver los datos.
+    </div>
+  }
+
+  @if (show_preview) {
+    <div class="card mt-4">
+      <div class="card-header">
+        <strong>Vista previa con fórmulas: {{ preview_agent_name }}</strong>
+      </div>
+      <div class="card-body">
+        <p>
+          <span>Total calculado: {{ preview_total | currency }}</span>
+          <span class="text-muted ms-3">Referencia del reporte: {{ preview_reference_total | currency }}</span>
+        </p>
+        @if (preview_errors.length > 0) {
+          <div class="alert alert-danger">
+            <strong>Errores de fórmula ({{ preview_errors.length }}):</strong>
+            <ul class="mb-0">
+              @for (preview_error of preview_errors; track preview_error) {
+                <li>{{ preview_error }}</li>
+              }
+            </ul>
+          </div>
+        }
+        <div class="table-responsive">
+          <table class="table table-sm">
+            <thead>
+              <tr>
+                <th>Orden</th>
+                <th>Pago</th>
+                <th class="text-end">Proporción</th>
+                <th class="text-end">Partidas</th>
+                <th class="text-end">Importe</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (preview_line of preview_lines; track $index) {
+                <tr>
+                  <td>{{ preview_line.order_id }}</td>
+                  <td>{{ preview_line.payment_id }}</td>
+                  <td class="text-end">{{ preview_line.paid_ratio | number:'1.2-4' }}</td>
+                  <td class="text-end">{{ preview_line.items.length }}</td>
+                  <td class="text-end">{{ preview_line.amount | currency }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+        <div class="text-end">
+          <button type="button" class="btn btn-secondary me-2" (click)="cancelPreview()">Cancelar</button>
+          <button type="button" class="btn btn-success" (click)="confirmGeneratePreview()" [disabled]="is_loading || preview_errors.length > 0 || preview_lines.length === 0">Generar {{ preview_lines.length }} comisiones</button>
+        </div>
+      </div>
     </div>
   }
 </div>

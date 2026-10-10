@@ -10,21 +10,79 @@
 			<div class="row my-2">
 				<div class="col-12 form-group">
 					<label for="base_percent">Porcentaje Base</label>
-					<input type="number" id="base_percent" name="base_percent" class="form-control" [(ngModel)]="commission_rule.base_percent" step="0.000001" required>
+					<input type="number" id="base_percent" name="base_percent" class="form-control" [(ngModel)]="commission_rule.base_percent" (ngModelChange)="updateFormulaPreview()" step="0.000001" required>
 				</div>
 			</div>
 			<div class="row my-2">
 				<div class="col-12 form-group">
 					<label for="discount_reduction_per_percent">Reducción por Descuento (%)</label>
-					<input type="number" id="discount_reduction_per_percent" name="discount_reduction_per_percent" class="form-control" [(ngModel)]="commission_rule.discount_reduction_per_percent" step="0.000001" required>
+					<input type="number" id="discount_reduction_per_percent" name="discount_reduction_per_percent" class="form-control" [(ngModel)]="commission_rule.discount_reduction_per_percent" (ngModelChange)="updateFormulaPreview()" step="0.000001" required>
 				</div>
 			</div>
+			<div class="row my-2">
+				<div class="col-12 form-group">
+					<label for="formula">Fórmula (JavaScript, opcional)</label>
+					<textarea id="formula" name="formula" class="form-control font-monospace" [(ngModel)]="commission_rule.formula" (ngModelChange)="updateFormulaPreview()" [attr.maxlength]="max_formula_length" rows="8" placeholder="return order_item.total * 0.10;"></textarea>
+					<small class="text-muted">{{ formula_length }} / {{ max_formula_length }} caracteres. Recibe order, order_item, rule y period. Vacía = cálculo tradicional.</small>
+				</div>
+			</div>
+			<div class="row my-2">
+				<div class="col-12">
+					<button type="button" class="btn btn-outline-secondary btn-sm" (click)="loadExampleFormula()">Cargar ejemplo</button>
+				</div>
+			</div>
+			<div class="row my-2">
+				<div class="col-12">
+					<strong>Valores de prueba</strong>
+				</div>
+			</div>
+			<div class="row my-2">
+				<div class="col-md-3 form-group">
+					<label for="test_order_total">Orden total</label>
+					<input type="number" id="test_order_total" name="test_order_total" class="form-control" [(ngModel)]="test_order_total" (ngModelChange)="updateFormulaPreview()" step="0.01">
+				</div>
+				<div class="col-md-3 form-group">
+					<label for="test_order_discount">Orden descuento</label>
+					<input type="number" id="test_order_discount" name="test_order_discount" class="form-control" [(ngModel)]="test_order_discount" (ngModelChange)="updateFormulaPreview()" step="0.01">
+				</div>
+				<div class="col-md-3 form-group">
+					<label for="test_item_total">Partida total</label>
+					<input type="number" id="test_item_total" name="test_item_total" class="form-control" [(ngModel)]="test_item_total" (ngModelChange)="updateFormulaPreview()" step="0.01">
+				</div>
+				<div class="col-md-3 form-group">
+					<label for="test_item_discount">Partida descuento</label>
+					<input type="number" id="test_item_discount" name="test_item_discount" class="form-control" [(ngModel)]="test_item_discount" (ngModelChange)="updateFormulaPreview()" step="0.01">
+				</div>
+			</div>
+			<div class="row my-2">
+				<div class="col-md-3 form-group">
+					<label for="test_item_discount_percent">Partida % desc.</label>
+					<input type="number" id="test_item_discount_percent" name="test_item_discount_percent" class="form-control" [(ngModel)]="test_item_discount_percent" (ngModelChange)="updateFormulaPreview()" step="0.01">
+				</div>
+				<div class="col-md-3 form-group">
+					<label for="test_item_qty">Cantidad</label>
+					<input type="number" id="test_item_qty" name="test_item_qty" class="form-control" [(ngModel)]="test_item_qty" (ngModelChange)="updateFormulaPreview()" step="0.01">
+				</div>
+				<div class="col-md-3 form-group">
+					<label for="test_unitary_price">Precio unitario</label>
+					<input type="number" id="test_unitary_price" name="test_unitary_price" class="form-control" [(ngModel)]="test_unitary_price" (ngModelChange)="updateFormulaPreview()" step="0.01">
+				</div>
+				<div class="col-md-3 form-group">
+					<label for="test_unit_cost">Costo unitario</label>
+					<input type="number" id="test_unit_cost" name="test_unit_cost" class="form-control" [(ngModel)]="test_unit_cost" (ngModelChange)="updateFormulaPreview()" step="0.01">
+				</div>
+			</div>
+			@if (preview_error !== '') {
+				<div class="alert alert-danger">{{ preview_error }}</div>
+			} @else if (preview_result !== null) {
+				<div class="alert alert-success">Resultado con valores de prueba: {{ preview_result }}</div>
+			}
 			<div class="row my-2">
 				<div class="col-12 form-group">
 					<label>Artículo</label>
 					<app-item-search
 						[value]="commission_rule.item_id"
-						(valueChange)="commission_rule.item_id = $event"
+						(valueChange)="commission_rule.item_id = $event; updateFormulaPreview()"
 						[nullLabel]="'Todos los artículos'">
 					</app-item-search>
 				</div>
@@ -34,7 +92,7 @@
 					<label>Categoría</label>
 					<app-category-search
 						[value]="commission_rule.category_id"
-						(valueChange)="commission_rule.category_id = $event"
+						(valueChange)="commission_rule.category_id = $event; updateFormulaPreview()"
 						[nullLabel]="'Todas las categorías'">
 					</app-category-search>
 				</div>
@@ -44,7 +102,7 @@
 					<label>Tipo de Precio</label>
 					<app-price-type-search
 						[value]="commission_rule.price_type_id"
-						(valueChange)="commission_rule.price_type_id = $event"
+						(valueChange)="commission_rule.price_type_id = $event; updateFormulaPreview()"
 						[nullLabel]="'Todos los tipos de precio'">
 					</app-price-type-search>
 				</div>
@@ -54,7 +112,7 @@
 					<label>Sucursal</label>
 					<app-store-search
 						[value]="commission_rule.store_id"
-						(valueChange)="commission_rule.store_id = $event"
+						(valueChange)="commission_rule.store_id = $event; updateFormulaPreview()"
 						[nullLabel]="'Todas las sucursales'">
 					</app-store-search>
 				</div>

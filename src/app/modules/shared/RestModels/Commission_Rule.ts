@@ -2,6 +2,7 @@ export interface Commission_Rule {
 	id: number;
 	base_percent: number;
 	discount_reduction_per_percent: number;
+	formula: string | null;
 	price_type_id: number | null;
 	status: string;
 	store_id: number | null;

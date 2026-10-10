@@ -16,9 +16,9 @@ import { ConfirmationResult, ConfirmationService } from '../../modules/shared/se
 	styleUrl: './list-commission-rule.component.css'
 })
 export class ListCommissionRuleComponent extends BaseComponent implements OnInit {
-	rest_commission_rule: RestSimple<Commission_Rule> = this.rest.initRestSimple('commission_rule', ['id', 'base_percent', 'discount_reduction_per_percent', 'status', 'created', 'updated']);
+	rest_commission_rule: RestSimple<Commission_Rule> = this.rest.initRestSimple('commission_rule', ['id', 'base_percent', 'discount_reduction_per_percent', 'formula', 'status', 'created', 'updated']);
 	search_commission_rule: SearchObject<Commission_Rule> = this.rest_commission_rule.getEmptySearch();
-	commission_rule_list: Commission_Rule[] = [];
+	commission_rule_array: Commission_Rule[] = [];
 
 	ngOnInit()
 	{
@@ -33,7 +33,7 @@ export class ListCommissionRuleComponent extends BaseComponent implements OnInit
 			})
 		).subscribe((response) => {
 				this.is_loading = false;
-				this.commission_rule_list = response.data;
+				this.commission_rule_array = response.data;
 				this.setPages(this.current_page, response.total);
 			});
 	}
@@ -48,7 +48,7 @@ export class ListCommissionRuleComponent extends BaseComponent implements OnInit
 		.subscribe({
 			next: () =>
 			{
-				this.commission_rule_list = this.commission_rule_list.filter(r => r.id !== rule.id);
+				this.commission_rule_array = this.commission_rule_array.filter(r => r.id !== rule.id);
 			},
 			error: (error: any) =>
 			{
