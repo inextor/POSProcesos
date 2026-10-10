@@ -39,6 +39,7 @@
               <th class="text-end">Comisión Prop.</th>
               <th class="text-end">Com. Pagada</th>
               <th class="text-center">Calcular</th>
+              <th class="text-center">Detalle</th>
             </tr>
           </thead>
           <tbody>
@@ -53,6 +54,9 @@
                 <td class="text-end text-success fw-bold">{{ agent.total_commission_paid | currency }}</td>
                 <td class="text-center">
                   <button type="button" class="btn btn-sm btn-outline-success" (click)="calculateAgentFormulas(agent)" title="Calcular con fórmulas y generar">fx</button>
+                </td>
+                <td class="text-center">
+                  <a class="btn btn-sm btn-outline-primary" [routerLink]="['/agent-commission-detail', agent.agent_id]" [queryParams]="{start_date: start_date, end_date: end_date}">Ver</a>
                 </td>
               </tr>
             }

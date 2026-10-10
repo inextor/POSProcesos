@@ -1,0 +1,153 @@
+<div class="container-fluid">
+  <h1 class="my-3">Comisiones de {{ agent_name }}</h1>
+  <div class="card p-3 mb-3">
+    <div class="card-body">
+      <form (ngSubmit)="applyFilters()" ngNativeValidate>
+        <div class="row g-3 align-items-end">
+          <div class="col-md-3">
+            <label for="fecha_inicio" class="form-label">Fecha Inicio (UTC)</label>
+            <input type="datetime-local" id="fecha_inicio" name="fecha_inicio" class="form-control" [(ngModel)]="start_date" required>
+          </div>
+          <div class="col-md-3">
+            <label for="fecha_fin" class="form-label">Fecha Fin (UTC)</label>
+            <input type="datetime-local" id="fecha_fin" name="fecha_fin" class="form-control" [(ngModel)]="end_date" required>
+          </div>
+          <div class="col-md-2">
+            <button type="submit" class="btn btn-primary w-100" [disabled]="is_loading">
+              @if (is_loading) {
+                <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+              }
+              {{ is_loading ? '...' : 'Buscar' }}
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+  @if (agent_user || summary) {
+    <div class="card p-3 mb-3">
+      <div class="card-body">
+        <div class="row">
+          <div class="col-md-3">
+            <div class="text-muted small">Agente</div>
+            <div class="fw-bold">{{ agent_name }}</div>
+          </div>
+          <div class="col-md-3">
+            <div class="text-muted small">Usuario</div>
+            <div>{{ agent_user?.username || '—' }}</div>
+          </div>
+          <div class="col-md-3">
+            <div class="text-muted small">Correo</div>
+            <div>{{ agent_user?.email || '—' }}</div>
+          </div>
+          <div class="col-md-3">
+            <div class="text-muted small">Teléfono</div>
+            <div>{{ agent_user?.phone || '—' }}</div>
+          </div>
+        </div>
+        <hr>
+        <div class="row text-end">
+          <div class="col-md-3">
+            <div class="text-muted small">Venta proporcional</div>
+            <div class="fw-bold">{{ summary?.total_sale || 0 | currency }}</div>
+          </div>
+          <div class="col-md-3">
+            <div class="text-muted small">Pagado en el periodo</div>
+            <div class="fw-bold">{{ summary?.total_paid || 0 | currency }}</div>
+          </div>
+          <div class="col-md-3">
+            <div class="text-muted small">Comisión calculada (función)</div>
+            <div class="fw-bold text-primary">{{ total_calculated | currency }}</div>
+          </div>
+          <div class="col-md-3">
+            <div class="text-muted small">Comisión pendiente (referencia)</div>
+            <div class="fw-bold text-success">{{ reference_pending | currency }}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  }
+  @if (calc_errors.length > 0) {
+    <div class="alert alert-danger">
+      <strong>Errores de fórmula ({{ calc_errors.length }}):</strong>
+      <ul class="mb-0">
+        @for (calc_error of calc_errors; track calc_error) {
+          <li>{{ calc_error }}</li>
+        }
+      </ul>
+    </div>
+  }
+  @if (sale_rows.length > 0) {
+    <div class="card p-3">
+      <div class="table-responsive">
+        <table class="table table-sm table-hover mb-0">
+          <thead class="table-dark">
+            <tr>
+              <th>Cliente</th>
+              <th>Orden</th>
+              <th>Pago</th>
+              <th class="text-end">Venta</th>
+              <th class="text-end">Pagado periodo</th>
+              <th class="text-end">Proporción</th>
+              <th class="text-end">Comisión (función)</th>
+              <th class="text-end">Comisión (ref)</th>
+              <th class="text-center">Ver</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (sale of sale_rows; track sale.sale_key) {
+              <tr class="align-middle">
+                <td>
+                  {{ sale.client_name }}
+                  @if (sale.commission_id) {
+                    <span class="badge bg-success ms-2">Generada{{ sale.commission_bill_id ? ' #' + sale.commission_bill_id : '' }}</span>
+                  }
+                </td>
+                <td>{{ sale.order_id }}</td>
+                <td>{{ sale.payment_id }}</td>
+                <td class="text-end">{{ sale.order_total | currency }}</td>
+                <td class="text-end">{{ sale.amount_paid_in_period | currency }}</td>
+                <td class="text-end">{{ sale.paid_ratio | number:'1.2-4' }}</td>
+                <td class="text-end text-primary fw-bold">{{ sale.commission_amount | currency }}</td>
+                <td class="text-end">{{ sale.commission_reference | currency }}</td>
+                <td class="text-center">
+                  <button type="button" class="btn btn-sm btn-outline-dark" (click)="toggleSale(sale)">{{ sale.expanded ? '−' : '+' }}</button>
+                </td>
+              </tr>
+              @if (sale.expanded) {
+                <tr class="table-light small text-muted">
+                  <td class="ps-5">Partida</td>
+                  <td class="text-end">Cant.</td>
+                  <td class="text-end">Precio unit.</td>
+                  <td class="text-end">Regla</td>
+                  <td class="text-end">Comisión (función)</td>
+                  <td class="text-end">Comisión (ref)</td>
+                  <td colspan="3"></td>
+                </tr>
+                @for (item of sale.item_rows; track item.order_item_id) {
+                  <tr class="table-light small align-middle">
+                    <td class="ps-5">{{ item.item_name }}</td>
+                    <td class="text-end">{{ item.qty }}</td>
+                    <td class="text-end">{{ item.unitary_price | currency }}</td>
+                    <td class="text-end">{{ item.rule_id || '—' }}</td>
+                    <td class="text-end text-primary fw-bold">{{ item.commission_amount | currency }}</td>
+                    <td class="text-end">{{ item.commission_reference | currency }}</td>
+                    <td colspan="3"></td>
+                  </tr>
+                }
+              }
+            }
+          </tbody>
+        </table>
+      </div>
+      <div class="text-end mt-3">
+        <button type="button" class="btn btn-primary" (click)="generateCommissions()" [disabled]="is_loading || calc_errors.length > 0 || commission_lines.length === 0">Generar {{ commission_lines.length }} comisiones</button>
+      </div>
+    </div>
+  } @else if (!is_loading) {
+    <div class="alert alert-info">No hay ventas con comisiones pendientes para este agente en el periodo seleccionado.</div>
+  }
+  <div class="d-flex justify-content-end mt-3">
+    <a class="btn btn-secondary" routerLink="/agent-commission-generator">Volver</a>
+  </div>
+</div>

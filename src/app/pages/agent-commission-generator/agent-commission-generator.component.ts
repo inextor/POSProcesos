@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { RouterLink } from '@angular/router';
 import { forkJoin } from 'rxjs';
 import { filter, mergeMap } from 'rxjs/operators';
 import { BaseComponent } from '../../modules/shared/base/base.component';
@@ -23,7 +24,7 @@ interface CommissionSummary {
 @Component({
 	selector: 'app-agent-commission-generator',
 	standalone: true,
-	imports: [CommonModule, FormsModule],
+	imports: [CommonModule, FormsModule, RouterLink],
 	templateUrl: './agent-commission-generator.component.html',
 	styleUrl: './agent-commission-generator.component.css'
 })
