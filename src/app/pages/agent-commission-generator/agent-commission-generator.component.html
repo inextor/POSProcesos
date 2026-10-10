@@ -1,0 +1,119 @@
+<div class="container-fluid">
+  <h1 class="my-3">Generar Comisiones por Fórmula</h1>
+  <p class="text-muted">Calcula las comisiones pendientes de cada agente con las reglas y fórmulas configuradas, revisa la vista previa y genera las facturas de comisión.</p>
+  <div class="card p-3 mb-3">
+    <div class="card-body">
+      <form (ngSubmit)="generateReport()" ngNativeValidate>
+        <div class="row g-3 align-items-end">
+          <div class="col-md-3">
+            <label for="fecha_inicio" class="form-label">Fecha Inicio (UTC)</label>
+            <input type="datetime-local" id="fecha_inicio" name="fecha_inicio" class="form-control" [(ngModel)]="start_date" required>
+          </div>
+          <div class="col-md-3">
+            <label for="fecha_fin" class="form-label">Fecha Fin (UTC)</label>
+            <input type="datetime-local" id="fecha_fin" name="fecha_fin" class="form-control" [(ngModel)]="end_date" required>
+          </div>
+          <div class="col-md-2">
+            <button type="submit" class="btn btn-primary w-100" [disabled]="is_loading">
+              @if (is_loading) {
+                <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+              }
+              {{ is_loading ? '...' : 'Buscar' }}
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+  @if (summaries.length > 0) {
+    <div class="card p-3 mb-3">
+      <div class="table-responsive">
+        <table class="table table-sm table-hover mb-0">
+          <thead class="table-dark">
+            <tr>
+              <th>Agente</th>
+              <th class="text-end">Venta Prop.</th>
+              <th class="text-end">Costo Prop.</th>
+              <th class="text-end">Utilidad Prop.</th>
+              <th class="text-end">Pagado Periodo</th>
+              <th class="text-end">Comisión Prop.</th>
+              <th class="text-end">Com. Pagada</th>
+              <th class="text-center">Calcular</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (agent of summaries; track agent.agent_id) {
+              <tr class="align-middle">
+                <td class="fw-bold">{{ agent.agent_name }}</td>
+                <td class="text-end">{{ agent.total_sale | currency }}</td>
+                <td class="text-end">{{ agent.total_cost | currency }}</td>
+                <td class="text-end">{{ agent.total_profit | currency }}</td>
+                <td class="text-end">{{ agent.total_paid | currency }}</td>
+                <td class="text-end text-primary fw-bold">{{ agent.total_commission | currency }}</td>
+                <td class="text-end text-success fw-bold">{{ agent.total_commission_paid | currency }}</td>
+                <td class="text-center">
+                  <button type="button" class="btn btn-sm btn-outline-success" (click)="calculateAgentFormulas(agent)" title="Calcular con fórmulas y generar">fx</button>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+  } @else if (!is_loading) {
+    <div class="alert alert-info">Seleccione un rango de fechas de <strong>pagos</strong> y presione "Buscar" para ver los agentes con comisiones pendientes.</div>
+  }
+  @if (show_preview) {
+    <div class="card p-3">
+      <div class="card-header">
+        <strong>Vista previa con fórmulas: {{ preview_agent_name }}</strong>
+      </div>
+      <div class="card-body">
+        <p>
+          <span>Total calculado: {{ preview_total | currency }}</span>
+          <span class="text-muted ms-3">Referencia del reporte: {{ preview_reference_total | currency }}</span>
+        </p>
+        @if (preview_errors.length > 0) {
+          <div class="alert alert-danger">
+            <strong>Errores de fórmula ({{ preview_errors.length }}):</strong>
+            <ul class="mb-0">
+              @for (preview_error of preview_errors; track preview_error) {
+                <li>{{ preview_error }}</li>
+              }
+            </ul>
+          </div>
+        }
+        <div class="table-responsive">
+          <table class="table table-sm">
+            <thead>
+              <tr>
+                <th>Orden</th>
+                <th>Pago</th>
+                <th class="text-end">Proporción</th>
+                <th class="text-end">Partidas</th>
+                <th class="text-end">Importe</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (preview_line of preview_lines; track $index) {
+                <tr>
+                  <td>{{ preview_line.order_id }}</td>
+                  <td>{{ preview_line.payment_id }}</td>
+                  <td class="text-end">{{ preview_line.paid_ratio | number:'1.2-4' }}</td>
+                  <td class="text-end">{{ preview_line.items.length }}</td>
+                  <td class="text-end">{{ preview_line.amount | currency }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+        <div class="text-end">
+          <button type="button" class="btn btn-primary" (click)="confirmGeneratePreview()" [disabled]="is_loading || preview_errors.length > 0 || preview_lines.length === 0">Generar {{ preview_lines.length }} comisiones</button>
+        </div>
+      </div>
+    </div>
+    <div class="d-flex justify-content-end mt-3">
+      <button type="button" class="btn btn-secondary" (click)="cancelPreview()">Cancelar</button>
+    </div>
+  }
+</div>

@@ -132,6 +132,7 @@ Admin-related pages in the application manage system configuration, production, 
 | `/item-sales-by-client-report` | ItemSalesByClientReportComponent | Sales by client |
 | `/commission-report` | CommissionReportComponent | Commission report |
 | `/payment-commission-report` | PaymentCommissionReportComponent | Payment commissions |
+| `/agent-commission-generator` | AgentCommissionGeneratorComponent | Formula commissions by agent |
 | `/pending-commissions-report` | PendingCommissionsReportComponent | Pending commissions |
 | `/paid-commissions-report` | PaidCommissionsReportComponent | Paid commissions |
 | `/item-movement-report` | ItemMovementReportComponent | Item movement |

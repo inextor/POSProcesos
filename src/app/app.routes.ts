@@ -118,6 +118,7 @@ export const routes: Routes = [
 		{path: 'edit-commission-rule/:id', loadComponent: () => import('./pages/save-commission-rule/save-commission-rule.component').then(m => m.SaveCommissionRuleComponent), canActivate: [authGuard]},
 		{path: 'commission-report', loadComponent: () => import('./pages/commission-report/commission-report.component').then(m => m.CommissionReportComponent), canActivate: [authGuard]},
 			{path: 'payment-commission-report', loadComponent: () => import('./pages/payment-commission-report/payment-commission-report.component').then(m => m.PaymentCommissionReportComponent), canActivate: [authGuard]},
+			{path: 'agent-commission-generator', loadComponent: () => import('./pages/agent-commission-generator/agent-commission-generator.component').then(m => m.AgentCommissionGeneratorComponent), canActivate: [authGuard]},
 			{path: 'manual-commissions', loadComponent: () => import('./pages/manual-commissions/manual-commissions.component').then(m => m.ManualCommissionsComponent), canActivate: [authGuard]},
 			{path: 'pending-commissions-report', loadComponent: () => import('./pages/pending-commissions-report/pending-commissions-report.component').then(m => m.PendingCommissionsReportComponent), canActivate: [authGuard]},
 			{path: 'paid-commissions-report', loadComponent: () => import('./pages/paid-commissions-report/paid-commissions-report.component').then(m => m.PaidCommissionsReportComponent), canActivate: [authGuard]},
