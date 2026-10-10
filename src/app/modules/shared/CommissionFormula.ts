@@ -44,6 +44,8 @@ export interface FormulaOrderItem {
 	unit_cost: number;
 	total_cost: number;
 	profit: number;
+	tax: number;
+	original_unitary_price: number;
 }
 
 export interface FormulaRule {
@@ -82,6 +84,8 @@ export interface AgentCommissionItemRow {
 	total_cost: number | string;
 	commission_type: string;
 	commission: number | string;
+	tax: number | string;
+	original_unitary_price: number | string;
 }
 
 export interface AgentCommissionOrderRow {
@@ -174,7 +178,9 @@ export function buildFormulaOrderItem(row: AgentCommissionItemRow): FormulaOrder
 		discount_percent: toCalcNumber(row.discount_percent),
 		unit_cost: toCalcNumber(row.unit_cost),
 		total_cost: total_cost,
-		profit: total - total_cost
+		profit: total - total_cost,
+		tax: toCalcNumber(row.tax),
+		original_unitary_price: toCalcNumber(row.original_unitary_price)
 	};
 }
 

@@ -71,6 +71,14 @@
 					<label for="test_unit_cost">Costo unitario</label>
 					<input type="number" id="test_unit_cost" name="test_unit_cost" class="form-control" [(ngModel)]="test_unit_cost" (ngModelChange)="updateFormulaPreview()" step="0.01">
 				</div>
+				<div class="col-md-3 form-group">
+					<label for="test_item_tax">Impuesto partida</label>
+					<input type="number" id="test_item_tax" name="test_item_tax" class="form-control" [(ngModel)]="test_item_tax" (ngModelChange)="updateFormulaPreview()" step="0.01">
+				</div>
+				<div class="col-md-3 form-group">
+					<label for="test_original_unitary_price">Precio unitario original</label>
+					<input type="number" id="test_original_unitary_price" name="test_original_unitary_price" class="form-control" [(ngModel)]="test_original_unitary_price" (ngModelChange)="updateFormulaPreview()" step="0.01">
+				</div>
 			</div>
 			@if (preview_error !== '') {
 				<div class="alert alert-danger">{{ preview_error }}</div>

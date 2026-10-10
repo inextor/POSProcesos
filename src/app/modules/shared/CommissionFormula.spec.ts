@@ -44,6 +44,8 @@ function makeOrderItem(overrides: Partial<FormulaOrderItem> = {}): FormulaOrderI
 		unit_cost: 300,
 		total_cost: 600,
 		profit: 400,
+		tax: 160,
+		original_unitary_price: 500,
 		...overrides
 	};
 }
@@ -114,6 +116,11 @@ describe('CommissionFormula', () => {
 		it('rejects negative results', () => {
 			expect(() => evaluateCommissionFormula('return -5;', makeOrder(), makeOrderItem(), makeRule(), makePeriod()))
 				.toThrowError(/negative commission/);
+		});
+
+		it('exposes tax and original_unitary_price to formulas', () => {
+			const formula = 'let original_total = order_item.original_unitary_price * order_item.qty; return original_total - order_item.total + order_item.tax;';
+			expect(evaluateCommissionFormula(formula, makeOrder(), makeOrderItem(), makeRule(), makePeriod())).toBe(160);
 		});
 	});
 
@@ -272,12 +279,16 @@ describe('CommissionFormula', () => {
 				unit_cost: '300',
 				total_cost: 600,
 				commission_type: 'RULE_PERCENT',
-				commission: 0
+				commission: 0,
+				tax: '160.00',
+				original_unitary_price: '500'
 			});
 
 			expect(item.qty).toBe(2);
 			expect(item.profit).toBe(400);
 			expect(item.discount_percent).toBe(0);
+			expect(item.tax).toBe(160);
+			expect(item.original_unitary_price).toBe(500);
 		});
 	});
 
@@ -314,7 +325,9 @@ describe('CommissionFormula', () => {
 								unit_cost: 300,
 								total_cost: 600,
 								commission_type: 'RULE_PERCENT',
-								commission: 0
+								commission: 0,
+								tax: 160,
+								original_unitary_price: 500
 							}
 						]
 					}

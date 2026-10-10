@@ -33,6 +33,8 @@ export class SaveCommissionRuleComponent extends BaseComponent implements OnInit
 	test_item_qty: number = 2;
 	test_unitary_price: number = 500;
 	test_unit_cost: number = 300;
+	test_item_tax: number = 0;
+	test_original_unitary_price: number = 500;
 	preview_result: number | null = null;
 	preview_error: string = '';
 	formula_length: number = 0;
@@ -108,7 +110,9 @@ export class SaveCommissionRuleComponent extends BaseComponent implements OnInit
 					discount_percent: this.test_item_discount_percent,
 					unit_cost: this.test_unit_cost,
 					total_cost: item_total_cost,
-					profit: this.test_item_total - item_total_cost
+					profit: this.test_item_total - item_total_cost,
+					tax: this.test_item_tax,
+					original_unitary_price: this.test_original_unitary_price
 				},
 				{
 					id: this.commission_rule.id,
