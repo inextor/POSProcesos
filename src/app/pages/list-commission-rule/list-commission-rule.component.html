@@ -15,17 +15,23 @@
           <th>ID</th>
           <th>Porcentaje Base</th>
           <th>Reducción por Descuento</th>
+          <th>Fórmula</th>
           <th>Estatus</th>
           <th>Modificado</th>
           <th>Acciones</th>
         </tr>
       </thead>
       <tbody>
-        @for (rule of commission_rule_list; track rule) {
+        @for (rule of commission_rule_array; track rule) {
           <tr>
             <td>{{ rule.id }}</td>
             <td>{{ rule.base_percent }}%</td>
             <td>{{ rule.discount_reduction_per_percent }}%</td>
+            <td>
+              @if (rule.formula) {
+                <span class="badge bg-info">fx</span>
+              }
+            </td>
             <td>{{ rule.status }}</td>
             <td>{{ rule.updated | shortDate: 'relative' }}</td>
             <td>

@@ -5,6 +5,7 @@ export function commission_rule(): Commission_Rule {
 		id: 0,
 		base_percent: 0,
 		discount_reduction_per_percent: 0,
+		formula: null,
 		price_type_id: null,
 		status: 'ACTIVE',
 		store_id: null,

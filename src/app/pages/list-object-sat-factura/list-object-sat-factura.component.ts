@@ -178,7 +178,6 @@ export class ListObjectSatFacturaComponent extends BaseComponent implements OnIn
 
 		let client_name = order?.client_name || '';
 
-		let folio = order?.store_consecutive?.toString() || null;
 		let total = extended_sat_factura.type == 'POR_PERIODO' ? 0
 		: ((order?.total || 0) - (order?.discount || 0)) || (payment_info?.payment.payment_amount || 0);
 
@@ -191,7 +190,7 @@ export class ListObjectSatFacturaComponent extends BaseComponent implements OnIn
 			is_current = true;
 
 		return {
-			...extended_sat_factura, name_type, sat_cancelled, link, system_status, client_name, folio, total, is_current
+			...extended_sat_factura, name_type, sat_cancelled, link, system_status, client_name, total, is_current
 		};
 	}
 

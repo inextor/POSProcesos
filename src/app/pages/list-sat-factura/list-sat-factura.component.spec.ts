@@ -24,7 +24,7 @@ function makeFactura(overrides: Partial<Sat_Factura> = {}): Sat_Factura
 		uuid: 'uuid-123',
 		xml_attachment_id: null,
 		...overrides
-	};
+	} as Sat_Factura;
 }
 
 describe('ListSatFacturaComponent', () =>
