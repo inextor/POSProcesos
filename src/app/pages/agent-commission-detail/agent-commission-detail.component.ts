@@ -8,7 +8,7 @@ import { BaseComponent } from '../../modules/shared/base/base.component';
 import { Utils } from '../../modules/shared/Utils';
 import { RestSimple } from '../../modules/shared/services/Rest';
 import { Commission_Rule, User } from '../../modules/shared/RestModels';
-import { AgentCommissionItemRow, AgentCommissionOrderRow, AgentCommissionReport, GeneratedLine, calcPaidRatio, calculateAgentCommissions, toCalcNumber } from '../../modules/shared/CommissionFormula';
+import { AgentCommissionItemRow, AgentCommissionOrderRow, AgentCommissionReport, GeneratedLine, GeneratedLineItem, applyManualLineAmount, calcPaidRatio, calculateAgentCommissions, roundAmount, sumLineAmounts, toCalcNumber } from '../../modules/shared/CommissionFormula';
 
 interface AgentSummary {
 	agent_id: number | string;
@@ -60,6 +60,7 @@ interface AgentSaleItemRow {
 	unitary_price: number;
 	commission_reference: number;
 	commission_amount: number;
+	commission_calculated: number;
 	rule_id: number | null;
 }
 
@@ -77,6 +78,7 @@ interface AgentSaleRow {
 	commission_id: number | null;
 	commission_bill_id: number | null;
 	expanded: boolean;
+	selected: boolean;
 	item_rows: AgentSaleItemRow[];
 }
 
@@ -102,6 +104,9 @@ export class AgentCommissionDetailComponent extends BaseComponent implements OnI
 	total_calculated: number = 0;
 	reference_pending: number = 0;
 	calc_errors: string[] = [];
+	selected_count: number = 0;
+	total_selected: number = 0;
+	all_selected: boolean = false;
 
 	rest_user: RestSimple<User> = this.rest.initRestSimple('user');
 	rest_commission_rule: RestSimple<Commission_Rule> = this.rest.initRestSimple('commission_rule');
@@ -175,6 +180,7 @@ export class AgentCommissionDetailComponent extends BaseComponent implements OnI
 		this.commission_lines = calc_result.lines;
 		this.total_calculated = calc_result.total_amount;
 		this.calc_errors = calc_result.errors;
+		this.refreshSelection();
 	}
 
 	handleDetailError(error: any) {
@@ -202,6 +208,7 @@ export class AgentCommissionDetailComponent extends BaseComponent implements OnI
 				unitary_price: toCalcNumber(item.unitary_price),
 				commission_reference: toCalcNumber(item.total_commission),
 				commission_amount: calc_item ? calc_item.amount : 0,
+				commission_calculated: calc_item ? calc_item.amount : 0,
 				rule_id: calc_item ? calc_item.rule_id : null
 			};
 		});
@@ -220,6 +227,7 @@ export class AgentCommissionDetailComponent extends BaseComponent implements OnI
 			commission_id: sale.commission_id === null || sale.commission_id === undefined || sale.commission_id === '' ? null : Number(sale.commission_id),
 			commission_bill_id: sale.commission_bill_id === null || sale.commission_bill_id === undefined || sale.commission_bill_id === '' ? null : Number(sale.commission_bill_id),
 			expanded: false,
+			selected: sale.commission_id === null || sale.commission_id === undefined || sale.commission_id === '',
 			item_rows: item_rows
 		};
 	}
@@ -228,18 +236,139 @@ export class AgentCommissionDetailComponent extends BaseComponent implements OnI
 		sale.expanded = !sale.expanded;
 	}
 
+	findCommissionLine(sale: AgentSaleRow): GeneratedLine | undefined {
+		return this.commission_lines.find((line) => line.order_id === sale.order_id && line.payment_id === sale.payment_id);
+	}
+
+	onSaleAmountChange(sale: AgentSaleRow, event: Event) {
+		const input = event.target as HTMLInputElement | null;
+		const parsed = input ? Number(input.value) : NaN;
+		const line = this.findCommissionLine(sale);
+
+		if (!Number.isFinite(parsed) || !line) {
+			if (input) {
+				input.value = String(sale.commission_amount);
+			}
+			if (Number.isFinite(parsed) && !line) {
+				this.showError('Esta venta no tiene cálculo generado para editar.');
+			}
+			return;
+		}
+
+		applyManualLineAmount(line, roundAmount(Math.max(0, parsed)));
+		this.syncSaleRow(sale, line);
+
+		if (input) {
+			input.value = String(sale.commission_amount);
+		}
+
+		this.total_calculated = sumLineAmounts(this.commission_lines);
+		this.refreshSelection();
+	}
+
+	onItemAmountChange(sale: AgentSaleRow, item_row: AgentSaleItemRow, event: Event) {
+		const input = event.target as HTMLInputElement | null;
+		const parsed = input ? Number(input.value) : NaN;
+		const line = this.findCommissionLine(sale);
+		const line_item = line?.items.find((entry) => entry.order_item_id === item_row.order_item_id);
+
+		if (!Number.isFinite(parsed) || !line || !line_item) {
+			if (input) {
+				input.value = String(item_row.commission_amount);
+			}
+			if (Number.isFinite(parsed) && (!line || !line_item)) {
+				this.showError('Esta partida no tiene cálculo generado para editar.');
+			}
+			return;
+		}
+
+		this.applyItemAmount(sale, item_row, line, line_item, roundAmount(Math.max(0, parsed)));
+
+		if (input) {
+			input.value = String(item_row.commission_amount);
+		}
+	}
+
+	onRestoreItemAmount(sale: AgentSaleRow, item_row: AgentSaleItemRow, input: HTMLInputElement | null) {
+		const line = this.findCommissionLine(sale);
+		const line_item = line?.items.find((entry) => entry.order_item_id === item_row.order_item_id);
+
+		if (!line || !line_item) {
+			this.showError('Esta partida no tiene cálculo generado para restaurar.');
+			return;
+		}
+
+		this.applyItemAmount(sale, item_row, line, line_item, item_row.commission_calculated);
+
+		if (input) {
+			input.value = String(item_row.commission_amount);
+		}
+	}
+
+	applyItemAmount(sale: AgentSaleRow, item_row: AgentSaleItemRow, line: GeneratedLine, line_item: GeneratedLineItem, new_amount: number) {
+		line_item.amount = new_amount;
+		item_row.commission_amount = new_amount;
+		line.amount = roundAmount(line.items.reduce((sum, entry) => sum + entry.amount, 0));
+		sale.commission_amount = line.amount;
+		this.total_calculated = sumLineAmounts(this.commission_lines);
+		this.refreshSelection();
+	}
+
+	syncSaleRow(sale: AgentSaleRow, line: GeneratedLine) {
+		sale.commission_amount = line.amount;
+
+		for (const item_row of sale.item_rows) {
+			const line_item = line.items.find((entry) => entry.order_item_id === item_row.order_item_id);
+			if (line_item) {
+				item_row.commission_amount = line_item.amount;
+			}
+		}
+	}
+
+	toggleSelectSale(sale: AgentSaleRow, event: Event) {
+		const input = event.target as HTMLInputElement | null;
+		sale.selected = input ? input.checked : !sale.selected;
+		this.refreshSelection();
+	}
+
+	toggleSelectAll(event: Event) {
+		const input = event.target as HTMLInputElement | null;
+		const checked = input ? input.checked : !this.all_selected;
+		for (const sale of this.sale_rows) {
+			sale.selected = checked;
+		}
+		this.refreshSelection();
+	}
+
+	getSelectedLines(): GeneratedLine[] {
+		const selected_keys = new Set(this.sale_rows.filter((sale) => sale.selected).map((sale) => sale.sale_key));
+		return this.commission_lines.filter((line) => selected_keys.has(line.order_id + '-' + line.payment_id));
+	}
+
+	refreshSelection() {
+		const selected_lines = this.getSelectedLines();
+		this.selected_count = selected_lines.length;
+		this.total_selected = sumLineAmounts(selected_lines);
+		this.all_selected = this.sale_rows.length > 0 && this.sale_rows.every((sale) => sale.selected);
+	}
+
 	generateCommissions() {
 		if (this.calc_errors.length > 0) {
 			this.showError('Corrija los errores de fórmula antes de generar: ' + this.calc_errors[0]);
 			return;
 		}
-		if (this.commission_lines.length === 0) {
-			this.showError('No hay líneas pendientes por generar para este agente.');
+		const selected_lines = this.getSelectedLines();
+		if (selected_lines.length === 0) {
+			this.showError('Seleccione al menos una comisión para generar.');
+			return;
+		}
+		if (selected_lines.some((line) => !Number.isFinite(line.amount) || line.amount < 0 || line.items.some((item) => !Number.isFinite(item.amount) || item.amount < 0))) {
+			this.showError('Hay importes inválidos en el detalle. Revise los montos editados.');
 			return;
 		}
 
 		this.subs.sink = this.confirmation
-			.showConfirmAlert(null, 'Generar Comisiones', 'Generar ' + this.commission_lines.length + ' comisiones de ' + this.agent_name + ' por ' + this.total_calculated + '?', 'Sí', 'No')
+			.showConfirmAlert(null, 'Generar Comisiones', 'Generar ' + selected_lines.length + ' comisiones de ' + this.agent_name + ' por ' + this.total_selected + '?', 'Sí', 'No')
 			.pipe(
 				filter((x) => x.accepted),
 				mergeMap(() => {
@@ -248,7 +377,7 @@ export class AgentCommissionDetailComponent extends BaseComponent implements OnI
 						user_id: this.agent_user_id,
 						date_start: this.detail_date_start,
 						date_end: this.detail_date_end,
-						lines: this.commission_lines
+						lines: selected_lines
 					});
 				})
 			)

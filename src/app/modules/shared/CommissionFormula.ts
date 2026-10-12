@@ -360,8 +360,44 @@ export function calcLegacyCommission(
 	return 0;
 }
 
-function roundAmount(value: number): number {
+export function roundAmount(value: number): number {
 	return Math.round(value * 1000000) / 1000000;
+}
+
+// Applies a manually edited line total and keeps the line consistent with its
+// items: items are rescaled proportionally (or split evenly when the
+// calculated line was zero), with the rounding residue absorbed by the last
+// item so the items always add up to the line amount.
+export function applyManualLineAmount(line: GeneratedLine, new_amount: number): void {
+	const old_total = line.items.reduce((sum, item) => sum + item.amount, 0);
+	line.amount = new_amount;
+
+	if (line.items.length === 0) {
+		return;
+	}
+
+	if (old_total > 0) {
+		for (const item of line.items) {
+			item.amount = roundAmount(item.amount * new_amount / old_total);
+		}
+	} else if (new_amount > 0) {
+		const even_share = roundAmount(new_amount / line.items.length);
+		for (const item of line.items) {
+			item.amount = even_share;
+		}
+	} else {
+		for (const item of line.items) {
+			item.amount = 0;
+		}
+	}
+
+	const fixed_total = line.items.reduce((sum, item) => sum + item.amount, 0);
+	const last_item = line.items[line.items.length - 1];
+	last_item.amount = Math.max(0, roundAmount(last_item.amount + (new_amount - fixed_total)));
+}
+
+export function sumLineAmounts(lines: GeneratedLine[]): number {
+	return roundAmount(lines.reduce((sum, line) => sum + line.amount, 0));
 }
 
 export function calculateAgentCommissions(

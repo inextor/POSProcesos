@@ -6,6 +6,8 @@ import {
 	FormulaOrderItem,
 	FormulaPeriod,
 	FormulaRule,
+	GeneratedLine,
+	applyManualLineAmount,
 	buildFormulaOrder,
 	buildFormulaOrderItem,
 	calcLegacyCommission,
@@ -13,7 +15,8 @@ import {
 	calculateAgentCommissions,
 	calculateItemCommission,
 	evaluateCommissionFormula,
-	resolveCommissionRule
+	resolveCommissionRule,
+	sumLineAmounts
 } from './CommissionFormula';
 
 function makeOrder(overrides: Partial<FormulaOrder> = {}): FormulaOrder {
@@ -368,6 +371,88 @@ describe('CommissionFormula', () => {
 			expect(result.lines).toEqual([]);
 			expect(result.errors.length).toBe(1);
 			expect(result.errors[0]).toContain('order not found');
+		});
+	});
+
+	describe('applyManualLineAmount', () => {
+		function makeLine(): GeneratedLine {
+			return {
+				order_id: 1,
+				payment_id: 2,
+				paid_ratio: 1,
+				amount: 100,
+				items: [
+					{ order_item_id: 11, rule_id: 1, amount: 60 },
+					{ order_item_id: 12, rule_id: 1, amount: 40 }
+				]
+			};
+		}
+
+		it('rescales items proportionally', () => {
+			const line = makeLine();
+
+			applyManualLineAmount(line, 200);
+
+			expect(line.amount).toBe(200);
+			expect(line.items[0].amount).toBe(120);
+			expect(line.items[1].amount).toBe(80);
+		});
+
+		it('splits evenly when the calculated line is zero', () => {
+			const line = makeLine();
+			line.amount = 0;
+			line.items[0].amount = 0;
+			line.items[1].amount = 0;
+
+			applyManualLineAmount(line, 100);
+
+			expect(line.amount).toBe(100);
+			expect(line.items[0].amount).toBe(50);
+			expect(line.items[1].amount).toBe(50);
+		});
+
+		it('absorbs the rounding residue in the last item', () => {
+			const line: GeneratedLine = {
+				order_id: 1,
+				payment_id: 2,
+				paid_ratio: 1,
+				amount: 3,
+				items: [
+					{ order_item_id: 11, rule_id: 1, amount: 1 },
+					{ order_item_id: 12, rule_id: 1, amount: 1 },
+					{ order_item_id: 13, rule_id: 1, amount: 1 }
+				]
+			};
+
+			applyManualLineAmount(line, 10);
+
+			expect(line.items[0].amount).toBe(3.333333);
+			expect(line.items[1].amount).toBe(3.333333);
+			expect(line.items[2].amount).toBe(3.333334);
+			expect(line.items[0].amount + line.items[1].amount + line.items[2].amount).toBeCloseTo(10, 6);
+		});
+
+		it('zeroes items when the line is set to zero', () => {
+			const line = makeLine();
+
+			applyManualLineAmount(line, 0);
+
+			expect(line.amount).toBe(0);
+			expect(line.items[0].amount).toBe(0);
+			expect(line.items[1].amount).toBe(0);
+		});
+	});
+
+	describe('sumLineAmounts', () => {
+		it('adds line amounts rounded to six decimals', () => {
+			expect(sumLineAmounts([
+				{ order_id: 1, payment_id: 2, paid_ratio: 1, amount: 10.1234567, items: [] },
+				{ order_id: 3, payment_id: 4, paid_ratio: 1, amount: 5, items: [] }
+			])).toBe(15.123457);
+		});
+
+		it('returns zero for no lines', () => {
+			expect(sumLineAmounts([])).toBe(0);
 		});
 	});
 });

@@ -8,7 +8,7 @@ import { BaseComponent } from '../../modules/shared/base/base.component';
 import { Utils } from '../../modules/shared/Utils';
 import { RestSimple } from '../../modules/shared/services/Rest';
 import { Commission_Rule } from '../../modules/shared/RestModels';
-import { AgentCommissionReport, GeneratedLine, calculateAgentCommissions } from '../../modules/shared/CommissionFormula';
+import { AgentCommissionReport, GeneratedLine, applyManualLineAmount, calculateAgentCommissions, roundAmount, sumLineAmounts } from '../../modules/shared/CommissionFormula';
 
 interface CommissionSummary {
 	agent_id: string;
@@ -128,6 +128,26 @@ export class AgentCommissionGeneratorComponent extends BaseComponent implements 
 		this.preview_errors = [];
 	}
 
+	onLineAmountChange(line: GeneratedLine, event: Event) {
+		const input = event.target as HTMLInputElement | null;
+		const parsed = input ? Number(input.value) : NaN;
+
+		if (!Number.isFinite(parsed)) {
+			if (input) {
+				input.value = String(line.amount);
+			}
+			return;
+		}
+
+		applyManualLineAmount(line, roundAmount(Math.max(0, parsed)));
+
+		if (input) {
+			input.value = String(line.amount);
+		}
+
+		this.preview_total = sumLineAmounts(this.preview_lines);
+	}
+
 	confirmGeneratePreview() {
 		if (this.preview_errors.length > 0) {
 			this.showError('Corrija los errores de fórmula antes de generar: ' + this.preview_errors[0]);
@@ -135,6 +155,10 @@ export class AgentCommissionGeneratorComponent extends BaseComponent implements 
 		}
 		if (this.preview_lines.length === 0) {
 			this.showError('No hay líneas pendientes por generar para este agente.');
+			return;
+		}
+		if (this.preview_lines.some((line) => !Number.isFinite(line.amount) || line.amount < 0)) {
+			this.showError('Hay importes inválidos en la vista previa. Revise los montos editados.');
 			return;
 		}
 
