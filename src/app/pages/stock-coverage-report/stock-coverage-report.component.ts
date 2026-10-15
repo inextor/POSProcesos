@@ -86,6 +86,11 @@ export class StockCoverageReportComponent extends BaseComponent implements OnIni
 		return this.stock_coverage_array.reduce((sum, item) => sum + (item.total_sold || 0), 0);
 	}
 
+	get totalMerma(): number
+	{
+		return this.stock_coverage_array.reduce((sum, item) => sum + (item.total_merma || 0), 0);
+	}
+
 	get avgVentaPromDiaria(): number
 	{
 		if (!this.stock_coverage_array.length) return 0;
@@ -354,6 +359,10 @@ export class StockCoverageReportComponent extends BaseComponent implements OnIni
 				case 'total_sold':
 					aValue = a.total_sold || 0;
 					bValue = b.total_sold || 0;
+					break;
+				case 'total_merma':
+					aValue = a.total_merma || 0;
+					bValue = b.total_merma || 0;
 					break;
 				case 'venta_prom_diaria':
 					aValue = a.venta_prom_diaria || 0;

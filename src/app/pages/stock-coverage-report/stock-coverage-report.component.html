@@ -56,6 +56,7 @@
 					<option value="dias_req">Días+Req</option>
 					<option value="inv_mas_pedido">Inv.+Requerido</option>
 					<option value="total_sold">Ventas 30dias</option>
+					<option value="total_merma">Merma 30días</option>
 					<option value="venta_prom_diaria">Venta prom. diaria</option>
 					<option value="req_inv_venta">Req+Inv/Venta</option>
 					<option value="estatus">Estatus</option>
@@ -66,16 +67,17 @@
 			</div>
 			<div class="d-none d-md-flex row fw-bold border-bottom pb-2 mb-2">
 				<div class="col-md-2">Producto</div>
-				<div class="col-md-1 text-end">Precio</div>
-				<div class="col-md-1 text-end">Inv. físico</div>
-				<div class="col-md-1 text-end">Días</div>
-				<div class="col-md-1 text-end">Requerido</div>
-				<div class="col-md-1 text-end">Días+Req</div>
-				<div class="col-md-1 text-end">Inv.+Requerido</div>
-				<div class="col-md-1 text-end">Ventas 30dias</div>
-				<div class="col-md-1 text-end">Venta prom.</div>
-				<div class="col-md-1 text-end">Req+Inv/Venta</div>
-				<div class="col-md-1 text-end">Estatus</div>
+				<div class="col-md text-end">Precio</div>
+				<div class="col-md text-end">Inv. físico</div>
+				<div class="col-md text-end">Días</div>
+				<div class="col-md text-end">Requerido</div>
+				<div class="col-md text-end">Días+Req</div>
+				<div class="col-md text-end">Inv.+Requerido</div>
+				<div class="col-md text-end">Ventas 30dias</div>
+				<div class="col-md text-end" title="Merma registrada en los últimos 30 días (misma ventana que Ventas 30dias)">Merma 30días</div>
+				<div class="col-md text-end">Venta prom.</div>
+				<div class="col-md text-end">Req+Inv/Venta</div>
+				<div class="col-md text-end">Estatus</div>
 			</div>
 			@for(item of stock_coverage_array; track item.item_id)
 			{
@@ -86,35 +88,38 @@
 						{{item.item_name}}
 						<div class="small text-muted">#{{item.item_id}} · {{item.item_code || '—'}} · {{item.category?.name || '—'}}</div>
 					</div>
-					<div class="col-6 col-md-1 text-md-end">
+					<div class="col-6 col-md text-md-end">
 						<span class="d-md-none fw-bold">Precio: </span>{{item.reference_price|currency}}
 					</div>
-					<div class="col-6 col-md-1 text-md-end">
+					<div class="col-6 col-md text-md-end">
 						<span class="d-md-none fw-bold">Inv. físico: </span>{{item.inv_fisico|number}}
 					</div>
-					<div class="col-6 col-md-1 text-md-end">
+					<div class="col-6 col-md text-md-end">
 						<span class="d-md-none fw-bold">Días: </span>{{item.dias_display}}
 					</div>
-					<div class="col-6 col-md-1 text-md-end">
+					<div class="col-6 col-md text-md-end">
 						<span class="d-md-none fw-bold">Requerido: </span>
 						<button type="button" class="btn btn-link btn-sm p-0" (click)="viewRequisitions(item)">{{item.requerido|number}}</button>
 					</div>
-					<div class="col-6 col-md-1 text-md-end">
+					<div class="col-6 col-md text-md-end">
 						<span class="d-md-none fw-bold">Días+Req: </span>{{item.dias_req_display}}
 					</div>
-					<div class="col-6 col-md-1 text-md-end">
+					<div class="col-6 col-md text-md-end">
 						<span class="d-md-none fw-bold">Inv.+Requerido: </span>{{item.inv_mas_pedido|number}}
 					</div>
-					<div class="col-6 col-md-1 text-md-end">
+					<div class="col-6 col-md text-md-end">
 						<span class="d-md-none fw-bold">Ventas 30dias: </span>{{item.total_sold|number}}
 					</div>
-					<div class="col-6 col-md-1 text-md-end">
+					<div class="col-6 col-md text-md-end">
+						<span class="d-md-none fw-bold">Merma 30días: </span>{{item.total_merma|number:'1.0-2'}}
+					</div>
+					<div class="col-6 col-md text-md-end">
 						<span class="d-md-none fw-bold">Venta prom.: </span>{{item.venta_prom_diaria|number:'1.0-4'}}
 					</div>
-					<div class="col-6 col-md-1 text-md-end">
+					<div class="col-6 col-md text-md-end">
 						<span class="d-md-none fw-bold">Req+Inv/Venta: </span><span>{{item.req_inv_venta_display}}</span>
 					</div>
-					<div class="col-6 col-md-1 text-md-end">
+					<div class="col-6 col-md text-md-end">
 						<span class="d-md-none fw-bold">Estatus: </span><span [class]="item.estatus_class">{{item.estatus}}</span>
 					</div>
 				</div>
@@ -140,6 +145,9 @@
 				</div>
 				<div class="col-6 col-md-3">
 					<span class="small">Ventas 30dias:</span> {{totalSold|number}}
+				</div>
+				<div class="col-6 col-md-3">
+					<span class="small">Merma 30días:</span> {{totalMerma|number:'1.0-2'}}
 				</div>
 				<div class="col-6 col-md-3">
 					<span class="small">Σ Venta/día:</span> {{totalVentaPromDiaria|number:'1.0-4'}}

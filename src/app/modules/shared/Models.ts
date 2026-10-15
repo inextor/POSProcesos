@@ -380,6 +380,7 @@ export interface StockCoverage
 	requerido: number;
 	inv_mas_pedido: number;
 	total_sold: number;
+	total_merma: number;
 	venta_prom_diaria: number;
 	porcentaje_pedido_inv: number;
 }
