@@ -7,6 +7,7 @@ import { mergeMap, of } from 'rxjs';
 import { GetEmpty } from '../../modules/shared/GetEmpty';
 import { MAX_FORMULA_LENGTH, evaluateCommissionFormula } from '../../modules/shared/CommissionFormula';
 import { LoadingComponent } from "../../components/loading/loading.component";
+import { ModalComponent } from "../../components/modal/modal.component";
 import { FormsModule } from '@angular/forms';
 import { StoreSearchComponent } from "../../modules/shared/components/store-search/store-search.component";
 import { PriceTypeSearchComponent } from "../../modules/shared/components/price-type-search/price-type-search.component";
@@ -15,7 +16,7 @@ import { CategorySearchComponent } from "../../modules/shared/components/categor
 
 @Component({
 	selector: 'app-save-commission-rule',
-	imports: [LoadingComponent, FormsModule, StoreSearchComponent, PriceTypeSearchComponent, ItemSearchComponent, CategorySearchComponent],
+	imports: [LoadingComponent, ModalComponent, FormsModule, StoreSearchComponent, PriceTypeSearchComponent, ItemSearchComponent, CategorySearchComponent],
 	templateUrl: './save-commission-rule.component.html',
 	styleUrl: './save-commission-rule.component.css'
 })
@@ -38,6 +39,15 @@ export class SaveCommissionRuleComponent extends BaseComponent implements OnInit
 	preview_result: number | null = null;
 	preview_error: string = '';
 	formula_length: number = 0;
+
+	show_formula_modal: boolean = false;
+	modal_template: string = '';
+	modal_title: string = '';
+	modal_description: string = '';
+	modal_percent: number = 10;
+	modal_amount: number = 0;
+	modal_discount_limit: number = 10;
+	modal_reduction: number = 0.5;
 
 	ngOnInit()
 	{
@@ -135,14 +145,123 @@ export class SaveCommissionRuleComponent extends BaseComponent implements OnInit
 		}
 	}
 
-	loadExampleFormula()
+	openFormulaTemplate(template: string)
 	{
-		this.commission_rule.formula = 'let y = 0;\n'
-			+ 'let discount_percent = ((order.discount / order.total) + (order_item.discount / order_item.total)) / 2;\n'
-			+ 'if (discount_percent < 10) y = 1;\n'
-			+ 'if (y == 1)\n'
-			+ '  return order_item.total * 0.10;\n'
-			+ 'return 0;';
+		this.modal_template = template;
+
+		if (template === 'percent')
+		{
+			this.modal_title = 'Porcentaje sobre venta';
+			this.modal_description = 'Comisión = total de la partida × porcentaje. Ejemplo: 10% de una venta de $1,000 = $100.';
+		}
+		else if (template === 'fixed_qty')
+		{
+			this.modal_title = 'Monto fijo por pieza';
+			this.modal_description = 'Comisión = cantidad × monto. Ejemplo: 2 piezas × $25 = $50.';
+		}
+		else if (template === 'profit')
+		{
+			this.modal_title = 'Porcentaje sobre utilidad';
+			this.modal_description = 'Comisión = (total − costo) × porcentaje. Solo se comisiona sobre la ganancia.';
+		}
+		else if (template === 'discount_cap')
+		{
+			this.modal_title = 'Porcentaje con tope de descuento';
+			this.modal_description = 'Si el descuento de la partida alcanza el tope, la comisión es $0. Si no, aplica el porcentaje sobre la venta.';
+		}
+		else if (template === 'discount_reduction')
+		{
+			this.modal_title = 'Porcentaje reducido por descuento';
+			this.modal_description = 'Cada punto de descuento reduce el porcentaje base. Ejemplo: base 10% con 4% de descuento y reducción 0.5 → 8% efectivo.';
+		}
+		else if (template === 'flat')
+		{
+			this.modal_title = 'Monto fijo por concepto';
+			this.modal_description = 'Comisión fija por partida, sin importar cantidad ni total.';
+		}
+
+		this.show_formula_modal = true;
+	}
+
+	applyFormulaTemplate()
+	{
+		let formula = '';
+
+		if (this.modal_template === 'percent')
+		{
+			if (!(this.modal_percent > 0))
+			{
+				this.rest.showError('El porcentaje debe ser mayor a 0');
+				return;
+			}
+			formula = 'return order_item.total * ' + (this.modal_percent / 100) + ';';
+		}
+		else if (this.modal_template === 'fixed_qty')
+		{
+			if (!(this.modal_amount > 0))
+			{
+				this.rest.showError('El monto debe ser mayor a 0');
+				return;
+			}
+			formula = 'return order_item.qty * ' + this.modal_amount + ';';
+		}
+		else if (this.modal_template === 'profit')
+		{
+			if (!(this.modal_percent > 0))
+			{
+				this.rest.showError('El porcentaje debe ser mayor a 0');
+				return;
+			}
+			formula = 'return order_item.profit * ' + (this.modal_percent / 100) + ';';
+		}
+		else if (this.modal_template === 'discount_cap')
+		{
+			if (!(this.modal_percent > 0))
+			{
+				this.rest.showError('El porcentaje debe ser mayor a 0');
+				return;
+			}
+			if (!(this.modal_discount_limit > 0))
+			{
+				this.rest.showError('El tope de descuento debe ser mayor a 0');
+				return;
+			}
+			formula = 'if (order_item.discount_percent >= ' + this.modal_discount_limit + ') return 0;\n'
+				+ 'return order_item.total * ' + (this.modal_percent / 100) + ';';
+		}
+		else if (this.modal_template === 'discount_reduction')
+		{
+			if (!(this.modal_percent > 0))
+			{
+				this.rest.showError('El porcentaje base debe ser mayor a 0');
+				return;
+			}
+			if (!(this.modal_reduction >= 0))
+			{
+				this.rest.showError('La reducción debe ser 0 o mayor');
+				return;
+			}
+			formula = 'let effective_percent = ' + this.modal_percent + ' - (order_item.discount_percent * ' + this.modal_reduction + ');\n'
+				+ 'if (effective_percent < 0) effective_percent = 0;\n'
+				+ 'return order_item.total * effective_percent / 100;';
+		}
+		else if (this.modal_template === 'flat')
+		{
+			if (!(this.modal_amount > 0))
+			{
+				this.rest.showError('El monto debe ser mayor a 0');
+				return;
+			}
+			formula = 'return ' + this.modal_amount + ';';
+		}
+		else
+		{
+			this.rest.showError('Plantilla desconocida');
+			return;
+		}
+
+		this.commission_rule.formula = formula;
+		this.show_formula_modal = false;
 		this.updateFormulaPreview();
 	}
 
@@ -151,6 +270,12 @@ export class SaveCommissionRuleComponent extends BaseComponent implements OnInit
 		if (!this.commission_rule.store_id && !this.commission_rule.price_type_id && !this.commission_rule.category_id && !this.commission_rule.item_id)
 		{
 			this.rest.showError('Se requiere al menos uno de: sucursal, tipo de precio, categoría o artículo');
+			return;
+		}
+
+		if (!this.commission_rule.formula || this.commission_rule.formula.trim() === '')
+		{
+			this.rest.showError('La fórmula es requerida, usa los botones de plantilla para generarla');
 			return;
 		}
 

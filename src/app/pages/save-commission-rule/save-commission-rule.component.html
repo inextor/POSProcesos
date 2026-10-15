@@ -8,27 +8,54 @@
 	<div class="card p-3 mt-3">
 		<form (submit)="save($event)" ngNativeValidate>
 			<div class="row my-2">
-				<div class="col-12 form-group">
-					<label for="base_percent">Porcentaje Base</label>
-					<input type="number" id="base_percent" name="base_percent" class="form-control" [(ngModel)]="commission_rule.base_percent" (ngModelChange)="updateFormulaPreview()" step="0.000001" required>
+				<div class="col-12">
+					<strong>Dónde aplica la regla</strong>
 				</div>
 			</div>
 			<div class="row my-2">
 				<div class="col-12 form-group">
-					<label for="discount_reduction_per_percent">Reducción por Descuento (%)</label>
-					<input type="number" id="discount_reduction_per_percent" name="discount_reduction_per_percent" class="form-control" [(ngModel)]="commission_rule.discount_reduction_per_percent" (ngModelChange)="updateFormulaPreview()" step="0.000001" required>
+					<label>Artículo</label>
+					<app-item-search [value]="commission_rule.item_id" (valueChange)="commission_rule.item_id = $event; updateFormulaPreview()" [nullLabel]="'Todos los artículos'"></app-item-search>
 				</div>
 			</div>
 			<div class="row my-2">
 				<div class="col-12 form-group">
-					<label for="formula">Fórmula (JavaScript, opcional)</label>
-					<textarea id="formula" name="formula" class="form-control font-monospace" [(ngModel)]="commission_rule.formula" (ngModelChange)="updateFormulaPreview()" [attr.maxlength]="max_formula_length" rows="8" placeholder="return order_item.total * 0.10;"></textarea>
-					<small class="text-muted">{{ formula_length }} / {{ max_formula_length }} caracteres. Recibe order, order_item, rule y period. Vacía = cálculo tradicional.</small>
+					<label>Categoría</label>
+					<app-category-search [value]="commission_rule.category_id" (valueChange)="commission_rule.category_id = $event; updateFormulaPreview()" [nullLabel]="'Todas las categorías'"></app-category-search>
+				</div>
+			</div>
+			<div class="row my-2">
+				<div class="col-12 form-group">
+					<label>Sucursal</label>
+					<app-store-search [value]="commission_rule.store_id" (valueChange)="commission_rule.store_id = $event; updateFormulaPreview()" [nullLabel]="'Todas las sucursales'"></app-store-search>
+				</div>
+			</div>
+			<div class="row my-2">
+				<div class="col-12 form-group">
+					<label>Tipo de Precio</label>
+					<app-price-type-search [value]="commission_rule.price_type_id" (valueChange)="commission_rule.price_type_id = $event; updateFormulaPreview()" [nullLabel]="'Todos los tipos de precio'"></app-price-type-search>
 				</div>
 			</div>
 			<div class="row my-2">
 				<div class="col-12">
-					<button type="button" class="btn btn-outline-secondary btn-sm" (click)="loadExampleFormula()">Cargar ejemplo</button>
+					<strong>Fórmula por concepto</strong>
+				</div>
+			</div>
+			<div class="row my-2">
+				<div class="col-12">
+					<button type="button" class="btn btn-outline-secondary btn-sm me-2 mb-2" (click)="openFormulaTemplate('percent')">Porcentaje sobre venta</button>
+					<button type="button" class="btn btn-outline-secondary btn-sm me-2 mb-2" (click)="openFormulaTemplate('fixed_qty')">Monto fijo por pieza</button>
+					<button type="button" class="btn btn-outline-secondary btn-sm me-2 mb-2" (click)="openFormulaTemplate('profit')">Porcentaje sobre utilidad</button>
+					<button type="button" class="btn btn-outline-secondary btn-sm me-2 mb-2" (click)="openFormulaTemplate('discount_cap')">Porcentaje con tope de descuento</button>
+					<button type="button" class="btn btn-outline-secondary btn-sm me-2 mb-2" (click)="openFormulaTemplate('discount_reduction')">Porcentaje reducido por descuento</button>
+					<button type="button" class="btn btn-outline-secondary btn-sm me-2 mb-2" (click)="openFormulaTemplate('flat')">Monto fijo por concepto</button>
+				</div>
+			</div>
+			<div class="row my-2">
+				<div class="col-12 form-group">
+					<label for="formula">Fórmula por concepto</label>
+					<textarea id="formula" name="formula" class="form-control font-monospace" [(ngModel)]="commission_rule.formula" (ngModelChange)="updateFormulaPreview()" [attr.maxlength]="max_formula_length" rows="8" placeholder="return order_item.total * 0.10;" required></textarea>
+					<small class="text-muted">{{ formula_length }} / {{ max_formula_length }} caracteres. Usa los botones para generar la fórmula. Variables: order, order_item, rule y period.</small>
 				</div>
 			</div>
 			<div class="row my-2">
@@ -87,46 +114,6 @@
 			}
 			<div class="row my-2">
 				<div class="col-12 form-group">
-					<label>Artículo</label>
-					<app-item-search
-						[value]="commission_rule.item_id"
-						(valueChange)="commission_rule.item_id = $event; updateFormulaPreview()"
-						[nullLabel]="'Todos los artículos'">
-					</app-item-search>
-				</div>
-			</div>
-			<div class="row my-2">
-				<div class="col-12 form-group">
-					<label>Categoría</label>
-					<app-category-search
-						[value]="commission_rule.category_id"
-						(valueChange)="commission_rule.category_id = $event; updateFormulaPreview()"
-						[nullLabel]="'Todas las categorías'">
-					</app-category-search>
-				</div>
-			</div>
-			<div class="row my-2">
-				<div class="col-12 form-group">
-					<label>Tipo de Precio</label>
-					<app-price-type-search
-						[value]="commission_rule.price_type_id"
-						(valueChange)="commission_rule.price_type_id = $event; updateFormulaPreview()"
-						[nullLabel]="'Todos los tipos de precio'">
-					</app-price-type-search>
-				</div>
-			</div>
-			<div class="row my-2">
-				<div class="col-12 form-group">
-					<label>Sucursal</label>
-					<app-store-search
-						[value]="commission_rule.store_id"
-						(valueChange)="commission_rule.store_id = $event; updateFormulaPreview()"
-						[nullLabel]="'Todas las sucursales'">
-					</app-store-search>
-				</div>
-			</div>
-			<div class="row my-2">
-				<div class="col-12 form-group">
 					<label for="status">Estatus</label>
 					<select id="status" name="status" class="form-select" [(ngModel)]="commission_rule.status" required>
 						<option value="ACTIVE">ACTIVE</option>
@@ -140,4 +127,53 @@
 			</div>
 		</form>
 	</div>
+	<app-modal [(show)]="show_formula_modal">
+		<div class="m-3">
+			<h5>{{ modal_title }}</h5>
+			<p>{{ modal_description }}</p>
+			@if (commission_rule.formula) {
+				<div class="alert alert-warning">Esto reemplazará la fórmula actual.</div>
+			}
+			@if (modal_template === 'percent' || modal_template === 'profit' || modal_template === 'discount_cap') {
+				<div class="form-group mb-3">
+					<label for="modal_percent">Porcentaje (%)</label>
+					<input type="number" id="modal_percent" name="modal_percent" class="form-control" [(ngModel)]="modal_percent" step="0.01" min="0">
+				</div>
+			}
+			@if (modal_template === 'discount_reduction') {
+				<div class="form-group mb-3">
+					<label for="modal_base_percent">Porcentaje base (%)</label>
+					<input type="number" id="modal_base_percent" name="modal_base_percent" class="form-control" [(ngModel)]="modal_percent" step="0.01" min="0">
+				</div>
+			}
+			@if (modal_template === 'discount_reduction') {
+				<div class="form-group mb-3">
+					<label for="modal_reduction">Reducción por cada % de descuento</label>
+					<input type="number" id="modal_reduction" name="modal_reduction" class="form-control" [(ngModel)]="modal_reduction" step="0.01" min="0">
+				</div>
+			}
+			@if (modal_template === 'discount_cap') {
+				<div class="form-group mb-3">
+					<label for="modal_discount_limit">Descuento máximo (%)</label>
+					<input type="number" id="modal_discount_limit" name="modal_discount_limit" class="form-control" [(ngModel)]="modal_discount_limit" step="0.01" min="0">
+				</div>
+			}
+			@if (modal_template === 'fixed_qty') {
+				<div class="form-group mb-3">
+					<label for="modal_amount_qty">Monto por pieza</label>
+					<input type="number" id="modal_amount_qty" name="modal_amount_qty" class="form-control" [(ngModel)]="modal_amount" step="0.01" min="0">
+				</div>
+			}
+			@if (modal_template === 'flat') {
+				<div class="form-group mb-3">
+					<label for="modal_amount_flat">Monto fijo</label>
+					<input type="number" id="modal_amount_flat" name="modal_amount_flat" class="form-control" [(ngModel)]="modal_amount" step="0.01" min="0">
+				</div>
+			}
+			<div class="text-end">
+				<button type="button" class="btn btn-secondary me-2" (click)="show_formula_modal = false">Cancelar</button>
+				<button type="button" class="btn btn-primary" (click)="applyFormulaTemplate()">Aplicar</button>
+			</div>
+		</div>
+	</app-modal>
 </div>
