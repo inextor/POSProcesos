@@ -141,3 +141,4 @@ Admin-related pages in the application manage system configuration, production, 
 | `/report-credit-payments` | ReportCreditPaymentsComponent | Credit payments |
 | `/provider-resume` | ProviderResumeComponent | Provider summary |
 | `/list-merma-totals` | ListMermaTotalsComponent | Waste totals |
+| `/sales-by-batch-report` | SalesByBatchReportComponent | Sales by batch (entered / sold / remaining, movement ledger and per-order sales) |

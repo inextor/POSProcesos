@@ -1,0 +1,18 @@
+th.sortable {
+	cursor: pointer;
+	user-select: none;
+}
+
+th.sortable:hover {
+	background-color: #f0f0f0;
+}
+
+tr.row-clickable {
+	cursor: pointer;
+}
+
+.detail-label {
+	font-size: 0.75rem;
+	color: #6c757d;
+	text-transform: uppercase;
+}

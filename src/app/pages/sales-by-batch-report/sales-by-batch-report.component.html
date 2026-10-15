@@ -1,0 +1,321 @@
+<app-loading [is_loading]="is_loading"></app-loading>
+
+<div class="container-fluid">
+	<h1 class="my-3">Ventas por Lote</h1>
+
+	<div class="card p-3 mb-3">
+		<div class="card-body">
+			<form (ngSubmit)="searchSummary()">
+				<div class="row g-2">
+					<div class="col-12 col-md-4 col-lg-3">
+						<label class="form-label">Fecha Inicial</label>
+						<input type="datetime-local" class="form-control" name="start_date" [(ngModel)]="start_date" required>
+					</div>
+					<div class="col-12 col-md-4 col-lg-3">
+						<label class="form-label">Fecha Final</label>
+						<input type="datetime-local" class="form-control" name="end_date" [(ngModel)]="end_date" required>
+					</div>
+					<div class="col-12 col-md-4 col-lg-3">
+						<label class="form-label">Sucursal</label>
+						<select class="form-control form-select" name="store_id" [(ngModel)]="store_id">
+							<option value="ALL">Todas las sucursales</option>
+							@for (store of store_array; track store.id) {
+								<option [value]="store.id">{{ store.name }}</option>
+							}
+						</select>
+					</div>
+					<div class="col-12 col-md-6 col-lg-3">
+						<label class="form-label">Artículo</label>
+						<app-item-search
+							[value]="item_id"
+							(valueChange)="item_id = $event"
+							[text]="item_search_str"
+							(textChange)="item_search_str = $event"
+							[nullLabel]="'Todos los artículos'">
+						</app-item-search>
+					</div>
+					<div class="col-12 col-md-6 col-lg-3">
+						<label class="form-label">Categoría</label>
+						<app-category-search
+							[value]="category_id"
+							(valueChange)="category_id = $event"
+							[nullLabel]="'Todas las categorías'">
+						</app-category-search>
+					</div>
+					<div class="col-12 col-md-6 col-lg-3">
+						<label class="form-label">Lote (exacto)</label>
+						<input type="text" class="form-control" name="batch" placeholder="Ej. LOT-2025-001" [(ngModel)]="batch">
+					</div>
+					<div class="col-12 col-md-6 col-lg-3">
+						<label class="form-label">Lote (contiene)</label>
+						<input type="text" class="form-control" name="batch_search" placeholder="Ej. LOT-2025" [(ngModel)]="batch_search">
+					</div>
+					<div class="col-12 col-md-6 col-lg-3">
+						<label class="form-label">Expira en (días)</label>
+						<input type="number" class="form-control" name="expiring_within_days" min="0" placeholder="Todos" [(ngModel)]="expiring_within_days">
+					</div>
+					<div class="col-12 col-md-6 col-lg-3 d-flex align-items-end">
+						<button type="submit" class="btn btn-primary w-100" [disabled]="is_loading">Buscar</button>
+					</div>
+				</div>
+			</form>
+		</div>
+	</div>
+
+	@if (summary_array.length) {
+		<div class="card">
+			<div class="card-header d-flex justify-content-between align-items-center">
+				<span>Lotes encontrados ({{ summary_array.length }})</span>
+				<button type="button" class="btn btn-primary btn-sm" (click)="downloadExcel()" [disabled]="is_loading">Descargar Excel</button>
+			</div>
+			<div class="card-body p-0">
+				<div class="table-responsive">
+					<table class="table table-sm table-hover table-nowrap mb-0">
+						<thead class="thead-light">
+							<tr>
+								<th class="sortable" (click)="sortBy('store_name')">Sucursal</th>
+								<th class="sortable" (click)="sortBy('item_code')">Código</th>
+								<th class="sortable" (click)="sortBy('item_name')">Artículo</th>
+								<th class="sortable" (click)="sortBy('batch')">Lote</th>
+								<th class="sortable" (click)="sortBy('expiration_date')">Expira</th>
+								<th class="sortable text-end" (click)="sortBy('days_to_expire')">Días</th>
+								<th class="sortable text-end" (click)="sortBy('qty_entered')">Ingresado</th>
+								<th class="sortable text-end" (click)="sortBy('qty_adjusted')">Ajustado</th>
+								<th class="sortable text-end" (click)="sortBy('qty_removed')">Retirado</th>
+								<th class="sortable text-end" (click)="sortBy('qty_sold')">Vendido</th>
+								<th class="sortable text-end" (click)="sortBy('qty_returned')">Devuelto</th>
+								<th class="sortable text-end" (click)="sortBy('qty_current')">Actual</th>
+								<th class="sortable text-end" (click)="sortBy('pct_sold')">% Vendido</th>
+								<th class="sortable text-end" (click)="sortBy('orders_count')">Pedidos</th>
+								<th class="sortable text-end" (click)="sortBy('avg_unit_price')">Precio prom.</th>
+								<th class="text-end">Subtotal</th>
+								<th class="text-end">Impuesto</th>
+								<th class="text-end">Descuento</th>
+								<th class="sortable text-end" (click)="sortBy('sold_total')">Total</th>
+								<th>Proveedor</th>
+								<th class="text-end">Costo unit.</th>
+							</tr>
+						</thead>
+						<tbody>
+							@for (row of summary_array; track row.store_id + '-' + row.item_id + '-' + row.batch) {
+								<tr class="align-middle row-clickable"
+									(click)="openDetail(row)"
+									[class.table-active]="selected_row && selected_row.batch === row.batch && selected_row.item_id === row.item_id && selected_row.store_id === row.store_id">
+									<td>{{ row.store_name }}</td>
+									<td>{{ row.item_code }}</td>
+									<td class="fw-bold">{{ row.item_name }}</td>
+									<td>{{ row.batch }}</td>
+									<td [class]="row.expiration_class">{{ row.expiration_date }}</td>
+									<td class="text-end">{{ row.days_to_expire }}</td>
+									<td class="text-end">{{ row.qty_entered | number }}</td>
+									<td class="text-end" [class.text-danger]="row.qty_adjusted < 0" [class.text-success]="row.qty_adjusted > 0">{{ row.qty_adjusted | number }}</td>
+									<td class="text-end">{{ row.qty_removed | number }}</td>
+									<td class="text-end">{{ row.qty_sold | number }}</td>
+									<td class="text-end">{{ row.qty_returned | number }}</td>
+									<td class="text-end fw-bold">{{ row.qty_current | number }}</td>
+									<td class="text-end">{{ row.pct_sold | number:'1.0-1' }}%</td>
+									<td class="text-end">{{ row.orders_count | number }}</td>
+									<td class="text-end">{{ row.avg_unit_price | number:'1.2-2' }}</td>
+									<td class="text-end">{{ row.sold_subtotal | number:'1.2-2' }}</td>
+									<td class="text-end">{{ row.sold_tax | number:'1.2-2' }}</td>
+									<td class="text-end">{{ row.sold_discount | number:'1.2-2' }}</td>
+									<td class="text-end fw-bold">{{ row.sold_total | number:'1.2-2' }}</td>
+									<td>{{ row.provider_name }}</td>
+									<td class="text-end">{{ row.purchase_unit_cost | number:'1.2-2' }}</td>
+								</tr>
+							}
+						</tbody>
+						<tfoot class="table-light fw-bold">
+							<tr>
+								<td colspan="6" class="text-end">Totales</td>
+								<td class="text-end">{{ total_entered | number }}</td>
+								<td colspan="2"></td>
+								<td class="text-end">{{ total_sold | number }}</td>
+								<td></td>
+								<td class="text-end">{{ total_current | number }}</td>
+								<td colspan="6"></td>
+								<td class="text-end">{{ total_sold_amount | number:'1.2-2' }}</td>
+								<td colspan="2"></td>
+							</tr>
+						</tfoot>
+					</table>
+				</div>
+			</div>
+		</div>
+	} @else if (!is_loading && has_searched) {
+		<div class="card p-3">
+			<div class="card-body">No se encontraron lotes con los filtros seleccionados.</div>
+		</div>
+	} @else if (!is_loading) {
+		<div class="card p-3">
+			<div class="card-body">Selecciona un rango de fechas y al menos un filtro (sucursal, artículo, categoría o lote), luego presiona "Buscar".</div>
+		</div>
+	}
+
+	@if (selected_row) {
+		<div class="d-flex justify-content-between align-items-center mt-4">
+			<h2 class="h4 mb-0">Detalle del lote {{ selected_row.batch }}</h2>
+			<button type="button" class="btn btn-secondary" (click)="closeDetail()">Cerrar</button>
+		</div>
+
+		<div class="card mt-2">
+			<div class="card-body">
+				<div class="row g-3">
+					<div class="col-6 col-md-3">
+						<div class="detail-label">Sucursal</div>
+						<div class="fw-bold">{{ selected_row.store_name }}</div>
+					</div>
+					<div class="col-6 col-md-3">
+						<div class="detail-label">Artículo</div>
+						<div class="fw-bold">{{ selected_row.item_code }} - {{ selected_row.item_name }}</div>
+					</div>
+					<div class="col-6 col-md-3">
+						<div class="detail-label">Expira</div>
+						<div class="fw-bold" [class]="selected_row.expiration_class">{{ selected_row.expiration_date }} ({{ selected_row.days_to_expire }} días)</div>
+					</div>
+					<div class="col-6 col-md-3">
+						<div class="detail-label">Ingreso</div>
+						<div class="fw-bold">{{ selected_row.first_entry_date }}</div>
+					</div>
+					<div class="col-6 col-md-3">
+						<div class="detail-label">Ingresado</div>
+						<div class="fw-bold">{{ selected_row.qty_entered | number }}</div>
+					</div>
+					<div class="col-6 col-md-3">
+						<div class="detail-label">Vendido</div>
+						<div class="fw-bold">{{ selected_row.qty_sold | number }} ({{ selected_row.pct_sold | number:'1.0-1' }}%)</div>
+					</div>
+					<div class="col-6 col-md-3">
+						<div class="detail-label">Actual</div>
+						<div class="fw-bold">{{ selected_row.qty_current | number }}</div>
+					</div>
+					<div class="col-6 col-md-3">
+						<div class="detail-label">Compra</div>
+						<div class="fw-bold">{{ selected_row.provider_name }}</div>
+					</div>
+				</div>
+
+				<div class="alert mt-3 mb-0" [class.alert-success]="selected_row.is_balanced" [class.alert-warning]="!selected_row.is_balanced">
+					Ingresado {{ selected_row.qty_entered | number }} + ajustado {{ selected_row.qty_adjusted | number }} − retirado {{ selected_row.qty_removed | number }} = {{ selected_row.balance_expected | number }} (actual {{ selected_row.qty_current | number }})
+				</div>
+
+				<ul class="nav nav-tabs mt-3">
+					<li class="nav-item">
+						<button type="button" class="nav-link" [class.active]="detail_tab === 'ledger'" (click)="showDetailTab('ledger')">Movimientos</button>
+					</li>
+					<li class="nav-item">
+						<button type="button" class="nav-link" [class.active]="detail_tab === 'sales'" (click)="showDetailTab('sales')">Ventas</button>
+					</li>
+				</ul>
+			</div>
+		</div>
+
+		@if (detail_is_loading) {
+			<div class="text-center p-3 text-muted">Cargando detalle...</div>
+		}
+
+		@if (detail_tab === 'ledger' && !detail_is_loading) {
+			<div class="card mt-3">
+				<div class="card-header">
+					Movimientos del lote
+					<small class="text-muted fw-normal d-block">Los ajustes negativos aproximan la merma del lote: la tabla de merma no guarda el lote. Un ajuste a cero seguido de una entrada nueva es un renombrado del lote.</small>
+				</div>
+				<div class="table-responsive">
+					<table class="table table-sm table-striped table-nowrap mb-0">
+						<thead class="thead-light">
+							<tr>
+								<th>Fecha</th>
+								<th>Tipo</th>
+								<th class="text-end">Movimiento</th>
+								<th class="text-end">Anterior</th>
+								<th class="text-end">Actual</th>
+								<th>Descripción</th>
+								<th>Orden</th>
+								<th>Compra / Proveedor</th>
+								<th>Usuario</th>
+							</tr>
+						</thead>
+						<tbody>
+							@for (ledger of ledger_array; track ledger.batch_record_id) {
+								<tr class="align-middle">
+									<td>{{ ledger.created }}</td>
+									<td [class]="ledger.movement_class">{{ ledger.movement_label }}</td>
+									<td class="text-end" [class.text-success]="ledger.signed_qty > 0" [class.text-danger]="ledger.signed_qty < 0">{{ ledger.signed_qty | number }}</td>
+									<td class="text-end">{{ ledger.previous_qty | number }}</td>
+									<td class="text-end">{{ ledger.qty | number }}</td>
+									<td>{{ ledger.description }}</td>
+									<td>
+										@if (ledger.order_id) {
+											{{ ledger.order_id }}
+										}
+									</td>
+									<td>
+										@if (ledger.purchase_id) {
+											{{ ledger.purchase_id }} / {{ ledger.provider_name }}
+										}
+									</td>
+									<td>{{ ledger.created_by_user_name }}</td>
+								</tr>
+							} @empty {
+								<tr>
+									<td class="text-center" colspan="9">Sin movimientos para este lote.</td>
+								</tr>
+							}
+						</tbody>
+					</table>
+				</div>
+			</div>
+		}
+
+		@if (detail_tab === 'sales' && !detail_is_loading) {
+			<div class="card mt-3">
+				<div class="card-header">
+					Ventas del lote ({{ sales_array.length }})
+					<small class="text-muted fw-normal d-block">Los importes por lote son una asignación proporcional de la línea del pedido, no un precio registrado. Las ventas sin registro de lote (datos antiguos) no se incluyen.</small>
+				</div>
+				<div class="table-responsive">
+					<table class="table table-sm table-striped table-nowrap mb-0">
+						<thead class="thead-light">
+							<tr>
+								<th>Fecha</th>
+								<th>Orden</th>
+								<th>Cliente</th>
+								<th>Código</th>
+								<th>Artículo</th>
+								<th class="text-end">Cant. línea</th>
+								<th class="text-end">Cant. lote</th>
+								<th class="text-end">Precio unit.</th>
+								<th class="text-end">Subtotal</th>
+								<th class="text-end">Impuesto</th>
+								<th class="text-end">Descuento</th>
+								<th class="text-end">Total</th>
+							</tr>
+						</thead>
+						<tbody>
+							@for (sale of sales_array; track sale.order_item_id) {
+								<tr class="align-middle">
+									<td>{{ sale.closed_timestamp }}</td>
+									<td>{{ sale.order_id }}</td>
+									<td>{{ sale.client_display }}</td>
+									<td>{{ sale.item_code }}</td>
+									<td>{{ sale.item_name }}</td>
+									<td class="text-end">{{ sale.line_qty | number }}</td>
+									<td class="text-end">{{ sale.batch_qty | number }}</td>
+									<td class="text-end">{{ sale.unitary_price | number:'1.2-2' }}</td>
+									<td class="text-end">{{ sale.batch_subtotal | number:'1.2-2' }}</td>
+									<td class="text-end">{{ sale.batch_tax | number:'1.2-2' }}</td>
+									<td class="text-end">{{ sale.batch_discount | number:'1.2-2' }}</td>
+									<td class="text-end fw-bold">{{ sale.batch_total | number:'1.2-2' }}</td>
+								</tr>
+							} @empty {
+								<tr>
+									<td class="text-center" colspan="12">Sin ventas registradas para este lote en el rango de fechas.</td>
+								</tr>
+							}
+						</tbody>
+					</table>
+				</div>
+			</div>
+		}
+	}
+</div>
