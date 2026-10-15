@@ -81,8 +81,9 @@
 			{
 				<div class="row g-1 py-2 border-bottom align-items-center">
 					<div class="col-6 col-md-2">
-						<span class="d-md-none fw-bold">Producto: </span>{{item.item_name}}
-						<app-item-info-button [item_id]="item.item_id" btn_class="btn btn-sm btn-outline-primary ms-1"></app-item-info-button>
+						<span class="d-md-none fw-bold">Producto: </span>
+						<app-item-info-button [item_id]="item.item_id" btn_class="btn btn-sm btn-outline-primary me-1"></app-item-info-button>
+						{{item.item_name}}
 						<div class="small text-muted">#{{item.item_id}} · {{item.item_code || '—'}} · {{item.category?.name || '—'}}</div>
 					</div>
 					<div class="col-6 col-md-1 text-md-end">
