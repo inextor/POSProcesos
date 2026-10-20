@@ -68,6 +68,9 @@
 							<a *ngIf="bi.bill.purchase_id" [routerLink]="['/purchase/edit', bi.bill.purchase_id]" (click)="$event.stopPropagation()" class="btn btn-sm btn-outline-primary py-0">
 								Ver Compra
 							</a>
+							<div class="mt-1" *ngIf="bi.bill.json_tags?.length">
+								<span *ngFor="let bill_tag of bi.bill.json_tags" class="badge bg-info me-1">{{bill_tag}}</span>
+							</div>
 						</td>
 						<td>
 							{{ bi.store ? bi.store.name : 'N/A' }}

@@ -1,0 +1,280 @@
+<app-loading [is_loading]="is_loading"></app-loading>
+
+<div class="container-fluid">
+	<div class="row align-items-center">
+		<div class="col">
+			<h1 class="my-3">Resumen de Rentabilidad por Lote</h1>
+		</div>
+	</div>
+
+	<div class="card p-3 mb-3">
+		<div class="card-body">
+			<form (ngSubmit)="searchReport()">
+				<div class="row g-2">
+					<div class="col-12 col-md-4 col-lg-3">
+						<label class="form-label">Sucursal</label>
+						<select class="form-control form-select" name="store_id" [(ngModel)]="store_id" (ngModelChange)="onStoreChange()">
+							<option value="ALL">Todas las sucursales</option>
+							@for (store of store_array; track store.id) {
+								<option [value]="store.id">{{ store.name }}</option>
+							}
+						</select>
+					</div>
+					<div class="col-12 col-md-4 col-lg-3">
+						<label class="form-label">Lotes recientes</label>
+						<select class="form-control form-select" name="batch_select" [ngModel]="batch" (ngModelChange)="onSelectBatchOption($event)">
+							<option value="">-- Seleccionar lote --</option>
+							@for (batch_option of batch_option_array; track batch_option.batch) {
+								<option [value]="batch_option.batch">{{ batch_option.label_display }}</option>
+							}
+						</select>
+					</div>
+					<div class="col-12 col-md-4 col-lg-2">
+						<label class="form-label">Código de Lote</label>
+						<input type="text" class="form-control" name="batch" placeholder="Ej. LOTE-00125" [(ngModel)]="batch" required>
+					</div>
+					<div class="col-12 col-md-4 col-lg-2">
+						<label class="form-label">Ventas desde (opcional)</label>
+						<input type="datetime-local" class="form-control" name="start_date" [(ngModel)]="start_date">
+					</div>
+					<div class="col-12 col-md-4 col-lg-2">
+						<label class="form-label">Ventas hasta (opcional)</label>
+						<input type="datetime-local" class="form-control" name="end_date" [(ngModel)]="end_date">
+					</div>
+					<div class="col-12 d-flex justify-content-end mt-2">
+						<button type="submit" class="btn btn-primary" [disabled]="is_loading">Consultar Lote</button>
+					</div>
+				</div>
+			</form>
+		</div>
+	</div>
+
+	@if (summary) {
+		<div class="card mb-3">
+			<div class="card-header d-flex justify-content-between align-items-center">
+				<span class="fw-bold">RESUMEN DEL LOTE</span>
+				@if (item_array.length) {
+					<button type="button" class="btn btn-primary btn-sm" (click)="downloadExcel()" [disabled]="is_loading">Descargar Excel</button>
+				}
+			</div>
+			<div class="card-body">
+				<div class="row g-3 mb-3 pb-3 border-bottom">
+					<div class="col-6 col-md-3">
+						<div class="summary-meta-label">Lote</div>
+						<div class="summary-meta-value fw-bold">{{ summary.batch }}</div>
+					</div>
+					<div class="col-6 col-md-3">
+						<div class="summary-meta-label">Fecha</div>
+						<div class="summary-meta-value fw-bold">{{ summary.date_display }}</div>
+					</div>
+					<div class="col-6 col-md-3">
+						<div class="summary-meta-label">Proveedor</div>
+						<div class="summary-meta-value fw-bold">{{ summary.provider_name }}</div>
+					</div>
+					<div class="col-6 col-md-3">
+						<div class="summary-meta-label">Estado</div>
+						<div class="summary-meta-value">
+							<span [class]="summary.status_badge_class">{{ summary.status }}</span>
+						</div>
+					</div>
+				</div>
+
+				<div class="row g-3">
+					<div class="col-6 col-md-3">
+						<div class="kpi-box">
+							<div class="kpi-label">Kilos recibidos</div>
+							<div class="kpi-value">{{ summary.qty_received | number:'1.2-2' }}</div>
+						</div>
+					</div>
+					<div class="col-6 col-md-3">
+						<div class="kpi-box">
+							<div class="kpi-label">Kilos vendidos</div>
+							<div class="kpi-value">{{ summary.qty_sold | number:'1.2-2' }}</div>
+						</div>
+					</div>
+					<div class="col-6 col-md-3">
+						<div class="kpi-box">
+							<div class="kpi-label">Merma (kg)</div>
+							<div class="kpi-value">{{ summary.qty_merma | number:'1.2-2' }}</div>
+						</div>
+					</div>
+					<div class="col-6 col-md-3">
+						<div class="kpi-box">
+							<div class="kpi-label">Existencia (kg)</div>
+							<div class="kpi-value fw-bold">{{ summary.qty_existence | number:'1.2-2' }}</div>
+						</div>
+					</div>
+
+					<div class="col-6 col-md-3">
+						<div class="kpi-box kpi-highlight">
+							<div class="kpi-label">Venta neta</div>
+							<div class="kpi-value">$ {{ summary.net_sales | number:'1.2-2' }}</div>
+						</div>
+					</div>
+					<div class="col-6 col-md-3">
+						<div class="kpi-box">
+							<div class="kpi-label">Costo compra</div>
+							<div class="kpi-value">$ {{ summary.purchase_cost | number:'1.2-2' }}</div>
+						</div>
+					</div>
+					<div class="col-6 col-md-3">
+						<div class="kpi-box">
+							<div class="kpi-label">Gastos</div>
+							<div class="kpi-value">$ {{ summary.expenses | number:'1.2-2' }}</div>
+						</div>
+					</div>
+					<div class="col-6 col-md-3">
+						<div class="kpi-box kpi-highlight">
+							<div class="kpi-label">Utilidad estimada</div>
+							<div class="kpi-value" [class]="summary.profit_class">$ {{ summary.estimated_profit | number:'1.2-2' }}</div>
+						</div>
+					</div>
+
+					<div class="col-6 col-md-3">
+						<div class="kpi-box">
+							<div class="kpi-label">Por cobrar</div>
+							<div class="kpi-value">$ {{ summary.accounts_receivable | number:'1.2-2' }}</div>
+						</div>
+					</div>
+					<div class="col-6 col-md-3">
+						<div class="kpi-box">
+							<div class="kpi-label">Por pagar</div>
+							<div class="kpi-value">$ {{ summary.accounts_payable | number:'1.2-2' }}</div>
+						</div>
+					</div>
+					<div class="col-6 col-md-3">
+						<div class="kpi-box">
+							<div class="kpi-label">Merma %</div>
+							<div class="kpi-value">{{ summary.merma_pct | number:'1.1-1' }}%</div>
+						</div>
+					</div>
+					<div class="col-6 col-md-3">
+						<div class="kpi-box">
+							<div class="kpi-label">Margen %</div>
+							<div class="kpi-value" [class]="summary.margin_class">{{ summary.margin_pct | number:'1.1-1' }}%</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="card mb-3">
+			<div class="card-header fw-bold">DETALLE POR ESPECIE</div>
+			<div class="card-body p-0">
+				<div class="table-responsive">
+					<table class="table table-sm table-hover table-bordered table-nowrap mb-0">
+						<thead class="thead-light">
+							<tr>
+								<th>Código</th>
+								<th>Especie / producto</th>
+								<th class="text-end">Costo compra ($)</th>
+								<th class="text-end">Recibido (kg)</th>
+								<th class="text-end">Vendido (kg)</th>
+								<th class="text-end">Merma (kg)</th>
+								<th class="text-end">Existencia (kg)</th>
+								<th class="text-end">Venta neta ($)</th>
+								<th class="text-end">Gastos ($)</th>
+								<th class="text-end">Utilidad estimada ($)</th>
+								<th class="text-end">Por cobrar ($)</th>
+								<th class="text-end">Por pagar ($)</th>
+							</tr>
+						</thead>
+						<tbody>
+							@for (row of item_array; track row.item_id) {
+								<tr class="align-middle">
+									<td class="text-center">{{ row.item_code }}</td>
+									<td class="fw-bold">{{ row.item_name }}</td>
+									<td class="text-end">$ {{ row.purchase_cost | number:'1.2-2' }}</td>
+									<td class="text-end">{{ row.qty_received | number:'1.2-2' }}</td>
+									<td class="text-end">{{ row.qty_sold | number:'1.2-2' }}</td>
+									<td class="text-end">{{ row.qty_merma | number:'1.2-2' }}</td>
+									<td class="text-end fw-bold">{{ row.qty_existence | number:'1.2-2' }}</td>
+									<td class="text-end">$ {{ row.net_sales | number:'1.2-2' }}</td>
+									<td class="text-end">$ {{ row.expenses | number:'1.2-2' }}</td>
+									<td class="text-end" [class]="row.profit_class">$ {{ row.estimated_profit | number:'1.2-2' }}</td>
+									<td class="text-end">$ {{ row.accounts_receivable | number:'1.2-2' }}</td>
+									<td class="text-end">$ {{ row.accounts_payable | number:'1.2-2' }}</td>
+								</tr>
+							} @empty {
+								<tr>
+									<td colspan="12" class="text-center p-3">No se encontraron productos registrados para este lote.</td>
+								</tr>
+							}
+						</tbody>
+						@if (item_array.length) {
+							<tfoot class="table-light fw-bold">
+								<tr>
+									<td></td>
+									<td>TOTALES</td>
+									<td class="text-end">$ {{ summary.purchase_cost | number:'1.2-2' }}</td>
+									<td class="text-end">{{ summary.qty_received | number:'1.2-2' }}</td>
+									<td class="text-end">{{ summary.qty_sold | number:'1.2-2' }}</td>
+									<td class="text-end">{{ summary.qty_merma | number:'1.2-2' }}</td>
+									<td class="text-end">{{ summary.qty_existence | number:'1.2-2' }}</td>
+									<td class="text-end">$ {{ summary.net_sales | number:'1.2-2' }}</td>
+									<td class="text-end">$ {{ summary.expenses | number:'1.2-2' }}</td>
+									<td class="text-end" [class]="summary.profit_class">$ {{ summary.estimated_profit | number:'1.2-2' }}</td>
+									<td class="text-end">$ {{ summary.accounts_receivable | number:'1.2-2' }}</td>
+									<td class="text-end">$ {{ summary.accounts_payable | number:'1.2-2' }}</td>
+								</tr>
+							</tfoot>
+						}
+					</table>
+				</div>
+			</div>
+			<div class="card-footer text-muted small">
+				Criterio: Utilidad estimada = venta neta − costo proporcional de kilos vendidos − costo proporcional de merma − gastos.
+			</div>
+		</div>
+
+		@if (bill_array.length) {
+			<div class="card mb-3">
+				<div class="card-header fw-bold">FACTURAS DE COMPRA Y GASTOS VINCULADOS AL LOTE</div>
+				<div class="card-body p-0">
+					<div class="table-responsive">
+						<table class="table table-sm table-striped table-nowrap mb-0">
+							<thead class="thead-light">
+								<tr>
+									<th>ID</th>
+									<th>Tipo</th>
+									<th>Folio</th>
+									<th>Proveedor / Concepto</th>
+									<th>Nota</th>
+									<th>Fecha</th>
+									<th class="text-end">Total ($)</th>
+									<th class="text-end">Pagado ($)</th>
+									<th class="text-end">Por pagar ($)</th>
+									<th class="text-center">Estatus</th>
+								</tr>
+							</thead>
+							<tbody>
+								@for (bill of bill_array; track bill.bill_id) {
+									<tr class="align-middle">
+										<td>{{ bill.bill_id }}</td>
+										<td>
+											<span [class]="bill.category_badge_class">{{ bill.bill_category }}</span>
+										</td>
+										<td>{{ bill.folio }}</td>
+										<td>{{ bill.provider_name }}</td>
+										<td>{{ bill.note }}</td>
+										<td>{{ bill.created }}</td>
+										<td class="text-end">$ {{ bill.total | number:'1.2-2' }}</td>
+										<td class="text-end">$ {{ bill.amount_paid | number:'1.2-2' }}</td>
+										<td class="text-end fw-bold">$ {{ bill.pending_amount | number:'1.2-2' }}</td>
+										<td class="text-center">
+											<span [class]="bill.paid_badge_class">{{ bill.paid_status_display }}</span>
+										</td>
+									</tr>
+								}
+							</tbody>
+						</table>
+					</div>
+				</div>
+			</div>
+		}
+	} @else if (!is_loading && !has_searched) {
+		<div class="card p-3">
+			<div class="card-body">Selecciona o escribe un código de lote y presiona "Consultar Lote" para ver el resumen de rentabilidad.</div>
+		</div>
+	}
+</div>

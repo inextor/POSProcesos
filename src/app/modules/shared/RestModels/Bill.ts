@@ -11,6 +11,7 @@ export interface Bill{
 	folio:string | null;
 	id:number;
 	invoice_attachment_id:number | null;
+	json_tags:string[] | null;
 	name:string;
 	note:string | null;
 	organization_id:number | null;

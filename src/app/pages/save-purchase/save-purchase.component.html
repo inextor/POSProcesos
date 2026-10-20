@@ -58,6 +58,21 @@
 					</select>
 				</div>
 
+				<div class="col-12 col-md-4 form-group">
+					<label>Tags</label>
+					<div class="py-1" *ngIf="purchase_info.bill.json_tags?.length">
+						<span *ngFor="let bill_tag of purchase_info.bill.json_tags" class="badge bg-secondary mx-1" role="button" (click)="removeBillTag(bill_tag)">{{bill_tag}}</span>
+					</div>
+					<div class="row">
+						<div class="col-8">
+							<input #bill_tags class="form-control" type="text">
+						</div>
+						<div class="col-4">
+							<button type="button" class="btn btn-primary" (click)="addBillTag(bill_tags.value); bill_tags.value = ''">Agregar</button>
+						</div>
+					</div>
+				</div>
+
 
 				<div class="col col-md-4 form-check form-switch mt-3" *ngIf="purchase_info.bank_movements_info.length == 0 && purchase_info.purchase.stock_status == 'PENDING'">
 					<label class="form-check-label">

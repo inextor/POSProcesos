@@ -75,6 +75,9 @@
 						<td>{{purchase_info.purchase.total | currency }} {{purchase_info.bill.currency_id}}</td>
 						<td>
 							{{purchase_info.bill.folio}}
+							<div class="mt-1" *ngIf="purchase_info.bill.json_tags?.length">
+								<span *ngFor="let bill_tag of purchase_info.bill.json_tags" class="badge bg-info me-1">{{bill_tag}}</span>
+							</div>
 						</td>
 						<td>
 							<span *ngIf="purchase_info.bill.paid_status == 'PAID'">

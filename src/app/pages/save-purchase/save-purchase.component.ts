@@ -102,9 +102,12 @@ export class SavePurchaseComponent extends BaseComponent implements OnInit
 				{
 					response.purchase.bill = {
 						paid_status: 'PENDING',
-						total: response.purchase.purchase.total
+						total: response.purchase.purchase.total,
+						json_tags: []
 					}
 				}
+
+				response.purchase.bill.json_tags = response.purchase.bill.json_tags || [];
 
 				this.currency_list = response.currency.data;
 				this.currency_rate_list = response.currency_rate.data;
@@ -273,7 +276,8 @@ export class SavePurchaseComponent extends BaseComponent implements OnInit
 				paid_status: 'PENDING',
 				currency_id: 'MXN',
 				amount_paid: 0,
-				total: 0
+				total: 0,
+				json_tags: []
 			},
 			details:[] as PurchaseDetailInfo[],
 			shipping: null,
@@ -478,6 +482,27 @@ export class SavePurchaseComponent extends BaseComponent implements OnInit
 	toggleMarkAsPaid()
 	{
 		this.purchase_info.bill.paid_status = this.purchase_info.bill.paid_status == 'PAID' ? 'PENDING' : 'PAID';
+	}
+
+	addBillTag(tag:string)
+	{
+		let normalized_tag = tag.trim();
+
+		if( !normalized_tag )
+			return;
+
+		if( !this.purchase_info.bill.json_tags )
+			this.purchase_info.bill.json_tags = [];
+
+		if( this.purchase_info.bill.json_tags.some((existing_tag)=>existing_tag.toLowerCase() == normalized_tag.toLowerCase()) )
+			return;
+
+		this.purchase_info.bill.json_tags.push( normalized_tag );
+	}
+
+	removeBillTag(tag:string)
+	{
+		this.purchase_info.bill.json_tags = (this.purchase_info.bill.json_tags || []).filter((existing_tag)=>existing_tag !== tag);
 	}
 
 	loadStoreBankAccounts()
