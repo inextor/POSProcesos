@@ -138,6 +138,7 @@ export const routes: Routes = [
 			{path: 'item-movement-by-category-all-stores-report', loadComponent: () => import('./pages/item-movement-by-category-all-stores-report/item-movement-by-category-all-stores-report.component').then(m => m.ItemMovementByCategoryAllStoresReportComponent), canActivate: [authGuard]},
 			{path: 'sales-by-batch-report', loadComponent: () => import('./pages/sales-by-batch-report/sales-by-batch-report.component').then(m => m.SalesByBatchReportComponent), canActivate: [authGuard]},
 			{path: 'batch-profitability-report', loadComponent: () => import('./pages/batch-profitability-report/batch-profitability-report.component').then(m => m.BatchProfitabilityReportComponent), canActivate: [authGuard]},
+			{path: 'batch-purchase-cost-report', loadComponent: () => import('./pages/batch-purchase-cost-report/batch-purchase-cost-report.component').then(m => m.BatchPurchaseCostReportComponent), canActivate: [authGuard]},
 			{path: 'list-printer', loadComponent: () => import('./pages/list-printer/list-printer.component').then(m => m.ListPrinterComponent), canActivate: [authGuard]},
 			{path: 'add-printer', loadComponent: () => import('./pages/save-printer/save-printer.component').then(m => m.SavePrinterComponent), canActivate: [authGuard]},
 			{path: 'edit-printer/:id', loadComponent: () => import('./pages/save-printer/save-printer.component').then(m => m.SavePrinterComponent), canActivate: [authGuard]},
