@@ -88,6 +88,7 @@ export const routes: Routes = [
 			{path: 'resume-production-day', loadComponent: () => import('./pages/resume-production-day/resume-production-day.component').then(m => m.ResumeProductionDayComponent), canActivate: [authGuard]},
 			{path: 'list-ecommerce-order', loadComponent: () => import('./pages/list-ecommerce-order/list-ecommerce-order.component').then(m => m.ListEcommerceOrderComponent), canActivate: [authGuard]},
 			{path: 'list-order', loadComponent: () => import('./pages/list-order/list-order.component').then(m => m.ListOrderComponent), canActivate: [authGuard]},
+			{path: 'view-order/:id', loadComponent: () => import('./pages/view-order/view-order.component').then(m => m.ViewOrderComponent), canActivate: [authGuard]},
 			{path: 'list-consumption', loadComponent: () => import('./pages/list-consumption/list-consumption.component').then(m => m.ListConsumptionComponent), canActivate: [authGuard]},
 			{path: 'report-cash-count-totals', loadComponent: () => import('./pages/report-cash-count-totals/report-cash-count-totals.component').then(m => m.ReportCashCountTotalsComponent), canActivate: [authGuard]},
 			{path: 'reporte-estado-cuenta-cliente', loadComponent: () => import('./pages/reporte-estado-cuenta-cliente/reporte-estado-cuenta-cliente.component').then(m => m.ReporteEstadoCuentaClienteComponent), canActivate: [authGuard]},

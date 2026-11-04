@@ -1,17 +1,13 @@
 import { OrderInfo, OrderItemInfo } from '../Models';
 import { Order, User, Store, Price_Type } from '../RestModels';
 import { RestService } from '../services/rest.service';
+import { store as getEmptyStore } from './Store';
+import { price_type as getEmptyPriceType } from './Price_Type';
 
-export function order_info(rest: RestService, store: Store, price_type: Price_Type): OrderInfo {
-	let tax_percent = 0;
+export function order_info(rest: RestService, store: Store = getEmptyStore(), price_type: Price_Type = getEmptyPriceType()): OrderInfo {
+	let user = rest?.user;
 
-	if (!rest.user) {
-		throw new Error('No user');
-	}
-
-	let user = rest.user as User;
-
-	let version_created = rest.getVersion();
+	let version_created = rest ? rest.getVersion() : '';
 	let items: OrderItemInfo[] = [];
 	let order: Order = {
 		id: 0,
@@ -33,7 +29,10 @@ export function order_info(rest: RestService, store: Store, price_type: Price_Ty
 		city: "",
 		delivery_status: 'PENDING',
 		client_user_id: null,
+		external_id: null,
 		facturacion_code: "",
+		facturacion_mode: 'FULL',
+		installment_months: 0,
 		paid_timetamp: null,
 		sat_serie_consecutive: null,
 		sat_receptor_rfc: '',
@@ -42,7 +41,7 @@ export function order_info(rest: RestService, store: Store, price_type: Price_Ty
 		guests: 1,
 		lat: null,
 		lng: null,
-		cashier_user_id: user.id,
+		cashier_user_id: user?.id ?? null,
 		created: new Date(),
 		currency_id: 'MXN',
 		cancellation_reason: '',
@@ -65,9 +64,9 @@ export function order_info(rest: RestService, store: Store, price_type: Price_Ty
 		status: 'PENDING',
 		paid_status: 'PENDING',
 		period_id: null,
-		store_id: user.store_id as number,
+		store_id: (user?.store_id ?? store.id) as number,
 		subtotal: 0,
-		sync_id: rest.getSyncId(),
+		sync_id: rest ? rest.getSyncId() : '',
 		system_activated: null,
 		table_id: null,
 		tag: '',
@@ -90,13 +89,17 @@ export function order_info(rest: RestService, store: Store, price_type: Price_Ty
 	let empty: OrderInfo = {
 		items,
 		order,
-		cashier: rest.user,
+		cashier: rest?.user ?? null,
 		delivery_user: null,
+		agent: null,
 		client: null,
 		store,
 		purchase: null,
 		offers: [],
-		price_type
+		price_type,
+		sat_factura: null,
+		responses: [],
+		attachments: []
 	};
 	return empty;
 }

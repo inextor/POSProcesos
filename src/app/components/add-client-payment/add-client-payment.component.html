@@ -1,0 +1,178 @@
+<div class="position-relative">
+	<form (submit)="makePayment($event)">
+		<div class="card p-0">
+			<div class="d-flex flex-column align-items-stretch">
+				<div class="bg-danger text-white px-3 display-6">
+					<div class="row" style="height:62px">
+						<div class="col-5 align-self-center">{{order_info ? 'Abono' : 'Selecciona una orden'}}</div>
+						<div class="col-6 align-self-center text-end">
+							<select name="order_info" [(ngModel)]="order_info" (ngModelChange)="onOrderInfoChange()" class="form-control">
+								<option [ngValue]="null">Seleccionar</option>
+								@for (oi of order_info_list; track oi.order.id) {
+									<option [ngValue]="oi">Id#{{oi.order.id}} - {{oi.order.total - (oi.order.discount + oi.order.amount_paid) | currency:'$'}} - {{oi.order.currency_id}}</option>
+								}
+							</select>
+						</div>
+						<div class="col-1 align-self-center">
+							<button type="button" class="btn-close" aria-label="Close" (click)="emitClose()"></button>
+						</div>
+					</div>
+				</div>
+				@if (order_info) {
+					<div class="flex-grow-1 align-self-stretch">
+						<div class="flex-row">
+							<div class="row px-1 m-0">
+								<div class="col-6 p-3">
+									<div class="row py-1 border border-bottom-0">
+										<div class="col-6 align-self-center">Efectivo</div>
+										<div class="col-6 px-0">
+											<input class="form-control px-0 border-0 text-end" type="number" name="cash" [(ngModel)]="cash" (change)="updatePaymentData()" min="0">
+										</div>
+									</div>
+									<div class="row py-1 border border-bottom-0">
+										<div class="col-6 align-self-center">Dolares</div>
+										<div class="col-6 px-0">
+											<input class="form-control px-0 border-0 text-end" type="number" name="dolares" [(ngModel)]="dolares" (change)="updatePaymentData()" min="0">
+										</div>
+									</div>
+									<div class="row py-1 border border-bottom-0">
+										<div class="col-6 align-self-center">Puntos</div>
+										<div class="col-6 px-0">
+											<input class="form-control px-0 border-0 text-end" type="number" name="points" [(ngModel)]="points" (change)="updatePaymentData()" min="0">
+										</div>
+									</div>
+									<div class="row py-1 border border-bottom-0">
+										<div class="col-6 align-self-center">Tarjeta</div>
+										<div class="col-6 px-0">
+											<input class="form-control px-0 border-0 text-end" type="number" name="card_amount" [(ngModel)]="card_amount" (change)="updatePaymentData()" min="0">
+										</div>
+									</div>
+									@if (card_amount > 0) {
+										<div class="row p-3-1 border border-bottom-0">
+											<div class="col-9 pe-0">
+												<label>Es Tarjeta de credito</label>
+											</div>
+											<div class="col-3 form-check form-switch pl-1">
+												<input type="checkbox" name="es_tarjeta_credito" (click)="toggleTarjetaCredito($event)" class="form-check-input">
+											</div>
+										</div>
+										<div class="row py-1 border border-bottom-0">
+											<div class="col-9 align-self-center">Terminación Tarjeta</div>
+											<div class="col-3 px-0">
+												<input class="form-control px-0 border-0 text-end" type="number" name="card_ending" [(ngModel)]="card_ending">
+											</div>
+										</div>
+									}
+									<div class="row py-1 border border-bottom-0">
+										<div class="col-6 align-self-center">Transferencia</div>
+										<div class="col-6 px-0">
+											<input class="form-control px-0 border-0 text-end" type="number" name="transfer" [(ngModel)]="transfer" (change)="updatePaymentData()" min="0">
+										</div>
+									</div>
+									<div class="row py-1 border border-bottom-0">
+										<div class="col-4 align-self-center">Banco</div>
+										<div class="col-8 px-0">
+											<input list="bank_list" class="form-control px-0 border-0 text-end" type="text" name="origin_bank_name" [(ngModel)]="origin_bank_name">
+											<datalist id="bank_list">
+												<option>AHORRO FAMSA</option>
+												<option>AMERICAN EXPRESS</option>
+												<option>BANAMEX</option>
+												<option>BANCO AZTECA</option>
+												<option>BANCO DE MEXICO (BANXICO)</option>
+												<option>BANCO HSBC</option>
+												<option>BANCO INBURSA</option>
+												<option>BANCO INMOBILIARIO MEXICANO</option>
+												<option>BANCOPPEL</option>
+												<option>BANJERCITO</option>
+												<option>BANK OF AMERICA</option>
+												<option>BANORTE</option>
+												<option>BBVA BANCOMER</option>
+												<option>ICBC MEXICO</option>
+												<option>INVESTA BANCO</option>
+												<option>SCOTIABANK</option>
+											</datalist>
+										</div>
+									</div>
+									<div class="row py-1 border border-bottom-0">
+										<div class="col-6 align-self-center">Referencia</div>
+										<div class="col-6 px-0">
+											<input class="form-control px-0 border-0 text-end" type="text" name="transfer_reference" [(ngModel)]="transfer_reference">
+										</div>
+									</div>
+									<div class="row py-1 border">
+										<div class="col-6 align-self-center">Cheque</div>
+										<div class="col-6 py-1 px-0">
+											<input class="form-control px-0 border-0 text-end" type="number" name="chek" [(ngModel)]="check" (change)="updatePaymentData()" min="0">
+										</div>
+									</div>
+									@if (transfer > 0) {
+										<div class="row py-1 border border-bottom-0">
+											<div class="col-6 align-self-center">Referencia</div>
+											<div class="col-6 px-0">
+												<input class="form-control px-0 border-0 text-end" type="text" name="check_reference" [(ngModel)]="check_reference">
+											</div>
+										</div>
+									}
+								</div>
+								<div class="col-6">
+									<div class="row mt-3">
+										<div class="col-4 px-1 pt-0 pb-2" (click)="addEfectivo(20)">
+											<img class="w-100" src="/assets/billetes/20.png">
+										</div>
+										<div class="col-4 px-1 pt-0 pb-2" (click)="addEfectivo(50)">
+											<img class="w-100" src="/assets/billetes/50.png">
+										</div>
+										<div class="col-4 px-1 pt-0 pb-2" (click)="addEfectivo(100)">
+											<img class="w-100" src="/assets/billetes/100.png">
+										</div>
+										<div class="col-4 px-1 pt-0 pb-2" (click)="addEfectivo(200)">
+											<img class="w-100" src="/assets/billetes/200.png">
+										</div>
+										<div class="col-4 px-1 pt-0 pb-2" (click)="addEfectivo(500)">
+											<img class="w-100" src="/assets/billetes/500.png">
+										</div>
+										<div class="col-4 px-1 pt-0 pb-2" (click)="addEfectivo(1000)">
+											<img class="w-100" src="/assets/billetes/1000.png">
+										</div>
+									</div>
+									<div class="row">
+										<div class="col-6 p-1">
+											<button type="button" class="btn btn-primary w-100 text-white" (click)="efectivoExacto()" style="background-color:#767676">Efectivo exacto</button>
+										</div>
+										<div class="col-6 p-1">
+											<button type="button" class="btn btn-primary w-100 text-white" (click)="dolarsExacto()" style="background-color:#60B044">Dolares exacto</button>
+										</div>
+										<div class="col-6 p-1">
+											<button type="button" class="btn btn-primary w-100 text-white h-100" (click)="tarjetaExacta()" style="background-color:#DB2828">Solo tarjeta</button>
+										</div>
+										<div class="col-6 p-1">
+											<button type="button" class="btn btn-primary w-100 text-white" style="background-color:#80A6CD" (click)="transferenciaExacta()">Solo transferencia</button>
+										</div>
+										<div class="col-12 p-1">
+											<button type="button" class="btn btn-primary w-100 text-white" style="background-color:#444C55" (click)="cleanAmounts()">Limpiar cantidades</button>
+										</div>
+										<div class="col-12 p-1">
+											<button type="submit" class="btn btn-primary w-100 text-white" [disabled]="is_loading || (payment_info.payment.received_amount <= 0)">
+												<span class="display-6 text-white">Procesar pago</span>
+											</button>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="bg-danger display-5 text-white px-3">
+						<div class="row align-items-center" style="height:82px">
+							<div class="col-6 align-self-center">
+								{{remaining_label}}
+							</div>
+							<div class="col-6 align-self-center text-end">
+								{{remaining_amount | currency:'$'}} {{order_info.order.currency_id}}
+							</div>
+						</div>
+					</div>
+				}
+			</div>
+		</div>
+	</form>
+</div>

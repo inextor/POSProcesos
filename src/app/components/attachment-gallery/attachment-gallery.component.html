@@ -1,0 +1,25 @@
+<div class="attachment-gallery">
+	@if (gallery_item_array.length == 0) {
+		<p class="text-muted mb-0">No hay archivos adjuntos</p>
+	}
+	@if (gallery_item_array.length > 0) {
+		<div class="row">
+			@for (item of gallery_item_array; track $index) {
+				<div class="col-6 col-md-4 col-xl-3 mb-3">
+					@if (item.is_image) {
+						<a [href]="item.file_url" target="_blank" class="d-block position-relative text-decoration-none">
+							<img [src]="item.file_url" [alt]="item.display_title" class="img-fluid rounded border" style="object-fit:cover; height:120px; width:100%;">
+							<small class="d-block mt-1 text-body">{{item.display_title}}</small>
+						</a>
+					}
+					@if (!item.is_image) {
+						<a [href]="item.download_url" target="_blank" class="list-group-item list-group-item-action d-flex align-items-center rounded border">
+							<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-paperclip me-2" viewBox="0 0 16 16"><path d="M4.5 13a4 4 0 0 1-4-4 5 5 0 0 1 5-5h7a3 3 0 0 1 3 3 4 4 0 0 1-4 4H8a2 2 0 0 1-2-2 2.5 2.5 0 0 1 2.5-2.5h4a1 1 0 0 1 1 1 1.5 1.5 0 0 1-1.5 1.5H8"/></svg>
+							<span class="text-truncate">{{item.display_title}}</span>
+						</a>
+					}
+				</div>
+			}
+		</div>
+	}
+</div>

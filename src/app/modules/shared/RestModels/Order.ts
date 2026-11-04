@@ -20,10 +20,16 @@ export interface Order{
 	delivery_user_id:number | null;
 	discount:number;
 	discount_calculated:number;
+	external_id?:string | null;
 	facturacion_code:string;
+	facturacion_mode?:'FULL'|'PER_PAYMENT'|null;
 	facturado:'NO'|'YES';
 	guests:number | null;
 	id:number;
+	installment_amount?:number | null;
+	installment_months?:number;
+	installment_round_amount?:number;
+	installments?:number | null;
 	lat:number | null;
 	lng:number | null;
 	initial_payment:number;

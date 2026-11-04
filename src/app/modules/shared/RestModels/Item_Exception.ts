@@ -5,6 +5,7 @@ export interface Item_Exception {
   item_id: number;
   list_as_exception: 'YES' | 'NO';
   order_type: 'ALL' | 'TOGO' | 'IN_PLACE' | 'PICK_UP' | 'QUICK_SALE';
+  removal_timing?: 'SALE' | 'PRODUCTION';
   stock_item_id: number | null;
   stock_qty: number;
   updated: Date;
