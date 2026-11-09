@@ -236,53 +236,94 @@ export class ValidateProductionComponent extends BaseComponent
 
 			//producciones aun no validadas (se marcaran como DELETED al final)
 			let production_info_list = pi.production_list.filter(p => !p.production.verified_by_user_id);
+			let ids = production_info_list.map(p => p.production.id);
 
-			//se arma la nueva produccion consolidada con lo validado y la merma
-			let newProduction:Production = GetEmpty.production();
-			newProduction.qty = pi.validated;
-			newProduction.merma_qty = pi.merma;
-			newProduction.item_id = pi.item_id;
-			newProduction.produced_by_user_id = pi.production_list[0].production.produced_by_user_id; //usuario de la primera produccion
-			newProduction.merma_reason = pi.merma_reason ? pi.merma_reason : null;
-			newProduction.qty_reported = pi.validated + pi.merma;
-			let production_area = this.production_area_list.find(pa => pa.id == this.search_production.eq.production_area_id);
-			newProduction.store_id = production_area?.store_id || pi.production_list[0].production.store_id; //sucursal de la primera produccion
-			newProduction.verified_by_user_id = this.rest.user?.id as number;
-			newProduction.production_area_id = pi.production_list[0].production.production_area_id; //area de la primera produccion
-
-			//A1: primero se CREA la consolidada (que ingresa al inventario).
-			//Si esto falla, no se borro nada y se puede reintentar sin perder la produccion.
-			this.subs.sink = this.rest_production.create(newProduction)
+			//Doble validacion: la lista es la que se cargo al abrir la pantalla. Si otra persona
+			//(con la pantalla abierta en otro lado) ya valido estas capturas, siguen apareciendo
+			//aqui y se volverian a validar: produccion e inventario duplicados (caso 9-nov-2026,
+			//Coyotas validadas por dos personas). Antes de crear nada se vuelven a consultar.
+			//Se usa GET (search): production.php sobreescribe post() y un searchAsPost seria un INSERT.
+			this.subs.sink = this.rest_production.search({ csv: { id: ids }, limit: 9999 })
 			.subscribe({
-				next: ()=>
+				next: (response)=>
 				{
-					//ya creada la consolidada, ahora si se marcan las anteriores como DELETED
-					let production_list = production_info_list.map(p => ({...p.production, qty: p.qty, merma_qty: p.merma_qty, status: 'DELETED'}));
+					let pendientes = response.data.filter(p => p.status == 'ACTIVE' && !p.verified_by_user_id);
 
-					this.rest_production.batchUpdate(production_list as Partial<Production>[])
-					.subscribe({
-						//A2: solo cuando TODO termino se limpia la vista y se notifica
-						next: ()=>
-						{
-							this.production_info_list = this.production_info_list.filter(p => p.item_id != pi.item_id);
-							this.validating_item_ids.delete( pi.item_id );
-							this.showSuccess('Producción validada');
-						},
-						error: ()=>
-						{
-							//la consolidada SI se creo, pero no se pudieron eliminar las anteriores
-							this.validating_item_ids.delete( pi.item_id );
-							this.showError('La validación se registró, pero no se pudieron eliminar las producciones anteriores. Recarga y verifica este producto antes de volver a validar.');
-						}
-					})
+					if( pendientes.length == 0 )
+					{
+						//ya no queda nada por validar de este producto: se quita de la lista
+						this.production_info_list = this.production_info_list.filter(p => p.item_id != pi.item_id);
+						this.validating_item_ids.delete( pi.item_id );
+						this.showError('"'+pi.item.name+'" ya fue validado por otra persona. No se validó de nuevo.');
+						return;
+					}
+
+					if( pendientes.length != ids.length )
+					{
+						//otra persona valido solo una parte: lo capturado en pantalla ya no corresponde
+						this.validating_item_ids.delete( pi.item_id );
+						this.showError('Parte de la producción de "'+pi.item.name+'" ya fue validada por otra persona. Recarga la pantalla y revisa las cantidades antes de validar.');
+						return;
+					}
+
+					this.createConsolidatedProduction( pi, production_info_list );
 				},
 				error: (error)=>
 				{
-					//no se creo nada: se libera el item para poder reintentar sin perdida
 					this.validating_item_ids.delete( pi.item_id );
 					this.showError( error );
 				}
-			})
+			});
+		})
+	}
+
+	createConsolidatedProduction(pi: CProduction, production_info_list: CProductionInfo[])
+	{
+		//se arma la nueva produccion consolidada con lo validado y la merma
+		let newProduction:Production = GetEmpty.production();
+		newProduction.qty = pi.validated;
+		newProduction.merma_qty = pi.merma;
+		newProduction.item_id = pi.item_id;
+		newProduction.produced_by_user_id = pi.production_list[0].production.produced_by_user_id; //usuario de la primera produccion
+		newProduction.merma_reason = pi.merma_reason ? pi.merma_reason : null;
+		newProduction.qty_reported = pi.validated + pi.merma;
+		let production_area = this.production_area_list.find(pa => pa.id == this.search_production.eq.production_area_id);
+		newProduction.store_id = production_area?.store_id || pi.production_list[0].production.store_id; //sucursal de la primera produccion
+		newProduction.verified_by_user_id = this.rest.user?.id as number;
+		newProduction.production_area_id = pi.production_list[0].production.production_area_id; //area de la primera produccion
+
+		//A1: primero se CREA la consolidada (que ingresa al inventario).
+		//Si esto falla, no se borro nada y se puede reintentar sin perder la produccion.
+		this.subs.sink = this.rest_production.create(newProduction)
+		.subscribe({
+			next: ()=>
+			{
+				//ya creada la consolidada, ahora si se marcan las anteriores como DELETED
+				let production_list = production_info_list.map(p => ({...p.production, qty: p.qty, merma_qty: p.merma_qty, status: 'DELETED'}));
+
+				this.rest_production.batchUpdate(production_list as Partial<Production>[])
+				.subscribe({
+					//A2: solo cuando TODO termino se limpia la vista y se notifica
+					next: ()=>
+					{
+						this.production_info_list = this.production_info_list.filter(p => p.item_id != pi.item_id);
+						this.validating_item_ids.delete( pi.item_id );
+						this.showSuccess('Producción validada');
+					},
+					error: ()=>
+					{
+						//la consolidada SI se creo, pero no se pudieron eliminar las anteriores
+						this.validating_item_ids.delete( pi.item_id );
+						this.showError('La validación se registró, pero no se pudieron eliminar las producciones anteriores. Recarga y verifica este producto antes de volver a validar.');
+					}
+				})
+			},
+			error: (error)=>
+			{
+				//no se creo nada: se libera el item para poder reintentar sin perdida
+				this.validating_item_ids.delete( pi.item_id );
+				this.showError( error );
+			}
 		})
 	}
 }
