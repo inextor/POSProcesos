@@ -57,6 +57,9 @@ export class ValidateProductionComponent extends BaseComponent
 	search_str:string = '';
 	search_by_code:boolean = false;
 
+	//true cuando no hay area seleccionada: no se lista nada hasta que se elija una
+	area_required:boolean = false;
+
 	//item_ids que se estan validando en este momento (evita doble click / doble submit)
 	validating_item_ids:Set<number> = new Set<number>();
 	// show_merma_option:boolean = false;
@@ -111,9 +114,16 @@ export class ValidateProductionComponent extends BaseComponent
 				//search_production_area.eq.store_id = this.rest.user?.store_id as number;
 				//search_production_area.eq.production_enabled = 1;
 
+				//Usuario sin area de produccion (production_area_id NULL): antes el filtro se iba vacio
+				//y la pantalla listaba lo de TODAS las areas, asi alguien de Integral terminaba validando
+				//Pan Dulce y Reposteria (caso 9-nov-2026). Ahora tiene que elegir el area primero.
+				this.area_required = !this.search_production.eq.production_area_id;
+
 				return forkJoin({
 					production_area: this.rest_production_area.search(search_production_area),
-					production_info: this.rest_production_info.search(this.search_production)
+					production_info: this.area_required
+						? of({ total: 0, data: [] as ProductionInfo[] })
+						: this.rest_production_info.search(this.search_production)
 				})
 			}),
 		)

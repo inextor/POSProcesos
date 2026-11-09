@@ -44,7 +44,11 @@
         <div class="col-2 text-end">Motivo de Merma</div>
         <div class="col-2 text-end">Acciones</div>
       </div>
-      @if (production_info_list.length == 0) {
+      @if (area_required) {
+        <div class="text-center fw-bold mt-2">
+          Selecciona la Sucursal de Producción que vas a validar
+        </div>
+      } @else if (production_info_list.length == 0) {
         <div class="text-center fw-bold mt-2">
           No hay producciones por validar
         </div>
