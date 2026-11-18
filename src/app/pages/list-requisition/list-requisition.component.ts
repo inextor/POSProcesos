@@ -394,10 +394,34 @@ export class ListRequisitionComponent extends BaseComponent implements OnInit
 		}
 	}
 
+	//quien tiene approve_requisition puede producir mas de lo requerido
+	canOverproduce():boolean
+	{
+		return !!this.rest.user_permission?.approve_requisition;
+	}
+
+	//cantidad maxima que se puede agregar sin permiso: lo requerido menos lo ya producido
+	getMaxProducible(cri:CRequisitionItem):number
+	{
+		let row = this.requsition_obj_list.find(r=>r.item.id == cri.item.id) || cri;
+		let required = row.requisition?.sum_qty || 0;
+		let produced = row.production?.produced || 0;
+		return Math.max(0, required - produced);
+	}
+
 	addProduction(cri:CRequisitionItem)
 	{
 		//evt.preventDefault();
 		//evt.stopPropagation();
+		if( !this.canOverproduce() && cri.input_production.qty > this.getMaxProducible(cri) )
+		{
+			let max = this.getMaxProducible(cri);
+			this.showError( max > 0
+				? `Solo puedes producir lo requerido. Faltan ${max} por producir de ${cri.item.name}`
+				: `No hay requerido pendiente de ${cri.item.name}`);
+			return;
+		}
+
 		this.is_loading = true;
 
 		this.new_production = GetEmpty.production();
