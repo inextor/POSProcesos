@@ -151,7 +151,7 @@
       </div>
       <div class="d-md-none col-6">Agregar</div>
       <div class="col-6 col-md-2 text-start text-md-end fw-bold">
-        <input type="number" class="form-control text-start text-md-end" name="input_production_new_qty" [(ngModel)]="cri.input_production.qty" [min]="0" [max]="canOverproduce() ? null : getMaxProducible(cri)" (click)="selectText($event)" required>
+        <input type="number" class="form-control text-start text-md-end" name="input_production_new_qty" [(ngModel)]="cri.input_production.qty" [min]="0" (click)="selectText($event)" required>
       </div>
       <div class="d-md-none col-6">Merma</div>
       <div class="col-6 col-md-1 text-start text-md-end fw-bold">
@@ -276,7 +276,7 @@
               <div class="row">
                 <div class="col-12 col-md-4">
                   <label>Cantidad Producida</label>
-                  <input class="form-control" type="number" name="production_qty"	[min]="0" [max]="canOverproduce() ? null : getMaxProducible(selected_crequistion_item)" [(ngModel)]="selected_crequistion_item.input_production.qty" required>
+                  <input class="form-control" type="number" name="production_qty"	[min]="0" [(ngModel)]="selected_crequistion_item.input_production.qty" required>
                   @if (!canOverproduce()) {
                     <small class="text-muted">Máximo por producir: {{getMaxProducible(selected_crequistion_item)}}</small>
                   }
