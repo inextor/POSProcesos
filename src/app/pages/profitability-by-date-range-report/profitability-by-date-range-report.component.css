@@ -1,0 +1,36 @@
+.summary-meta-label {
+	font-size: 0.75rem;
+	color: #17365d;
+	font-weight: 700;
+	text-transform: uppercase;
+}
+
+.summary-meta-value {
+	font-size: 1rem;
+}
+
+.kpi-box {
+	border: 1px solid #c8d2dc;
+	background-color: #fafbfc;
+	border-radius: 4px;
+	padding: 0.75rem;
+	text-align: center;
+}
+
+.kpi-highlight {
+	background-color: #e2f0d9;
+}
+
+.kpi-label {
+	font-size: 0.78rem;
+	font-weight: 700;
+	color: #17365d;
+	text-transform: uppercase;
+	margin-bottom: 0.25rem;
+}
+
+.kpi-value {
+	font-size: 1.15rem;
+	font-weight: 700;
+	color: #1f4e78;
+}
