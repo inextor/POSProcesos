@@ -129,7 +129,6 @@
 											</abbr>
 										</button>
 									}
-									@if(sat_factura.cancelado_por_sat != 'YES'){
 										<button type="button" class="mx-1 btn btn-primary" (click)="checarFactura(sat_factura)" [disabled]="is_loading">
 											<abbr title="Revisar estatus de factura">
 												<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24">
@@ -137,7 +136,6 @@
 												</svg>
 											</abbr>
 										</button>
-									}
 								</td>
 							</tr>
 						}

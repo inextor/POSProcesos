@@ -28,16 +28,8 @@
           {{ is_loading ? '...' : 'Buscar' }}
         </button>
       </div>
-      @if (summaries.length > 0) {
-        <div class="col-md-2">
-          <button type="button" class="btn btn-success w-100" (click)="processCommissions()" [disabled]="is_loading">
-            Generar Comisiones
-          </button>
-        </div>
-      }
 	    </div>
 	  </form>
-
 
   @if (summaries.length > 0) {
     <div class="table-responsive">
@@ -52,7 +44,6 @@
             <th class="text-end">Comisión Prop.</th>
             <th class="text-end">Com. Pagada</th>
             <th class="text-center" style="width: 40px;">Ver</th>
-            <th class="text-center" style="width: 40px;"><input type="checkbox" class="form-check-input" (change)="toggleAll($event)"></th>
           </tr>
         </thead>
         <tbody>
@@ -70,21 +61,18 @@
                   {{ agent.expanded ? '−' : '+' }}
                 </button>
               </td>
-              <td class="text-center">
-                <input type="checkbox" class="form-check-input" [(ngModel)]="agent.selected" (change)="toggleAgentSelection(agent)">
-              </td>
             </tr>
             @if (agent.expanded) {
               @if (agent.loading_sales) {
                 <tr>
-                  <td colspan="10" class="text-center py-3">
+                  <td colspan="9" class="text-center py-3">
                     <div class="spinner-border spinner-border-sm" role="status"></div>
                     <span> Cargando ventas...</span>
                   </td>
                 </tr>
               } @else if (agent.sales?.length === 0) {
                 <tr>
-                  <td colspan="10" class="text-muted text-center py-3">No se encontraron pagos para este agente en este periodo.</td>
+                  <td colspan="9" class="text-muted text-center py-3">No se encontraron pagos para este agente en este periodo.</td>
                 </tr>
               } @else {
                 @for (sale of agent.sales; track sale.order_id) {
@@ -107,16 +95,11 @@
                         {{ sale.expanded ? '−' : '+' }}
                       </button>
                     </td>
-                    <td class="text-center">
-	                      <input type="checkbox" class="form-check-input" [(ngModel)]="sale.selected" 
-	                             (change)="onSaleSelectionChange(agent)"
-	                             [disabled]="!!sale.commission_id">
-                    </td>
                   </tr>
                   @if (sale.expanded) {
                     @if (sale.loading_items) {
                       <tr>
-                        <td colspan="10" class="text-center py-2">
+                        <td colspan="9" class="text-center py-2">
                           <div class="spinner-border spinner-border-sm" role="status"></div>
                         </td>
                       </tr>
@@ -129,7 +112,7 @@
                         <td class="text-end">Comisión Prop.</td>
                         <td class="text-end">Com. en Periodo</td>
                         <td class="text-end">Com. Pagada (Acum.)</td>
-                        <td colspan="2"></td>
+                        <td></td>
                       </tr>
                       @for (item of sale.items; track item.item_name) {
                         <tr class="table-light small align-middle">
@@ -140,7 +123,7 @@
                           <td class="text-end">{{ item.total_commission | currency }}</td>
                           <td class="text-end text-success fw-bold">{{ item.commission_paid_in_period | currency }}</td>
                           <td class="text-end">{{ item.total_commission_paid | currency }}</td>
-                          <td colspan="2"></td>
+                          <td></td>
                         </tr>
                       }
                     }

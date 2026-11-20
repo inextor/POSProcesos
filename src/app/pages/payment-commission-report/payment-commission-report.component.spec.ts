@@ -23,8 +23,12 @@ describe('PaymentCommissionReportComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should keep the legacy selection flow', () => {
-    expect(typeof component.processCommissions).toBe('function');
+  it('should not expose the legacy selection/generate flow (read-only report)', () => {
+    const any_component = component as unknown as Record<string, unknown>;
+    expect(any_component['processCommissions']).toBeUndefined();
+    expect(any_component['toggleAll']).toBeUndefined();
+    expect(any_component['toggleAgentSelection']).toBeUndefined();
+    expect(any_component['onSaleSelectionChange']).toBeUndefined();
   });
 
   it('should not include the formula flow (it lives in agent-commission-generator)', () => {

@@ -69,6 +69,10 @@ export class ScannerComponent extends BaseComponent
 	show_alert_modal: boolean = false;
 
 	serial_input: string = '';
+	serial_array: Serial[] = [];
+	batch_record_array: Batch_Record[] = [];
+	is_loading_serials: boolean = false;
+	is_loading_batches: boolean = false;
 
 	constructor(injector: Injector)
 	{
@@ -138,6 +142,8 @@ export class ScannerComponent extends BaseComponent
 		this.item_info = null;
 		this.stock_info = null;
 		this.stock_alert = null;
+		this.serial_array = [];
+		this.batch_record_array = [];
 	}
 
 	onCodeDetected(codes: CodeValue[])
@@ -164,6 +170,8 @@ export class ScannerComponent extends BaseComponent
 		this.not_found = false;
 		this.scanned_code = '';
 		this.stock_alert = null;
+		this.serial_array = [];
+		this.batch_record_array = [];
 	}
 
 	lookupItem(code: string)
@@ -175,6 +183,8 @@ export class ScannerComponent extends BaseComponent
 		this.item_info = null;
 		this.stock_info = null;
 		this.stock_alert = null;
+		this.serial_array = [];
+		this.batch_record_array = [];
 		this.not_found = false;
 		this.quantity = 1;
 
@@ -209,9 +219,65 @@ export class ScannerComponent extends BaseComponent
 			{
 				this.stock_info = stock_info;
 				this.loadStockAlert();
+				this.loadItemDetails();
 			},
 			error: (error)=> this.showError(error)
 		});
+	}
+
+	loadItemDetails()
+	{
+		this.serial_array = [];
+		this.batch_record_array = [];
+
+		if( !this.item_info || this.store_id == null )
+			return;
+
+		let item_id = this.item_info.item.id;
+		let store_id = this.store_id;
+
+		if( this.item_info.item.has_serial_number == 'YES' )
+		{
+			this.is_loading_serials = true;
+			this.subs.sink = this.rest_serial.search({
+				eq: { item_id, store_id },
+				limit: 9999,
+				sort_order: ['serial_number_ASC']
+			}).subscribe({
+				next: (response)=>
+				{
+					this.is_loading_serials = false;
+					this.serial_array = response.data;
+				},
+				error: (error)=>
+				{
+					this.is_loading_serials = false;
+					this.showError(error);
+				}
+			});
+		}
+
+		if( this.requiresBatch(this.item_info.item) )
+		{
+			this.is_loading_batches = true;
+			this.subs.sink = this.rest_batch_record.search({
+				eq: { item_id, store_id, is_current: 1 },
+				gt: { qty: 0 },
+				limit: 9999,
+				sort_order: ['expiration_date_ASC']
+			}).subscribe({
+				next: (response)=>
+				{
+					this.is_loading_batches = false;
+					this.batch_record_array = response.data;
+				},
+				error: (error)=>
+				{
+					this.is_loading_batches = false;
+					this.showError(error);
+				}
+			});
+		}
 	}
 
 	addStock()
@@ -618,6 +684,7 @@ export class ScannerComponent extends BaseComponent
 				this.is_saving = false;
 				this.serial_input = '';
 				this.showSuccess('Serial agregado');
+				this.loadItemDetails();
 			},
 			error: (error)=>
 			{

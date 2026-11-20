@@ -8,12 +8,21 @@ export function printer(): Printer {
 		device: null,
 		id: 0,
 		ip_address: null,
+		model: null,
 		name: '',
+		font_a_columns: null,
+		font_b_columns: null,
 		port: null,
 		protocol: '',
 		serial_number: '',
 		store_id: null,
 		updated: new Date(),
-		updated_by_user_id: 0
+		updated_by_user_id: 0,
+		vendor_id: null,
+		product_id: null,
+		interface_number: null,
+		codepage_mapping: null,
+		paper_width: null,
+		ticket_id: null
 	};
 }

@@ -39,7 +39,7 @@ export class SavePrinterComponent extends BaseComponent implements OnInit
 {
 
 	printer: Printer = GetEmpty.printer();
-	rest_printer: RestSimple<Printer> = this.rest.initRestSimple('printer', ['name', 'id', 'created', 'updated', 'ip_address', 'protocol', 'device', 'serial_number', 'port', 'description', 'store_id']);
+	rest_printer: RestSimple<Printer> = this.rest.initRestSimple('printer', ['name', 'id', 'created', 'updated', 'ip_address', 'protocol', 'device', 'serial_number', 'port', 'description', 'store_id', 'model', 'font_a_columns', 'font_b_columns', 'vendor_id', 'product_id', 'interface_number', 'codepage_mapping', 'paper_width', 'ticket_id']);
 	search_printer: SearchObject<Printer> = this.rest_printer.getEmptySearch();
 
 	show_usb_modal: boolean = false;
@@ -133,6 +133,8 @@ export class SavePrinterComponent extends BaseComponent implements OnInit
 		// Populate printer fields with USB device info
 		this.printer.serial_number = device.serialNumber || '';
 		this.printer.device = device.productName || device.manufacturerName || '';
+		this.printer.vendor_id = this.toHex(device.vendorId);
+		this.printer.product_id = this.toHex(device.productId);
 
 		if (!this.printer.name)
 		{

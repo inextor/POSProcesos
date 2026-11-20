@@ -47,6 +47,40 @@
 					<input type="number" id="description" name="description" class="form-control" [(ngModel)]="printer.description">
 				</div>
 			</div>
+			<div class="row my-2">
+				<div class="col-12 col-md-6 form-group">
+					<label for="model">Modelo</label>
+					<input type="text" id="model" name="model" class="form-control" [(ngModel)]="printer.model" placeholder="bixolon-srp350iii">
+				</div>
+				<div class="col-12 col-md-6 form-group">
+					<label for="codepage_mapping">Codepage</label>
+					<input type="text" id="codepage_mapping" name="codepage_mapping" class="form-control" [(ngModel)]="printer.codepage_mapping" placeholder="bixolon">
+				</div>
+			</div>
+			<div class="row my-2">
+				<div class="col-12 col-md-6 form-group">
+					<label for="vendor_id">Vendor ID</label>
+					<input type="text" id="vendor_id" name="vendor_id" class="form-control" [(ngModel)]="printer.vendor_id" placeholder="0x1504">
+				</div>
+				<div class="col-12 col-md-6 form-group">
+					<label for="product_id">Product ID</label>
+					<input type="text" id="product_id" name="product_id" class="form-control" [(ngModel)]="printer.product_id" placeholder="0x003d">
+				</div>
+			</div>
+			<div class="row my-2">
+				<div class="col-12 col-md-4 form-group">
+					<label for="interface_number">Interfaz USB</label>
+					<input type="number" id="interface_number" name="interface_number" class="form-control" [(ngModel)]="printer.interface_number">
+				</div>
+				<div class="col-12 col-md-4 form-group">
+					<label for="font_a_columns">Columnas Fuente A</label>
+					<input type="number" id="font_a_columns" name="font_a_columns" class="form-control" [(ngModel)]="printer.font_a_columns" min="20" max="80">
+				</div>
+				<div class="col-12 col-md-4 form-group">
+					<label for="font_b_columns">Columnas Fuente B</label>
+					<input type="number" id="font_b_columns" name="font_b_columns" class="form-control" [(ngModel)]="printer.font_b_columns" min="20" max="80">
+				</div>
+			</div>
 			<div class="text-end">
 				<button type="button" class="btn btn-info me-2" (click)="listUSBDevices()">Listar Dispositivos USB</button>
 				<button type="button" class="btn btn-secondary me-2" (click)="location.back()">Cancelar</button>

@@ -1,0 +1,155 @@
+<div class="container-fluid">
+<div class="row align-items-center">
+<div class="col">
+<h1 class="my-3">Fusionar Clientes</h1>
+</div>
+</div>
+<div class="card p-3 mb-3">
+<div class="card-body">
+<div class="row">
+<div class="col-md-5">
+<label>Cliente destino (receptor, conserva sus datos)</label>
+<app-search-users [type]="'CLIENT'" [reset_on_search]="true" (user_selected)="onTargetSelected($event)"></app-search-users>
+</div>
+<div class="col-md-2">
+<label>&nbsp;</label>
+<div>
+<button type="button" class="btn btn-sm btn-outline-secondary w-100" (click)="swapSourceAndTarget()" [disabled]="!can_swap" title="Intercambia destino y origen (solo con un origen)">Intercambiar</button>
+</div>
+</div>
+<div class="col-md-5">
+<label>Cliente origen (donante, se fusiona y se elimina)</label>
+<app-search-users [type]="'CLIENT'" [reset_on_search]="true" (user_selected)="onSourceSelected($event)"></app-search-users>
+</div>
+</div>
+</div>
+</div>
+<div class="card p-3 mb-3">
+<div class="card-body">
+<div class="alert alert-warning">
+<strong>Atencion: esta accion no se puede deshacer.</strong>
+<span>El cliente ORIGEN es el donante: todos sus datos se mueven al DESTINO y despues se marca como ELIMINADO.</span>
+<span>El cliente DESTINO es el receptor: conserva sus datos y recibe los del origen, incluyendo sus puntos.</span>
+<span>Se actualizan 18 tablas en una sola transaccion (ordenes, pagos, cotizaciones, devoluciones, movimientos bancarios, puntos, direcciones, cuentas bancarias, cuentas, carrito, tokens, reservaciones, respuestas, ecommerce, check-ins, permisos, adjuntos y campos extra). Si algo falla, todo se revierte.</span>
+<span>Ambos clientes deben ser tipo CLIENT, estar ACTIVOS y ser diferentes. Con un solo origen puede usar Intercambiar para invertir los papeles.</span>
+</div>
+@if (target_user) {
+<div class="alert alert-success">
+<strong>Destino:</strong>
+<span>{{target_user_display}}</span>
+@if (target_preview) {
+<span>{{target_preview.points}} puntos</span>
+}
+<button type="button" class="btn btn-sm btn-outline-secondary ms-2" (click)="clearTarget()">Quitar</button>
+</div>
+}
+@if (target_preview_loading) {
+<app-loading [is_loading]="true"></app-loading>
+}
+@if (target_preview_error) {
+<div class="alert alert-warning">
+<span>{{target_preview_error}}</span>
+</div>
+}
+@if (target_preview_row_array.length > 0) {
+<div class="table-responsive mb-3">
+<table class="table table-bordered table-striped">
+<thead>
+<tr>
+<th>Registros del destino</th>
+<th class="text-end">Cantidad</th>
+</tr>
+</thead>
+<tbody>
+@for (row of target_preview_row_array; track row.label) {
+<tr>
+<td>{{row.label}}</td>
+<td class="text-end">{{row.count}}</td>
+</tr>
+}
+</tbody>
+</table>
+</div>
+}
+@if (source_entry_array.length > 0) {
+<div class="table-responsive">
+<table class="table table-bordered table-striped">
+<thead>
+<tr>
+<th>Cliente origen</th>
+<th>Resumen</th>
+<th class="text-end">Accion</th>
+</tr>
+</thead>
+<tbody>
+@for (entry of source_entry_array; track entry.user.id) {
+<tr>
+<td>{{entry.user_display}}</td>
+<td>
+@if (entry.is_loading_preview) {
+<span>Cargando resumen...</span>
+}
+@if (entry.preview_error) {
+<span class="text-danger">{{entry.preview_error}}</span>
+}
+@if (entry.preview) {
+<span>{{entry.preview.points}} puntos</span>
+}
+@if (entry.preview_row_array.length > 0) {
+<ul class="mb-0 ps-3">
+@for (row of entry.preview_row_array; track row.label) {
+<li>{{row.label}}: {{row.count}}</li>
+}
+</ul>
+}
+</td>
+<td class="text-end">
+<button type="button" class="btn btn-sm btn-outline-secondary" (click)="removeSourceEntry(entry)">Quitar</button>
+</td>
+</tr>
+}
+</tbody>
+</table>
+</div>
+}
+@if (source_entry_array.length === 0) {
+<div class="alert alert-light">
+<span>Agregue al menos un cliente origen con el buscador de arriba.</span>
+</div>
+}
+<app-loading [is_loading]="is_loading"></app-loading>
+@if (merge_result) {
+<div class="alert alert-success mt-3">
+<strong>{{merge_result.message}}</strong>
+<span>Destino: {{merge_result.target_user_name}} (ID: {{merge_result.target_user_id}})</span>
+</div>
+}
+@if (merge_summary_row_array.length > 0) {
+<div class="table-responsive mt-3">
+<table class="table table-bordered table-striped">
+<thead>
+<tr>
+<th>Registros movidos</th>
+<th class="text-end">Cantidad</th>
+</tr>
+</thead>
+<tbody>
+@for (row of merge_summary_row_array; track row.label) {
+<tr>
+<td>{{row.label}}</td>
+<td class="text-end">{{row.count}}</td>
+</tr>
+}
+</tbody>
+</table>
+</div>
+}
+<div class="text-end mt-3">
+<button type="button" class="btn btn-primary" (click)="confirmAndMerge()" [disabled]="!can_merge">Fusionar Clientes</button>
+</div>
+</div>
+</div>
+<div class="d-flex justify-content-end mt-3">
+<button type="button" class="btn btn-secondary" (click)="clearAll()">Limpiar</button>
+</div>
+</div>

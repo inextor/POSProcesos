@@ -25,6 +25,30 @@ declare global
 export const USER_PERMISSION_KEY = 'user_permission';
 const USER_KEY = 'user';
 
+export interface MergeUserPreview
+{
+	user_id:number;
+	name:string;
+	email:string | null;
+	phone:string | null;
+	type:string;
+	status:string;
+	points:number;
+	related_records:Record<string, number>;
+}
+
+export interface MergeUsersResult
+{
+	success:boolean;
+	message:string;
+	merged_users_count:number;
+	source_user_ids:(number | string)[];
+	target_user_id:number;
+	target_user_name:string;
+	merged_users:{ user_id:number; name:string; email:string | null; updates:Record<string, number> }[];
+	total_updates_summary:Record<string, number>;
+}
+
 type SuperEmpty<Type> = Type | null | undefined;
 
 @Injectable
@@ -959,6 +983,19 @@ export class RestService
 	facturarPagoComun(params:{ payment_id:number; sat_serie?:string; email?:string; fecha_de_pago?:string | null; transaccion?:string | null; folio?:string }):Observable<any>
 	{
 		return this.httpPost('facturar_pago_comun.php', params);
+	}
+
+	getMergeUserPreview(user_id:number):Observable<MergeUserPreview>
+	{
+		let params = new HttpParams().set('user_id',''+user_id);
+		let url = `${this.domain_configuration.domain}/${this.url_base}/merge_user.php`;
+		let options = { params, headers: this.getSessionHeaders(), withCredentials: true };
+		return this.http.get<MergeUserPreview>(url, options);
+	}
+
+	mergeUsers(source_user_ids:number[], target_user_id:number):Observable<MergeUsersResult>
+	{
+		return this.httpPost('merge_user.php', { source_user_id: source_user_ids, target_user_id }) as Observable<MergeUsersResult>;
 	}
 
 	cancelOrder(order_id:number, cancellation_reason:string = 'N/A'):Observable<any>

@@ -4,6 +4,7 @@ import { ScannerComponent } from './scanner.component';
 import { provideComponentMocks } from '../../modules/shared/test/test-mocks';
 import { GetEmpty } from '../../modules/shared/GetEmpty';
 import { ItemInfo } from '../../modules/shared/Models';
+import { of } from 'rxjs';
 
 function makeItem(batch_option: any): any
 {
@@ -97,6 +98,64 @@ describe('ScannerComponent', () => {
 			component.quantity = 3;
 			component.stocktake_batch_rows = [{ batch: 'L1', expiration_date: null, db_qty: 0, real_qty: 3 }];
 			expect(component.isStocktakeBatchValid()).toBe(true);
+		});
+	});
+
+	describe('loadItemDetails', () => {
+		function makeDetailedItem(has_serial_number: any, batch_option: any): any
+		{
+			const item = makeItem(batch_option);
+			item.has_serial_number = has_serial_number;
+			return item;
+		}
+
+		it('loads serials when the item has serials', () => {
+			component.item_info = makeItemInfo(makeDetailedItem('YES', 'NONE'));
+			component.store_id = 5;
+			const serial_search = spyOn(component.rest_serial, 'search').and.returnValue(of({ data: [{ id: 1 }], total: 1 } as any));
+			const batch_search = spyOn(component.rest_batch_record, 'search').and.returnValue(of({ data: [], total: 0 } as any));
+			component.loadItemDetails();
+			expect(serial_search).toHaveBeenCalled();
+			expect(component.serial_array.length).toBe(1);
+			expect(batch_search).not.toHaveBeenCalled();
+			expect(component.batch_record_array.length).toBe(0);
+		});
+
+		it('loads batches when the item uses batches', () => {
+			component.item_info = makeItemInfo(makeDetailedItem('NO', 'BATCH_ONLY'));
+			component.store_id = 5;
+			const serial_search = spyOn(component.rest_serial, 'search').and.returnValue(of({ data: [], total: 0 } as any));
+			const batch_search = spyOn(component.rest_batch_record, 'search').and.returnValue(of({ data: [{ id: 7 }], total: 1 } as any));
+			component.loadItemDetails();
+			expect(serial_search).not.toHaveBeenCalled();
+			expect(batch_search).toHaveBeenCalled();
+			expect(component.batch_record_array.length).toBe(1);
+		});
+
+		it('loads nothing when the item has no serials or batches', () => {
+			component.item_info = makeItemInfo(makeDetailedItem('NO', 'NONE'));
+			component.store_id = 5;
+			const serial_search = spyOn(component.rest_serial, 'search').and.returnValue(of({ data: [], total: 0 } as any));
+			const batch_search = spyOn(component.rest_batch_record, 'search').and.returnValue(of({ data: [], total: 0 } as any));
+			component.loadItemDetails();
+			expect(serial_search).not.toHaveBeenCalled();
+			expect(batch_search).not.toHaveBeenCalled();
+		});
+
+		it('loads nothing without a store and resetItem clears the lists', () => {
+			component.item_info = makeItemInfo(makeDetailedItem('YES', 'BATCH_ONLY'));
+			component.store_id = null;
+			const serial_search = spyOn(component.rest_serial, 'search').and.returnValue(of({ data: [], total: 0 } as any));
+			const batch_search = spyOn(component.rest_batch_record, 'search').and.returnValue(of({ data: [], total: 0 } as any));
+			component.loadItemDetails();
+			expect(serial_search).not.toHaveBeenCalled();
+			expect(batch_search).not.toHaveBeenCalled();
+
+			component.serial_array = [{ id: 1 } as any];
+			component.batch_record_array = [{ id: 2 } as any];
+			component.resetItem();
+			expect(component.serial_array.length).toBe(0);
+			expect(component.batch_record_array.length).toBe(0);
 		});
 	});
 
