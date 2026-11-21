@@ -90,6 +90,7 @@ export const routes: Routes = [
 			{path: 'list-order', loadComponent: () => import('./pages/list-order/list-order.component').then(m => m.ListOrderComponent), canActivate: [authGuard]},
 			{path: 'list-consumption', loadComponent: () => import('./pages/list-consumption/list-consumption.component').then(m => m.ListConsumptionComponent), canActivate: [authGuard]},
 			{path: 'report-cash-count-totals', loadComponent: () => import('./pages/report-cash-count-totals/report-cash-count-totals.component').then(m => m.ReportCashCountTotalsComponent), canActivate: [authGuard]},
+			{path: 'report-withdrawals', loadComponent: () => import('./pages/report-withdrawals/report-withdrawals.component').then(m => m.ReportWithdrawalsComponent), canActivate: [authGuard]},
 			{path: 'reporte-estado-cuenta-cliente', loadComponent: () => import('./pages/reporte-estado-cuenta-cliente/reporte-estado-cuenta-cliente.component').then(m => m.ReporteEstadoCuentaClienteComponent), canActivate: [authGuard]},
 			{path: 'reporte-estado-cuenta-proveedor', loadComponent: () => import('./pages/reporte-estado-cuenta-proveedor/reporte-estado-cuenta-proveedor.component').then(m => m.ReporteEstadoCuentaProveedorComponent), canActivate: [authGuard]},
 			{path: 'factura-asis/:order_id', loadComponent: () => import('./pages/factura-asis/factura-asis.component').then(m => m.FacturaAsisComponent), canActivate: [authGuard]},
