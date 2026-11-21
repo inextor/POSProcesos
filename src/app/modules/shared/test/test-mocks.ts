@@ -13,6 +13,7 @@ export function createRestInstanceMock(overrides: Record<string, any> = {}): any
 		search: () => of({ data: [] }),
 		getAll: () => of({ data: [] }),
 		update: () => of({}),
+		create: () => of({}),
 		getRelation: () => ({}),
 		getSearchObject: () => ({}),
 		searchWithRelations: () => of({ data: [] }),

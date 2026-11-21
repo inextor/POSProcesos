@@ -2,6 +2,7 @@
 import { account } from './Empties/Account';
 import { attribute } from './Empties/Attribute';
 import { bank_account } from './Empties/Bank_Account';
+import { bank_movement } from './Empties/Bank_Movement';
 import { item_info } from './Empties/Item_Info';
 import { role } from './Empties/Role';
 import { role_item_price } from './Empties/Role_Item_Price';
@@ -57,6 +58,7 @@ export class GetEmpty {
 	static account = account;
 	static attribute = attribute;
 	static bank_account = bank_account;
+	static bank_movement = bank_movement;
 	static item_info = item_info;
 	static role = role;
 	static role_item_price = role_item_price;
@@ -65,6 +67,7 @@ export class GetEmpty {
 	static orderItemInfo = order_item_info;
 	static period = period;
 	static order_info = order_info;
+	static orderInfo = order_info;
 	static shipping_info = shipping_info;
 	static shipping = shipping;
 	static process = process;

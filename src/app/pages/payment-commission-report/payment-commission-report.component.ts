@@ -16,7 +16,6 @@ interface CommissionSummary {
 	expanded?: boolean;
 	sales?: CommissionSale[];
 	loading_sales?: boolean;
-	selected?: boolean;
 }
 
 interface CommissionSale {
@@ -39,7 +38,6 @@ interface CommissionSale {
 	expanded?: boolean;
 	items?: CommissionItem[];
 	loading_items?: boolean;
-	selected?: boolean;
 }
 
 interface CommissionItem {
@@ -104,7 +102,7 @@ export class PaymentCommissionReportComponent extends BaseComponent implements O
 			.subscribe({
 				next: (data: any) => {
 					const summaryData = Array.isArray(data) ? data : (data.data || []);
-					this.summaries = summaryData.map((s: any) => ({ ...s, expanded: false, sales: [], loading_sales: false, selected: false }));
+					this.summaries = summaryData.map((s: any) => ({ ...s, expanded: false, sales: [], loading_sales: false }));
 					this.is_loading = false;
 				},
 				error: (error) => {
@@ -121,28 +119,6 @@ export class PaymentCommissionReportComponent extends BaseComponent implements O
 		}
 	}
 
-	toggleAgentSelection(agent: CommissionSummary) {
-		if (agent.sales) {
-			agent.sales.forEach(s => s.selected = agent.selected);
-		}
-	}
-
-	onSaleSelectionChange(agent: CommissionSummary) {
-		if (agent.sales) {
-			agent.selected = agent.sales.every(s => s.selected);
-		}
-	}
-
-	toggleAll(event: any) {
-		const isChecked = event.target.checked;
-		this.summaries.forEach(agent => {
-			agent.selected = isChecked;
-			if (agent.sales) {
-				agent.sales.forEach(s => s.selected = isChecked);
-			}
-		});
-	}
-
 	loadSales(agent: CommissionSummary) {
 		agent.loading_sales = true;
 		const date_start = this.start_date.replace('T', ' ') + ':00';
@@ -157,68 +133,12 @@ export class PaymentCommissionReportComponent extends BaseComponent implements O
 			.subscribe({
 				next: (data: any) => {
 					const salesData = Array.isArray(data) ? data : (data.data || []);
-					agent.sales = salesData.map((s: any) => ({ ...s, expanded: false, items: [], loading_items: false, selected: agent.selected || false }));
+					agent.sales = salesData.map((s: any) => ({ ...s, expanded: false, items: [], loading_items: false }));
 					agent.loading_sales = false;
 				},
 				error: (error) => {
 					this.showError(error);
 					agent.loading_sales = false;
-				}
-			});
-	}
-
-	async processCommissions() {
-		const agentsToLoad = this.summaries.filter(a => a.selected && (!a.sales || a.sales.length === 0));
-
-		if (agentsToLoad.length > 0) {
-			this.is_loading = true;
-			const date_start = this.start_date.replace('T', ' ') + ':00';
-			const date_end = this.end_date.replace('T', ' ') + ':59';
-			const agent_ids = agentsToLoad.map(a => a.agent_id);
-
-			try {
-				const data: any = await this.rest.httpPost('reports/getCommissionSalesByAgentByPayment.php', { 
-					agent_ids, 
-					date_start, 
-					date_end,
-					billing_status: this.billing_status 
-				}).toPromise();
-
-				const salesData = Array.isArray(data) ? data : (data.data || []);
-				
-				agentsToLoad.forEach(agent => {
-					agent.sales = salesData.filter((s: any) => s.agent_id == agent.agent_id || agent_ids.length === 1)
-						.map((s: any) => ({ ...s, expanded: false, items: [], loading_items: false, selected: true }));
-				});
-			} catch (error) {
-				this.showError(error);
-			}
-			this.is_loading = false;
-		}
-
-		const selections = this.summaries.flatMap(a => a.sales || [])
-			.filter(s => s.selected && !s.commission_id)
-			.map(s => ({ order_id: s.order_id, payment_id: s.payment_id }));
-
-		if (selections.length === 0) {
-			this.showError('Seleccione al menos una orden para procesar.');
-			return;
-		}
-
-		if (!confirm(`¿Está seguro de generar facturas de comisiones para ${selections.length} pagos seleccionados?`)) {
-			return;
-		}
-
-		this.is_loading = true;
-		this.rest.httpPost('generate_commission_bills.php', { selections })
-			.subscribe({
-				next: () => {
-					alert('Comisiones procesadas exitosamente');
-					this.generateReport();
-				},
-				error: (error) => {
-					this.showError(error);
-					this.is_loading = false;
 				}
 			});
 	}

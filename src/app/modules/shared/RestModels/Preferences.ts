@@ -90,4 +90,7 @@ export interface Preferences {
   updated: Date;
   user_attachments: 'ENABLED' | 'DISABLED';
   default_cash_close_type: 'SIMPLE' | 'DETAILED';
+  cfdi_per_payment_enabled?: number;
+  order_attachment_enabled?: number;
+  funeraria_enabled?: number;
 }

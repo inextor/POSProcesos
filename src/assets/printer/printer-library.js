@@ -9,29 +9,64 @@ console.log('Loaded printer-library');
 const receiptPrinter = new WebUSBReceiptPrinter();
 var isPrinting = false;
 
-function printUsb(xmlString, evt, config, interfaceNumber)
+/**
+ * Print XML to USB thermal printer
+ * @param {string} xmlString - ESC/POS XML string to print
+ * @param {Event|null} evt - User event (required for WebUSB permission)
+ * @param {Object} config - USB device config { vendorId, productId, serial_number? }
+ * @param {number} interfaceNumber - USB interface number (default: -1 for auto-detect)
+ * @param {Object} encoderConfig - Encoder config { language, columns, printerModel, codepageMapping }
+ * @returns {Promise<string>} - Returns 'OK' on success
+ */
+async function printUsb(xmlString, evt, config, interfaceNumber, encoderConfig)
 {
-	return getDevice(config, interfaceNumber || -1, evt).then((device)=>{
-		console.log('Configuration', config);
+	let deviceHandle = null;
 
-		let encoder_config = {
+	try {
+		const device = await getDevice(config, interfaceNumber || -1, evt);
+		deviceHandle = device;
+		console.log('USB Config:', config);
+
+		// Fallback when the caller provides no encoder config (legacy 4-arg
+		// printUsb path). 48 matches the app default ticket width; a narrower
+		// layout degrades safely while a wider one wraps destructively.
+		const encoder_config = encoderConfig || {
 			language: 'esc-pos',
 			columns: 48,
 			printerModel: 'bixolon-srp350iii',
 			codepageMapping: 'bixolon'
 		};
 
-		let model = 'bixolon-srp350iii';
-
-		console.log('Configuration', encoder_config);
-		const encoderInstance = new ReceiptPrinterEncoder( encoder_config );
-		const xmlProcessor = new EscposXmlProcessor(encoderInstance);
-		xmlProcessor.process(xmlString);
+		console.log('Encoder Config:', encoder_config);
+		const encoderInstance = new ReceiptPrinterEncoder(encoder_config);
+		// Same as the encoder playground: without this, every Text node is
+		// encoded with the fixed cp437 codepage and ÁÍÓÚ come out as '?'.
+		// Auto mode walks the mapping candidates (cp850 covers Spanish)
+		// and emits ESC t switches the printer follows.
+		encoderInstance.codepage('auto');
+		const xmlProcessor = new EscposXmlProcessor(encoderInstance, { accent_map: encoder_config.accent_map || '' });
+		
+		await xmlProcessor.process(xmlString);
+		// Every USB print job kicks the cash drawer, as the Windows driver
+		// did before WinUSB replaced it
+		encoderInstance.pulse();
 		const data = encoderInstance.encode();
 
-		device.write(data);
+		await device.write(data);
+		console.log('Print job sent successfully');
 		return 'OK';
-	});
+	} finally {
+		if (deviceHandle && deviceHandle.device) {
+			console.log('Releasing USB interface and closing device...');
+			try {
+				await deviceHandle.device.releaseInterface(deviceHandle.interfaceNumber);
+				await deviceHandle.device.close();
+				console.log('Device released and closed successfully');
+			} catch (err) {
+				console.warn('Error releasing device:', err);
+			}
+		}
+	}
 }
 
 function printUsb2(xmlString, evt, config, interfaceNumber)
@@ -286,7 +321,12 @@ function getDevice(config, interface_number,evt)
 	})
 	.then((response)=>{
 		console.log('What type is the reponse', response);
-		return device.selectConfiguration(1);
+		// The OS may already have configured the device; re-selecting the
+		// same configuration can reject on some platforms.
+		if (device.configuration === null) {
+			return device.selectConfiguration(1);
+		}
+		return Promise.resolve(device.configuration);
 	})
 	.then((reponse)=>{
 

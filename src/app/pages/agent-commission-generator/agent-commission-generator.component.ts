@@ -48,7 +48,7 @@ export class AgentCommissionGeneratorComponent extends BaseComponent implements 
 	ngOnInit(): void {
 		this.start_date = this.getFirstDayOfMonth();
 		this.end_date = this.getLastDayOfMonth();
-		this.setTitle('Generar Comisiones por Fórmula');
+		this.setTitle('Generar Comisiones');
 	}
 
 	getFirstDayOfMonth(): string {

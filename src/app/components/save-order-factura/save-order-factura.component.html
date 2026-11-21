@@ -1,0 +1,169 @@
+<form (submit)="save($event)" ngNativeValidate>
+	<div class="card p-3">
+		@if (order_info) {
+			<div class="row">
+				<div class="col-12">
+					<div class="my-3">
+						<h4>Datos Sucursal</h4>
+					</div>
+					<div class="row">
+						<div class="form-group col-12 col-lg-6">
+							<label>Código Postal Emisor</label>
+							<input class="form-control" type="text" name="sat_codigo_postal" [(ngModel)]="order_info.order.sat_codigo_postal" required>
+						</div>
+						<div class="form-group col-12 col-lg-6">
+							<label>Serie</label>
+							<input class="form-control" type="text" name="sat_serie" [ngModel]="order_info.order.sat_serie" (ngModelChange)="updateSatSerie($event)" required>
+						</div>
+						<div class="form-group col-12">
+							<label>Datos Facturación</label>
+							<select name="default_billing_data_id" [(ngModel)]="order_info.order.billing_data_id" (ngModelChange)="onBillingDataChange($event)" class="form-control" required>
+								<option [ngValue]="null">Seleccionar</option>
+								@for (c of billing_data_list; track c.id) {
+									<option [value]="c.id">{{c.rfc}}</option>
+								}
+							</select>
+						</div>
+					</div>
+				</div>
+				<div class="col-12">
+					<div class="my-3">
+						<h4>Datos del cliente</h4>
+					</div>
+					<div class="row">
+						<div class="col-12 col-md-6 form-group">
+							<label>Razón Social</label>
+							<input class="form-control" type="text" name="razon_social" [(ngModel)]="order_info.order.sat_razon_social" (ngModelChange)="changeAddress($event);checkFieldsChanged()" autocomplete="organization" placeholder="Mi Empresa" list="sat_rfc_list" required>
+						</div>
+						<datalist id="sat_rfc_list">
+							<option value="XAXX010101000">PUBLICO GENERAL</option>
+							@for (a of address_array; track a.id) {
+								<option [value]="a.name">{{a.name}}</option>
+							}
+						</datalist>
+						<div class="col-12 col-md-6 form-group">
+							<label>Régimen Capital</label>
+							<input class="form-control" type="text" name="regimen_capital" [(ngModel)]="order_info.order.sat_regimen_capital_receptor" (ngModelChange)="checkFieldsChanged()" placeholder="Ej: SA de CV">
+						</div>
+						<div class="col-12 col-lg-6 form-group">
+							<label>RFC receptor</label>
+							<input class="form-control" type="text" name="sat_receptor_rfc" [(ngModel)]="order_info.order.sat_receptor_rfc" (ngModelChange)="checkFieldsChanged()" list="sat_rfc_list_code" required>
+							<datalist id="sat_rfc_list_code">
+								<option value="XAXX010101000">PUBLICO GENERAL</option>
+								@for (a of address_array; track a.id) {
+									<option [value]="a.rfc">{{a.name}}</option>
+								}
+							</datalist>
+						</div>
+						<div class="col-12 col-md-6 form-group">
+							<label>Código postal del Domicilio Fiscal</label>
+							<input class="form-control" type="text" name="domicilio_fiscal" [(ngModel)]="order_info.order.sat_domicilio_fiscal_receptor" (ngModelChange)="checkFieldsChanged()" placeholder="Ej: 22800" required>
+						</div>
+						<div class="col-6 form-group">
+							<label>Regimen Fiscal</label>
+							<select class="form-control" name="regimen_fiscal" [(ngModel)]="order_info.order.sat_regimen_fiscal_receptor" (ngModelChange)="checkFieldsChanged()" required>
+								<option value="622">622 - Actividades Agrícolas, Ganaderas, Silvícolas y Pesqueras</option>
+								<option value="606">606 - Arrendamiento</option>
+								<option value="609">609 - Consolidación</option>
+								<option value="624">624 - Coordinados</option>
+								<option value="629">629 - De los Regímenes Fiscales Preferentes y de las Empresas Multinacionales</option>
+								<option value="608">608 - Demás ingresos</option>
+								<option value="630">630 - Enajenación de acciones en bolsa de valores</option>
+								<option value="601">601 - General de Ley Personas Morales</option>
+								<option value="628">628 - Hidrocarburos</option>
+								<option value="621">621 - Incorporación Fiscal</option>
+								<option value="611">611 - Ingresos por Dividendos (socios y accionistas)</option>
+								<option value="614">614 - Ingresos por intereses</option>
+								<option value="623">623 - Opcional para Grupos de Sociedades</option>
+								<option value="612">612 - Personas Físicas con Actividades Empresariales y Profesionales</option>
+								<option value="603">603 - Personas Morales con Fines no Lucrativos</option>
+								<option value="607">607 - Régimen de Enajenación o Adquisición de Bienes</option>
+								<option value="625">625 - Régimen de las Actividades Empresariales con ingresos a través de Plataformas Tecnológicas</option>
+								<option value="615">615 - Régimen de los ingresos por obtención de premios</option>
+								<option value="626">626 - Régimen Simplificado de Confianza</option>
+								<option value="610">610 - Residentes en el Extranjero sin Establecimiento Permanente en México</option>
+								<option value="616">616 - Sin obligaciones fiscales</option>
+								<option value="620">620 - Sociedades Cooperativas de Producción que optan por diferir sus ingresos</option>
+								<option value="605">605 - Sueldos y Salarios e Ingresos Asimilados a Salarios</option>
+							</select>
+						</div>
+						<div class="col-12 col-md-6 form-group">
+							<label>Forma de Pago</label>
+							<select class="form-control" name="sat_forma_pago" [(ngModel)]="order_info.order.sat_forma_pago" (ngModelChange)="checkFieldsChanged()" required>
+								<option value="">Seleccionar</option>
+								<option value="01">Efectivo</option>
+								<option value="02">Cheque</option>
+								<option value="04">Tarjeta de crédito</option>
+								<option value="05">Monedero electrónico</option>
+								<option value="28">Tarjeta de débito</option>
+								<option value="03">Transferencia</option>
+								<option value="99">Credito</option>
+							</select>
+						</div>
+						<div class="col-12 col-lg-6 form-group">
+							<label>Uso CFDI</label>
+							<select name="sat_uso_cfdi" class="form-control" [(ngModel)]="order_info.order.sat_uso_cfdi" (ngModelChange)="checkFieldsChanged()" required>
+								<option value="G01">G01 - Adquisición de mercancías</option>
+								<option value="G02">G02 - Devoluciones, descuentos o bonificaciones</option>
+								<option value="G03">G03 - Gastos en general</option>
+								<option value="I01">I01 - Construcciones</option>
+								<option value="I02">I02 - Mobiliario y equipo de oficina por inversiones</option>
+								<option value="I03">I03 - Equipo de transporte</option>
+								<option value="I04">I04 - Equipo de cómputo y accesorios</option>
+								<option value="I05">I05 - Dados, troqueles, moldes, matrices y herramental</option>
+								<option value="I06">I06 - Comunicaciones telefónicas</option>
+								<option value="I07">I07 - Comunicaciones satelitales</option>
+								<option value="I08">I08 - Otra maquinaria y equipo</option>
+								<option value="D01">D01 - Honorarios médicos, dentales y gastos hospitalarios.</option>
+								<option value="D02">D02 - Gastos médicos por incapacidad o discapacidad</option>
+								<option value="D03">D03 - Gastos funerales.</option>
+								<option value="D04">D04 - Donativos</option>
+								<option value="D05">D05 - Intereses reales efectivamente pagados por créditos hipotecarios (casa habitación).</option>
+								<option value="D06">D06 - Aportaciones voluntarias al SAR.</option>
+								<option value="D07">D07 - Primas por seguros de gastos médicos.</option>
+								<option value="D08">D08 - Gastos de transportación escolar obligatoria.</option>
+								<option value="D09">D09 - Depósitos en cuentas para el ahorro, primas que tengan como base planes de pensiones.</option>
+								<option value="D10">D10 - Pagos por servicios educativos (colegiaturas)</option>
+								<option value="P01">P01 - Por definir</option>
+								<option value="S01">S01 - Sin efectos Fiscales</option>
+							</select>
+						</div>
+						<div class="col-12 col-lg-6 form-group">
+							<label>Nota</label>
+							<textarea name="note" [(ngModel)]="order_info.order.note" class="form-control"></textarea>
+						</div>
+						<div class="col-12 form-group">
+							<label>Email Receptor</label>
+							<input class="form-control" type="text" name="sat_receptor_email" [(ngModel)]="order_info.order.sat_receptor_email" (ngModelChange)="checkFieldsChanged()" placeholder='correo@ejemplo.com, "Nombre" <correo@ejemplo.com>' required>
+						</div>
+						@if (fields_changed) {
+							<div class="col-12 form-group">
+								<div class="form-check">
+									<input type="checkbox" class="form-check-input" id="updateAddress" [(ngModel)]="update_address" name="updateAddress">
+									<label class="form-check-label" for="updateAddress">{{ client_address ? 'Actualizar datos de facturación' : 'Guardar datos de facturación' }}</label>
+								</div>
+							</div>
+						}
+						@if (!is_precision_6) {
+							<div class="col-12 form-group">
+								<div class="form-check">
+									<input type="checkbox" class="form-check-input" id="apply_rounding_discount_adjustment" [(ngModel)]="apply_rounding_discount_adjustment" name="apply_rounding_discount_adjustment">
+									<label class="form-check-label" for="apply_rounding_discount_adjustment">Facturar por el total exacto del ticket</label>
+									<div class="text-danger small">Puede agregar descuentos por ajuste de redondeo.</div>
+								</div>
+							</div>
+						}
+					</div>
+				</div>
+			</div>
+		}
+		<div class="row mt-3">
+			<div class="col-12 text-end">
+				<button type="submit" class="mx-1 btn btn-primary" [disabled]="is_loading">Facturar</button>
+			</div>
+		</div>
+	</div>
+	<div class="d-flex justify-content-end mt-2">
+		<button type="button" class="btn btn-secondary" (click)="cancel()">Cerrar</button>
+	</div>
+</form>

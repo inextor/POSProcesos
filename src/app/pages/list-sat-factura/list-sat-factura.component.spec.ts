@@ -1,4 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { of } from 'rxjs';
 
 import { ListSatFacturaComponent } from './list-sat-factura.component';
 import { provideComponentMocks } from '../../modules/shared/test/test-mocks';
@@ -70,6 +71,19 @@ describe('ListSatFacturaComponent', () =>
 		expect(result.total).toBe(1000);
 		expect(result.name_type).toBe('Facturación');
 		expect(result.link).toBe('http://localhost:4000/#/view-order/10');
+	});
+
+	it('should cancel through the dedicated cancelar_factura endpoint, not updates.php', () =>
+	{
+		const factura = makeFactura({ id: 55 });
+		component.confirmation = { showConfirmAlert: () => of({ accepted: true }) } as any;
+		(component.rest_cancelar_factura as any).create = jasmine.createSpy('create').and.returnValue(of({}));
+		(component.rest as any).update = jasmine.createSpy('update').and.returnValue(of({}));
+
+		component.cancelarFactura(factura);
+
+		expect((component.rest_cancelar_factura as any).create).toHaveBeenCalledWith({ sat_factura_id: 55 });
+		expect((component.rest as any).update).not.toHaveBeenCalledWith('cancelar_factura', jasmine.anything());
 	});
 
 	it('should leave agent_name empty when the order has no client', () =>

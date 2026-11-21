@@ -1,4 +1,4 @@
-import { Address, Attachment, Bank_Account, Bank_Movement_Bill, Batch_Record, Bill, Cash_Close, Cash_Count, Bank_Movement, Bank_Movement_Order, Category, Consignment_Received, Consignment_Received_Item, Consignment_Received_Item_Batch, Consignment_Delivered, Consignment_Delivered_Item, Consignment_Delivered_Item_Batch, Delivery_Assignment, File_Type, Item, Item_Attribute, Item_Exception, Item_Option, Item_Option_Value, Offer, Order, Order_Item, Order_Item_Exception, Order_Item_Serial, Payment, Period, Price, Price_Type, Process, Production, Production_Area, Purchase, Purchase_Detail, Requisition, Requisition_Item, Reservation, Reservation_Item, Reservation_Item_Serial, Return_Assignment, Serial, Serial_Image, Shipping, Shipping_Item, Stock_Record, Store, Subscription, Task, Transfer, Transformation, Transformation_Input, Transformation_Output, User, Withdrawal } from "./RestModels";
+import { Address, Answer, Attachment, Bank_Account, Bank_Movement_Bill, Batch_Record, Bill, Cash_Close, Cash_Count, Bank_Movement, Bank_Movement_Order, Category, Consignment_Received, Consignment_Received_Item, Consignment_Received_Item_Batch, Consignment_Delivered, Consignment_Delivered_Item, Consignment_Delivered_Item_Batch, Delivery_Assignment, File_Type, Form, Item, Item_Attribute, Item_Exception, Item_Option, Item_Option_Value, Offer, Order, Order_Attachment, Order_Item, Order_Item_Batch, Order_Item_Exception, Order_Item_Response, Order_Item_Serial, Order_Offer, Order_Response, Payment, Period, Price, Price_Type, Process, Production, Production_Area, Purchase, Purchase_Detail, Question, Requisition, Requisition_Item, Reservation, Reservation_Item, Reservation_Item_Serial, Response, Return_Assignment, Returned_Item, Returns, Sat_Factura, Serial, Serial_Image, Shipping, Shipping_Item, Stock_Record, Store, Subscription, Task, Transfer, Transformation, Transformation_Input, Transformation_Output, User, Withdrawal } from "./RestModels";
 
 interface CSerial extends Serial
 {
@@ -35,11 +35,14 @@ export interface OrderItemInfo extends ItemInfo
 	order_item:Order_Item; //Obligatorio
 	created:Date;
 	//serials:SerialInfo[];
+	batches?:Order_Item_Batch[];
 	order_item_exceptions: Order_Item_Exception[];
 	serials_string:string;
 	commanda_type_id:number | null;
 	draw_separator?:boolean;//Not in backend
 	category_zero: number | null;
+	form?:Form | null;
+	responses?:OrderItemResponseInfo[];
 }
 
 export interface OrderItemStructureInfo extends OrderItemInfo
@@ -60,10 +63,16 @@ export interface OrderInfo
 	client: User | null;
 	cashier: User | null;
 	delivery_user: User | null;
+	agent?: User | null;
 	price_type: Price_Type;
 	store: Store;
 	purchase: Purchase | null;
 	offers:Offer[];
+	order_offers?:Order_Offer[];
+	sat_factura?:Sat_Factura | null;
+	payment_facturas?:Sat_Factura[];
+	responses?:OrderResponseInfo[];
+	attachments?:OrderAttachmentInfo[];
 }
 
 export interface StructuredOrderInfo extends OrderInfo
@@ -183,6 +192,7 @@ export interface ItemInfo
 	stock_record?:Stock_Record;
 	options:ItemOptionInfo[];
 	exceptions:Item_Exception[];
+	exception_stock_items?:Item[];
 	display_category?:boolean;
 	serials:SerialInfo[];
 }
@@ -308,6 +318,95 @@ export interface PaymentInfo
 {
 	payment:Payment;
 	movements:MovementInfo[];
+	paid_by_user?:User | null;
+	created_by_user?:User | null;
+	store?:Store | null;
+	sat_factura?:Sat_Factura | null;
+	order_sync_id?:string | null;
+	offline_order_id?:number | null;
+	comex_points?:number;
+	comex_puntos?:number;
+	comex_codigo_autorizacion?:string;
+}
+
+export interface ReturnItemInfo
+{
+	returned_item:Returned_Item;
+	item:Item;
+	category:Category | null;
+}
+
+export interface ReturnsInfo
+{
+	returns:Returns;
+	items:ReturnItemInfo[];
+	cashier_user:User;
+	client_user:User | null;
+	store:Store;
+}
+
+export interface AnswerInfo
+{
+	question:Question;
+	answer:Answer;
+}
+
+export interface ResponseInfo
+{
+	response:Response;
+	form:Form;
+	answers:AnswerInfo[];
+	user:User | null;
+}
+
+export interface OrderResponseInfo
+{
+	order_response:Order_Response;
+	response:Response;
+	form:Form | null;
+	answers:AnswerInfo[];
+	show_answers?:boolean;
+}
+
+export interface OrderItemResponseInfo
+{
+	order_item_response:Order_Item_Response;
+	order_item?:Order_Item;
+	response:Response;
+	form:Form | null;
+	answers:AnswerInfo[];
+	serial:Serial | null;
+}
+
+export interface OrderAttachmentInfo
+{
+	order_attachment:Order_Attachment;
+	attachment:Attachment | null;
+	file_type?:File_Type | null;
+}
+
+export interface FacturacionRequest
+{
+	facturacion_code:string;
+	domicilio_fiscal:string;
+	regimen_fiscal:string;
+	regimen_capital:string;
+	forma_de_pago?:string;
+	rfc:string;
+	razon_social:string;
+	email:string;
+	uso_cfdi:string;
+	note:string;
+	version:'4.0' | '3.0';
+	lugar_de_expedicion:string;
+	apply_rounding_discount_adjustment?:boolean;
+}
+
+export interface ReenviarFacturaRequest
+{
+	email:string;
+	name:string;
+	order_id:number;
 }
 
 export interface BankMovementBillInfo

@@ -1,0 +1,80 @@
+<h2>Datos XML</h2>
+<div class="card p-3 my-3">
+	<div class="row m-0">
+		<div class="col-md-6 mt-2">
+			<div>Fecha:</div>
+			<b>{{factura_metadata.Fecha}}</b>
+		</div>
+		<div class="col-md-6 mt-2">
+			<div>Folio Fiscal:</div>
+			<b>{{factura_metadata.UUID}}</b>
+		</div>
+		<div class="col-md-6 mt-2">
+			<div>Moneda:</div>
+			<b>{{factura_metadata.moneda}}</b>
+		</div>
+		<div class="col-md-6 mt-2">
+			<div>Folio:</div>
+			<b>{{factura_metadata.folio}}</b>
+		</div>
+		<div class="col-md-6 mt-2">
+			<div>Total:</div>
+			<b>{{factura_metadata.total}}</b>
+		</div>
+		<div class="col-md-6 mt-2">
+			<div>No. Certificado:</div>
+			<b>{{factura_metadata.noCertificado}}</b>
+		</div>
+		<div class="col-md-6 mt-2">
+			<div>Lugar de expedición:</div>
+			<b>{{factura_metadata.lugarExpedicion}}</b>
+		</div>
+	</div>
+	<div class="row m-0">
+		<div class="col-md-6 mt-2">
+			<a class="btn btn-primary w-100" [href]="sat_verify_url" target="_blank">
+				Validar Factura
+			</a>
+		</div>
+		<div class="col-md-6 mt-2">
+			<a class="btn btn-primary w-100" [href]="xml_download_url">
+				Descargar XML
+			</a>
+		</div>
+	</div>
+	<div class="border-bottom my-3">&nbsp;</div>
+	<div class="row">
+		<div class="col-6">
+			<h3>Receptor:</h3>
+			<div>
+				<div>
+					<b>{{factura_metadata.receptor}}</b>
+				</div>
+				<div>
+					<div>RFC Receptor:</div>
+					<b>{{factura_metadata.rfcReceptor}}</b>
+				</div>
+				<div>
+					<div>Domicilio Receptor:</div>
+					<b>{{factura_metadata.domicilioReceptor}}</b>
+				</div>
+				<div>
+					<div>Régimen Fiscal Receptor:</div>
+					<b>{{factura_metadata.regimenFiscalReceptorDescription}}</b>
+				</div>
+			</div>
+		</div>
+		<div class="col-6">
+			<h3>Emisor</h3>
+			<div>
+				<div>
+					<b>{{factura_metadata.emisor}}</b>
+				</div>
+				<div>
+					<div>RFC Emisor:</div>
+					<b>{{factura_metadata.rfcEmisor}}</b>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

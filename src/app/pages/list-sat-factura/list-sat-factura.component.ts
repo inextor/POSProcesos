@@ -5,7 +5,7 @@ import { ParamMap } from '@angular/router';
 import { forkJoin, of } from 'rxjs';
 import { filter, mergeMap } from 'rxjs/operators';
 import { BaseComponent } from '../../modules/shared/base/base.component';
-import { RestResponse, RestSimple, SearchObject } from '../../modules/shared/services/Rest';
+import { Rest, RestResponse, RestSimple, SearchObject } from '../../modules/shared/services/Rest';
 import { Billing_Data, Order, Sat_Factura, User } from '../../modules/shared/RestModels';
 import { PaymentInfo } from '../../modules/shared/Models';
 import { Utils } from '../../modules/shared/Utils';
@@ -30,6 +30,11 @@ interface CSatFacturaInfo extends Sat_Factura
 	total: number;
 	pdf_url: string;
 	xml_url: string;
+}
+
+interface CancelacionRequest
+{
+	sat_factura_id: number;
 }
 
 @Component({
@@ -71,6 +76,7 @@ export class ListSatFacturaComponent extends BaseComponent implements OnInit
 	rest_order: RestSimple<Order> = this.rest.initRestSimple('order');
 	rest_billing_data: RestSimple<Billing_Data> = this.rest.initRestSimple('billing_data');
 	rest_user: RestSimple<CClient> = this.rest.initRestSimple('user');
+	rest_cancelar_factura: Rest<CancelacionRequest, CancelacionRequest> = this.rest.initRest('cancelar_factura');
 
 	ngOnInit(): void
 	{
@@ -322,7 +328,7 @@ export class ListSatFacturaComponent extends BaseComponent implements OnInit
 				mergeMap(() =>
 				{
 					this.is_loading = true;
-					return this.rest.update('cancelar_factura', { sat_factura_id: sat_factura.id });
+					return this.rest_cancelar_factura.create({ sat_factura_id: sat_factura.id });
 				}),
 			)
 			.subscribe

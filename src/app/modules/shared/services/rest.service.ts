@@ -25,6 +25,30 @@ declare global
 export const USER_PERMISSION_KEY = 'user_permission';
 const USER_KEY = 'user';
 
+export interface MergeUserPreview
+{
+	user_id:number;
+	name:string;
+	email:string | null;
+	phone:string | null;
+	type:string;
+	status:string;
+	points:number;
+	related_records:Record<string, number>;
+}
+
+export interface MergeUsersResult
+{
+	success:boolean;
+	message:string;
+	merged_users_count:number;
+	source_user_ids:(number | string)[];
+	target_user_id:number;
+	target_user_name:string;
+	merged_users:{ user_id:number; name:string; email:string | null; updates:Record<string, number> }[];
+	total_updates_summary:Record<string, number>;
+}
+
 type SuperEmpty<Type> = Type | null | undefined;
 
 @Injectable
@@ -95,12 +119,12 @@ export class RestService
 		this.updates = this.updatesSubject.asObservable();
 	}
 
-	sendNotification(type:string,id:number)
+	sendNotification(type:string,id:number,store_id?:number)
 	{
 		if( this.socket )
 		{
 			console.log('Emitiendo notificacion');
-			this.socket.emit('update',{type,id});
+			this.socket.emit('update',{type,id,store_id});
 		}
 	}
 
@@ -934,5 +958,85 @@ export class RestService
 	callPostApi(url:string,payload:any,options:any):Observable<any>
 	{
 		return this.http.post(url, payload, { responseType: 'blob' })
+	}
+
+	getFileContentAsString(id:number):Observable<string>
+	{
+		return this.http.get(this.getFilePath(id), { headers: this.getSessionHeaders(), withCredentials: true, responseType: 'text' });
+	}
+
+	createCreditNote(uuid:string, motivo:string, amount:number | null = null, sat_factura_id:number | null = null):Observable<any>
+	{
+		return this.http.post<any>(`${this.domain_configuration.domain}/${this.url_base}/NotaDeCredito.php`, { uuid, motivo, amount, sat_factura_id }, { withCredentials: true, headers: this.getSessionHeaders() });
+	}
+
+	createCreditNoteByItems(sat_factura_id:number, order_id:number, motivo:string, amounts:{ amount:number, iva:string, isr:string | null, ieps:string | null }[], forma_de_pago:string = '15', sat_serie:string = 'A'):Observable<any>
+	{
+		return this.http.post<any>(`${this.domain_configuration.domain}/${this.url_base}/NotaDeCreditoManual.php`, { sat_factura_id, order_id, motivo, forma_de_pago, sat_serie, amounts }, { withCredentials: true, headers: this.getSessionHeaders() });
+	}
+
+	setFacturacionMode(order_id:number, facturacion_mode:'FULL'|'PER_PAYMENT'):Observable<any>
+	{
+		return this.httpPost('updates.php', { method: 'setFacturacionMode', order_id, facturacion_mode });
+	}
+
+	facturarPagoComun(params:{ payment_id:number; sat_serie?:string; email?:string; fecha_de_pago?:string | null; transaccion?:string | null; folio?:string }):Observable<any>
+	{
+		return this.httpPost('facturar_pago_comun.php', params);
+	}
+
+	getMergeUserPreview(user_id:number):Observable<MergeUserPreview>
+	{
+		let params = new HttpParams().set('user_id',''+user_id);
+		let url = `${this.domain_configuration.domain}/${this.url_base}/merge_user.php`;
+		let options = { params, headers: this.getSessionHeaders(), withCredentials: true };
+		return this.http.get<MergeUserPreview>(url, options);
+	}
+
+	mergeUsers(source_user_ids:number[], target_user_id:number):Observable<MergeUsersResult>
+	{
+		return this.httpPost('merge_user.php', { source_user_id: source_user_ids, target_user_id }) as Observable<MergeUsersResult>;
+	}
+
+	cancelOrder(order_id:number, cancellation_reason:string = 'N/A'):Observable<any>
+	{
+		return this.update('cancelOrder', { order_id, cancellation_reason }).pipe
+		(
+			mergeMap((response)=>
+			{
+				this.sendNotification('order', order_id);
+				return of(response);
+			})
+		);
+	}
+
+	cancelPayment(payment_id:number):Observable<any>
+	{
+		return this.updatePath('cancel_payment', { payment_id });
+	}
+
+	updateOrderDeliveryStatus(order_id:number, delivery_status:'PENDING'|'SENT'|'DELIVERED'|'READY_TO_PICKUP', commanda_type_id:number | null = null):Observable<any>
+	{
+		return this.update('updateOrderDeliveryStatus', { order_id, delivery_status, commanda_type_id });
+	}
+
+	markOrderItemsAsDelivered(order_item_ids:number[]):Observable<boolean>
+	{
+		return this.update('markOrderItemsAsDelivered', { order_item_ids });
+	}
+
+	updateOrderBatches(order_id:number, items:{ item_id:number, order_item_id?:number, item_exception_id?:number | null, batches:{ batch:string, expiration_date:string, qty:number }[] }[]):Observable<any>
+	{
+		return this.updatePath('update_order_batches', { order_id, items });
+	}
+
+	updateDatosFacturacion(order:any):Observable<any>
+	{
+		return this.updatePath('datos_facturacion', order);
+	}
+
+	comex(path:string, data:any):Observable<any>
+	{
+		return this.httpPost(`comex/${path}.php`, data);
 	}
 }

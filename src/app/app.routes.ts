@@ -88,6 +88,7 @@ export const routes: Routes = [
 			{path: 'resume-production-day', loadComponent: () => import('./pages/resume-production-day/resume-production-day.component').then(m => m.ResumeProductionDayComponent), canActivate: [authGuard]},
 			{path: 'list-ecommerce-order', loadComponent: () => import('./pages/list-ecommerce-order/list-ecommerce-order.component').then(m => m.ListEcommerceOrderComponent), canActivate: [authGuard]},
 			{path: 'list-order', loadComponent: () => import('./pages/list-order/list-order.component').then(m => m.ListOrderComponent), canActivate: [authGuard]},
+			{path: 'view-order/:id', loadComponent: () => import('./pages/view-order/view-order.component').then(m => m.ViewOrderComponent), canActivate: [authGuard]},
 			{path: 'list-consumption', loadComponent: () => import('./pages/list-consumption/list-consumption.component').then(m => m.ListConsumptionComponent), canActivate: [authGuard]},
 			{path: 'report-cash-count-totals', loadComponent: () => import('./pages/report-cash-count-totals/report-cash-count-totals.component').then(m => m.ReportCashCountTotalsComponent), canActivate: [authGuard]},
 			{path: 'report-withdrawals', loadComponent: () => import('./pages/report-withdrawals/report-withdrawals.component').then(m => m.ReportWithdrawalsComponent), canActivate: [authGuard]},
@@ -144,6 +145,7 @@ export const routes: Routes = [
 			{path: 'list-printer', loadComponent: () => import('./pages/list-printer/list-printer.component').then(m => m.ListPrinterComponent), canActivate: [authGuard]},
 			{path: 'add-printer', loadComponent: () => import('./pages/save-printer/save-printer.component').then(m => m.SavePrinterComponent), canActivate: [authGuard]},
 			{path: 'edit-printer/:id', loadComponent: () => import('./pages/save-printer/save-printer.component').then(m => m.SavePrinterComponent), canActivate: [authGuard]},
+			{path: 'print-commandas', loadComponent: () => import('./pages/print-commandas/print-commandas.component').then(m => m.PrintCommandasComponent), canActivate: [authGuard]},
 			{path: 'report-credit-payments', loadComponent: () => import('./pages/report-credit-payments/report-credit-payments.component').then(m => m.ReportCreditPaymentsComponent), canActivate: [authGuard]},
 			{path: 'report-store-payments', loadComponent: () => import('./pages/report-store-payments/report-store-payments.component').then(m => m.ReportStorePaymentsComponent), canActivate: [authGuard]},
 			{path: 'list-transformation', loadComponent: () => import('./pages/list-transformation/list-transformation.component').then(m => m.ListTransformationComponent), canActivate: [authGuard]},
@@ -166,6 +168,7 @@ export const routes: Routes = [
 		{path: 'view-consignment-delivered/:id', loadComponent: () => import('./pages/view-consignment-delivered/view-consignment-delivered.component').then(m => m.ViewConsignmentDeliveredComponent), canActivate: [authGuard]},
 		{path: 'consignment-report', loadComponent: () => import('./pages/consignment-report/consignment-report.component').then(m => m.ConsignmentReportComponent), canActivate: [authGuard]},
 		{path: 'list-subscription', loadComponent: () => import('./pages/list-subscription/list-subscription.component').then(m => m.ListSubscriptionComponent), canActivate: [authGuard]},
+			{path: 'merge-user', loadComponent: () => import('./pages/merge-user/merge-user.component').then(m => m.MergeUserComponent), canActivate: [authGuard]},
 			{path: 'produccion-reportada-vs-validada-report', loadComponent: () => import('./pages/produccion-reportada-vs-validada-report/produccion-reportada-vs-validada-report.component').then(m => m.ProduccionReportadaVsValidadaReportComponent), canActivate: [authGuard]}
 		]
 	},

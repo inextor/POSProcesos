@@ -96,4 +96,5 @@ export interface User_Permission {
   view_commissions: any | null;
   pay_commissions: any | null;
   approve_commissions: any | null;
+  cfdi_per_payment_enabled?: any;
 }
