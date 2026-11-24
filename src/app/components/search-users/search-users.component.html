@@ -1,4 +1,4 @@
-<input type="text" (input)="keyPressed($event)" [(ngModel)]="search_str" [placeholder]="type === 'USER' ? 'Buscar usuario' : 'Buscar cliente'" autocomplete="off" class="form-control w-100">
+<input type="text" (input)="keyPressed($event)" [(ngModel)]="search_str" placeholder="Buscar usuario" autocomplete="off" class="form-control w-100">
 <div style="overflow:visible;max-height:10px;position:relative;z-index:3">
   @if (search_str) {
     <div class="pointer border" style="background-color:white">

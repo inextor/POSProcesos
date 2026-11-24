@@ -53,6 +53,7 @@ export class ListUserAttendanceComponent extends BaseComponent
 				this.path = 'users-attendance';
 				let search_obj = this.rest_user.getSearchObject(param_map);
 				search_obj.eq.type = 'USER';
+				search_obj.search_extra['user_permission.is_provider'] = 0;
 				search_obj.nn = ['production_area_id'];
 
 				if( this.rest.user?.production_area_id )

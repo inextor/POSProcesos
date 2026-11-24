@@ -94,7 +94,7 @@ export class SaveConsignmentReceivedComponent extends BaseComponent implements O
 		let rest_user = this.rest.initRestSimple<User>('user');
 		this.subs.sink = rest_user.search({
 			start: { name: provider_name },
-			eq: { status: 'ACTIVE' },
+			eq: { status: 'ACTIVE', type: 'USER' },
 			search_extra: { 'user_permission.is_provider': 1 },
 			limit: 20
 		}).subscribe((response) =>

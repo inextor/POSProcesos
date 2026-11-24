@@ -6,7 +6,7 @@ import { BaseComponent } from '../../modules/shared/base/base.component';
 import { User } from '../../modules/shared/RestModels';
 import { MergeUserPreview, MergeUsersResult } from '../../modules/shared/services/rest.service';
 import { LoadingComponent } from '../../components/loading/loading.component';
-import { SearchUsersComponent } from '../../components/search-users/search-users.component';
+import { SearchClientsComponent } from '../../components/search-clients/search-clients.component';
 
 interface PreviewRow
 {
@@ -60,7 +60,7 @@ const SUMMARY_LABELS:Record<string, string> =
 @Component({
 	selector:'app-merge-user',
 	standalone:true,
-	imports:[CommonModule, FormsModule, LoadingComponent, SearchUsersComponent],
+	imports:[CommonModule, FormsModule, LoadingComponent, SearchClientsComponent],
 	templateUrl:'./merge-user.component.html',
 	styleUrl:'./merge-user.component.css'
 })

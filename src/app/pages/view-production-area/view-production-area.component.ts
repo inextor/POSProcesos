@@ -72,7 +72,7 @@ export class ViewProductionAreaComponent extends BaseComponent implements OnInit
 							? this.rest_production_area.get( paramMap.get('id' ) )
 							: of( GetEmpty.production_area() ),
 						process	: this.rest_process.search({eq:{production_area_id }, limit: 20 }),
-						users: this.rest_user.search({eq:{production_area_id, status: 'ACTIVE' }, limit: 99999, }),
+						users: this.rest_user.search({eq:{production_area_id, type: 'USER', status: 'ACTIVE' }, search_extra: { 'user_permission.is_provider': 0 }, limit: 99999, }),
 						items	: this.rest_production_area_item.search({eq:{production_area_id, status: 'ACTIVE' }, limit: 99999, }).pipe
 						(
 							mergeMap((response)=>

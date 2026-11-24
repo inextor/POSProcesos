@@ -9,7 +9,7 @@
 <div class="row">
 <div class="col-md-5">
 <label>Cliente destino (receptor, conserva sus datos)</label>
-<app-search-users [type]="'CLIENT'" [reset_on_search]="true" (user_selected)="onTargetSelected($event)"></app-search-users>
+<app-search-clients [reset_on_search]="true" (user_selected)="onTargetSelected($event)"></app-search-clients>
 </div>
 <div class="col-md-2">
 <label>&nbsp;</label>
@@ -19,7 +19,7 @@
 </div>
 <div class="col-md-5">
 <label>Cliente origen (donante, se fusiona y se elimina)</label>
-<app-search-users [type]="'CLIENT'" [reset_on_search]="true" (user_selected)="onSourceSelected($event)"></app-search-users>
+<app-search-clients [reset_on_search]="true" (user_selected)="onSourceSelected($event)"></app-search-clients>
 </div>
 </div>
 </div>

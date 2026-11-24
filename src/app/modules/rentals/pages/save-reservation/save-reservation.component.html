@@ -15,13 +15,12 @@
           <div class="col-12 col-md-4">
             <div class="form-group">
               <label>Cliente</label>
-              <app-search-users
-                [type]="'CLIENT'"
+              <app-search-clients
                 [search_str]="client_search_str"
                 (search_strChange)="onClientStrChange($event)"
                 [reset_on_search]="false"
                 (user_selected)="onSelectUser($event)"
-              null_user_string="Registrar"></app-search-users>
+              null_user_string="Registrar"></app-search-clients>
             </div>
           </div>
         }

@@ -22,7 +22,7 @@
     <div class="col-12 col-md-3">
       <div class="form-group mb-3">
         <label for="client_id">Cliente</label>
-        <app-search-users [type]="'CLIENT'" [reset_on_search]="false" (user_selected)="onSelectUser($event)"></app-search-users>
+        <app-search-clients [reset_on_search]="false" (user_selected)="onSelectUser($event)"></app-search-clients>
       </div>
     </div>
     <div class="col-12 col-md-3">
@@ -91,6 +91,6 @@
 </div>
 <app-modal [(show)]="show_assign_delivery">
   <div style="min-height:400px">
-    <app-search-users [type]="'USER'" [null_user_string]="'cancelar'" [reset_on_search]="true" (user_selected)="onSelectDeliveryUser($event)"></app-search-users>
+    <app-search-users [null_user_string]="'cancelar'" [reset_on_search]="true" (user_selected)="onSelectDeliveryUser($event)"></app-search-users>
   </div>
 </app-modal>

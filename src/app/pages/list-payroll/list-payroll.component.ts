@@ -67,7 +67,7 @@ export class ListPayrollComponent extends BaseComponent implements OnInit {
 
 				let user = this.rest.user as User;
 				return forkJoin({
-					users: this.rest_user.search({eq:{status: 'ACTIVE', store_id: user.store_id}}),
+					users: this.rest_user.search({eq:{status: 'ACTIVE', type: 'USER', store_id: user.store_id}, search_extra: { 'user_permission.is_provider': 0 }}),
 					payrolls: this.rest_payroll.search(this.search_payroll)
 				});
 			}),

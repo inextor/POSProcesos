@@ -84,7 +84,8 @@ export class SavePayrollComponent extends BaseComponent implements OnInit {
 				({
 					users: this.rest_user.search
 					({
-						eq: { store_id: this.rest.user?.store_id, status: "ACTIVE" }
+						eq: { store_id: this.rest.user?.store_id, status: "ACTIVE", type: 'USER' },
+						search_extra: { 'user_permission.is_provider': 0 }
 					}),
 					payroll_concepts: this.rest_payroll_concept.search({limit:9999}),
 					payroll: payroll_id ? this.rest_payroll.get(payroll_id) : of(null)

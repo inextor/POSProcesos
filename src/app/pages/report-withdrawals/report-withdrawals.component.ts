@@ -91,7 +91,7 @@ export class ReportWithdrawalsComponent extends BaseComponent implements OnInit
 				({
 					withdrawals: this.rest_withdrawal.search(this.search_withdrawal),
 					stores: this.rest_store.search({ limit: 99999, eq: { status: 'ACTIVE' } as any }),
-					users: this.rest_user.search({ limit: 99999, eq: { type: 'USER' } as any }),
+					users: this.rest_user.search({ limit: 99999, eq: { type: 'USER' } as any, search_extra: { 'user_permission.is_provider': 0 } }),
 					bank_accounts: this.rest_bank_account.search({ limit: 99999 })
 				});
 			})

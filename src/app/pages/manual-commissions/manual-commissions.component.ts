@@ -57,7 +57,7 @@ export class ManualCommissionsComponent extends BaseComponent implements OnInit 
 	}
 
 	loadAgentUsers() {
-		this.rest.initRestSimple<{ id: number; name: string }>('user').search({ eq: { type: 'USER' } as any, limit: 9999 })
+		this.rest.initRestSimple<{ id: number; name: string }>('user').search({ eq: { type: 'USER' } as any, search_extra: { 'user_permission.is_provider': 0 }, limit: 9999 })
 			.subscribe({
 				next: (response: any) => {
 					const users = response.data || [];

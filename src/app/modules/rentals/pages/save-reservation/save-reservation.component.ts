@@ -8,14 +8,14 @@ import { GetEmpty } from '../../../shared/GetEmpty';
 import { ItemInfo, ReservationInfo, ReservationItemInfo } from '../../../shared/Models';
 import { Rest, RestSimple } from '../../../shared/services/Rest';
 import { FormsModule } from '@angular/forms';
-import { SearchUsersComponent } from '../../../../components/search-users/search-users.component';
+import { SearchClientsComponent } from '../../../../components/search-clients/search-clients.component';
 import { SearchItemsComponent } from '../../../../components/search-items/search-items.component';
 import { Utils } from '../../../shared/Utils';
 
 
 @Component({
     selector: 'app-save-reservation',
-    imports: [CommonModule, FormsModule, RouterModule, SearchUsersComponent, SearchItemsComponent],
+    imports: [CommonModule, FormsModule, RouterModule, SearchClientsComponent, SearchItemsComponent],
     templateUrl: './save-reservation.component.html',
     styleUrl: './save-reservation.component.css'
 })

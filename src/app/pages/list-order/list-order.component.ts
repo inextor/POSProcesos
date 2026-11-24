@@ -252,7 +252,7 @@ export class ListOrderComponent extends BaseComponent implements OnInit
 					({
 						limit: 9999, eq: { type: 'USER' } as any,
 						sort_order: ['name_ASC'],
-						search_extra: { 'user_permission.pos': 1 }
+						search_extra: { 'user_permission.pos': 1, 'user_permission.is_provider': 0 }
 					});
 
 				let currency_obs = this.currency_array.length > 0

@@ -182,7 +182,7 @@ export class SavePurchaseComponent extends BaseComponent implements OnInit
 		this.subs.sink = rest_user.search(
 		{
 			start:{	name:provider_name },
-			eq:{ status:'ACTIVE'},
+			eq:{ status:'ACTIVE', type:'USER'},
 			search_extra:{'user_permission.is_provider':1},
 			limit: 20
 		})

@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { BaseComponent } from '../../../shared/base/base.component';
 import { FormsModule } from '@angular/forms';
 import { SearchUsersComponent } from '../../../../components/search-users/search-users.component';
+import { SearchClientsComponent } from '../../../../components/search-clients/search-clients.component';
 import { Delivery_Assignment, Return_Assignment, User } from '../../../shared/RestModels';
 import { Rest } from '../../../shared/services/Rest';
 import { ExtendedReservation, ReservationInfo, ReservationItemInfo } from '../../../shared/Models';
@@ -33,7 +34,7 @@ interface CReservationInfo extends ReservationInfo
     selector: 'app-list-reservation',
     templateUrl: './list-reservation.component.html',
     styleUrl: './list-reservation.component.css',
-    imports: [CommonModule, FormsModule, SearchUsersComponent, RouterModule, ModalComponent, ShortDatePipe, LoadingComponent]
+    imports: [CommonModule, FormsModule, SearchUsersComponent, SearchClientsComponent, RouterModule, ModalComponent, ShortDatePipe, LoadingComponent]
 })
 export class ListReservationComponent extends BaseComponent implements OnInit
 {

@@ -22,7 +22,6 @@ import { ControlValueAccessor, FormsModule, NG_VALUE_ACCESSOR } from '@angular/f
     ]
 })
 export class SearchUsersComponent implements OnInit, OnDestroy, OnChanges, ControlValueAccessor {
-    @Input() type: 'USER' | 'CLIENT' = 'USER';
     @Input() search_str: string = '';
     @Input() reset_on_search: boolean = true;
     @Output() search_strChange = new EventEmitter<string>();
@@ -84,13 +83,13 @@ export class SearchUsersComponent implements OnInit, OnDestroy, OnChanges, Contr
             }),
             debounceTime(350),
             mergeMap((response) => {
-                let permissions: Record<string, string | number | null | Date> = this.type == 'CLIENT' ? {} : { 'user_permission_production': 1 };
-
+                // Staff only: providers are also type 'USER' (is_provider = 1).
+                // is_provider = 0 makes the backend add (0 OR NULL), excluding providers.
                 return this.rest_user.search
                     ({
-                        eq: { status: 'ACTIVE', type: this.type, },
+                        eq: { status: 'ACTIVE', type: 'USER', },
                         start: { name: response },
-                        search_extra: permissions,
+                        search_extra: { 'user_permission.is_provider': 0 },
                         limit: 50,
                     })
             })
