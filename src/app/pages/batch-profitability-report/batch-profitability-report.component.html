@@ -133,7 +133,13 @@
 					<div class="col-6 col-md-3">
 						<div class="kpi-box">
 							<div class="kpi-label">Por cobrar</div>
-							<div class="kpi-value">$ {{ summary.accounts_receivable | number:'1.2-2' }}</div>
+							@if (summary.receivable_url) {
+								<a class="kpi-value" [attr.href]="summary.receivable_url" target="_blank" rel="noopener">
+									$ {{ summary.accounts_receivable | number:'1.2-2' }}
+								</a>
+							} @else {
+								<div class="kpi-value">$ {{ summary.accounts_receivable | number:'1.2-2' }}</div>
+							}
 						</div>
 					</div>
 					<div class="col-6 col-md-3">
@@ -192,7 +198,13 @@
 									<td class="text-end">$ {{ row.net_sales | number:'1.2-2' }}</td>
 									<td class="text-end">$ {{ row.expenses | number:'1.2-2' }}</td>
 									<td class="text-end" [class]="row.profit_class">$ {{ row.estimated_profit | number:'1.2-2' }}</td>
-									<td class="text-end">$ {{ row.accounts_receivable | number:'1.2-2' }}</td>
+									<td class="text-end">
+										@if (row.receivable_url) {
+											<a [attr.href]="row.receivable_url" target="_blank" rel="noopener">$ {{ row.accounts_receivable | number:'1.2-2' }}</a>
+										} @else {
+											$ {{ row.accounts_receivable | number:'1.2-2' }}
+										}
+									</td>
 									<td class="text-end">$ {{ row.accounts_payable | number:'1.2-2' }}</td>
 								</tr>
 							} @empty {
@@ -214,7 +226,13 @@
 									<td class="text-end">$ {{ summary.net_sales | number:'1.2-2' }}</td>
 									<td class="text-end">$ {{ summary.expenses | number:'1.2-2' }}</td>
 									<td class="text-end" [class]="summary.profit_class">$ {{ summary.estimated_profit | number:'1.2-2' }}</td>
-									<td class="text-end">$ {{ summary.accounts_receivable | number:'1.2-2' }}</td>
+									<td class="text-end">
+										@if (summary.receivable_url) {
+											<a [attr.href]="summary.receivable_url" target="_blank" rel="noopener">$ {{ summary.accounts_receivable | number:'1.2-2' }}</a>
+										} @else {
+											$ {{ summary.accounts_receivable | number:'1.2-2' }}
+										}
+									</td>
 									<td class="text-end">$ {{ summary.accounts_payable | number:'1.2-2' }}</td>
 								</tr>
 							</tfoot>

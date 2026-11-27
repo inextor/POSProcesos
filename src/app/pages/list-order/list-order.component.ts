@@ -191,7 +191,8 @@ export class ListOrderComponent extends BaseComponent implements OnInit
 					query_params.has('eq.client_user_id') ||
 					query_params.has('client_name') ||
 					query_params.has('search_extra.start_timestamp') ||
-					query_params.has('eq.store_consecutive')
+					query_params.has('eq.store_consecutive') ||
+					query_params.has('csv.id')
 				);
 
 				if (add_fecha)
