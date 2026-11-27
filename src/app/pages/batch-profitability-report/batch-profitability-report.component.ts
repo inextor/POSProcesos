@@ -47,10 +47,12 @@ interface BatchProfitabilitySummary
 	accounts_payable: number;
 	merma_pct: number;
 	margin_pct: number;
+	receivable_order_ids: number[];
 }
 
 interface CBatchProfitabilitySummary extends BatchProfitabilitySummary
 {
+	receivable_url: string | null;
 	date_display: string;
 	status_badge_class: string;
 	profit_class: string;
@@ -85,10 +87,12 @@ interface BatchProfitabilityItemRow
 	merma_pct: number;
 	margin_pct: number;
 	orders_count: number;
+	receivable_order_ids: number[];
 }
 
 interface CBatchProfitabilityItemRow extends BatchProfitabilityItemRow
 {
+	receivable_url: string | null;
 	profit_class: string;
 }
 
@@ -138,6 +142,7 @@ export class BatchProfitabilityReportComponent extends BaseComponent implements 
 	item_array: CBatchProfitabilityItemRow[] = [];
 	bill_array: CBatchBillRow[] = [];
 	has_searched: boolean = false;
+	external_base_url: string = this.rest.getExternalAppUrl();
 
 	rest_store: RestSimple<Store> = this.rest.initRestSimple<Store>('store');
 
@@ -299,6 +304,7 @@ export class BatchProfitabilityReportComponent extends BaseComponent implements 
 
 		return {
 			...summary,
+			receivable_url: this.getReceivableUrl(summary.receivable_order_ids),
 			date_display,
 			status_badge_class,
 			profit_class,
@@ -311,8 +317,19 @@ export class BatchProfitabilityReportComponent extends BaseComponent implements 
 		const profit_class = row.estimated_profit >= 0 ? 'text-success fw-bold' : 'text-danger fw-bold';
 		return {
 			...row,
+			receivable_url: this.getReceivableUrl(row.receivable_order_ids),
 			profit_class
 		};
+	}
+
+	getReceivableUrl(order_id_array: number[] | undefined): string | null
+	{
+		if (!order_id_array || order_id_array.length === 0)
+		{
+			return null;
+		}
+
+		return `${this.external_base_url}/#/list-order?csv.id=${order_id_array.join(',')}`;
 	}
 
 	getCBatchBillRow(row: BatchBillRow): CBatchBillRow
